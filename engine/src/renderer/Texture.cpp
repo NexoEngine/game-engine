@@ -17,7 +17,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Texture.hpp"
-// #include "Renderer.hpp"
 #include "String.hpp"
 #include "renderer/RendererExceptions.hpp"
 

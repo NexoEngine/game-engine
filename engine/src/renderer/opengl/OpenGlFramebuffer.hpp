@@ -152,7 +152,7 @@ namespace nexo::renderer {
          * - `glActiveTexture`: Activates the specified texture unit.
          * - `glBindTexture`: Binds the color attachment texture to the active texture unit.
          */
-        void bindAsTexture(unsigned int slot = 0, unsigned int attachment = 0) override;
+        void bindAsTexture(unsigned int slot, unsigned int attachment) override;
 
         /**
          * @brief Binds the depth attachment as a texture to a specified texture slot.
@@ -166,7 +166,7 @@ namespace nexo::renderer {
          * - `glActiveTexture`: Activates the specified texture unit.
          * - `glBindTexture`: Binds the depth texture to the active texture unit.
          */
-        void bindDepthAsTexture(unsigned int slot = 0) override;
+        void bindDepthAsTexture(unsigned int slot) override;
 
         /**
          * @brief Unbinds the framebuffer and restores the default framebuffer.
@@ -347,7 +347,7 @@ namespace nexo::renderer {
          * @param index The index of the color attachment (default is 0).
          * @return The OpenGL ID of the specified color attachment.
          */
-        [[nodiscard]] unsigned int getColorAttachmentId(const unsigned int index = 0) const override
+        [[nodiscard]] unsigned int getColorAttachmentId(const unsigned int index) const override
         {
             return m_colorAttachments[index];
         }

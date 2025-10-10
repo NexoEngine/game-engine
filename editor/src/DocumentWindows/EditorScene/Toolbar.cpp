@@ -78,14 +78,13 @@ namespace nexo::editor {
     }
     void EditorScene::spawnBallsScene(const glm::vec3& offset) const
     {
-        static std::random_device rd;
-        static std::mt19937 gen(rd());
-        static std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+        thread_local std::mt19937 gen{std::random_device{}()};
+        thread_local std::uniform_real_distribution<float> dis(0.0f, 1.0f);
 
         // Balls
         for (int i = 0; i < 50; ++i) {
-            float x         = -3.0f + static_cast<float>(i % 5) * 1.5f;
-            float z         = static_cast<float>((i % 2 == 0) ? 1 : -1) * 0.5f;
+            const float x   = -3.0f + static_cast<float>(i % 5) * 1.5f;
+            const float z   = static_cast<float>((i % 2 == 0) ? 1 : -1) * 0.5f;
             glm::vec3 pos   = {x, 62.0f + static_cast<float>(i), z};
             glm::vec4 color = {1.0f, dis(gen), dis(gen), 1.0f};
             createEntityWithPhysic(pos + offset, {0.4f, 0.4f, 0.4f}, {0, 0, 0}, color, system::ShapeType::Sphere,
@@ -389,9 +388,9 @@ namespace nexo::editor {
                                                          gizmoScaleButtonProps, gizmoUniversalButtonProps};
 
         ImNexo::ButtonProps activeOp;
-        auto eraseGizmoButton = [&](const std::string& id, const ImNexo::ButtonProps& prop) {
+        auto eraseGizmoButton = [&activeOp, &gizmoButtons](const std::string& id, const ImNexo::ButtonProps& prop) {
             activeOp = prop;
-            std::erase_if(gizmoButtons, [&](const auto& p) { return p.uniqueId == id; });
+            std::erase_if(gizmoButtons, [&id](const auto& p) { return p.uniqueId == id; });
         };
 
         using enum ImGuizmo::OPERATION;

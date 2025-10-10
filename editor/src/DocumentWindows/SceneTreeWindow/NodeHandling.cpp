@@ -67,8 +67,9 @@ namespace nexo::editor {
     {
         SceneObject lightNode;
         lightNode.type = SelectionType::DIR_LIGHT;
+        ++m_nbDirLights;
         const std::string uiName =
-            std::format("{}Directional light {}", ObjectTypeToIcon.at(lightNode.type), ++m_nbDirLights);
+            std::format("{}Directional light {}", ObjectTypeToIcon.at(lightNode.type), m_nbDirLights);
         newLightNode(lightNode, sceneId, uiId, lightEntity, uiName);
         return lightNode;
     }
@@ -78,8 +79,9 @@ namespace nexo::editor {
     {
         SceneObject lightNode;
         lightNode.type = SelectionType::SPOT_LIGHT;
+        ++m_nbSpotLights;
         const std::string uiName =
-            std::format("{}Spot light {}", ObjectTypeToIcon.at(lightNode.type), ++m_nbSpotLights);
+            std::format("{}Spot light {}", ObjectTypeToIcon.at(lightNode.type), m_nbSpotLights);
         newLightNode(lightNode, sceneId, uiId, lightEntity, uiName);
         return lightNode;
     }
@@ -89,8 +91,9 @@ namespace nexo::editor {
     {
         SceneObject lightNode;
         lightNode.type = SelectionType::POINT_LIGHT;
+        ++m_nbPointLights;
         const std::string uiName =
-            std::format("{}Point light {}", ObjectTypeToIcon.at(lightNode.type), ++m_nbPointLights);
+            std::format("{}Point light {}", ObjectTypeToIcon.at(lightNode.type), m_nbPointLights);
         newLightNode(lightNode, sceneId, uiId, lightEntity, uiName);
         return lightNode;
     }

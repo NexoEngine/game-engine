@@ -168,11 +168,12 @@ namespace nexo::editor::utils {
     {
         auto &app = getApp();
         renderer::NxFramebufferSpecs framebufferSpecs;
-        framebufferSpecs.attachments = {renderer::NxFrameBufferTextureFormats::RGBA8,
-                                        renderer::NxFrameBufferTextureFormats::RED_INTEGER,
-                                        renderer::NxFrameBufferTextureFormats::Depth};
-        framebufferSpecs.width       = static_cast<unsigned int>(previewSize.x);
-        framebufferSpecs.height      = static_cast<unsigned int>(previewSize.y);
+        framebufferSpecs.attachments = renderer::NxFrameBufferAttachmentsSpecifications(
+            {renderer::NxFrameBufferTextureSpecifications(renderer::NxFrameBufferTextureFormats::RGBA8),
+             renderer::NxFrameBufferTextureSpecifications(renderer::NxFrameBufferTextureFormats::RED_INTEGER),
+             renderer::NxFrameBufferTextureSpecifications(renderer::NxFrameBufferTextureFormats::Depth)});
+        framebufferSpecs.width  = static_cast<unsigned int>(previewSize.x);
+        framebufferSpecs.height = static_cast<unsigned int>(previewSize.y);
         const auto &transformComponentBase =
             Application::m_coordinator->getComponent<components::TransformComponent>(entity);
         const auto &transformComponent =

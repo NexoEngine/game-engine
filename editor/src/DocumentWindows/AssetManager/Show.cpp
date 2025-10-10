@@ -83,7 +83,7 @@ namespace nexo::editor {
             ImGui::PushID(("breadcrumb_" + crumb).c_str());
             if (i == lastIndex)
                 ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "%s", crumb.c_str());
-            else if (ImNexo::Button(std::format("%d##%d", crumb, i)))
+            else if (ImNexo::Button(std::format("{}##{}", crumb, i)))
                 m_currentFolder = fullPath;
 
             handleAssetDrop(fullPath);

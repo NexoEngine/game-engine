@@ -30,11 +30,12 @@ namespace nexo::renderer {
     MaskPass::MaskPass(const unsigned int width, const unsigned int height) : RenderPass(Passes::MASK, "Mask pass")
     {
         renderer::NxFramebufferSpecs maskFramebufferSpecs;
-        maskFramebufferSpecs.attachments = {renderer::NxFrameBufferTextureFormats::RGBA8,
-                                            renderer::NxFrameBufferTextureFormats::DEPTH24STENCIL8};
-        maskFramebufferSpecs.width       = width; // Default size, will be resized as needed
-        maskFramebufferSpecs.height      = height;
-        m_mask                           = renderer::NxFramebuffer::create(maskFramebufferSpecs);
+        maskFramebufferSpecs.attachments = renderer::NxFrameBufferAttachmentsSpecifications(
+            {renderer::NxFrameBufferTextureSpecifications(renderer::NxFrameBufferTextureFormats::RGBA8),
+             renderer::NxFrameBufferTextureSpecifications(renderer::NxFrameBufferTextureFormats::DEPTH24STENCIL8)});
+        maskFramebufferSpecs.width  = width; // Default size, will be resized as needed
+        maskFramebufferSpecs.height = height;
+        m_mask                      = renderer::NxFramebuffer::create(maskFramebufferSpecs);
     }
 
     void MaskPass::execute(RenderPipeline &pipeline)

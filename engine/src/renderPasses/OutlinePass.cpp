@@ -35,7 +35,7 @@ namespace nexo::renderer {
     {
         const auto renderTarget                 = pipeline.getRenderTarget();
         std::shared_ptr<NxFramebuffer> maskPass = nullptr;
-        for (auto prereq : prerequisites) {
+        for (const auto prereq : prerequisites) {
             auto p = pipeline.getRenderPass(prereq);
             if (p->getId() == Passes::MASK) maskPass = p->getOutput();
         }
@@ -47,7 +47,7 @@ namespace nexo::renderer {
 
         renderer::NxRenderCommand::setDepthTest(false);
         renderer::NxRenderCommand::setDepthMask(false);
-        maskPass->bindAsTexture();           // bound to unit 0
+        maskPass->bindAsTexture(0,0);           // bound to unit 0
         renderTarget->bindDepthAsTexture(1); // bound to unit 1
         maskPass->bindDepthAsTexture(2);     // bound to unit 2
 

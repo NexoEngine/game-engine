@@ -41,7 +41,7 @@ namespace nexo::editor {
             const int currentTypeIndex = (currentType == components::PhysicsBodyComponent::Type::Static) ? 0 : 1;
             int newTypeIndex           = currentTypeIndex;
 
-            if (ImGui::Combo("Physics Type", &newTypeIndex, typeNames.data(), typeNames.size())) {
+            if (ImGui::Combo("Physics Type", &newTypeIndex, typeNames.data(), static_cast<int>(typeNames.size()))) {
                 const auto newType = (newTypeIndex == 0) ? components::PhysicsBodyComponent::Type::Static :
                                                            components::PhysicsBodyComponent::Type::Dynamic;
 

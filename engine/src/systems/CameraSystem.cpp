@@ -57,9 +57,9 @@ namespace nexo::system {
         for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
             const auto &cameraComponent = cameraSpan[i];
             if (!cameraComponent.render) continue;
-            const auto &transformComponent       = transformComponentArray->get(entitySpan[i]);
-            glm::mat4 projectionMatrix           = cameraComponent.getProjectionMatrix();
-            glm::mat4 viewMatrix                 = cameraComponent.getViewMatrix(transformComponent);
+            const auto &transformComponent = transformComponentArray->get(entitySpan[i]);
+            glm::mat4 projectionMatrix     = cameraComponent.getProjectionMatrix();
+            glm::mat4 viewMatrix = components::CameraComponent::getViewMatrix(transformComponent);
             const glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
             components::CameraContext context{viewProjectionMatrix, transformComponent.pos, cameraComponent.clearColor,
                                               cameraComponent.m_renderTarget, cameraComponent.pipeline};

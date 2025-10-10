@@ -35,10 +35,12 @@ namespace nexo::renderer {
         specs.width = 800;
         specs.height = 600;
         specs.samples = 1;
+
         specs.attachments.attachments = {
-            {NxFrameBufferTextureFormats::RGBA8},
-            {NxFrameBufferTextureFormats::DEPTH24STENCIL8}
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8),
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
         };
+
         NxOpenGlFramebuffer framebuffer(specs);
 
         // Validate framebuffer id
@@ -78,9 +80,11 @@ namespace nexo::renderer {
         specs.width = 800;
         specs.height = 600;
         specs.samples = 1;
+
         specs.attachments.attachments = {
-            {NxFrameBufferTextureFormats::RGBA8},
-            {NxFrameBufferTextureFormats::DEPTH24STENCIL8}
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8),
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
+
         };
         NxOpenGlFramebuffer framebuffer(specs);
 
@@ -99,9 +103,10 @@ namespace nexo::renderer {
         specs.height = 600;
         specs.samples = 1;
         specs.attachments.attachments = {
-            {NxFrameBufferTextureFormats::RGBA8},
-            {NxFrameBufferTextureFormats::DEPTH24STENCIL8}
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8),
+NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
         };
+
         NxOpenGlFramebuffer framebuffer(specs);
 
         EXPECT_THROW(framebuffer.resize(0, 600), NxFramebufferResizingFailed);
@@ -135,9 +140,9 @@ namespace nexo::renderer {
         specs.height = 600;
         specs.samples = 1;
         specs.attachments.attachments = {
-            {NxFrameBufferTextureFormats::RGBA8},
-            {NxFrameBufferTextureFormats::RGBA16},
-            {NxFrameBufferTextureFormats::DEPTH24STENCIL8}
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8),
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA16),
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
         };
 
         // Check if the hardware supports at least the required number of attachments
@@ -275,8 +280,9 @@ namespace nexo::renderer {
         specs.samples = 1;
 
         // Test unsupported color format
+
         specs.attachments.attachments = {
-            {static_cast<NxFrameBufferTextureFormats>(999)} // Invalid format
+            NxFrameBufferTextureSpecifications(static_cast<NxFrameBufferTextureFormats>(99))
         };
 
         EXPECT_THROW(
@@ -315,9 +321,9 @@ namespace nexo::renderer {
         specs.width = 100;
         specs.height = 100;
         specs.samples = 1;
-        specs.attachments.attachments = {
-            {NxFrameBufferTextureFormats::RGBA8}
-        };
+            specs.attachments.attachments = {
+                NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)
+            };
 
         NxOpenGlFramebuffer framebuffer(specs);
         int dummy = 0;
@@ -336,9 +342,8 @@ namespace nexo::renderer {
         specs.samples = 1;
         // Only one color attachment.
         specs.attachments.attachments = {
-            {NxFrameBufferTextureFormats::RGBA8}
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)
         };
-
         NxOpenGlFramebuffer framebuffer(specs);
         int dummy = 0;
         // Attachment index 1 is invalid because only index 0 exists.
@@ -356,7 +361,7 @@ namespace nexo::renderer {
         specs.height = 100;
         specs.samples = 1;
         specs.attachments.attachments = {
-            {NxFrameBufferTextureFormats::RGBA8}
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)
         };
 
         NxOpenGlFramebuffer framebuffer(specs);
@@ -372,7 +377,7 @@ namespace nexo::renderer {
         specs.height = 100;
         specs.samples = 1;
         specs.attachments.attachments = {
-            {NxFrameBufferTextureFormats::RGBA8}
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)
         };
 
         NxOpenGlFramebuffer framebuffer(specs);
@@ -392,7 +397,7 @@ namespace nexo::renderer {
         specs.samples = 1;
         // Only one color attachment exists.
         specs.attachments.attachments = {
-            {NxFrameBufferTextureFormats::RGBA8}
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)
         };
 
         NxOpenGlFramebuffer framebuffer(specs);
@@ -409,7 +414,9 @@ namespace nexo::renderer {
         specs.width = 100;
         specs.height = 100;
         specs.samples = 1;
-        specs.attachments.attachments = { NxFrameBufferTextureFormats::RED_INTEGER };
+        specs.attachments.attachments = {
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RED_INTEGER)
+        };
 
         NxOpenGlFramebuffer framebuffer(specs);
         framebuffer.bind();
@@ -428,8 +435,8 @@ namespace nexo::renderer {
         specs.height = 100;
         specs.samples = 1;
         specs.attachments.attachments = {
-            { NxFrameBufferTextureFormats::RGBA8 },
-            { NxFrameBufferTextureFormats::RED_INTEGER }
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8),
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RED_INTEGER)
         };
 
         NxOpenGlFramebuffer framebuffer(specs);
@@ -451,8 +458,9 @@ namespace nexo::renderer {
         NxFramebufferSpecs specs;
         specs.width = 50;
         specs.height = 50;
-        specs.samples = 1;
-        specs.attachments.attachments = { { static_cast<NxFrameBufferTextureFormats>(3) } };
+        specs.samples                 = 1;
+        specs.attachments.attachments = {
+            NxFrameBufferTextureSpecifications(static_cast<NxFrameBufferTextureFormats>(3))};
 
         NxOpenGlFramebuffer framebuffer(specs);
         framebuffer.bind();

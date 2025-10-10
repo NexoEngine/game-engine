@@ -91,8 +91,7 @@ namespace nexo::editor {
         int cpuInfo[4]   = {0};
         char brand[0x40] = {0};
         __cpuid(cpuInfo, 0x80000000);
-        unsigned int maxId = cpuInfo[0];
-        if (maxId >= 0x80000004) {
+        if (const unsigned int maxId = cpuInfo[0]; maxId >= 0x80000004) {
             __cpuid((int *)cpuInfo, 0x80000002);
             memcpy(brand, cpuInfo, sizeof(cpuInfo));
             __cpuid((int *)cpuInfo, 0x80000003);
@@ -132,12 +131,13 @@ namespace nexo::editor {
 
     static constexpr std::string testResultToString(const TestResult r)
     {
+        using enum TestResult;
         switch (r) {
-            case TestResult::PASSED:
+            case PASSED:
                 return "PASSED";
-            case TestResult::FAILED:
+            case FAILED:
                 return "FAILED";
-            case TestResult::SKIPPED:
+            case SKIPPED:
                 return "SKIPPED";
             default:
                 return "NOT_TESTED";

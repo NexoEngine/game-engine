@@ -43,18 +43,22 @@ namespace nexo::editor {
 
         m_sceneId = static_cast<int>(app.getSceneManager().createScene(m_windowName));
         renderer::NxFramebufferSpecs framebufferSpecs;
-        framebufferSpecs.attachments = {renderer::NxFrameBufferTextureFormats::RGBA8,
-                                        renderer::NxFrameBufferTextureFormats::RED_INTEGER,
-                                        renderer::NxFrameBufferTextureFormats::Depth};
-        framebufferSpecs.width       = static_cast<unsigned int>(m_contentSize.x);
-        framebufferSpecs.height      = static_cast<unsigned int>(m_contentSize.y);
-        const auto renderTarget      = renderer::NxFramebuffer::create(framebufferSpecs);
-        m_editorCamera               = static_cast<int>(
+        framebufferSpecs.attachments = renderer::NxFrameBufferAttachmentsSpecifications(
+            {renderer::NxFrameBufferTextureSpecifications(renderer::NxFrameBufferTextureFormats::RGBA8),
+             renderer::NxFrameBufferTextureSpecifications(renderer::NxFrameBufferTextureFormats::RED_INTEGER),
+             renderer::NxFrameBufferTextureSpecifications(renderer::NxFrameBufferTextureFormats::Depth)});
+
+        framebufferSpecs.width  = static_cast<unsigned int>(m_contentSize.x);
+        framebufferSpecs.height = static_cast<unsigned int>(m_contentSize.y);
+
+        const auto renderTarget = renderer::NxFramebuffer::create(framebufferSpecs);
+        m_editorCamera          = static_cast<int>(
             CameraFactory::createPerspectiveCamera({-14.51f, 7.41f, 2.46f}, static_cast<unsigned int>(m_contentSize.x),
-                                                                 static_cast<unsigned int>(m_contentSize.y), renderTarget));
+                                                            static_cast<unsigned int>(m_contentSize.y), renderTarget));
         auto& cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(m_editorCamera);
         auto& transformComponent =
             Application::m_coordinator->getComponent<components::TransformComponent>(m_editorCamera);
+
         transformComponent.quat = glm::quat(glm::radians(glm::vec3{-56.90f, 18.90f, 0.0f}));
         cameraComponent.render  = true;
         auto maskPass           = std::make_shared<renderer::MaskPass>(static_cast<unsigned int>(m_contentSize.x),
@@ -94,7 +98,7 @@ namespace nexo::editor {
 
         m_sceneUuid = app.getSceneManager().getScene(m_sceneId).getUuid();
         if (m_defaultScene) {
-            // loadDefaultEntities();
+            loadDefaultEntities(); // Load default entities for testing purposes
             physicScene(glm::vec3{-60.0f, 0.0f, 0.0f});
             videoScene(glm::vec3{-15.0f, 0.0f, 0.0f});
             lightsScene(glm::vec3{50.0f, 0.0f, 0.0f});
@@ -174,7 +178,10 @@ namespace nexo::editor {
     }
 
     void EditorScene::loadDefaultEntities()
-    {}
+    {
+        // This function is empty because it is used to load default entities for testing purposes.
+        // Examples scenes are now in their own functions.
+    }
 
     void EditorScene::lightsScene(const glm::vec3& offset) const
     {
@@ -377,7 +384,7 @@ namespace nexo::editor {
         const auto& catalog = nexo::assets::AssetCatalog::getInstance();
         const assets::AssetLocation grassTexture("my_package::grass@Textures");
         const auto grassAssetRef = catalog.getAsset(grassTexture).as<assets::Texture>();
-        auto& materialComp       = nexo::Application::m_coordinator->getComponent<components::MaterialComponent>(floor);
+        const auto& materialComp       = nexo::Application::m_coordinator->getComponent<components::MaterialComponent>(floor);
         const auto materialAssetRef             = materialComp.material;
         const auto materialAsset                = materialAssetRef.lock();
         materialAsset->getData()->albedoTexture = grassAssetRef;

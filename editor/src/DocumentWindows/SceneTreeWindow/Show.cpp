@@ -240,11 +240,11 @@ namespace nexo::editor {
             // Show the primitive creation popup
             if (m_popupManager.showPopup("Sphere creation popup")) {
                 const int sceneId = selector.getSelectedScene();
-                ImNexo::PrimitiveCustomizationMenu(sceneId, SPHERE);
+                ImNexo::PrimitiveCustomizationMenu(sceneId, Primitives::SPHERE);
             }
             if (m_popupManager.showPopup("Cylinder creation popup")) {
                 const int sceneId = selector.getSelectedScene();
-                ImNexo::PrimitiveCustomizationMenu(sceneId, CYLINDER);
+                ImNexo::PrimitiveCustomizationMenu(sceneId, Primitives::CYLINDER);
             }
             physicsTypeSelectionPopup();
         }

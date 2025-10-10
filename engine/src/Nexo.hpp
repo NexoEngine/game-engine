@@ -19,22 +19,6 @@
 #pragma once
 
 #include "Application.hpp"
-// #include "Logger.hpp"
-// #include "Timer.hpp"
-// #include "Timestep.hpp"
-// #include "core/event/KeyCodes.hpp"
-//
-// // Renderer
-// #include "renderer/RenderCommand.hpp"
-// #include "renderer/Renderer.hpp"
-//
-// #include "renderer/Buffer.hpp"
-// #include "renderer/Framebuffer.hpp"
-// #include "renderer/Shader.hpp"
-// #include "renderer/Texture.hpp"
-// #include "renderer/VertexArray.hpp"
-//
-// #include "components/Components.hpp"
 
 namespace nexo {
     /**

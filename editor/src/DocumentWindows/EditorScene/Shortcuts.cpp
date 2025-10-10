@@ -131,7 +131,7 @@ namespace nexo::editor {
     void EditorScene::setupGlobalState()
     {
         // ================= GLOBAL STATE =============================
-        m_globalState = {static_cast<unsigned int>(EditorState::GLOBAL)};
+        m_globalState = WindowState(static_cast<unsigned int>(EditorState::GLOBAL));
 
         // Shift context
         m_globalState.registerCommand(
@@ -187,7 +187,7 @@ namespace nexo::editor {
     void EditorScene::setupGizmoState()
     {
         // ================= GIZMO STATE =============================
-        m_gizmoState = {static_cast<unsigned int>(EditorState::GIZMO)};
+        m_globalState = WindowState(static_cast<unsigned int>(EditorState::GIZMO));
 
         // Delete
         m_gizmoState.registerCommand(Command::create()
@@ -257,7 +257,7 @@ namespace nexo::editor {
     void EditorScene::setupGizmoTranslateState()
     {
         // ================= TRANSLATE STATE =============================
-        m_gizmoTranslateState = {static_cast<unsigned int>(EditorState::GIZMO_TRANSLATE)};
+        m_globalState = WindowState(static_cast<unsigned int>(EditorState::GIZMO_TRANSLATE));
 
         // Universal
         m_gizmoTranslateState.registerCommand(Command::create()
@@ -386,7 +386,7 @@ namespace nexo::editor {
     void EditorScene::setupGizmoRotateState()
     {
         // ================= ROTATE STATE =============================
-        m_gizmoRotateState = {static_cast<unsigned int>(EditorState::GIZMO_ROTATE)};
+        m_globalState = WindowState(static_cast<unsigned int>(EditorState::GIZMO_ROTATE));
 
         // Universal
         m_gizmoRotateState.registerCommand(Command::create()
@@ -472,8 +472,7 @@ namespace nexo::editor {
                                       m_currentGizmoOperation & ~ImGuizmo::OPERATION::ROTATE_Z);
                               })
                               .onReleased([this] {
-                                  m_currentGizmoOperation = static_cast<ImGuizmo::OPERATION>(
-                                      m_currentGizmoOperation | ImGuizmo::OPERATION::ROTATE_Z);
+                                  m_currentGizmoOperation = m_currentGizmoOperation | ImGuizmo::OPERATION::ROTATE_Z;
                               })
                               .build())
                 .addChild(Command::create()
@@ -515,7 +514,7 @@ namespace nexo::editor {
     void EditorScene::setupGizmoScaleState()
     {
         // ================= SCALE STATE =============================
-        m_gizmoScaleState = {static_cast<unsigned int>(EditorState::GIZMO_SCALE)};
+        m_globalState = WindowState(static_cast<unsigned int>(EditorState::GIZMO_SCALE));
 
         // Universal
         m_gizmoScaleState.registerCommand(Command::create()

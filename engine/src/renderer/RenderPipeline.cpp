@@ -22,7 +22,6 @@
 #include <utility>
 #include "Exception.hpp"
 #include "Framebuffer.hpp"
-// #include "RenderCommand.hpp"
 #include "Renderer3D.hpp"
 #include "RendererExceptions.hpp"
 

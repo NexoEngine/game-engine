@@ -16,7 +16,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
-
+#include <array>
 #include "Shader.hpp"
 #include "UniformCache.hpp"
 #include "VertexArray.hpp"
@@ -41,13 +41,13 @@ namespace nexo::renderer {
     {
         static std::shared_ptr<NxVertexArray> s_fullscreenQuad = nullptr;
         if (!s_fullscreenQuad) {
+            s_fullscreenQuad               = createVertexArray();
             // Create a simple 2-triangle quad covering NDC [-1..1]
-            s_fullscreenQuad            = createVertexArray();
-            static float quadVertices[] = {// positions   // tex coords
-                                           -1.0f, 1.0f, 0.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, 1.0f, -1.0f, 1.0f, 0.0f,
-                                           -1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  -1.0f, 1.0f, 0.0f, 1.0f, 1.0f,  1.0f, 1.0f};
-            const auto vb               = createVertexBuffer(sizeof(quadVertices));
-            vb->setData(quadVertices, sizeof(quadVertices));
+            static std::array quadVertices = {-1.0f, 1.0f,  0.0f, 1.0f, -1.0f, -1.0f, 0.0f, 0.0f, // positions   // tex coords
+                                              1.0f,  -1.0f, 1.0f, 0.0f, -1.0f, 1.0f,  0.0f, 1.0f,
+                                              1.0f,  -1.0f, 1.0f, 0.0f, 1.0f,  1.0f,  1.0f, 1.0f};
+            const auto vb = createVertexBuffer(static_cast<unsigned int>(sizeof(float) * quadVertices.size()));
+            vb->setData(quadVertices.data(), sizeof(float) * quadVertices.size());
             vb->setLayout({{NxShaderDataType::FLOAT2, "aPosition"}, {NxShaderDataType::FLOAT2, "aTexCoord"}});
             s_fullscreenQuad->addVertexBuffer(vb);
         }

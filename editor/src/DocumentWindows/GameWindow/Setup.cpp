@@ -57,10 +57,11 @@ namespace nexo::editor {
         if (!mainCameraFound) {
             // Create render target specs for new camera
             renderer::NxFramebufferSpecs framebufferSpecs;
-            framebufferSpecs.attachments = {
-                renderer::NxFrameBufferTextureFormats::RGBA8,
-                renderer::NxFrameBufferTextureFormats::RED_INTEGER, // Required by render system
-                renderer::NxFrameBufferTextureFormats::Depth};
+            framebufferSpecs.attachments = renderer::NxFrameBufferAttachmentsSpecifications(
+                {renderer::NxFrameBufferTextureSpecifications(renderer::NxFrameBufferTextureFormats::RGBA8),
+                 renderer::NxFrameBufferTextureSpecifications(
+                     renderer::NxFrameBufferTextureFormats::RED_INTEGER), // Required by render system
+                 renderer::NxFrameBufferTextureSpecifications(renderer::NxFrameBufferTextureFormats::Depth)});
             framebufferSpecs.width  = 1280; // Default size, will be resized
             framebufferSpecs.height = 720;
             const auto renderTarget = renderer::NxFramebuffer::create(framebufferSpecs);

@@ -19,6 +19,7 @@
 #include "ModelImporter.hpp"
 
 #include <array>
+#include <cstddef>
 #include <iomanip>
 
 #include <assimp/Importer.hpp>
@@ -101,10 +102,10 @@ namespace nexo::assets {
             AssetImporter assetImporter;
             const ImporterInputVariant inputVariant = ImporterMemoryInput{
                 // Reinterpret cast to uint8_t* because this is raw memory data, not aiTexels, see assimp docs
-                .memoryData = std::vector<uint8_t>(reinterpret_cast<uint8_t*>(texture->pcData),
-                                                   reinterpret_cast<uint8_t*>(texture->pcData) + texture->mWidth),
+                .memoryData =
+                    std::vector<unsigned char>(reinterpret_cast<unsigned char*>(texture->pcData),
+                                               reinterpret_cast<unsigned char*>(texture->pcData) + texture->mWidth),
                 .formatHint = std::string(texture->achFormatHint)};
-
             return assetImporter.importAsset<Texture>(ctx.genUniqueDependencyLocation<Texture>(), inputVariant);
         }
         // Uncompressed texture
@@ -134,7 +135,8 @@ namespace nexo::assets {
 
     renderer::NxTextureFormat ModelImporter::convertAssimpHintToNxTextureFormat(const char achFormatHint[9])
     {
-        if (std::memchr(achFormatHint, '\0', 9) == nullptr || std::strlen(achFormatHint) != 8) {
+        const auto nullTerminator = static_cast<const char*>(std::memchr(achFormatHint, '\0', 9));
+        if (nullTerminator == nullptr || (nullTerminator - achFormatHint) != 8) {
             return renderer::NxTextureFormat::INVALID;
         }
 
@@ -170,25 +172,26 @@ namespace nexo::assets {
         }
 
         // Match channel patterns
+        using enum renderer::NxTextureFormat;
         switch (active_channels.size()) {
             case 1:
-                if (active_channels[0].code == 'r') return renderer::NxTextureFormat::R8;
+                if (active_channels[0].code == 'r') return R8;
                 break;
 
             case 2:
                 if (active_channels[0].code == 'r' && active_channels[1].code == 'g')
-                    return renderer::NxTextureFormat::RG8;
+                    return RG8;
                 break;
 
             case 3:
                 if (active_channels[0].code == 'r' && active_channels[1].code == 'g' && active_channels[2].code == 'b')
-                    return renderer::NxTextureFormat::RGB8;
+                    return RGB8;
                 break;
 
             case 4:
                 if (active_channels[0].code == 'r' && active_channels[1].code == 'g' &&
                     active_channels[2].code == 'b' && active_channels[3].code == 'a')
-                    return renderer::NxTextureFormat::RGBA8;
+                    return RGBA8;
                 break;
             default:
                 break;

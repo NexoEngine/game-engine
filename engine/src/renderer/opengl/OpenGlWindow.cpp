@@ -45,7 +45,7 @@ namespace nexo::renderer {
      *
      * Example:
      * ```cpp
-     * // Set the error callback during GLFW initialization
+     * //Set the error callback during GLFW initialization
      * glfwSetErrorCallback(glfwErrorCallback);
      * ```
      */

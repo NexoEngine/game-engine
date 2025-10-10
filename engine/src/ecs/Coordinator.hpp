@@ -315,8 +315,8 @@ namespace nexo::ecs {
         template<typename T>
         void tryRemoveComponent(const Entity entity) const
         {
-            Signature signature    = m_entityManager->getSignature(entity);
-            Signature oldSignature = signature;
+            Signature signature          = m_entityManager->getSignature(entity);
+            const Signature oldSignature = signature;
             signature.set(m_componentManager->getComponentType<T>(), false);
             if (m_componentManager->tryRemoveComponent<T>(entity, oldSignature, signature)) {
                 m_entityManager->setSignature(entity, signature);
@@ -460,6 +460,12 @@ namespace nexo::ecs {
          */
         [[nodiscard]] std::vector<ComponentType> getAllComponentTypes(Entity entity) const;
 
+        /**
+         * @brief Retrieves all component type indices associated with an entity.
+         *
+         * @param entity The target entity identifier.
+         * @return std::vector<std::type_index> A list of type indices for each component the entity has.
+         */
         [[nodiscard]] std::vector<std::type_index> getAllComponentTypeIndices(Entity entity) const;
 
         /**
@@ -488,7 +494,7 @@ namespace nexo::ecs {
             (processComponentSignature<Components>(requiredSignature, excludeSignature), ...);
 
             // Query entities
-            std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
+            const std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
             std::vector<Entity> result;
             result.reserve(livingEntities.size());
 
@@ -541,7 +547,7 @@ namespace nexo::ecs {
         std::shared_ptr<T> registerQuerySystem(Args&&... args)
         {
             auto newQuerySystem = m_systemManager->registerQuerySystem<T>(std::forward<Args>(args)...);
-            std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
+            const std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
             const Signature querySystemSignature   = newQuerySystem->getSignature();
             for (Entity entity : livingEntities) {
                 const Signature entitySignature = m_entityManager->getSignature(entity);
@@ -644,7 +650,7 @@ namespace nexo::ecs {
         template<typename T>
         void setRestoreComponent()
         {
-            m_restoreComponentFunctions[typeid(T)] = [](const std::any&) -> std::any { return std::any(T{}); };
+            m_restoreComponentFunctions[typeid(T)] = [](const std::any&) { return std::any(T{}); };
         }
 
         /**
@@ -757,7 +763,7 @@ namespace nexo::ecs {
         [[nodiscard]] std::vector<Entity> getEntitiesWithComponents() const
         {
             std::vector<Entity> result;
-            std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
+            const std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
             result.reserve(livingEntities.size());
             for (Entity entity : livingEntities) {
                 const bool hasAll = (entityHasComponent<ComponentTypes>(entity) && ...);

@@ -351,6 +351,14 @@ namespace nexo::renderer {
          * - `NxFileNotFoundException` if the file cannot be opened.
          */
         static std::string readFile(const std::string& filepath);
+
+        /**
+        * The following members are intentionally protected.
+        * Rationale: Derived backend implementations (e.g., OpenGlShader, VulkanShader)
+        * need direct access to shader internals such as uniform maps and buffer states.
+        * This design follows the template method pattern commonly used in rendering engines.
+        * NOSONAR: Protected access is required for low-level graphics backends.
+        */
         std::vector<std::shared_ptr<NxShaderStorageBuffer>> m_storageBuffers;
         RequiredAttributes m_requiredAttributes;
         std::unordered_map<std::string, UniformInfo> m_uniformInfos;

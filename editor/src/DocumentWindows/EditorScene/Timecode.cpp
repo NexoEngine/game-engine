@@ -43,7 +43,7 @@ namespace nexo::editor {
     void EditorScene::skipVideosToPreviousKeyframe() const
     {
         // app.setGameState(nexo::GameState::PLAY_MODE);
-        for (auto &entity : nexo::Application::m_coordinator->getAllEntitiesWith<components::VideoComponent>()) {
+        for (const auto &entity : nexo::Application::m_coordinator->getAllEntitiesWith<components::VideoComponent>()) {
             if (!nexo::Application::m_coordinator->entityHasComponent<components::SceneTag>(entity)) {
                 continue;
             }
@@ -59,7 +59,7 @@ namespace nexo::editor {
     void EditorScene::skipVideosToNextKeyframe() const
     {
         // app.setGameState(nexo::GameState::PLAY_MODE);
-        for (auto &entity : nexo::Application::m_coordinator->getAllEntitiesWith<components::VideoComponent>()) {
+        for (const auto &entity : nexo::Application::m_coordinator->getAllEntitiesWith<components::VideoComponent>()) {
             if (!nexo::Application::m_coordinator->entityHasComponent<components::SceneTag>(entity)) {
                 continue;
             }

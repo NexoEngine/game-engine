@@ -31,7 +31,7 @@ namespace nexo::editor {
 
     void SceneTreeWindow::setupDefaultState()
     {
-        m_defaultState = {static_cast<unsigned int>(SceneTreeState::GLOBAL)};
+        m_defaultState = WindowState(static_cast<unsigned int>(SceneTreeState::GLOBAL));
 
         // CTRL context
         m_defaultState.registerCommand(
@@ -73,7 +73,7 @@ namespace nexo::editor {
         m_defaultState.registerCommand(Command::create()
                                            .description("Rename")
                                            .key("F2")
-                                           .onPressed([this]() { renameSelectedCallback(); })
+                                           .onPressed([]() { renameSelectedCallback(); })
                                            .build());
 
         // Expand all nodes

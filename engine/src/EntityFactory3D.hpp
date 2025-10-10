@@ -26,7 +26,7 @@
 
 namespace nexo {
 
-    enum Primitives {
+    enum class Primitives {
         CUBE,
         TETRAHEDRON,
         PYRAMID,
