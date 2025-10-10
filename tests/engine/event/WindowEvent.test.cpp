@@ -37,10 +37,10 @@ namespace nexo::event {
     }
 
     TEST(WindowEventTest, EventKeyAttributesAndModifiers) {
-        EventKey keyEvent(65, PRESSED, GLFW_MOD_SHIFT | GLFW_MOD_CONTROL);
+        EventKey keyEvent(65, KeyAction::PRESSED, GLFW_MOD_SHIFT | GLFW_MOD_CONTROL);
 
         EXPECT_EQ(keyEvent.keycode, 65);
-        EXPECT_EQ(keyEvent.action, PRESSED);
+        EXPECT_EQ(keyEvent.action, KeyAction::PRESSED);
         EXPECT_TRUE(keyEvent.hasMod(KeyMods::SHIFT));
         EXPECT_TRUE(keyEvent.hasMod(KeyMods::CONTROL));
         EXPECT_FALSE(keyEvent.hasMod(KeyMods::ALT));
@@ -52,12 +52,12 @@ namespace nexo::event {
 
     TEST(WindowEventTest, EventMouseClickAttributes) {
         EventMouseClick mouseClickEvent;
-        mouseClickEvent.button = RIGHT;
-        mouseClickEvent.action = RELEASED;
+        mouseClickEvent.button = MouseButton::RIGHT;
+        mouseClickEvent.action = KeyAction::RELEASED;
         mouseClickEvent.mods = GLFW_MOD_ALT;
 
-        EXPECT_EQ(mouseClickEvent.button, RIGHT);
-        EXPECT_EQ(mouseClickEvent.action, RELEASED);
+        EXPECT_EQ(mouseClickEvent.button, MouseButton::RIGHT);
+        EXPECT_EQ(mouseClickEvent.action, KeyAction::RELEASED);
         EXPECT_TRUE(mouseClickEvent.hasMod(KeyMods::ALT));
         EXPECT_FALSE(mouseClickEvent.hasMod(KeyMods::CONTROL));
         EXPECT_FALSE(mouseClickEvent.hasMod(KeyMods::SHIFT));
@@ -91,15 +91,15 @@ namespace nexo::event {
 
     TEST(WindowEventTest, KeyActionStreamOperator) {
         std::ostringstream os;
-        os << PRESSED;
+        os << KeyAction::PRESSED;
         EXPECT_EQ(os.str(), "PRESSED");
 
         os.str(""); os.clear();
-        os << RELEASED;
+        os << KeyAction::RELEASED;
         EXPECT_EQ(os.str(), "RELEASED");
 
         os.str(""); os.clear();
-        os << REPEAT;
+        os << KeyAction::REPEAT;
         EXPECT_EQ(os.str(), "REPEAT");
     }
 
