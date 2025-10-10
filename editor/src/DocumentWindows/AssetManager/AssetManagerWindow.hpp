@@ -194,6 +194,7 @@ namespace nexo::editor {
         // search functionality
         void drawSearchBar();
         void drawAdvancedSearchPanel();
+        void drawStatusFilters();
         void drawSearchSuggestions();
         void updateSearchFilter();
         void applySearch();

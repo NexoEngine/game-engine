@@ -15,7 +15,9 @@
 #pragma once
 
 #include <regex>
+#include <string_view>
 #include <algorithm>
+#include <ranges>
 #include <cctype>
 #include "SearchCriteria.hpp"
 #include "Asset.hpp"
@@ -122,7 +124,7 @@ namespace nexo::assets {
          * @return Vector of suggested search terms
          */
         [[nodiscard]] std::vector<std::string> getSuggestions(
-            const std::string& partialText,
+            std::string_view partialText,
             const std::vector<GenericAssetRef>& assets,
             size_t maxSuggestions = 10) const {
 
@@ -130,7 +132,7 @@ namespace nexo::assets {
             if (partialText.empty()) return suggestions;
 
             std::string lowerPartial = toLower(partialText);
-            std::set<std::string> uniqueSuggestions;
+            std::set<std::string, std::less<>> uniqueSuggestions;
 
             for (const auto& asset : assets) {
                 if (suggestions.size() >= maxSuggestions) break;
@@ -139,10 +141,10 @@ namespace nexo::assets {
                 if (!assetPtr) continue;
 
                 const auto& metadata = assetPtr->getMetadata();
-                const std::string assetName = metadata.location.getName().data();
 
                 // Check asset name
-                if (toLower(assetName).find(lowerPartial) != std::string::npos) {
+                if (const std::string assetName = metadata.location.getName().data();
+                    toLower(assetName).find(lowerPartial) != std::string::npos) {
                     uniqueSuggestions.insert(assetName);
                 }
 
@@ -183,9 +185,10 @@ namespace nexo::assets {
         }
 
         [[nodiscard]] bool matchesStatusFilter(AssetStatus status) const {
-            if (m_criteria.onlyLoaded && status != AssetStatus::LOADED) return false;
-            if (m_criteria.onlyUnloaded && status != AssetStatus::UNLOADED) return false;
-            if (m_criteria.onlyErrored && status != AssetStatus::ERROR) return false;
+            using enum AssetStatus;
+            if (m_criteria.onlyLoaded && status != LOADED) return false;
+            if (m_criteria.onlyUnloaded && status != UNLOADED) return false;
+            if (m_criteria.onlyErrored && status != ERROR) return false;
             return true;
         }
 
@@ -194,7 +197,7 @@ namespace nexo::assets {
             return m_criteria.allowedTypes.contains(type);
         }
 
-        [[nodiscard]] bool matchesPathFilter(const std::string& path) const {
+        [[nodiscard]] bool matchesPathFilter(std::string_view path) const {
             if (m_criteria.pathFilter.empty()) return true;
 
             if (m_criteria.includeSubfolders) {
@@ -205,32 +208,32 @@ namespace nexo::assets {
         }
 
         [[nodiscard]] bool matchesDateFilters(const AssetMetadata& metadata) const {
-            if (m_criteria.createdAfter && metadata.creationTime < *m_criteria.createdAfter) return false;
-            if (m_criteria.createdBefore && metadata.creationTime > *m_criteria.createdBefore) return false;
-            if (m_criteria.modifiedAfter && metadata.modificationTime < *m_criteria.modifiedAfter) return false;
-            if (m_criteria.modifiedBefore && metadata.modificationTime > *m_criteria.modifiedBefore) return false;
+            if (m_criteria.createdAfter.has_value() && metadata.creationTime < *m_criteria.createdAfter) return false;
+            if (m_criteria.createdBefore.has_value() && metadata.creationTime > *m_criteria.createdBefore) return false;
+            if (m_criteria.modifiedAfter.has_value() && metadata.modificationTime < *m_criteria.modifiedAfter) return false;
+            if (m_criteria.modifiedBefore.has_value() && metadata.modificationTime > *m_criteria.modifiedBefore) return false;
             return true;
         }
 
         [[nodiscard]] bool matchesSizeFilter(size_t size) const {
-            if (m_criteria.minSize && size < *m_criteria.minSize) return false;
-            if (m_criteria.maxSize && size > *m_criteria.maxSize) return false;
+            if (m_criteria.minSize.has_value() && size < *m_criteria.minSize) return false;
+            if (m_criteria.maxSize.has_value() && size > *m_criteria.maxSize) return false;
             return true;
         }
 
         [[nodiscard]] bool matchesTagFilters(const std::vector<std::string>& tags) const {
-            // Check required tags
-            for (const auto& requiredTag : m_criteria.requiredTags) {
-                if (std::find(tags.begin(), tags.end(), requiredTag) == tags.end()) {
-                    return false;
-                }
+            // Check required tags - all must be present
+            if (!std::ranges::all_of(m_criteria.requiredTags, [&tags](const auto& requiredTag) {
+                return std::ranges::find(tags, requiredTag) != tags.end();
+            })) {
+                return false;
             }
 
-            // Check excluded tags
-            for (const auto& excludedTag : m_criteria.excludedTags) {
-                if (std::find(tags.begin(), tags.end(), excludedTag) != tags.end()) {
-                    return false;
-                }
+            // Check excluded tags - none must be present
+            if (!std::ranges::none_of(m_criteria.excludedTags, [&tags](const auto& excludedTag) {
+                return std::ranges::find(tags, excludedTag) != tags.end();
+            })) {
+                return false;
             }
 
             return true;
@@ -241,33 +244,32 @@ namespace nexo::assets {
 
             const std::string assetName = metadata.location.getName().data();
 
+            using enum SearchMode;
             switch (m_criteria.searchMode) {
-                case SearchMode::NAME_ONLY:
+                case NAME_ONLY:
                     return matchesText(assetName);
 
-                case SearchMode::TAGS_ONLY:
-                    for (const auto& tag : metadata.tags) {
-                        if (matchesText(tag)) return true;
-                    }
-                    return false;
+                case TAGS_ONLY:
+                    return std::ranges::any_of(metadata.tags, [this](const auto& tag) {
+                        return matchesText(tag);
+                    });
 
-                case SearchMode::DESCRIPTION:
+                case DESCRIPTION:
                     return matchesText(metadata.description);
 
-                case SearchMode::ALL:
+                case ALL:
                 default:
                     if (matchesText(assetName)) return true;
                     if (matchesText(metadata.description)) return true;
-                    for (const auto& tag : metadata.tags) {
-                        if (matchesText(tag)) return true;
-                    }
-                    return false;
+                    return std::ranges::any_of(metadata.tags, [this](const auto& tag) {
+                        return matchesText(tag);
+                    });
             }
         }
 
-        [[nodiscard]] bool matchesText(const std::string& text) const {
-            if (m_searchRegex) {
-                return std::regex_search(text, *m_searchRegex);
+        [[nodiscard]] bool matchesText(std::string_view text) const {
+            if (m_searchRegex.has_value()) {
+                return std::regex_search(text.begin(), text.end(), *m_searchRegex);
             }
 
             if (m_criteria.caseSensitive) {
@@ -277,9 +279,9 @@ namespace nexo::assets {
             }
         }
 
-        [[nodiscard]] static std::string toLower(const std::string& str) {
-            std::string lower = str;
-            std::transform(lower.begin(), lower.end(), lower.begin(),
+        [[nodiscard]] static std::string toLower(std::string_view str) {
+            std::string lower{str};
+            std::ranges::transform(lower, lower.begin(),
                 [](unsigned char c) { return std::tolower(c); });
             return lower;
         }

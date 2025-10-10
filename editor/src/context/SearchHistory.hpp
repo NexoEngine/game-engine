@@ -21,6 +21,8 @@
 #include <fstream>
 #include <filesystem>
 #include <algorithm>
+#include <ranges>
+#include <loguru.hpp>
 #include "assets/SearchCriteria.hpp"
 #include "json.hpp"
 
@@ -35,7 +37,7 @@ namespace nexo::editor {
         SearchHistoryEntry() = default;
 
         SearchHistoryEntry(const std::string& text, const assets::SearchCriteria& crit)
-            : searchText(text), criteria(crit), timestamp(std::chrono::system_clock::now()), useCount(1) {}
+            : searchText(text), criteria(crit), timestamp(std::chrono::system_clock::now()) {}
     };
 
     class SearchHistory {
@@ -52,6 +54,11 @@ namespace nexo::editor {
             saveHistory();
         }
 
+        SearchHistory(const SearchHistory&) = delete;
+        SearchHistory& operator=(const SearchHistory&) = delete;
+        SearchHistory(SearchHistory&&) = default;
+        SearchHistory& operator=(SearchHistory&&) = default;
+
         /**
          * @brief Add a search to history
          * @param searchText The search text
@@ -61,12 +68,10 @@ namespace nexo::editor {
             if (searchText.empty()) return;
 
             // Check if search already exists
-            auto it = std::find_if(m_history.begin(), m_history.end(),
+            if (auto it = std::ranges::find_if(m_history,
                 [&searchText](const SearchHistoryEntry& entry) {
                     return entry.searchText == searchText;
-                });
-
-            if (it != m_history.end()) {
+                }); it != m_history.end()) {
                 // Update existing entry
                 it->useCount++;
                 it->timestamp = std::chrono::system_clock::now();
@@ -107,7 +112,7 @@ namespace nexo::editor {
          */
         [[nodiscard]] std::vector<std::string> getPopularSearches(size_t maxCount = 10) const {
             std::vector<SearchHistoryEntry> sorted(m_history.begin(), m_history.end());
-            std::sort(sorted.begin(), sorted.end(),
+            std::ranges::sort(sorted,
                 [](const SearchHistoryEntry& a, const SearchHistoryEntry& b) {
                     return a.useCount > b.useCount;
                 });
@@ -164,13 +169,9 @@ namespace nexo::editor {
          * @param searchText The search text to remove
          */
         void removeSearch(const std::string& searchText) {
-            m_history.erase(
-                std::remove_if(m_history.begin(), m_history.end(),
-                    [&searchText](const SearchHistoryEntry& entry) {
-                        return entry.searchText == searchText;
-                    }),
-                m_history.end()
-            );
+            std::erase_if(m_history, [&searchText](const SearchHistoryEntry& entry) {
+                return entry.searchText == searchText;
+            });
             saveHistory();
         }
 
@@ -180,12 +181,10 @@ namespace nexo::editor {
          * @return Optional containing the criteria if found
          */
         [[nodiscard]] std::optional<assets::SearchCriteria> getCriteriaForSearch(const std::string& searchText) const {
-            auto it = std::find_if(m_history.begin(), m_history.end(),
+            if (auto it = std::ranges::find_if(m_history,
                 [&searchText](const SearchHistoryEntry& entry) {
                     return entry.searchText == searchText;
-                });
-
-            if (it != m_history.end()) {
+                }); it != m_history.end()) {
                 return it->criteria;
             }
             return std::nullopt;
@@ -197,7 +196,7 @@ namespace nexo::editor {
 
         [[nodiscard]] std::vector<SearchHistoryEntry> sortByRecency() const {
             std::vector<SearchHistoryEntry> sorted(m_history.begin(), m_history.end());
-            std::sort(sorted.begin(), sorted.end(),
+            std::ranges::sort(sorted,
                 [](const SearchHistoryEntry& a, const SearchHistoryEntry& b) {
                     return a.timestamp > b.timestamp;
                 });
@@ -241,8 +240,12 @@ namespace nexo::editor {
                         if (m_history.size() >= MAX_HISTORY_SIZE) break;
                     }
                 }
-            } catch (const std::exception&) {
-                // Ignore errors loading history
+            } catch (const nlohmann::json::exception& e) {
+                LOG_F(WARNING, "Failed to parse search history JSON: %s", e.what());
+            } catch (const std::filesystem::filesystem_error& e) {
+                LOG_F(WARNING, "Filesystem error loading search history: %s", e.what());
+            } catch (const std::exception& e) {
+                LOG_F(WARNING, "Unexpected error loading search history: %s", e.what());
             }
         }
 
@@ -276,8 +279,12 @@ namespace nexo::editor {
                 if (file.is_open()) {
                     file << j.dump(2);
                 }
-            } catch (const std::exception&) {
-                // Ignore errors saving history
+            } catch (const nlohmann::json::exception& e) {
+                LOG_F(WARNING, "Failed to serialize search history to JSON: %s", e.what());
+            } catch (const std::filesystem::filesystem_error& e) {
+                LOG_F(WARNING, "Filesystem error saving search history: %s", e.what());
+            } catch (const std::exception& e) {
+                LOG_F(WARNING, "Unexpected error saving search history: %s", e.what());
             }
         }
 
@@ -287,7 +294,7 @@ namespace nexo::editor {
 
         [[nodiscard]] static std::string toLower(const std::string& str) {
             std::string lower = str;
-            std::transform(lower.begin(), lower.end(), lower.begin(),
+            std::ranges::transform(lower, lower.begin(),
                 [](unsigned char c) { return std::tolower(c); });
             return lower;
         }

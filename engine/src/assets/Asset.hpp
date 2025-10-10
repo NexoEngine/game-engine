@@ -19,6 +19,7 @@
 #pragma once
 
 #include <Texture.hpp>
+#include <array>
 #include <boost/uuid/basic_random_generator.hpp>
 #include <boost/uuid/nil_generator.hpp>
 #include <boost/uuid/uuid.hpp>
@@ -49,8 +50,8 @@ namespace nexo::assets {
      * @brief Array of asset type names
      * @note The order of the array must match the order of the AssetType enum.
      */
-    constexpr const char* AssetTypeNames[] = {"UNKNOWN", "TEXTURE", "MATERIAL", "MODEL", "SOUND",
-                                              "MUSIC",   "FONT",    "SHADER",   "SCRIPT"};
+    constexpr std::array<const char*, 9> AssetTypeNames = {{"UNKNOWN", "TEXTURE", "MATERIAL", "MODEL", "SOUND",
+                                                             "MUSIC",   "FONT",    "SHADER",   "SCRIPT"}};
 
     static_assert(static_cast<int>(AssetType::_COUNT) == std::size(AssetTypeNames),
                   "AssetTypeNames array size must match AssetType enum size");
@@ -115,16 +116,16 @@ namespace nexo::assets {
     class AssetImporter;
 
     struct AssetMetadata {
-        AssetType type;                                         //< Asset type
-        AssetStatus status;                                     //< Asset status
-        uint64_t referenceCount;                                //< Number of references to the asset
-        AssetID id;                                             //< Unique identifier
-        AssetLocation location;                                 //< Location of the asset
-        std::chrono::system_clock::time_point creationTime;     //< Asset creation time
-        std::chrono::system_clock::time_point modificationTime; //< Last modification time
-        size_t fileSize = 0;                                    //< File size in bytes
-        std::vector<std::string> tags;                          //< Asset tags for categorization
-        std::string description;                                //< Asset description
+        AssetType type = AssetType::UNKNOWN;                                         //< Asset type
+        AssetStatus status = AssetStatus::UNLOADED;                                  //< Asset status
+        uint64_t referenceCount = 0;                                                 //< Number of references to the asset
+        AssetID id = boost::uuids::nil_uuid();                                       //< Unique identifier
+        AssetLocation location = AssetLocation("default");                           //< Location of the asset
+        std::chrono::system_clock::time_point creationTime = std::chrono::system_clock::now();     //< Asset creation time
+        std::chrono::system_clock::time_point modificationTime = std::chrono::system_clock::now(); //< Last modification time
+        size_t fileSize = 0;                                                         //< File size in bytes
+        std::vector<std::string> tags = {};                                          //< Asset tags for categorization
+        std::string description = "";                                                //< Asset description
     };
 
     /**
@@ -146,18 +147,7 @@ namespace nexo::assets {
         [[nodiscard]] virtual bool isErrored() const = 0;
 
        protected:
-        explicit IAsset()
-            : m_metadata({.type             = AssetType::UNKNOWN,
-                          .status           = AssetStatus::UNLOADED,
-                          .referenceCount   = 0,
-                          .id               = boost::uuids::nil_uuid(),
-                          .location         = AssetLocation("default"),
-                          .creationTime     = std::chrono::system_clock::now(),
-                          .modificationTime = std::chrono::system_clock::now(),
-                          .fileSize         = 0,
-                          .tags             = {},
-                          .description      = ""})
-        {}
+        explicit IAsset() = default;
 
        public:
         AssetMetadata m_metadata;
@@ -183,6 +173,7 @@ namespace nexo::assets {
 
         ~Asset() override = default;
 
+        using IAsset::getMetadata;
         [[nodiscard]] const AssetMetadata& getMetadata() const override
         {
             return m_metadata;

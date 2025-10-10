@@ -16,6 +16,7 @@
 #include "IconsFontAwesome.h"
 #include <imgui.h>
 #include <imgui_internal.h>
+#include <array>
 
 namespace nexo::editor {
 
@@ -39,29 +40,28 @@ namespace nexo::editor {
                                          ImGuiInputTextFlags_CallbackHistory |
                                          ImGuiInputTextFlags_EnterReturnsTrue;
 
-        bool searchChanged = false;
         if (ImGui::InputTextWithHint("##SearchInput", "Search assets...",
                                      m_searchBuffer.data(), m_searchBuffer.capacity(),
                                      inputFlags,
-                                     [](ImGuiInputTextCallbackData* data) -> int {
+                                     [](ImGuiInputTextCallbackData* data) {
                                          auto* window = static_cast<AssetManagerWindow*>(data->UserData);
+
                                          if (data->EventFlag == ImGuiInputTextFlags_CallbackEdit) {
-                                             // Update the search buffer with current text
                                              window->m_searchBuffer = std::string(data->Buf, data->BufTextLen);
                                              window->handleSearchInput();
-                                         } else if (data->EventFlag == ImGuiInputTextFlags_CallbackHistory) {
-                                             // Handle up/down arrows for search history
-                                             if (data->EventKey == ImGuiKey_UpArrow) {
-                                                 auto history = window->m_searchHistory.getRecentSearches(1);
-                                                 if (!history.empty()) {
-                                                     data->DeleteChars(0, data->BufTextLen);
-                                                     data->InsertChars(0, history[0].c_str());
-                                                 }
+                                             return 0;
+                                         }
+
+                                         if (data->EventFlag == ImGuiInputTextFlags_CallbackHistory && data->EventKey == ImGuiKey_UpArrow) {
+                                             auto history = window->m_searchHistory.getRecentSearches(1);
+                                             if (!history.empty()) {
+                                                 data->DeleteChars(0, data->BufTextLen);
+                                                 data->InsertChars(0, history[0].c_str());
                                              }
                                          }
+
                                          return 0;
                                      }, this)) {
-            searchChanged = true;
             applySearch();
         }
 
@@ -118,9 +118,9 @@ namespace nexo::editor {
         // Search mode
         ImGui::Text("Search in:");
         ImGui::SameLine();
-        const char* searchModes[] = { "Name Only", "Tags Only", "Description", "All Fields" };
-        int currentMode = static_cast<int>(m_searchCriteria.searchMode);
-        if (ImGui::Combo("##SearchMode", &currentMode, searchModes, IM_ARRAYSIZE(searchModes))) {
+        std::array<const char*, 4> searchModes = { "Name Only", "Tags Only", "Description", "All Fields" };
+        if (auto currentMode = static_cast<int>(m_searchCriteria.searchMode);
+            ImGui::Combo("##SearchMode", &currentMode, searchModes.data(), searchModes.size())) {
             m_searchCriteria.searchMode = static_cast<assets::SearchMode>(currentMode);
             updateSearchFilter();
         }
@@ -129,9 +129,9 @@ namespace nexo::editor {
         ImGui::Text("Asset Types:");
         ImGui::Indent();
         for (int i = 1; i < static_cast<int>(assets::AssetType::_COUNT); ++i) {
-            assets::AssetType type = static_cast<assets::AssetType>(i);
-            bool isSelected = m_searchCriteria.allowedTypes.contains(type);
-            if (ImGui::Checkbox(assets::getAssetTypeName(type), &isSelected)) {
+            auto type = static_cast<assets::AssetType>(i);
+            if (bool isSelected = m_searchCriteria.allowedTypes.contains(type);
+                ImGui::Checkbox(assets::getAssetTypeName(type), &isSelected)) {
                 if (isSelected) {
                     m_searchCriteria.allowedTypes.insert(type);
                 } else {
@@ -149,8 +149,8 @@ namespace nexo::editor {
         ImGui::Separator();
         ImGui::Text("File Size:");
 
-        float minSize = m_searchCriteria.minSize.value_or(0) / 1024.0f; // Convert to KB
-        float maxSize = m_searchCriteria.maxSize.value_or(0) / 1024.0f;
+        float minSize = static_cast<float>(m_searchCriteria.minSize.value_or(0)) / 1024.0f;
+        float maxSize = static_cast<float>(m_searchCriteria.maxSize.value_or(0)) / 1024.0f;
 
         ImGui::PushItemWidth(100);
         if (ImGui::DragFloat("Min (KB)##MinSize", &minSize, 1.0f, 0.0f, FLT_MAX, "%.1f")) {
@@ -164,33 +164,7 @@ namespace nexo::editor {
         }
         ImGui::PopItemWidth();
 
-        // Status filters
-        ImGui::Separator();
-        ImGui::Text("Asset Status:");
-
-        if (ImGui::Checkbox("Loaded Only", &m_searchCriteria.onlyLoaded)) {
-            if (m_searchCriteria.onlyLoaded) {
-                m_searchCriteria.onlyUnloaded = false;
-                m_searchCriteria.onlyErrored = false;
-            }
-            updateSearchFilter();
-        }
-        ImGui::SameLine();
-        if (ImGui::Checkbox("Unloaded Only", &m_searchCriteria.onlyUnloaded)) {
-            if (m_searchCriteria.onlyUnloaded) {
-                m_searchCriteria.onlyLoaded = false;
-                m_searchCriteria.onlyErrored = false;
-            }
-            updateSearchFilter();
-        }
-        ImGui::SameLine();
-        if (ImGui::Checkbox("Errors Only", &m_searchCriteria.onlyErrored)) {
-            if (m_searchCriteria.onlyErrored) {
-                m_searchCriteria.onlyLoaded = false;
-                m_searchCriteria.onlyUnloaded = false;
-            }
-            updateSearchFilter();
-        }
+        drawStatusFilters();
 
         // Options
         ImGui::Separator();
@@ -346,6 +320,35 @@ namespace nexo::editor {
                 m_searchBuffer = m_searchSuggestions[m_selectedSuggestion];
                 applySearch();
             }
+        }
+    }
+
+    void AssetManagerWindow::drawStatusFilters() {
+        ImGui::Separator();
+        ImGui::Text("Asset Status:");
+
+        if (ImGui::Checkbox("Loaded Only", &m_searchCriteria.onlyLoaded)) {
+            if (m_searchCriteria.onlyLoaded) {
+                m_searchCriteria.onlyUnloaded = false;
+                m_searchCriteria.onlyErrored = false;
+            }
+            updateSearchFilter();
+        }
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Unloaded Only", &m_searchCriteria.onlyUnloaded)) {
+            if (m_searchCriteria.onlyUnloaded) {
+                m_searchCriteria.onlyLoaded = false;
+                m_searchCriteria.onlyErrored = false;
+            }
+            updateSearchFilter();
+        }
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Errors Only", &m_searchCriteria.onlyErrored)) {
+            if (m_searchCriteria.onlyErrored) {
+                m_searchCriteria.onlyLoaded = false;
+                m_searchCriteria.onlyUnloaded = false;
+            }
+            updateSearchFilter();
         }
     }
 
