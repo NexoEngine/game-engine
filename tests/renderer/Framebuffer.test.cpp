@@ -16,30 +16,29 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include <gtest/gtest.h>
+#include <glad/glad.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
-#include "opengl/OpenGlVertexArray.hpp"
+#include "RendererExceptions.hpp"
+#include "contexts/opengl.hpp"
 #include "opengl/OpenGlBuffer.hpp"
 #include "opengl/OpenGlFramebuffer.hpp"
-#include "contexts/opengl.hpp"
-#include "RendererExceptions.hpp"
+#include "opengl/OpenGlVertexArray.hpp"
 
 namespace nexo::renderer {
 
     TEST_F(OpenGLTest, FramebufferCreationAndBinding)
     {
         NxFramebufferSpecs specs;
-        specs.width = 800;
-        specs.height = 600;
+        specs.width   = 800;
+        specs.height  = 600;
         specs.samples = 1;
 
         specs.attachments.attachments = {
             NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8),
-            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
-        };
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)};
 
         NxOpenGlFramebuffer framebuffer(specs);
 
@@ -61,7 +60,6 @@ namespace nexo::renderer {
         glGetIntegerv(GL_FRAMEBUFFER_BINDING, &boundFramebuffer);
         EXPECT_EQ(boundFramebuffer, framebuffer.getFramebufferId());
 
-
         // Check framebuffer size properties
         GLint viewport[4];
         glGetIntegerv(GL_VIEWPORT, viewport);
@@ -77,8 +75,8 @@ namespace nexo::renderer {
     TEST_F(OpenGLTest, FramebufferResize)
     {
         NxFramebufferSpecs specs;
-        specs.width = 800;
-        specs.height = 600;
+        specs.width   = 800;
+        specs.height  = 600;
         specs.samples = 1;
 
         specs.attachments.attachments = {
@@ -99,13 +97,12 @@ namespace nexo::renderer {
     TEST_F(OpenGLTest, ResizeWithInvalidDimensions)
     {
         NxFramebufferSpecs specs;
-        specs.width = 800;
-        specs.height = 600;
-        specs.samples = 1;
+        specs.width                   = 800;
+        specs.height                  = 600;
+        specs.samples                 = 1;
         specs.attachments.attachments = {
-        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8),
-NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
-        };
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8),
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)};
 
         NxOpenGlFramebuffer framebuffer(specs);
 
@@ -118,17 +115,17 @@ NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
     TEST_F(OpenGLTest, InvalidFramebufferCreation)
     {
         NxFramebufferSpecs specs;
-        specs.width = 0;
+        specs.width  = 0;
         specs.height = 600;
 
         EXPECT_THROW(NxOpenGlFramebuffer framebuffer(specs), NxFramebufferResizingFailed);
-        specs.width = 800;
+        specs.width  = 800;
         specs.height = 0;
         EXPECT_THROW(NxOpenGlFramebuffer framebuffer(specs), NxFramebufferResizingFailed);
-        specs.width = 9000;
+        specs.width  = 9000;
         specs.height = 600;
         EXPECT_THROW(NxOpenGlFramebuffer framebuffer(specs), NxFramebufferResizingFailed);
-        specs.width = 800;
+        specs.width  = 800;
         specs.height = 9000;
         EXPECT_THROW(NxOpenGlFramebuffer framebuffer(specs), NxFramebufferResizingFailed);
     }
@@ -136,14 +133,13 @@ NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
     TEST_F(OpenGLTest, MultipleColorAttachments)
     {
         NxFramebufferSpecs specs;
-        specs.width = 800;
-        specs.height = 600;
-        specs.samples = 1;
+        specs.width                   = 800;
+        specs.height                  = 600;
+        specs.samples                 = 1;
         specs.attachments.attachments = {
             NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8),
             NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA16),
-            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
-        };
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)};
 
         // Check if the hardware supports at least the required number of attachments
         GLint maxAttachments;
@@ -163,87 +159,46 @@ NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
         EXPECT_EQ(framebufferStatus, GL_FRAMEBUFFER_COMPLETE) << "Framebuffer is not complete";
 
         // Check that all attachments are correctly bound
-        for (unsigned int i = 0; i < specs.attachments.attachments.size(); ++i)
-        {
+        for (unsigned int i = 0; i < specs.attachments.attachments.size(); ++i) {
             GLint boundTexture;
             GLenum attachmentType = (i < 2) ? GL_COLOR_ATTACHMENT0 + i : GL_DEPTH_STENCIL_ATTACHMENT;
-            glGetFramebufferAttachmentParameteriv(
-                GL_FRAMEBUFFER,
-                attachmentType,
-                GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME,
-                &boundTexture
-            );
+            glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, attachmentType, GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME,
+                                                  &boundTexture);
 
-            if (i < 2)
-            {
+            if (i < 2) {
                 EXPECT_EQ(static_cast<unsigned int>(boundTexture), framebuffer.getColorAttachmentId(i));
             } else if (framebuffer.getSpecs().attachments.attachments[i].textureFormat ==
-                       NxFrameBufferTextureFormats::DEPTH24STENCIL8)
-            {
-                EXPECT_EQ(static_cast<unsigned int>(boundTexture),
-                          framebuffer.getDepthAttachmentId());
-            } else
-            {
+                       NxFrameBufferTextureFormats::DEPTH24STENCIL8) {
+                EXPECT_EQ(static_cast<unsigned int>(boundTexture), framebuffer.getDepthAttachmentId());
+            } else {
                 EXPECT_EQ(static_cast<unsigned int>(boundTexture), 0);
             }
         }
 
         // Validate RGBA8 size
         GLint r, g, b, a;
-        glGetFramebufferAttachmentParameteriv(
-            GL_FRAMEBUFFER,
-            GL_COLOR_ATTACHMENT0,
-            GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE,
-            &r
-        );
-        glGetFramebufferAttachmentParameteriv(
-            GL_FRAMEBUFFER,
-            GL_COLOR_ATTACHMENT0,
-            GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE,
-            &g
-        );
-        glGetFramebufferAttachmentParameteriv(
-            GL_FRAMEBUFFER,
-            GL_COLOR_ATTACHMENT0,
-            GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE,
-            &b
-        );
-        glGetFramebufferAttachmentParameteriv(
-            GL_FRAMEBUFFER,
-            GL_COLOR_ATTACHMENT0,
-            GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE,
-            &a
-        );
+        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE,
+                                              &r);
+        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                              GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE, &g);
+        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE,
+                                              &b);
+        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                              GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE, &a);
         EXPECT_EQ(r, 8);
         EXPECT_EQ(g, 8);
         EXPECT_EQ(b, 8);
         EXPECT_EQ(a, 8);
 
         // Validate RGBA16 size
-        glGetFramebufferAttachmentParameteriv(
-            GL_FRAMEBUFFER,
-            GL_COLOR_ATTACHMENT1,
-            GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE,
-            &r
-        );
-        glGetFramebufferAttachmentParameteriv(
-            GL_FRAMEBUFFER,
-            GL_COLOR_ATTACHMENT1,
-            GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE,
-            &g
-        );
-        glGetFramebufferAttachmentParameteriv(
-            GL_FRAMEBUFFER,
-            GL_COLOR_ATTACHMENT1,
-            GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE,
-            &b
-        );
-        glGetFramebufferAttachmentParameteriv(
-            GL_FRAMEBUFFER,
-            GL_COLOR_ATTACHMENT1,
-            GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE,
-            &a
-        );
+        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE,
+                                              &r);
+        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,
+                                              GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE, &g);
+        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE,
+                                              &b);
+        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1,
+                                              GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE, &a);
         EXPECT_EQ(r, 16);
         EXPECT_EQ(g, 16);
         EXPECT_EQ(b, 16);
@@ -251,22 +206,14 @@ NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
 
         // Validate depth attachment size
         GLint depth;
-        glGetFramebufferAttachmentParameteriv(
-            GL_FRAMEBUFFER,
-            GL_DEPTH_STENCIL_ATTACHMENT,
-            GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE,
-            &depth
-        );
+        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+                                              GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE, &depth);
         EXPECT_EQ(depth, 24);
 
         // Validate stencil attachment size
         GLint stencil;
-        glGetFramebufferAttachmentParameteriv(
-            GL_FRAMEBUFFER,
-            GL_DEPTH_STENCIL_ATTACHMENT,
-            GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE,
-            &stencil
-        );
+        glGetFramebufferAttachmentParameteriv(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT,
+                                              GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE, &stencil);
         EXPECT_EQ(stencil, 8);
 
         framebuffer.unbind();
@@ -275,19 +222,16 @@ NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
     TEST_F(OpenGLTest, InvalidFormat)
     {
         NxFramebufferSpecs specs;
-        specs.width = 800;
-        specs.height = 600;
+        specs.width   = 800;
+        specs.height  = 600;
         specs.samples = 1;
 
         // Test unsupported color format
 
         specs.attachments.attachments = {
-            NxFrameBufferTextureSpecifications(static_cast<NxFrameBufferTextureFormats>(99))
-        };
+            NxFrameBufferTextureSpecifications(static_cast<NxFrameBufferTextureFormats>(99))};
 
-        EXPECT_THROW(
-            NxOpenGlFramebuffer framebuffer(specs);
-            , NxFramebufferUnsupportedColorFormat);
+        EXPECT_THROW(NxOpenGlFramebuffer framebuffer(specs);, NxFramebufferUnsupportedColorFormat);
     }
 
     TEST_F(OpenGLTest, GetPixelWrapperValid)
@@ -297,12 +241,11 @@ NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
         GTEST_SKIP() << "This test infinitely loops on the CI on Windows, skipping for now.";
 #else
         NxFramebufferSpecs specs;
-        specs.width = 100;
-        specs.height = 100;
+        specs.width   = 100;
+        specs.height  = 100;
         specs.samples = 1;
-        specs.attachments.attachments = {
-            {NxFrameBufferTextureFormats::RGBA8}
-        };
+
+        specs.attachments.attachments = {NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)};
 
         NxOpenGlFramebuffer framebuffer(specs);
         framebuffer.bind();
@@ -318,51 +261,40 @@ NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
     {
         // Verify that getPixelWrapper throws when provided with a type other than int.
         NxFramebufferSpecs specs;
-        specs.width = 100;
-        specs.height = 100;
-        specs.samples = 1;
-            specs.attachments.attachments = {
-                NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)
-            };
+        specs.width                   = 100;
+        specs.height                  = 100;
+        specs.samples                 = 1;
+        specs.attachments.attachments = {NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)};
 
         NxOpenGlFramebuffer framebuffer(specs);
         int dummy = 0;
-        EXPECT_THROW(
-            framebuffer.getPixelWrapper(0, 50, 50, &dummy, typeid(float)),
-            NxFramebufferUnsupportedColorFormat
-        );
+        EXPECT_THROW(framebuffer.getPixelWrapper(0, 50, 50, &dummy, typeid(float)),
+                     NxFramebufferUnsupportedColorFormat);
     }
 
     TEST_F(OpenGLTest, GetPixelWrapperInvalidAttachmentIndex)
     {
         // Verify that getPixelWrapper throws if the attachment index is out of bounds.
         NxFramebufferSpecs specs;
-        specs.width = 100;
-        specs.height = 100;
+        specs.width   = 100;
+        specs.height  = 100;
         specs.samples = 1;
         // Only one color attachment.
-        specs.attachments.attachments = {
-            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)
-        };
+        specs.attachments.attachments = {NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)};
         NxOpenGlFramebuffer framebuffer(specs);
         int dummy = 0;
         // Attachment index 1 is invalid because only index 0 exists.
-        EXPECT_THROW(
-            framebuffer.getPixelWrapper(1, 50, 50, &dummy, typeid(int)),
-            NxFramebufferInvalidIndex
-        );
+        EXPECT_THROW(framebuffer.getPixelWrapper(1, 50, 50, &dummy, typeid(int)), NxFramebufferInvalidIndex);
     }
 
     TEST_F(OpenGLTest, ClearAttachmentWrapperValid)
     {
         // Test that clearAttachmentWrapper does not throw when clearing a valid attachment with a supported type.
         NxFramebufferSpecs specs;
-        specs.width = 100;
-        specs.height = 100;
-        specs.samples = 1;
-        specs.attachments.attachments = {
-            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)
-        };
+        specs.width                   = 100;
+        specs.height                  = 100;
+        specs.samples                 = 1;
+        specs.attachments.attachments = {NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)};
 
         NxOpenGlFramebuffer framebuffer(specs);
         int clearValue = 0;
@@ -373,50 +305,40 @@ NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
     {
         // Test that clearAttachmentWrapper throws if called with an unsupported type.
         NxFramebufferSpecs specs;
-        specs.width = 100;
-        specs.height = 100;
-        specs.samples = 1;
-        specs.attachments.attachments = {
-            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)
-        };
+        specs.width                   = 100;
+        specs.height                  = 100;
+        specs.samples                 = 1;
+        specs.attachments.attachments = {NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)};
 
         NxOpenGlFramebuffer framebuffer(specs);
         int clearValue = 0;
-        EXPECT_THROW(
-            framebuffer.clearAttachmentWrapper(0, &clearValue, typeid(float)),
-            NxFramebufferUnsupportedColorFormat
-        );
+        EXPECT_THROW(framebuffer.clearAttachmentWrapper(0, &clearValue, typeid(float)),
+                     NxFramebufferUnsupportedColorFormat);
     }
 
     TEST_F(OpenGLTest, ClearAttachmentWrapperInvalidAttachmentIndex)
     {
         // Test that clearAttachmentWrapper throws when the attachment index is out of range.
         NxFramebufferSpecs specs;
-        specs.width = 100;
-        specs.height = 100;
+        specs.width   = 100;
+        specs.height  = 100;
         specs.samples = 1;
         // Only one color attachment exists.
-        specs.attachments.attachments = {
-            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)
-        };
+        specs.attachments.attachments = {NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)};
 
         NxOpenGlFramebuffer framebuffer(specs);
         int clearValue = 0;
         // Attachment index 1 is invalid.
-        EXPECT_THROW(
-            framebuffer.clearAttachmentWrapper(1, &clearValue, typeid(int)),
-            NxFramebufferInvalidIndex
-        );
+        EXPECT_THROW(framebuffer.clearAttachmentWrapper(1, &clearValue, typeid(int)), NxFramebufferInvalidIndex);
     }
 
-    TEST_F(OpenGLTest, ClearAndGetPixelRedIntegerAttachment) {
+    TEST_F(OpenGLTest, ClearAndGetPixelRedIntegerAttachment)
+    {
         NxFramebufferSpecs specs;
-        specs.width = 100;
-        specs.height = 100;
-        specs.samples = 1;
-        specs.attachments.attachments = {
-            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RED_INTEGER)
-        };
+        specs.width                   = 100;
+        specs.height                  = 100;
+        specs.samples                 = 1;
+        specs.attachments.attachments = {NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RED_INTEGER)};
 
         NxOpenGlFramebuffer framebuffer(specs);
         framebuffer.bind();
@@ -429,15 +351,14 @@ NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
         framebuffer.unbind();
     }
 
-    TEST_F(OpenGLTest, ClearAndGetPixelMultipleAttachments) {
+    TEST_F(OpenGLTest, ClearAndGetPixelMultipleAttachments)
+    {
         NxFramebufferSpecs specs;
-        specs.width = 100;
-        specs.height = 100;
-        specs.samples = 1;
-        specs.attachments.attachments = {
-            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8),
-            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RED_INTEGER)
-        };
+        specs.width                   = 100;
+        specs.height                  = 100;
+        specs.samples                 = 1;
+        specs.attachments.attachments = {NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8),
+                                         NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RED_INTEGER)};
 
         NxOpenGlFramebuffer framebuffer(specs);
         framebuffer.bind();
@@ -454,10 +375,11 @@ NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
 
     // While OpenGL's glReadPixels does not throw exceptions for out–of–bounds reads, we ensure
     // that our wrapper does not crash. (The returned value may be undefined.)
-    TEST_F(OpenGLTest, GetPixelOutOfBoundsRedIntegerAttachment) {
+    TEST_F(OpenGLTest, GetPixelOutOfBoundsRedIntegerAttachment)
+    {
         NxFramebufferSpecs specs;
-        specs.width = 50;
-        specs.height = 50;
+        specs.width                   = 50;
+        specs.height                  = 50;
         specs.samples                 = 1;
         specs.attachments.attachments = {
             NxFrameBufferTextureSpecifications(static_cast<NxFrameBufferTextureFormats>(3))};
@@ -470,4 +392,4 @@ NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
         framebuffer.unbind();
     }
 
-}
+} // namespace nexo::renderer
