@@ -41,7 +41,7 @@ namespace nexo::editor {
     // 2) Transparent equal
     struct StringEqual {
         using is_transparent = void; // enable heterogeneous lookup
-        bool operator()(std::string_view a, std::string_view b) const noexcept
+        bool operator()(const std::string_view a, const std::string_view b) const noexcept
         {
             return a == b;
         }

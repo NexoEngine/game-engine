@@ -20,14 +20,17 @@
 #define PHYSICS_SYSTEM_HPP
 
 #include <Coordinator.hpp>
-#include <iostream>
 #include <Jolt/Jolt.h>
-#include <Jolt/Core/TempAllocator.h>
+#include <iostream>
+
 #include <Jolt/Core/JobSystemThreadPool.h>
+#include <Jolt/Core/TempAllocator.h>
 #include <Jolt/Physics/PhysicsSystem.h>
-#include <Jolt/Physics/Collision/BroadPhase/BroadPhaseLayer.h>
+
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Body/BodyInterface.h>
+#include <Jolt/Physics/Collision/BroadPhase/BroadPhaseLayer.h>
+
 #include <Entity.hpp>
 #include <GroupSystem.hpp>
 #include <QuerySystem.hpp>
@@ -168,28 +171,98 @@ namespace nexo::system {
         void init();
         void update();
 
+        /**
+         * @brief Creates a dynamic body and associates it with the given entity and transform.
+         * @param entity The entity to associate with the dynamic body.
+         * @param transform The transform component containing position, rotation, and size.
+         * @return The ID of the created dynamic body.
+         */
         [[nodiscard]] JPH::BodyID createDynamicBody(ecs::Entity entity,
                                                     const components::TransformComponent& transform) const;
+
+        /**
+         * @brief Creates a static body and associates it with the given entity and transform.
+         * @param entity The entity to associate with the static body.
+         * @param transform The transform component containing position, rotation, and size.
+         * @return The ID of the created static body.
+         */
         [[nodiscard]] JPH::BodyID createStaticBody(ecs::Entity entity,
                                                    const components::TransformComponent& transform) const;
 
+        /**
+         * @brief Creates a body with the specified motion type and associates it with the given transform.
+         * @param transform The transform component containing position, rotation, and size.
+         * @param motionType The motion type of the body (e.g., static, dynamic).
+         * @return The ID of the created body.
+         */
         [[nodiscard]] JPH::BodyID createBody(const components::TransformComponent& transform,
                                              JPH::EMotionType motionType) const;
+
+        /**
+         * @brief Creates a body from a specified shape type and associates it with the given entity and transform.
+         * @param entity The entity to associate with the body.
+         * @param transform The transform component containing position, rotation, and size.
+         * @param shapeType The type of shape to create (e.g., box, sphere).
+         * @param motionType The motion type of the body (e.g., static, dynamic).
+         * @return The ID of the created body.
+         */
         [[nodiscard]] JPH::BodyID createBodyFromShape(ecs::Entity entity,
                                                       const components::TransformComponent& transform,
                                                       ShapeType shapeType, JPH::EMotionType motionType) const;
 
+        /**
+         * @brief Synchronizes the transforms of entities with their associated physics bodies.
+         * @param coordinator The ECS coordinator managing entities and components.
+         */
         void syncTransformsToBodies(ecs::Coordinator& coordinator) const;
 
+        /**
+         * @brief Applies a force to the specified body.
+         * @param bodyID The ID of the body to apply the force to.
+         * @param force The force vector to apply.
+         */
         void applyForce(JPH::BodyID bodyID, const JPH::Vec3& force) const;
+
+        /**
+         * @brief Sets the gravity vector for the physics simulation.
+         * @param gravity The gravity vector to set.
+         */
         void setGravity(const JPH::Vec3& gravity) const;
+
+        /**
+         * @brief Activates the specified body, making it responsive to physics simulation.
+         * @param bodyID The ID of the body to activate.
+         */
         void activateBody(JPH::BodyID bodyID) const;
+
+        /**
+         * @brief Deactivates the specified body, making it unresponsive to physics simulation.
+         * @param bodyID The ID of the body to deactivate.
+         */
         void deactivateBody(JPH::BodyID bodyID) const;
 
+        /**
+         * @brief Gets the physics system instance.
+         * @return Pointer to the JPH::PhysicsSystem instance.
+         */
+        [[nodiscard]] JPH::PhysicsSystem* getPhysicsSystem() const
+        {
+            return physicsSystem;
+        }
+
+        /**
+         * @brief Gets the body interface for managing physics bodies.
+         * @return Pointer to the JPH::BodyInterface instance.
+         */
         [[nodiscard]] JPH::BodyInterface* getBodyInterface() const
         {
             return bodyInterface;
         }
+
+        /**
+         * @brief Gets the body lock interface for thread-safe access to physics bodies.
+         * @return Pointer to the JPH::BodyLockInterface instance.
+         */
         [[nodiscard]] const JPH::BodyLockInterface* getBodyLockInterface() const
         {
             return bodyLockInterface;

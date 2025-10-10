@@ -89,7 +89,7 @@ namespace nexo::assets {
          * @param texture The embedded texture to load.
          * @return An AssetRef to the loaded Texture asset.
          */
-        AssetRef<Texture> loadEmbeddedTexture(AssetImporterContext& ctx, aiTexture* texture);
+        static AssetRef<Texture> loadEmbeddedTexture(AssetImporterContext& ctx, aiTexture* texture);
 
         /**
          * @brief Load materials from the Assimp scene.

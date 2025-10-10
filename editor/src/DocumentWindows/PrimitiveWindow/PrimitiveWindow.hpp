@@ -50,6 +50,6 @@ namespace nexo::editor {
          */
         void renderPrimitiveWindow() const;
 
-        Primitives m_selectedPrimitive = CUBE; // Default primitive type
+        Primitives m_selectedPrimitive = Primitives::CUBE; // Default primitive type
     };
 } // namespace nexo::editor

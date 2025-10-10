@@ -158,20 +158,20 @@ namespace ImNexo {
 
         // Static variables to track the last selected primitive and segment count
         static nexo::Primitives lastPrimitive = primitive;
-        static int segmentCount               = primitive == nexo::SPHERE ? 1 : 8;
+        static int segmentCount               = primitive == nexo::Primitives::SPHERE ? 1 : 8;
 
         // Reset segment count if the primitive type changes
         if (lastPrimitive != primitive) {
-            segmentCount  = primitive == nexo::SPHERE ? 1 : 8;
+            segmentCount  = primitive == nexo::Primitives::SPHERE ? 1 : 8;
             lastPrimitive = primitive;
         }
 
         // Define the minimum and maximum segment counts based on the primitive type
-        const unsigned int minSegmentCount = primitive == nexo::SPHERE ? 0 : 3;
-        const unsigned int maxSegmentCount = primitive == nexo::SPHERE ? 8 : 100;
+        const unsigned int minSegmentCount = primitive == nexo::Primitives::SPHERE ? 0 : 3;
+        const unsigned int maxSegmentCount = primitive == nexo::Primitives::SPHERE ? 8 : 100;
 
         // Set the slider title based on the primitive type
-        const char* title = primitive == nexo::SPHERE ? "Subdivision" : "Segments";
+        const char* title = primitive == nexo::Primitives::SPHERE ? "Subdivision" : "Segments";
 
         // Render a slider to adjust the segment count
         ImGui::SliderScalar(title, ImGuiDataType_S32, &segmentCount, &minSegmentCount, &maxSegmentCount, "%d");
@@ -182,7 +182,7 @@ namespace ImNexo {
 
             // Create the selected primitive with the specified parameters
             const nexo::ecs::Entity newPrimitive =
-                primitive == nexo::SPHERE ?
+                primitive == nexo::Primitives::SPHERE ?
                     nexo::EntityFactory3D::createSphere({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},
                                                         glm::vec4(DEFAULT_COLOR_PRIMITIVE), segmentCount) :
                     nexo::EntityFactory3D::createCylinder({0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f},

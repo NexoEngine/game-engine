@@ -207,10 +207,10 @@ namespace nexo::editor {
                 renderNewEntityPopup();
             }
             if (m_popupManager.showPopup("Sphere creation popup")) {
-                ImNexo::PrimitiveCustomizationMenu(m_sceneId, SPHERE);
+                ImNexo::PrimitiveCustomizationMenu(m_sceneId, Primitives::SPHERE);
             }
             if (m_popupManager.showPopup("Cylinder creation popup")) {
-                ImNexo::PrimitiveCustomizationMenu(m_sceneId, CYLINDER);
+                ImNexo::PrimitiveCustomizationMenu(m_sceneId, Primitives::CYLINDER);
             }
         }
         ImGui::End();

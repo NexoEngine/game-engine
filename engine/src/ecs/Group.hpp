@@ -716,6 +716,7 @@ namespace nexo::ecs {
          */
         struct IPartitionStorage {
             virtual ~IPartitionStorage() = default;
+
             /**
              * @brief Checks if the partition storage is dirty (needs rebuilding).
              *
@@ -723,10 +724,12 @@ namespace nexo::ecs {
              * @return false Otherwise.
              */
             [[nodiscard]] virtual bool isDirty() const = 0;
+
             /**
              * @brief Marks the partition storage as dirty.
              */
             virtual void markDirty() = 0;
+
             /**
              * @brief Rebuilds the partition storage.
              */
@@ -762,8 +765,8 @@ namespace nexo::ecs {
                 return m_isDirty;
             }
 
-          /**
-           * @brief Marks the partition storage as dirty.
+            /**
+             * @brief Marks the partition storage as dirty.
              */
             void markDirty() override
             {

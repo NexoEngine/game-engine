@@ -33,16 +33,16 @@ namespace nexo::system {
         videoComponent.updateFrame();
 
         // update material to current frame
-        auto &materialComponent    = coord->getComponent<components::MaterialComponent>(entity);
-        auto &currentFrameMaterial = videoComponent.frames[videoComponent.currentFrameIndex];
-        materialComponent.material = currentFrameMaterial;
+        auto &[material]          = coord->getComponent<components::MaterialComponent>(entity);
+        const auto &currentFrameMaterial = videoComponent.frames[videoComponent.currentFrameIndex];
+        material = currentFrameMaterial;
 
         return 0;
     }
 
     void RenderVideoSystem::update()
     {
-        auto &renderContext = getSingleton<components::RenderContext>();
+        const auto &renderContext = getSingleton<components::RenderContext>();
         if (renderContext.sceneRendered == -1) return;
 
         const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);

@@ -41,7 +41,7 @@ namespace nexo::event {
         }
     };
 
-    enum KeyAction { PRESSED, RELEASED, REPEAT };
+    enum class KeyAction { PRESSED, RELEASED, REPEAT };
 
     std::ostream &operator<<(std::ostream &os, const KeyAction &action);
 
@@ -72,13 +72,15 @@ namespace nexo::event {
 
         friend std::ostream &operator<<(std::ostream &os, const EventKey &event)
         {
+            using enum KeyMods;
+
             std::string mod;
-            if (event.hasMod(KeyMods::ALT)) mod.append("ALT");
-            if (event.hasMod(KeyMods::CONTROL)) {
+            if (event.hasMod(ALT)) mod.append("ALT");
+            if (event.hasMod(CONTROL)) {
                 if (!mod.empty()) mod.append(" + ");
                 mod.append("CTRL");
             }
-            if (event.hasMod(KeyMods::SHIFT)) {
+            if (event.hasMod(SHIFT)) {
                 if (!mod.empty()) mod.append(" + ");
                 mod.append("SHIFT");
             }
@@ -87,7 +89,7 @@ namespace nexo::event {
         }
     };
 
-    enum MouseButton { LEFT = 0, RIGHT = 1, MIDDLE = 2 };
+    enum class MouseButton { LEFT = 0, RIGHT = 1, MIDDLE = 2 };
 
     std::ostream &operator<<(std::ostream &os, const MouseButton &button);
 
@@ -106,13 +108,15 @@ namespace nexo::event {
 
         friend std::ostream &operator<<(std::ostream &os, const EventMouseClick &event)
         {
+            using enum KeyMods;
+
             std::string mod;
-            if (event.hasMod(KeyMods::ALT)) mod.append("ALT");
-            if (event.hasMod(KeyMods::CONTROL)) {
+            if (event.hasMod(ALT)) mod.append("ALT");
+            if (event.hasMod(CONTROL)) {
                 if (!mod.empty()) mod.append(" + ");
                 mod.append("CTRL");
             }
-            if (event.hasMod(KeyMods::SHIFT)) {
+            if (event.hasMod(SHIFT)) {
                 if (!mod.empty()) mod.append(" + ");
                 mod.append("SHIFT");
             }

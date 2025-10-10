@@ -354,7 +354,7 @@ namespace nexo::editor {
         setupGizmoContext(camera);
         ImGuizmo::SetID(static_cast<int>(primaryEntity));
 
-        glm::mat4 viewMatrix       = camera.getViewMatrix(cameraTransform);
+        glm::mat4 viewMatrix       = nexo::components::CameraComponent::getViewMatrix(cameraTransform);
         glm::mat4 projectionMatrix = camera.getProjectionMatrix();
 
         // 1) M₀ = parentWorld * T(pos) * R(quat) * S(size)

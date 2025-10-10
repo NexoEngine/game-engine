@@ -27,7 +27,6 @@
 #include "Timer.hpp"
 #include "Types.hpp"
 #include "WorldState.hpp"
-// #include "components/Light.hpp"
 #include "components/PhysicsBodyComponent.hpp"
 #include "core/event/SignalEvent.hpp"
 #include "core/event/WindowEvent.hpp"
@@ -462,11 +461,10 @@ namespace nexo {
         }
         static std::shared_ptr<ecs::Coordinator> m_coordinator;
 
-       protected:
+        private:
         Application();
         std::shared_ptr<event::EventManager> m_eventManager;
 
-       private:
         /**
          * @brief Registers all debug listeners for the application.
          *

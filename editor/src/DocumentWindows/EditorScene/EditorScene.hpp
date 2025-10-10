@@ -110,41 +110,49 @@ namespace nexo::editor {
         };
 
        private:
+        // Scene properties
         bool m_defaultScene = false;
-        ImVec2 m_viewportBounds[2];
-        ImGuizmo::OPERATION m_currentGizmoOperation = ImGuizmo::UNIVERSAL;
-        ImGuizmo::MODE m_currentGizmoMode           = ImGuizmo::WORLD;
-        bool m_snapTranslateOn                      = false;
-        glm::vec3 m_snapTranslate                   = {10.0f, 10.0f, 10.0f};
-        bool m_snapRotateOn                         = false;
-        float m_angleSnap                           = 90.0f;
-        bool m_snapToGrid                           = false;
-        bool m_wireframeEnabled                     = false;
-
-        ecs::Entity m_entityHovered = ecs::INVALID_ENTITY;
-
-        int m_sceneId = -1;
+        int m_sceneId       = -1;
         std::string m_sceneUuid;
+
+        // Camera management
         int m_activeCamera = -1;
         int m_editorCamera = -1;
 
+        // Viewport and rendering
+        ImVec2 m_viewportBounds[2];
+        bool m_wireframeEnabled = false;
+
+        // Entity selection
+        ecs::Entity m_entityHovered = ecs::INVALID_ENTITY;
+
+        // Gizmo settings
+        ImGuizmo::OPERATION m_currentGizmoOperation = ImGuizmo::UNIVERSAL;
+        ImGuizmo::MODE m_currentGizmoMode           = ImGuizmo::WORLD;
+
+        // Snapping settings
+        bool m_snapTranslateOn    = false;
+        glm::vec3 m_snapTranslate = {10.0f, 10.0f, 10.0f};
+        bool m_snapRotateOn       = false;
+        float m_angleSnap         = 90.0f;
+        bool m_snapToGrid         = false;
+
+        // UI management
         PopupManager m_popupManager;
 
-        const std::vector<ImNexo::GradientStop> m_buttonGradient = {{0.0f, IM_COL32(50, 50, 70, 230)},
-                                                                    {1.0f, IM_COL32(30, 30, 45, 230)}};
-
-        // Game window focus scheduling
-        bool m_shouldFocusGameWindow = false;
-        std::string m_gameWindowToFocus;
-
-        // Deferred dock split operation
-        bool m_shouldSplitDock = false;
-        std::string m_gameWindowNameToSplit;
-
-        // Selected button gradient - lighter blue gradient
+        // Button styling
+        const std::vector<ImNexo::GradientStop> m_buttonGradient   = {{0.0f, IM_COL32(50, 50, 70, 230)},
+                                                                      {1.0f, IM_COL32(30, 30, 45, 230)}};
         const std::vector<ImNexo::GradientStop> m_selectedGradient = {{0.0f, IM_COL32(70, 70, 120, 230)},
                                                                       {1.0f, IM_COL32(50, 50, 100, 230)}};
 
+        // Game window management
+        bool m_shouldFocusGameWindow = false;
+        std::string m_gameWindowToFocus;
+        bool m_shouldSplitDock = false;
+        std::string m_gameWindowNameToSplit;
+
+        // Timecode management
         std::vector<float> m_timecodeSeconds{5.0f, 8.0f, 5.0f, 10.0f};
         int m_currentTimecodeIndex = 0;
         bool m_isTimecodeActive    = false;
@@ -223,7 +231,7 @@ namespace nexo::editor {
         /**
          * @brief Sets up command bindings for the gizmo translate state.
          *
-         * Initializes command mappings for the translate state of the gizmo,
+         * Initializes command mappings for the translation state of the gizmo,
          * allowing users to switch between different transformation modes (translate, rotate, scale)
          * and modify gizmo behavior using keyboard shortcuts. It includes commands for toggling
          * snapping, locking axes, and changing the gizmo operation.
@@ -299,8 +307,8 @@ namespace nexo::editor {
          * @param rotation The rotation of the model in Euler angles (degrees).
          */
         void addModelToScene(const std::string& modelPath, const glm::vec3& position,
-                                          const glm::vec3& scale    = {1.0f, 1.0f, 1.0f},
-                                          const glm::vec3& rotation = {0.0f, 0.0f, 0.0f}) const;
+                             const glm::vec3& scale    = {1.0f, 1.0f, 1.0f},
+                             const glm::vec3& rotation = {0.0f, 0.0f, 0.0f}) const;
 
         /**
          * @brief Renders the toolbar overlay within the main scene view.

@@ -66,7 +66,7 @@ namespace nexo::renderer {
      *
      * Example:
      * ```cpp
-     * bool isIntType = isInt(NxShaderDataType::INT3); // returns true
+     * bool isIntType = isInt(NxShaderDataType::INT3); //returns true
      * ```
      **/
     static bool isInt(const NxShaderDataType type)
@@ -116,7 +116,6 @@ namespace nexo::renderer {
                 glVertexAttribIPointer(index, static_cast<int>(element.getComponentCount()),
                                        nxShaderDataTypeToOpenGltype(element.type), static_cast<int>(layout.getStride()),
                                        static_cast<const void *>(reinterpret_cast<uintptr_t *>(element.offset)));
-
             } else {
                 glVertexAttribPointer(index, static_cast<int>(element.getComponentCount()),
                                       nxShaderDataTypeToOpenGltype(element.type),

@@ -68,7 +68,7 @@ namespace nexo::renderer {
      */
     struct NxFrameBufferTextureSpecifications {
         NxFrameBufferTextureSpecifications() = default;
-        NxFrameBufferTextureSpecifications(const NxFrameBufferTextureFormats format) : textureFormat(format){};
+        explicit NxFrameBufferTextureSpecifications(const NxFrameBufferTextureFormats format) : textureFormat(format){};
 
         NxFrameBufferTextureFormats textureFormat = NxFrameBufferTextureFormats::NONE;
     };
@@ -181,7 +181,7 @@ namespace nexo::renderer {
          * @param slot The texture slot to bind the attachment to (default is 0).
          * @param attachment The index of the color attachment to bind (default is 0).
          */
-        virtual void bindAsTexture(unsigned int slot = 0, unsigned int attachment = 0) = 0;
+        virtual void bindAsTexture(unsigned int slot, unsigned int attachment) = 0;
 
         /**
          * @brief Binds the depth attachment of the framebuffer as a texture.
@@ -191,7 +191,7 @@ namespace nexo::renderer {
          *
          * @param slot The texture slot to bind the depth attachment to (default is 0).
          */
-        virtual void bindDepthAsTexture(unsigned int slot = 0) = 0;
+        virtual void bindDepthAsTexture(unsigned int slot) = 0;
 
         /**
          * @brief Unbinds the current framebuffer, reverting to the default framebuffer.
@@ -351,7 +351,7 @@ namespace nexo::renderer {
          * - If the framebuffer has multiple color attachments, specify the index accordingly.
          * - An invalid index may result in undefined behavior.
          */
-        [[nodiscard]] virtual unsigned int getColorAttachmentId(unsigned int index = 0) const = 0;
+        [[nodiscard]] virtual unsigned int getColorAttachmentId(unsigned int index) const = 0;
 
         /**
          * @brief Retrieves the OpenGL ID of the depth attachment.

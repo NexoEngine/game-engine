@@ -183,17 +183,16 @@ namespace nexo::renderer {
         [[nodiscard]] virtual void *window() const = 0;
 
         /**
-                /**
-                 * @brief Factory function to create a platform-specific window.
-                 *
-                 * Depending on the graphics API (e.g., OpenGL), this function creates an
-                 * instance of the corresponding `NxWindow` implementation.
-                 *
-                 * @param width Initial width of the window.
-                 * @param height Initial height of the window.
-                 * @param title Title of the window.
-                 * @return A shared pointer to the created `NxWindow` instance.
-                 */
+         * @brief Factory function to create a platform-specific window.
+         *
+         * Depending on the graphics API (e.g., OpenGL), this function creates an
+         * instance of the corresponding `NxWindow` implementation.
+         *
+         * @param width Initial width of the window.
+         * @param height Initial height of the window.
+         * @param title Title of the window.
+         * @return A shared pointer to the created `NxWindow` instance.
+         */
         static std::shared_ptr<NxWindow> create(int width = 1920, int height = 1080,
                                                 const std::string &title = "Nexo window");
 

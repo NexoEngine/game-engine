@@ -341,7 +341,7 @@ namespace nexo::editor {
             if (pathToRemove.empty()) {
                 m_pathToName[newFolderPath] = folderName;
                 if (!key.empty() && key.find(currentFolderPath) != std::string::npos) {
-                    const std::string newKey = path.empty() ? key : std::format("%s/%s", path, key);
+                    const std::string newKey = path.empty() ? key : std::format("{}/{}", path, key);
                     toUpdate.push_back(key);
                     m_pathToName[newKey] = m_pathToName[key];
                 }
@@ -407,8 +407,9 @@ namespace nexo::editor {
      * @param folderPath The path of the folder to calculate the size for.
      * @return The total size of the folder in megabytes, or 0 if an error occurs.
      */
-    float FolderManager::getFolderSize(const std::string& folderPath)
+    float FolderManager::getFolderSize(std::string_view folderPath)
     {
+        LOG(NEXO_INFO, "Calculating size of folder: %s", folderPath);
         // TODO: implement this function properly
         return 0.0f;
     }

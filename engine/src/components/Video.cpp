@@ -62,7 +62,7 @@ namespace nexo::components {
             LOG_ONCE(NEXO_ERROR, "Failed to open the video {}", videoPath);
             return false;
         }
-        int frameNumber = static_cast<int>(cap.get(cv::VideoCaptureProperties::CAP_PROP_FRAME_COUNT)); // Get total
+        auto frameNumber = static_cast<int>(cap.get(cv::VideoCaptureProperties::CAP_PROP_FRAME_COUNT)); // Get total
         frameRate       = cap.get(cv::VideoCaptureProperties::CAP_PROP_FPS);                           // Get FPS
 
         cv::Mat frame;
@@ -105,7 +105,7 @@ namespace nexo::components {
         auto secondsPassed = std::chrono::duration_cast<std::chrono::duration<double>>(
             std::chrono::high_resolution_clock::now() - lastFrameTime);
 
-        auto &currentKeyframe = keyframes[currentKeyframeIndex];
+        const auto &currentKeyframe = keyframes[currentKeyframeIndex];
         if (secondsPassed.count() >= (currentKeyframe.end - currentKeyframe.start)) {
             switch (currentKeyframe.keyframeType) {
                 case KeyframeType::LOOP:
@@ -137,12 +137,12 @@ namespace nexo::components {
             return;
         }
         currentKeyframeIndex = keyframeIndex;
-        auto &keyframe       = keyframes[currentKeyframeIndex];
+        const auto &keyframe       = keyframes[currentKeyframeIndex];
         currentFrameIndex    = static_cast<size_t>(keyframe.start * frameRate);
         lastFrameTime        = std::chrono::high_resolution_clock::now();
     }
 
-    void VideoComponent::setCurrentFrame(size_t frameIndex)
+    void VideoComponent::setCurrentFrame(const size_t frameIndex)
     {
         if (frameIndex >= nbFrame) {
             if (loopVideo) {
@@ -166,7 +166,7 @@ namespace nexo::components {
             if (loopVideo) setCurrentKeyframe(keyframes.size() - 1);
             return;
         }
-        auto &previousKeyframe = keyframes[currentKeyframeIndex - 1];
+        const auto &previousKeyframe = keyframes[currentKeyframeIndex - 1];
         if (previousKeyframe.keyframeType == KeyframeType::TRANSITION) {
             if (currentKeyframeIndex < 2) {
                 if (loopVideo) setCurrentKeyframe(keyframes.size() - 1);

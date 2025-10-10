@@ -21,6 +21,8 @@ namespace nexo::event {
 
     std::ostream& operator<<(std::ostream& os, const KeyAction& action)
     {
+        using enum KeyAction;
+
         switch (action) {
             case PRESSED:
                 os << "PRESSED";
@@ -40,17 +42,19 @@ namespace nexo::event {
 
     std::ostream& operator<<(std::ostream& os, const KeyMods& mod)
     {
+        using enum KeyMods;
+
         switch (mod) {
-            case KeyMods::NONE:
+            case NONE:
                 os << "NONE";
                 break;
-            case KeyMods::SHIFT:
+            case SHIFT:
                 os << "SHIFT";
                 break;
-            case KeyMods::CONTROL:
+            case CONTROL:
                 os << "CONTROL";
                 break;
-            case KeyMods::ALT:
+            case ALT:
                 os << "ALT";
                 break;
             default:
@@ -62,6 +66,8 @@ namespace nexo::event {
 
     std::ostream& operator<<(std::ostream& os, const MouseButton& button)
     {
+        using enum MouseButton;
+
         switch (button) {
             case LEFT:
                 os << "LEFT";

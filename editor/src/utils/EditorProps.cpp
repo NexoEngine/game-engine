@@ -136,14 +136,15 @@ namespace nexo::editor::utils {
 
     void addPropsTo(const ecs::Entity entity, const PropsType type)
     {
+        using enum PropsType;
         switch (type) {
-            case PropsType::CAMERA:
+            case CAMERA:
                 addCameraProps(entity);
                 break;
-            case PropsType::POINT_LIGHT:
+            case POINT_LIGHT:
                 addPointLightProps(entity);
                 break;
-            case PropsType::SPOT_LIGHT:
+            case SPOT_LIGHT:
                 addSpotLightProps(entity);
                 break;
             default:

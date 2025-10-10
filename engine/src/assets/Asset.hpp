@@ -18,6 +18,7 @@
 
 #pragma once
 
+#include <array>
 #include <boost/uuid/basic_random_generator.hpp>
 #include <boost/uuid/nil_generator.hpp>
 #include <boost/uuid/uuid.hpp>
@@ -45,8 +46,8 @@ namespace nexo::assets {
      * @brief Array of asset type names
      * @note The order of the array must match the order of the AssetType enum.
      */
-    constexpr const char* AssetTypeNames[] = {"UNKNOWN", "TEXTURE", "MATERIAL", "MODEL", "SOUND",
-                                              "MUSIC",   "FONT",    "SHADER",   "SCRIPT"};
+    constexpr std::array AssetTypeNames = {"UNKNOWN", "TEXTURE", "MATERIAL", "MODEL", "SOUND",
+                                           "MUSIC",   "FONT",    "SHADER",   "SCRIPT"};
 
     static_assert(static_cast<int>(AssetType::_COUNT) == std::size(AssetTypeNames),
                   "AssetTypeNames array size must match AssetType enum size");
@@ -153,7 +154,7 @@ namespace nexo::assets {
         /**
          * @brief Get the metadata of the asset (for modification)
          */
-        [[nodiscard]] AssetMetadata& getMetadata()
+        [[nodiscard]] virtual AssetMetadata& getMetadata()
         {
             return m_metadata;
         }
@@ -171,6 +172,10 @@ namespace nexo::assets {
 
         ~Asset() override = default;
 
+        [[nodiscard]] AssetMetadata& getMetadata() override
+        {
+            return m_metadata;
+        }
         [[nodiscard]] const AssetMetadata& getMetadata() const override
         {
             return m_metadata;

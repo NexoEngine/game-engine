@@ -137,9 +137,11 @@ namespace ImNexo {
     {
         auto &app = nexo::getApp();
         nexo::renderer::NxFramebufferSpecs framebufferSpecs;
-        framebufferSpecs.attachments = {nexo::renderer::NxFrameBufferTextureFormats::RGBA8,
-                                        nexo::renderer::NxFrameBufferTextureFormats::RED_INTEGER,
-                                        nexo::renderer::NxFrameBufferTextureFormats::Depth};
+        framebufferSpecs.attachments = nexo::renderer::NxFrameBufferAttachmentsSpecifications(
+            {nexo::renderer::NxFrameBufferTextureSpecifications(nexo::renderer::NxFrameBufferTextureFormats::RGBA8),
+             nexo::renderer::NxFrameBufferTextureSpecifications(
+                 nexo::renderer::NxFrameBufferTextureFormats::RED_INTEGER),
+             nexo::renderer::NxFrameBufferTextureSpecifications(nexo::renderer::NxFrameBufferTextureFormats::Depth)});
 
         // Define layout: 60% for inspector, 40% for preview
         framebufferSpecs.width                = static_cast<unsigned int>(sceneViewportSize.x);

@@ -18,6 +18,8 @@
 namespace nexo::editor {
     void PrimitiveWindow::renderPrimitiveWindow() const
     {
+        using enum Primitives;
+
         switch (m_selectedPrimitive) {
             case CUBE:
                 ImGui::Text("Cube customization options");

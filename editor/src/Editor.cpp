@@ -44,7 +44,11 @@ namespace nexo::editor {
     {
         const Application &app = Application::getInstance();
 
-        app.shutdownScripting();
+        if (app.shutdownScripting()) {
+            LOG(NEXO_INFO, "Scripting engine shutdown successfully");
+        } else {
+            LOG(NEXO_ERROR, "Error during scripting engine shutdown");
+        }
         LOG(NEXO_INFO, "Closing editor");
         LOG(NEXO_INFO, "All windows destroyed");
         m_windowRegistry.shutdown();
@@ -224,9 +228,13 @@ namespace nexo::editor {
         setupStyle();
         m_windowRegistry.setup();
 
-        const Application &app = Application::getInstance();
-        app.initScripting(); // TODO: scripting is init here since it requires a scene, later scenes shouldn't be
-                             // created in the editor window
+        if (const Application &app = Application::getInstance(); !app.initScripting()) {
+            LOG(NEXO_INFO, "Scripting engine initialized successfully");
+            // TODO: scripting is init here since it requires a scene, later scenes shouldn't be
+            // created in the editor window
+        } else {
+            LOG(NEXO_ERROR, "Error during scripting engine initialization");
+        }
         for (const auto inspectorWindow : m_windowRegistry.getWindows<InspectorWindow>())
             inspectorWindow->registerTypeErasedProperties(); // TODO: this should be done in the InspectorWindow
                                                              // constructor, but we need the scripting to init
@@ -348,9 +356,8 @@ namespace nexo::editor {
         static std::vector<CommandInfo> lastValidCommands; // Store the last valid set of commands
         static float commandDisplayTimer = 0.0f;           // Track how long to show last commands
 
-        auto focusedWindow = m_windowRegistry.getFocusedWindow();
-        if (focusedWindow) {
-            const WindowState currentState = m_windowRegistry.getFocusedWindow()->getWindowState();
+        if (const auto focusedWindow = m_windowRegistry.getFocusedWindow()) {
+            const WindowState currentState = focusedWindow->getWindowState();
             nexo::editor::InputManager::processInputs(currentState);
             possibleCommands = nexo::editor::InputManager::getPossibleCommands(currentState);
 

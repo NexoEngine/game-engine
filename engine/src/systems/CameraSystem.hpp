@@ -25,7 +25,6 @@
 #include "core/event/WindowEvent.hpp"
 #include "ecs/GroupSystem.hpp"
 #include "ecs/QuerySystem.hpp"
-#include "ecs/System.hpp"
 
 namespace nexo::system {
 

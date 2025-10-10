@@ -47,7 +47,7 @@ namespace nexo::renderer {
          * ```cpp
          * RequiredAttributes req1{.bitsUnion = {.flags = {true, false, true, false, true, false, false, false}}};
          * RequiredAttributes req2{.bitsUnion = {.flags = {true, false, true, false, true, false, false, false}}};
-         * bool areEqual = (req1 == req2); // returns true
+         * bool areEqual = (req1 == req2); //returns true
          * ```
          */
         bool operator==(RequiredAttributes const& o) const
@@ -68,7 +68,7 @@ namespace nexo::renderer {
          * ```cpp
          * RequiredAttributes req1{.bitsUnion = {.flags = {true, false, true, false, true, false, false, false}}};
          * RequiredAttributes req2{.bitsUnion = {.flags = {true, true, true, false, true, true, false, false}}};
-         * bool isCompatible = req1.compatibleWith(req2); // returns true
+         * bool isCompatible = req1.compatibleWith(req2); //returns true
          * ```
          */
         [[nodiscard]] bool compatibleWith(RequiredAttributes const& o) const

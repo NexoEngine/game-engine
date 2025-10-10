@@ -97,17 +97,32 @@ namespace nexo::assets {
         {
             return _value == other._value;
         }
-        bool operator!=(const ValidatedName& other) const
-        {
-            return !(*this == other);
-        }
 
+        /**
+         * @brief Inequality operator.
+         */
         ValidatedName& operator=(const ValidatedName& other) = default;
+
+        /**
+         * @brief Assignment operators with validation.
+         */
         ValidatedName& operator=(std::string_view name);
+
+        /**
+         * @brief Assignment operators with validation.
+         */
         ValidatedName& operator=(const std::string& name);
 
+        /**
+         * @brief Assignment operators with validation.
+         */
         ValidatedName& operator=(const char* name);
 
+        /**
+         * @brief Renames the validated name after validating the new name.
+         * @param name The new name to set.
+         * @return An error message if the name is invalid, or std::nullopt if the rename was successful.
+         */
         std::optional<std::string> rename(std::string_view name);
 
         /**

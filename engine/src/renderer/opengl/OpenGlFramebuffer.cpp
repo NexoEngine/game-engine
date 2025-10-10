@@ -17,6 +17,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "OpenGlFramebuffer.hpp"
+
+#include <array>
+
 #include "Logger.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
@@ -183,12 +186,8 @@ namespace nexo::renderer {
      */
     static bool isDepthFormat(const NxFrameBufferTextureFormats format)
     {
-        switch (format) {
-            case NxFrameBufferTextureFormats::DEPTH24STENCIL8:
-                return true;
-            default:
-                return false;
-        }
+        if (format == NxFrameBufferTextureFormats::DEPTH24STENCIL8) return true;
+        return false;
     }
 
     NxOpenGlFramebuffer::NxOpenGlFramebuffer(NxFramebufferSpecs specs) : m_specs(std::move(specs))
@@ -259,9 +258,9 @@ namespace nexo::renderer {
 
         if (m_colorAttachments.size() > 1) {
             if (m_colorAttachments.size() >= 4) THROW_EXCEPTION(NxFramebufferCreationFailed, "OPENGL");
-            constexpr GLenum buffers[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
+            constexpr std::array<GLenum, 4> buffers = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2,
                                            GL_COLOR_ATTACHMENT3};
-            glDrawBuffers(static_cast<int>(m_colorAttachments.size()), buffers);
+glDrawBuffers(static_cast<int>(m_colorAttachments.size()), buffers.data());
         } else if (m_colorAttachments.empty())
             glDrawBuffer(GL_NONE);
 

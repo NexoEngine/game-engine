@@ -94,7 +94,7 @@ namespace nexo::editor {
             Application::getInstance().run(sceneInfo);
             const auto &cameraComp =
                 Application::m_coordinator->getComponent<components::CameraComponent>(out.cameraId);
-            const unsigned int textureId = cameraComp.m_renderTarget->getColorAttachmentId();
+            const unsigned int textureId = cameraComp.m_renderTarget->getColorAttachmentId(0);
 
             const float aspectRatio = (previewWidth - 8) / totalHeight;
 

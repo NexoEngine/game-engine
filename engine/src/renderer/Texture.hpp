@@ -244,9 +244,9 @@ namespace nexo::renderer {
          *
          * Example:
          * ```cpp
-         * // Create a 128x128 RGBA texture with custom data (4 components (RGBA))
+         * //Create a 128x128 RGBA texture with custom data (4 components (RGBA))
          * std::vector<uint8_t> pixelData(128 * 128 * 4);
-         * // Fill pixelData with your custom values...
+         * //Fill pixelData with your custom values...
          * auto texture = NxTexture2D::create(pixelData.data(), 128, 128, NxTextureFormat::RGBA8);
          * ```
          */
@@ -266,7 +266,7 @@ namespace nexo::renderer {
          *
          * Example:
          * ```cpp
-         * // Load image data into a buffer
+         * //Load image data into a buffer
          * std::vector<uint8_t> imageData = ...;
          * auto texture = NxTexture2D::create(imageData.data(), imageData.size());
          * ```
