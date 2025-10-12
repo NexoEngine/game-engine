@@ -16,16 +16,20 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <GLFW/glfw3.h>
 #include <glad/glad.h>
-#include <gmock/gmock.h>
+
+#include <GLFW/glfw3.h>
 #include <gtest/gtest.h>
 
-#include "RendererExceptions.hpp"
-#include "contexts/opengl.hpp"
+#include <gmock/gmock.h>
+#include "opengl/OpenGlVertexArray.hpp"
+
 #include "opengl/OpenGlBuffer.hpp"
 #include "opengl/OpenGlFramebuffer.hpp"
-#include "opengl/OpenGlVertexArray.hpp"
+
+#include "contexts/opengl.hpp"
+
+#include "RendererExceptions.hpp"
 
 namespace nexo::renderer {
 
