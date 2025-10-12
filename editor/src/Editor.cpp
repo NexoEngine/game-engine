@@ -45,7 +45,7 @@ namespace nexo::editor {
     {
         const Application &app = Application::getInstance();
 
-        if (app.shutdownScripting()) {
+        if (!app.shutdownScripting()) {
             LOG(NEXO_INFO, "Scripting engine shutdown successfully");
         } else {
             LOG(NEXO_ERROR, "Error during scripting engine shutdown");
