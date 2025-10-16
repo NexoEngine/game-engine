@@ -74,7 +74,7 @@ TEST_F(PhysicsSystemTest, PhysicsUpdatesTransformPosition) {
     transform.size = {1.0f, 1.0f, 1.0f};
     coordinator->addComponent(entity, transform);
 
-    physicsSystem->createDynamicBody(entity, transform);
+    [[maybe_unused]] auto newBodyId = physicsSystem->createDynamicBody(entity, transform);
     physicsSystem->update(); // simulate one frame
 
     auto& updated = coordinator->getComponent<components::TransformComponent>(entity);

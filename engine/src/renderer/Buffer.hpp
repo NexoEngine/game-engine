@@ -108,7 +108,7 @@ namespace nexo::renderer {
         std::string name;
         NxShaderDataType type{};
         unsigned int size{};
-        unsigned int offset{};
+        unsigned long long offset{};
         bool normalized{};
 
         NxBufferElements() = default;
