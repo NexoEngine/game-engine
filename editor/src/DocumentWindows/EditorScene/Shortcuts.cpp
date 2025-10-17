@@ -165,6 +165,7 @@ namespace nexo::editor {
                                           .onPressed([this] { this->selectAllCallback(); })
                                           .build());
 
+        // Video timecode navigation
         m_globalState.registerCommand(Command::create()
                                           .description("Start previous timecode")
                                           .key("Left")
@@ -175,6 +176,8 @@ namespace nexo::editor {
                                           .key("Right")
                                           .onPressed([this] { this->skipVideosToNextKeyframe(); })
                                           .build());
+
+        // Physics demo: spawn balls
         m_globalState.registerCommand(Command::create()
                                           .description("Spawn balls")
                                           .key("L")
