@@ -76,6 +76,7 @@ namespace nexo::editor {
             }
         }
     }
+
     void EditorScene::spawnBallsScene(const glm::vec3& offset) const
     {
         thread_local std::mt19937 gen{std::random_device{}()};
