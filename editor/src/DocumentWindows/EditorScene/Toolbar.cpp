@@ -74,7 +74,13 @@ namespace nexo::editor {
 
     void EditorScene::spawnBallsScene(const glm::vec3& offset) const
     {
-        thread_local std::mt19937 gen{std::random_device{}()};
+        thread_local std::mt19937 gen = []() {
+            std::random_device rd;
+            const auto time_seed = static_cast<unsigned long>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+            const auto thread_hash = std::hash<std::thread::id>{}(std::this_thread::get_id());
+            std::seed_seq seq{rd(), static_cast<unsigned>(time_seed), static_cast<unsigned>(thread_hash)};
+            return std::mt19937(seq);
+        }();
         thread_local std::uniform_real_distribution<float> dis(0.0f, 1.0f);
 
         // Balls
