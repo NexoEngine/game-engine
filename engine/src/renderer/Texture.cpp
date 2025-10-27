@@ -102,4 +102,10 @@ namespace nexo::renderer {
 #endif
     }
 
+    std::shared_ptr<NxTexture2D> NxTexture2D::create(const std::string& path,
+                                         const assets::TextureImportParameters& ip)
+    {
+        return std::make_shared<NxOpenGlTexture2D>(path, ip);
+    }
+
 } // namespace nexo::renderer

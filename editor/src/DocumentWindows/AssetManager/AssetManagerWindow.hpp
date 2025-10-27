@@ -168,6 +168,7 @@ namespace nexo::editor {
         void deleteAssetPopup();
         void deleteUsedAssetPopup();
         void assetDetailsPopup();
+        void textureImporterPopup();
 
         template<typename T>
         static void drawErrorMessageInPopup(T& actionState);
@@ -189,7 +190,7 @@ namespace nexo::editor {
         void handleFolderDrag(const std::string& folderPath, const std::string& folderName) const;
         void handleAssetDrop(const std::string& path);
         void handleFolderDrop(const std::string& folderPath);
-        void importDroppedFile(const std::string& filePath) const;
+        void importDroppedFile(const std::string& filePath);
 
         // search functionality
         void drawSearchBar();
@@ -233,6 +234,8 @@ namespace nexo::editor {
         assets::AssetRef<assets::Texture> m_folderIcon;
 
         std::vector<std::string> m_pendingDroppedFiles;
+        assets::GenericAssetRef m_pendingImportedAsset = assets::GenericAssetRef::null();
+        std::string m_pendingImportedAssetPath = "";
 
         FolderManager m_folderManager;
     };

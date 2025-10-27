@@ -147,6 +147,8 @@ namespace nexo::editor {
             if (m_popupManager.showPopupModal("Delete Asset Popup")) deleteAssetPopup();
             if (m_popupManager.showPopupModal("Delete Used Asset Popup")) deleteUsedAssetPopup();
             if (m_popupManager.showPopupModal("Details Asset Popup")) assetDetailsPopup();
+
+            if (m_popupManager.showPopupModal("Texture Importer")) textureImporterPopup();
         }
 
         ImGui::End();
