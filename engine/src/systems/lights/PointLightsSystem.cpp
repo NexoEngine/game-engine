@@ -19,10 +19,13 @@
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
 #include "core/exceptions/Exceptions.hpp"
+#include "SystemProfiler.hpp"
 
 namespace nexo::system {
     void PointLightsSystem::update()
     {
+        const std::span<const ecs::Entity> entitySpan = m_group->entities();
+        PROFILE_SYSTEM("PointLightSystem", entitySpan.size());
         auto &renderContext = getSingleton<components::RenderContext>();
         if (renderContext.sceneRendered == -1) return;
 
@@ -44,7 +47,6 @@ namespace nexo::system {
         if (partition->count > MAX_POINT_LIGHTS)
             THROW_EXCEPTION(core::TooManyPointLightsException, sceneRendered, partition->count);
 
-        const std::span<const ecs::Entity> entitySpan = m_group->entities();
 
         for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
             renderContext.sceneLights.pointLights[renderContext.sceneLights.pointLightCount] = entitySpan[i];

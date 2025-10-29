@@ -19,6 +19,7 @@
 #include "renderPasses/Masks.hpp"
 #include "renderer/Renderer3D.hpp"
 #include "renderer/ShaderLibrary.hpp"
+#include "SystemProfiler.hpp"
 
 namespace nexo::system {
     /**
@@ -183,6 +184,8 @@ namespace nexo::system {
 
     void RenderBillboardSystem::update()
     {
+        const std::span<const ecs::Entity> entitySpan = m_group->entities();
+        PROFILE_SYSTEM("RenderBillboardSystem", entitySpan.size());
         auto &renderContext = getSingleton<components::RenderContext>();
         if (renderContext.sceneRendered == -1) return;
 
@@ -203,7 +206,6 @@ namespace nexo::system {
         const auto transformComponentArray            = get<components::TransformComponent>();
         const auto billboardSpan                      = get<components::BillboardComponent>();
         const auto materialComponentArray             = get<components::MaterialComponent>();
-        const std::span<const ecs::Entity> entitySpan = m_group->entities();
 
         for (auto &camera : renderContext.cameras) {
             std::vector<renderer::DrawCommand> drawCommands;
