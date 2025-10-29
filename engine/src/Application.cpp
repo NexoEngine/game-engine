@@ -16,7 +16,9 @@
 
 #include <core/event/SignalEvent.hpp>
 #include <glad/glad.h>
+#include <unordered_map>
 
+#include "Definitions.hpp"
 #include "Renderer3D.hpp"
 #include "Timestep.hpp"
 #include "components/BillboardMesh.hpp"
@@ -48,6 +50,7 @@
 #include "systems/TransformMatrixSystem.hpp"
 #include "systems/lights/DirectionalLightsSystem.hpp"
 #include "systems/lights/PointLightsSystem.hpp"
+#include "SystemProfiler.hpp"
 
 std::unique_ptr<nexo::Application> nexo::Application::_instance          = nullptr;
 std::shared_ptr<nexo::ecs::Coordinator> nexo::Application::m_coordinator = nullptr;
@@ -308,12 +311,13 @@ namespace nexo {
 
     void Application::run(const SceneInfo &sceneInfo)
     {
+        PROFILE_SYSTEM("Application::run", 0);
         static bool areVideoLoaded = false;
         auto &renderContext        = m_coordinator->getSingletonComponent<components::RenderContext>();
 
-        if (isInPlayMode()) {
-            m_scriptingSystem->update();
-        }
+        // if (isInPlayMode()) {
+        //     m_scriptingSystem->update();
+        // }
 
         if (!m_isMinimized) {
             renderContext.sceneRendered = static_cast<int>(sceneInfo.id);
@@ -324,28 +328,65 @@ namespace nexo {
                 renderContext.viewportBounds[1] = sceneInfo.viewportBounds[1];
             }
             if (m_SceneManager.getScene(sceneInfo.id).isRendered()) {
-                m_transformMatrixSystem->update();
-                m_transformHierarchySystem->update();
-                m_cameraContextSystem->update();
-                m_lightSystem->update();
-                m_renderCommandSystem->update();
-                m_renderBillboardSystem->update();
-                m_aabbdebugSystem->update();
+                {
+                    PROFILE_SYSTEM("TransformMatrixSystem", 0);
+                    m_transformMatrixSystem->update();
+                }
+
+                {
+                    PROFILE_SYSTEM("TransformHierarchySystem", 0);
+                    m_transformHierarchySystem->update();
+                }
+
+                {
+                    PROFILE_SYSTEM("CameraContextSystem", 0);
+                    m_cameraContextSystem->update();
+                }
+
+                {
+                    PROFILE_SYSTEM("LightSystem", 0);
+                    m_lightSystem->update();
+                }
+
+                {
+                    PROFILE_SYSTEM("RenderCommandSystem", 0);
+                    m_renderCommandSystem->update();
+                }
+
+                {
+                    PROFILE_SYSTEM("RenderBillboardSystem", 0);
+                    m_renderBillboardSystem->update();
+                }
+
+                //m_aabbdebugSystem->update();
                 if (!areVideoLoaded) {
+                    PROFILE_SYSTEM("RenderVideoSystem", 0);
                     m_renderVideoSystem->update();
                     areVideoLoaded = true;
                 }
-                for (auto &camera : renderContext.cameras) camera.pipeline.execute();
+                {
+                    PROFILE_SYSTEM("CameraPipeline", static_cast<size_t>(renderContext.cameras.size()));
+                    for (auto &camera : renderContext.cameras) {
+                        camera.pipeline.execute();
+                    }
+                }
                 // We have to unbind after the whole pipeline since multiple passes can use the same textures
                 // but we cant bind everything beforehand since a resize can be triggered and invalidate the whole state
                 renderer::NxRenderer3D::get().unbindTextures();
 
                 if (isInPlayMode()) {
-                    m_physicsSystem->update();
-                    m_renderVideoSystem->update();
+                    {
+                        PROFILE_SYSTEM("PhysicsSystem", 0);
+                        m_physicsSystem->update();
+                    }
+                    {
+                        PROFILE_SYSTEM("RenderVideoSystem", 0);
+                        m_renderVideoSystem->update();
+                    }
                 }
             }
             if (m_SceneManager.getScene(sceneInfo.id).isActive()) {
+                PROFILE_SYSTEM("PerspectiveCameraControllerSystem", 0);
                 m_perspectiveCameraControllerSystem->update(m_worldState.time.deltaTime);
             }
         }

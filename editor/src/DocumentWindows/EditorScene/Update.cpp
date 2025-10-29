@@ -186,7 +186,17 @@ namespace nexo::editor {
         sceneInfo.isChildWindow     = true;
         sceneInfo.viewportBounds[0] = glm::vec2{m_viewportBounds[0].x, m_viewportBounds[0].y};
         sceneInfo.viewportBounds[1] = glm::vec2{m_viewportBounds[1].x, m_viewportBounds[1].y};
+        auto engineStartTime = std::chrono::high_resolution_clock::now();
         runEngine(sceneInfo);
+        auto engineEndTime = std::chrono::high_resolution_clock::now();
+        static int frameCounter = 0;
+        frameCounter++;
+        auto engineDuration = std::chrono::duration_cast<std::chrono::microseconds>(engineEndTime - engineStartTime).count();
+
+        if (frameCounter % 60 == 0) {
+            std::cout << "Engine: " << engineDuration << " μs, "
+                      << "FPS: " << (1000000.0f / engineDuration) << std::endl;
+        }
 
         handleTimecodeUpdate();
 
