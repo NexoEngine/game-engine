@@ -34,20 +34,24 @@ namespace nexo::renderer {
         renderTarget->bind();
         constexpr GLenum singleDrawBuffer[] = {GL_COLOR_ATTACHMENT0};
         glDrawBuffers(1, singleDrawBuffer);
+
         renderer::NxRenderCommand::setDepthMask(false);
         renderer::NxRenderCommand::setCulling(false);
+
         const auto &drawCommands = pipeline.getDrawCommands();
         for (const auto &cmd : drawCommands) {
             if (cmd.filterMask & F_GRID_PASS) {
                 cmd.execute();
             }
         }
+
         renderer::NxRenderCommand::setDepthMask(true);
         renderer::NxRenderCommand::setCulling(true);
         renderer::NxRenderCommand::setCulledFace(CulledFace::BACK);
 
         constexpr GLenum allBuffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
         glDrawBuffers(2, allBuffers);
+
         renderTarget->unbind();
     }
 } // namespace nexo::renderer

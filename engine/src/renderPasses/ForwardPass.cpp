@@ -27,16 +27,26 @@ namespace nexo::renderer {
 
     void ForwardPass::execute(RenderPipeline &pipeline)
     {
+        const std::unordered_map<std::string, UniformValue> globalUniforms = pipeline.getGlobalUniforms();
+
         const std::shared_ptr<renderer::NxFramebuffer> renderTarget = pipeline.getRenderTarget();
         renderTarget->bind();
         NxRenderCommand::setClearColor(pipeline.getCameraClearColor());
         NxRenderCommand::clear();
         renderTarget->clearAttachment<int>(1, -1);
+
         NxRenderer3D::get().bindTextures();
-        const std::vector<DrawCommand> &drawCommands = pipeline.getDrawCommands();
-        for (const auto &cmd : drawCommands) {
-            if (cmd.filterMask & F_FORWARD_PASS) cmd.execute();
+
+        std::vector<DrawCommand> &drawCommands = pipeline.getDrawCommands();
+        for (auto &cmd : drawCommands) {
+            if (cmd.filterMask & F_FORWARD_PASS) {
+                for (const auto &[name, value] : globalUniforms) {
+                    cmd.uniforms[name] = value;
+                }
+                cmd.execute();
+            }
         }
+
         renderTarget->unbind();
     }
 } // namespace nexo::renderer

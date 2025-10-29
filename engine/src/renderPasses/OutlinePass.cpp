@@ -29,8 +29,11 @@ namespace nexo::renderer {
 
     void OutlinePass::execute(RenderPipeline& pipeline)
     {
-        const auto renderTarget                 = pipeline.getRenderTarget();
+        const std::unordered_map<std::string, UniformValue> globalUniforms = pipeline.getGlobalUniforms();
+
+        const auto renderTarget = pipeline.getRenderTarget();
         std::shared_ptr<NxFramebuffer> maskPass = nullptr;
+
         for (auto prereq : prerequisites) {
             auto p = pipeline.getRenderPass(prereq);
             if (p->getId() == Passes::MASK) maskPass = p->getOutput();
@@ -43,18 +46,26 @@ namespace nexo::renderer {
 
         renderer::NxRenderCommand::setDepthTest(false);
         renderer::NxRenderCommand::setDepthMask(false);
+
         maskPass->bindAsTexture();           // bound to unit 0
         renderTarget->bindDepthAsTexture(1); // bound to unit 1
         maskPass->bindDepthAsTexture(2);     // bound to unit 2
 
-        const auto& drawCommands = pipeline.getDrawCommands();
-        for (auto const& cmd : drawCommands) {
-            if (cmd.filterMask & F_OUTLINE_PASS) cmd.execute();
+        auto& drawCommands = pipeline.getDrawCommands();
+        for (auto &cmd : drawCommands) {
+            if (cmd.filterMask & F_OUTLINE_PASS) {
+                for (const auto &[name, value] : globalUniforms) {
+                    cmd.uniforms[name] = value;
+                }
+                cmd.execute();
+            }
         }
+
         constexpr GLenum allBuffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
         glDrawBuffers(2, allBuffers);
-        renderTarget->unbind();
         renderer::NxRenderCommand::setDepthMask(true);
         renderer::NxRenderCommand::setDepthTest(true);
+
+        renderTarget->unbind();
     }
 } // namespace nexo::renderer

@@ -58,6 +58,8 @@ namespace nexo::system {
         void update();
 
        private:
-        static void setupLights(renderer::DrawCommand& cmd, const components::LightContext& lightContext);
+        static void setupLights(renderer::RenderPipeline &pipeline, const components::LightContext& lightContext);
+        void setupGlobalLights(std::unordered_map<std::string, renderer::UniformValue> &globalUniforms,
+                                                   const components::LightContext &lightContext);
     };
 } // namespace nexo::system

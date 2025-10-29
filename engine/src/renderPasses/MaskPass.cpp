@@ -35,6 +35,8 @@ namespace nexo::renderer {
 
     void MaskPass::execute(RenderPipeline &pipeline)
     {
+        const std::unordered_map<std::string, UniformValue> globalUniforms = pipeline.getGlobalUniforms();
+
         m_mask->bind();
         renderer::NxRenderCommand::setClearColor({0.0f, 0.0f, 0.0f, 0.0f});
         renderer::NxRenderCommand::clear();
@@ -42,10 +44,17 @@ namespace nexo::renderer {
         // IMPORTANT: Bind textures after binding the framebuffer, since binding can trigger a resize and invalidate the
         //  current texture slots
         renderer::NxRenderer3D::get().bindTextures();
-        const std::vector<DrawCommand> &drawCommands = pipeline.getDrawCommands();
-        for (const auto &cmd : drawCommands) {
-            if (cmd.filterMask & F_OUTLINE_MASK) cmd.execute();
+
+        std::vector<DrawCommand> &drawCommands = pipeline.getDrawCommands();
+        for (auto &cmd : drawCommands) {
+            if (cmd.filterMask & F_OUTLINE_MASK) {
+                for (const auto &[name, value] : globalUniforms) {
+                    cmd.uniforms[name] = value;
+                }
+                cmd.execute();
+            }
         }
+
         m_mask->unbind();
     }
 
