@@ -7,140 +7,71 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        07/05/2025
-//  Description: Header file for the uniform cache
+//  Date:        29/10/2025
+//  Description: Header file for the optimized uniform cache
 //
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
 #include <glm/glm.hpp>
-#include <optional>
 #include <string>
 #include <unordered_map>
-#include <variant>
+#include <vector>
+#include <glad/glad.h>
 
 namespace nexo::renderer {
 
-    using UniformValue = std::variant<float, glm::vec2, glm::vec3, glm::vec4, int, bool, glm::mat4>;
-
-    class UniformCache {
-       public:
-        /**
-         * @brief Sets a float uniform value.
-         *
-         * @param name The name of the uniform variable.
-         * @param value The float value to set.
-         * @return true if the value changed and needs GPU upload, false if unchanged.
-         *
-         * If the value is different from the current cached value, it updates the cache and marks it as dirty.
-         */
-        bool setFloat(const std::string& name, float value);
-
-        /**
-         * @brief Sets a 2D vector uniform value.
-         *
-         * @param name The name of the uniform variable.
-         * @param value The vec2 value to set.
-         * @return true if the value changed and needs GPU upload, false if unchanged.
-         *
-         * If the value is different from the current cached value, it updates the cache and marks it as dirty.
-         */
-        bool setFloat2(const std::string& name, const glm::vec2& value);
-
-        /**
-         * @brief Sets a 3D vector uniform value.
-         *
-         * @param name The name of the uniform variable.
-         * @param value The vec3 value to set.
-         * @return true if the value changed and needs GPU upload, false if unchanged.
-         *
-         * If the value is different from the current cached value, it updates the cache and marks it as dirty.
-         */
-        bool setFloat3(const std::string& name, const glm::vec3& value);
-
-        /**
-         * @brief Sets a 4D vector uniform value.
-         *
-         * @param name The name of the uniform variable.
-         * @param value The vec4 value to set.
-         * @return true if the value changed and needs GPU upload, false if unchanged.
-         *
-         * If the value is different from the current cached value, it updates the cache and marks it as dirty.
-         */
-        bool setFloat4(const std::string& name, const glm::vec4& value);
-
-        /**
-         * @brief Sets an integer uniform value.
-         *
-         * @param name The name of the uniform variable.
-         * @param value The integer value to set.
-         * @return true if the value changed and needs GPU upload, false if unchanged.
-         *
-         * If the value is different from the current cached value, it updates the cache and marks it as dirty.
-         */
-        bool setInt(const std::string& name, int value);
-
-        /**
-         * @brief Sets a boolean uniform value.
-         *
-         * @param name The name of the uniform variable.
-         * @param value The boolean value to set.
-         * @return true if the value changed and needs GPU upload, false if unchanged.
-         *
-         * If the value is different from the current cached value, it updates the cache and marks it as dirty.
-         */
-        bool setBool(const std::string& name, bool value);
-
-        /**
-         * @brief Sets a 4x4 matrix uniform value.
-         *
-         * @param name The name of the uniform variable.
-         * @param value The mat4 value to set.
-         * @return true if the value changed and needs GPU upload, false if unchanged.
-         *
-         * If the value is different from the current cached value, it updates the cache and marks it as dirty.
-         */
-        bool setMatrix(const std::string& name, const glm::mat4& value);
-
-        /**
-         * @brief Checks if a uniform value is marked as dirty.
-         *
-         * @param name The name of the uniform variable.
-         * @return true if the uniform is dirty, false otherwise.
-         */
-        [[nodiscard]] bool isDirty(const std::string& name) const;
-
-        /**
-         * @brief Checks if a uniform value exists in the cache.
-         *
-         * @param name The name of the uniform variable.
-         * @return true if the uniform exists in the cache, false otherwise.
-         */
-        [[nodiscard]] bool hasValue(const std::string& name) const;
-
-        /**
-         * @brief Retrieves a uniform value from the cache.
-         *
-         * @param name The name of the uniform variable.
-         * @return The uniform value if it exists, std::nullopt otherwise.
-         */
-        [[nodiscard]] std::optional<UniformValue> getValue(const std::string& name) const;
-
-        /**
-         * @brief Clears the dirty flag for a specific uniform.
-         *
-         * @param name The name of the uniform variable.
-         */
-        void clearDirtyFlag(const std::string& name);
-
-        /**
-         * @brief Clears all dirty flags in the cache.
-         */
-        void clearAllDirtyFlags();
-
-       private:
-        std::unordered_map<std::string, UniformValue> m_values;
-        std::unordered_map<std::string, bool> m_dirtyFlags;
+    struct CachedUniformInfo {
+        size_t offset;      // Offset in the main buffer
+        size_t size;        // Size in bytes
+        GLenum type;        // OpenGL type (GL_FLOAT, GL_FLOAT_VEC3, etc.)
+        int location;       // OpenGL uniform location
+        bool isDirty;       // Dirty flag
     };
 
+    // Helper struct to match shader reflection data
+    struct ShaderUniformInfo {
+        std::string name;
+        GLenum type;
+        GLint size;
+        GLint location;
+    };
+
+    class UniformCache {
+    public:
+        UniformCache();
+        ~UniformCache() = default;
+
+        // Initialize the cache with uniform information from shader reflection
+        void initialize(const std::unordered_map<std::string, ShaderUniformInfo>& uniformInfos);
+
+        // Uniform setters - return true if value changed and needs GPU upload
+        bool setFloat(const std::string& name, float value);
+        bool setFloat2(const std::string& name, const glm::vec2& value);
+        bool setFloat3(const std::string& name, const glm::vec3& value);
+        bool setFloat4(const std::string& name, const glm::vec4& value);
+        bool setInt(const std::string& name, int value);
+        bool setBool(const std::string& name, bool value);
+        bool setMatrix(const std::string& name, const glm::mat4& value);
+
+        // Utility functions
+        bool isDirty(const std::string& name) const;
+        bool hasValue(const std::string& name) const;
+        void clearDirtyFlag(const std::string& name);
+        void clearAllDirtyFlags();
+
+        // Debug/stats
+        size_t getTotalBufferSize() const { return m_buffer.size(); }
+        size_t getUniformCount() const { return m_uniforms.size(); }
+
+    private:
+        std::vector<uint8_t> m_buffer;                                  // Single contiguous buffer
+        std::unordered_map<std::string, CachedUniformInfo> m_uniforms;  // Name -> uniform info
+
+        // Helper functions
+        size_t getTypeSize(GLenum type) const;
+
+        template<typename T>
+        bool setUniformValue(const std::string& name, const T& value);
+    };
 } // namespace nexo::renderer

@@ -259,14 +259,6 @@ namespace nexo::renderer {
         virtual bool setUniformIntArray(NxShaderUniforms uniform, const int* values, unsigned int count) const = 0;
 
         /**
-         * @brief Sets a uniform value by name using UniformValue variant.
-         * @param name The uniform name.
-         * @param value The value to set.
-         * @return true if the uniform was found and set.
-         */
-        bool setUniform(const std::string& name, UniformValue value) const;
-
-        /**
          * @brief Adds a shader storage buffer to the shader.
          * @param buffer The buffer to add.
          */

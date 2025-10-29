@@ -7,7 +7,7 @@
 //  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz
 //
 //  Author:      Mehdy MORVAN
-//  Date:        09/03/2025
+//  Date:        29/10/2025
 //  Description: Source file for the render system
 //
 ///////////////////////////////////////////////////////////////////////////////
@@ -61,7 +61,6 @@ namespace nexo::system {
         pipeline.setGlobalUniform("uNumPointLights", static_cast<int>(lightContext.pointLightCount));
         pipeline.setGlobalUniform("uNumSpotLights", static_cast<int>(lightContext.spotLightCount));
 
-
         const auto &directionalLight        = lightContext.dirLight;
         pipeline.setGlobalUniform("uDirLight.direction", directionalLight.direction);
         pipeline.setGlobalUniform("uDirLight.color", glm::vec4(directionalLight.color, 1.0f));
@@ -110,16 +109,16 @@ namespace nexo::system {
         cmd.filterMask |= renderer::F_OUTLINE_PASS;
         cmd.shader = renderer::ShaderLibrary::getInstance().get("Outline pulse flat");
 
-        cmd.uniforms["uViewProjection"] = camera.viewProjectionMatrix;
-        cmd.uniforms["uCamPos"]         = camera.cameraPosition;
+        cmd.setUniform("uViewProjection", camera.viewProjectionMatrix);
+        cmd.setUniform("uCamPos", camera.cameraPosition);
 
-        cmd.uniforms["uMaskTexture"]      = 0;
-        cmd.uniforms["uDepthTexture"]     = 1;
-        cmd.uniforms["uDepthMaskTexture"] = 2;
-        cmd.uniforms["uTime"]             = static_cast<float>(glfwGetTime());
-        const glm::vec2 screenSize        = {camera.renderTarget->getSize().x, camera.renderTarget->getSize().y};
-        cmd.uniforms["uScreenSize"]       = screenSize;
-        cmd.uniforms["uOutlineWidth"]     = 10.0f;
+        cmd.setUniform("uMaskTexture", 0);
+        cmd.setUniform("uDepthTexture", 1);
+        cmd.setUniform("uDepthMaskTexture", 2);
+        cmd.setUniform("uTime", static_cast<float>(glfwGetTime()));
+        const glm::vec2 screenSize = {camera.renderTarget->getSize().x, camera.renderTarget->getSize().y};
+        cmd.setUniform("uScreenSize", screenSize);
+        cmd.setUniform("uOutlineWidth", 10.0f);
         return cmd;
     }
 
@@ -134,17 +133,17 @@ namespace nexo::system {
         cmd.filterMask |= renderer::F_GRID_PASS;
         cmd.shader = renderer::ShaderLibrary::getInstance().get("Grid shader");
 
-        cmd.uniforms["uViewProjection"] = camera.viewProjectionMatrix;
-        cmd.uniforms["uCamPos"]         = camera.cameraPosition;
+        cmd.setUniform("uViewProjection", camera.viewProjectionMatrix);
+        cmd.setUniform("uCamPos", camera.cameraPosition);
 
         const components::RenderContext::GridParams &gridParams = renderContext.gridParams;
-        cmd.uniforms["uGridSize"]                               = gridParams.gridSize;
-        cmd.uniforms["uGridCellSize"]                           = gridParams.cellSize;
-        cmd.uniforms["uGridMinPixelsBetweenCells"]              = gridParams.minPixelsBetweenCells;
-        constexpr glm::vec4 gridColorThin                       = {0.5f, 0.55f, 0.7f, 0.6f};
-        constexpr glm::vec4 gridColorThick                      = {0.7f, 0.75f, 0.9f, 0.8f};
-        cmd.uniforms["uGridColorThin"]                          = gridColorThin;
-        cmd.uniforms["uGridColorThick"]                         = gridColorThick;
+        cmd.setUniform("uGridSize", gridParams.gridSize);
+        cmd.setUniform("uGridCellSize", gridParams.cellSize);
+        cmd.setUniform("uGridMinPixelsBetweenCells", gridParams.minPixelsBetweenCells);
+        constexpr glm::vec4 gridColorThin  = {0.5f, 0.55f, 0.7f, 0.6f};
+        constexpr glm::vec4 gridColorThick = {0.7f, 0.75f, 0.9f, 0.8f};
+        cmd.setUniform("uGridColorThin", gridColorThin);
+        cmd.setUniform("uGridColorThick", gridColorThick);
 
         {
             PROFILE_SCOPE("RenderCommandSystem::createGridDrawCommand::MouseWorldPos");
@@ -195,10 +194,10 @@ namespace nexo::system {
                 }
             }
 
-            cmd.uniforms["uMouseWorldPos"] = mouseWorldPos;
+            cmd.setUniform("uMouseWorldPos", mouseWorldPos);
         }
 
-        cmd.uniforms["uTime"] = static_cast<float>(glfwGetTime());
+        cmd.setUniform("uTime", static_cast<float>(glfwGetTime()));
         return cmd;
     }
 
@@ -211,21 +210,21 @@ namespace nexo::system {
         renderer::DrawCommand cmd;
         cmd.vao             = mesh.vao;
         const bool isOpaque = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->isOpaque : true;
-        if (isOpaque)
+        if (isOpaque) {
             cmd.shader = renderer::ShaderLibrary::getInstance().get("Flat color");
-        else {
+        } else {
             cmd.shader = renderer::ShaderLibrary::getInstance().get("Albedo unshaded transparent");
-            cmd.uniforms["uMaterial.albedoColor"] =
-                materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoColor : glm::vec4(0.0f);
+            cmd.setUniform("uMaterial.albedoColor",
+                materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoColor : glm::vec4(0.0f));
             const auto albedoTextureAsset =
                 materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoTexture.lock() : nullptr;
             const auto albedoTexture =
                 albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
-            cmd.uniforms["uMaterial.albedoTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(albedoTexture);
+            cmd.setUniform("uMaterial.albedoTexIndex", renderer::NxRenderer3D::get().getTextureIndex(albedoTexture));
         }
-        cmd.uniforms["uMatModel"] = transform.worldMatrix;
-        cmd.filterMask            = 0;
-        cmd.filterMask            = renderer::F_OUTLINE_MASK;
+        cmd.setUniform("uMatModel", transform.worldMatrix);
+        cmd.filterMask = 0;
+        cmd.filterMask = renderer::F_OUTLINE_MASK;
         return cmd;
     }
 
@@ -238,47 +237,44 @@ namespace nexo::system {
         PROFILE_SCOPE("RenderCommandSystem::createDrawCommand");
 
         renderer::DrawCommand cmd;
-        cmd.vao                   = mesh.vao;
-        cmd.shader                = shader;
-        cmd.uniforms["uMatModel"] = transform.worldMatrix;
-        cmd.uniforms["uEntityId"] = static_cast<int>(entity);
+        cmd.vao    = mesh.vao;
+        cmd.shader = shader;
+        cmd.setUniform("uMatModel", transform.worldMatrix);
+        cmd.setUniform("uEntityId", static_cast<int>(entity));
 
         {
             PROFILE_SCOPE("RenderCommandSystem::createDrawCommand::MaterialSetup");
-            cmd.uniforms["uMaterial.albedoColor"] =
-                materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoColor : glm::vec4(0.0f);
+            cmd.setUniform("uMaterial.albedoColor",
+                materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoColor : glm::vec4(0.0f));
             const auto albedoTextureAsset =
                 materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoTexture.lock() : nullptr;
             const auto albedoTexture =
                 albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
-            cmd.uniforms["uMaterial.albedoTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(albedoTexture);
+            cmd.setUniform("uMaterial.albedoTexIndex", renderer::NxRenderer3D::get().getTextureIndex(albedoTexture));
 
-            cmd.uniforms["uMaterial.specularColor"] =
-                materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->specularColor : glm::vec4(0.0f);
+            cmd.setUniform("uMaterial.specularColor",
+                materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->specularColor : glm::vec4(0.0f));
             const auto specularTextureAsset =
                 materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->metallicMap.lock() : nullptr;
-            const auto specularTexture                 = specularTextureAsset && specularTextureAsset->isLoaded() ?
-                                                             specularTextureAsset->getData()->texture :
-                                                             nullptr;
-            cmd.uniforms["uMaterial.specularTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(specularTexture);
+            const auto specularTexture = specularTextureAsset && specularTextureAsset->isLoaded() ?
+                                             specularTextureAsset->getData()->texture : nullptr;
+            cmd.setUniform("uMaterial.specularTexIndex", renderer::NxRenderer3D::get().getTextureIndex(specularTexture));
 
-            cmd.uniforms["uMaterial.emissiveColor"] =
-                materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->emissiveColor : glm::vec3(0.0f);
+            cmd.setUniform("uMaterial.emissiveColor",
+                materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->emissiveColor : glm::vec3(0.0f));
             const auto emissiveTextureAsset =
                 materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->emissiveMap.lock() : nullptr;
-            const auto emissiveTexture                 = emissiveTextureAsset && emissiveTextureAsset->isLoaded() ?
-                                                             emissiveTextureAsset->getData()->texture :
-                                                             nullptr;
-            cmd.uniforms["uMaterial.emissiveTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(emissiveTexture);
+            const auto emissiveTexture = emissiveTextureAsset && emissiveTextureAsset->isLoaded() ?
+                                             emissiveTextureAsset->getData()->texture : nullptr;
+            cmd.setUniform("uMaterial.emissiveTexIndex", renderer::NxRenderer3D::get().getTextureIndex(emissiveTexture));
 
-            cmd.uniforms["uMaterial.roughness"] =
-                materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->roughness : 1.0f;
+            cmd.setUniform("uMaterial.roughness",
+                materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->roughness : 1.0f);
             const auto roughnessTextureAsset =
                 materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->roughnessMap.lock() : nullptr;
-            const auto roughnessTexture                 = roughnessTextureAsset && roughnessTextureAsset->isLoaded() ?
-                                                              roughnessTextureAsset->getData()->texture :
-                                                              nullptr;
-            cmd.uniforms["uMaterial.roughnessTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(roughnessTexture);
+            const auto roughnessTexture = roughnessTextureAsset && roughnessTextureAsset->isLoaded() ?
+                                              roughnessTextureAsset->getData()->texture : nullptr;
+            cmd.setUniform("uMaterial.roughnessTexIndex", renderer::NxRenderer3D::get().getTextureIndex(roughnessTexture));
         }
 
         cmd.filterMask = 0;
@@ -355,11 +351,6 @@ namespace nexo::system {
                     camera.pipeline.setGlobalUniform("uViewProjection", camera.viewProjectionMatrix);
                     camera.pipeline.setGlobalUniform("uCamPos", camera.cameraPosition);
                     setupLights(camera.pipeline, renderContext.sceneLights);
-                    // for (auto &cmd : drawCommands) {
-                    //     cmd.uniforms["uViewProjection"] = camera.viewProjectionMatrix;
-                    //     cmd.uniforms["uCamPos"]         = camera.cameraPosition;
-                    //     setupLights(cmd, renderContext.sceneLights);
-                    // }
                 }
 
                 {
