@@ -18,10 +18,14 @@
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
 #include "core/exceptions/Exceptions.hpp"
+#include "SystemProfiler.hpp"
 
 namespace nexo::system {
     void SpotLightsSystem::update()
     {
+        const std::span<const ecs::Entity> entitySpan = m_group->entities();
+        PROFILE_SYSTEM("SpotLightSystem", entitySpan.size());
+
         auto &renderContext = getSingleton<components::RenderContext>();
         if (renderContext.sceneRendered == -1) return;
 
@@ -43,7 +47,6 @@ namespace nexo::system {
         if (partition->count > MAX_SPOT_LIGHTS)
             THROW_EXCEPTION(core::TooManySpotLightsException, sceneRendered, partition->count);
 
-        const std::span<const ecs::Entity> entitySpan = m_group->entities();
 
         for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
             renderContext.sceneLights.spotLights[renderContext.sceneLights.spotLightCount] = entitySpan[i];

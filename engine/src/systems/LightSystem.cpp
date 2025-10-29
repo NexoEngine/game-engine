@@ -13,10 +13,12 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "LightSystem.hpp"
+#include "SystemProfiler.hpp"
 
 namespace nexo::system {
     void LightSystem::update() const
     {
+        PROFILE_SYSTEM("LightSystem", 0);
         m_ambientLightSystem->update();
         m_directionalLightSystem->update();
         m_pointLightSystem->update();

@@ -329,39 +329,15 @@ namespace nexo {
             }
             if (m_SceneManager.getScene(sceneInfo.id).isRendered()) {
 
-                {
-                    PROFILE_SYSTEM("TransformMatrixSystem", 0);
-                    m_transformMatrixSystem->update();
-                }
-
-                {
-                    PROFILE_SYSTEM("TransformHierarchySystem", 0);
-                    m_transformHierarchySystem->update();
-                }
-
-                {
-                    PROFILE_SYSTEM("CameraContextSystem", 0);
-                    m_cameraContextSystem->update();
-                }
-
-                {
-                    PROFILE_SYSTEM("LightSystem", 0);
-                    m_lightSystem->update();
-                }
-
-                {
-                    PROFILE_SYSTEM("RenderCommandSystem", 0);
-                    m_renderCommandSystem->update();
-                }
-
-                {
-                    PROFILE_SYSTEM("RenderBillboardSystem", 0);
-                    m_renderBillboardSystem->update();
-                }
+                m_transformMatrixSystem->update();
+                m_transformHierarchySystem->update();
+                m_cameraContextSystem->update();
+                m_lightSystem->update();
+                m_renderCommandSystem->update();
+                m_renderBillboardSystem->update();
 
                 //m_aabbdebugSystem->update();
                 if (!areVideoLoaded) {
-                    PROFILE_SYSTEM("RenderVideoSystem", 0);
                     m_renderVideoSystem->update();
                     areVideoLoaded = true;
                 }
@@ -377,17 +353,14 @@ namespace nexo {
 
                 if (isInPlayMode()) {
                     {
-                        PROFILE_SYSTEM("PhysicsSystem", 0);
                         m_physicsSystem->update();
                     }
                     {
-                        PROFILE_SYSTEM("RenderVideoSystem", 0);
                         m_renderVideoSystem->update();
                     }
                 }
             }
             if (m_SceneManager.getScene(sceneInfo.id).isActive()) {
-                PROFILE_SYSTEM("PerspectiveCameraControllerSystem", 0);
                 m_perspectiveCameraControllerSystem->update(m_worldState.time.deltaTime);
             }
         }

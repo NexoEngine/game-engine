@@ -17,6 +17,7 @@
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
 #include "components/Transform.hpp"
+#include "SystemProfiler.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
@@ -24,6 +25,8 @@
 namespace nexo::system {
     void TransformHierarchySystem::update()
     {
+        const std::span<const ecs::Entity> entitySpan = m_group->entities();
+        PROFILE_SYSTEM("TransformHierarchySystem", entitySpan.size());
         const auto& renderContext = getSingleton<components::RenderContext>();
         if (renderContext.sceneRendered == -1) return;
 
@@ -36,7 +39,6 @@ namespace nexo::system {
             return;
         }
 
-        const std::span<const ecs::Entity> entitySpan = m_group->entities();
         const auto& transformComponentArray           = get<components::TransformComponent>();
 
         // Process all root entities in the current scene

@@ -29,6 +29,7 @@
 #include "renderPasses/Masks.hpp"
 #include "renderer/DrawCommand.hpp"
 #include "renderer/ShaderLibrary.hpp"
+#include "SystemProfiler.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
@@ -263,6 +264,8 @@ namespace nexo::system {
 
     void RenderCommandSystem::update()
     {
+        const std::span<const ecs::Entity> entitySpan = m_group->entities();
+        PROFILE_SYSTEM("RenderCommandSystem", entitySpan.size());
         auto &renderContext = getSingleton<components::RenderContext>();
         if (renderContext.sceneRendered == -1) return;
 
@@ -283,7 +286,6 @@ namespace nexo::system {
         const auto transformSpan                      = get<components::TransformComponent>();
         const auto meshSpan                           = get<components::StaticMeshComponent>();
         const auto materialSpan                       = get<components::MaterialComponent>();
-        const std::span<const ecs::Entity> entitySpan = m_group->entities();
 
         std::vector<renderer::DrawCommand> drawCommands;
         for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {

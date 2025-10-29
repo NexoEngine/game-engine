@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "PhysicsSystem.hpp"
+#include "SystemProfiler.hpp"
 #include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
@@ -54,6 +55,7 @@ namespace nexo::system {
 
     void PhysicsSystem::update()
     {
+        PROFILE_SYSTEM("PhysicsSystem", entities.size());
         const double currentTime = std::chrono::duration_cast<std::chrono::duration<double>>(
             std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 

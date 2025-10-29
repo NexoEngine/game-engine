@@ -22,11 +22,14 @@
 #include "core/event/Input.hpp"
 #include "core/event/KeyCodes.hpp"
 #include "core/event/WindowEvent.hpp"
+#include "SystemProfiler.hpp"
 
 namespace nexo::system {
 
     void CameraContextSystem::update()
     {
+        const auto entitySpan              = m_group->entities();
+        PROFILE_SYSTEM("CameraContextSystem", entitySpan.size());
         auto &renderContext = getSingleton<components::RenderContext>();
         if (renderContext.sceneRendered == -1) return;
 
@@ -47,7 +50,6 @@ namespace nexo::system {
 
         const auto cameraSpan              = get<components::CameraComponent>();
         const auto transformComponentArray = get<components::TransformComponent>();
-        const auto entitySpan              = m_group->entities();
         renderContext.cameras.reserve(partition->count);
 
         for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
@@ -71,6 +73,7 @@ namespace nexo::system {
 
     void PerspectiveCameraControllerSystem::update(const Timestep ts)
     {
+        PROFILE_SYSTEM("PerspectiveCameraControllerSystem", entities.size());
         const auto &renderContext = getSingleton<components::RenderContext>();
         if (renderContext.sceneRendered == -1) return;
 
