@@ -214,7 +214,9 @@ namespace nexo::renderer {
         for (PassId id : m_plan) {
             if (passes.contains(id)) passes[id]->execute(*this);
         }
+
         m_drawCommands.clear();
+        m_globalUniforms.clear();
     }
 
     void RenderPipeline::addDrawCommands(const std::vector<DrawCommand>& drawCommands)
@@ -228,7 +230,7 @@ namespace nexo::renderer {
         m_drawCommands.push_back(drawCommand);
     }
 
-    const std::vector<DrawCommand>& RenderPipeline::getDrawCommands() const
+    std::vector<DrawCommand>& RenderPipeline::getDrawCommands()
     {
         return m_drawCommands;
     }
@@ -248,5 +250,25 @@ namespace nexo::renderer {
         if (!m_renderTarget) return;
         m_renderTarget->resize(width, height);
         for (const auto& pass : passes | std::views::values) pass->resize(width, height);
+    }
+
+    void RenderPipeline::setGlobalUniforms(const std::unordered_map<std::string, UniformValue> &uniforms)
+    {
+        m_globalUniforms = uniforms;
+    }
+
+    void RenderPipeline::setGlobalUniform(const std::string &name, const UniformValue &value)
+    {
+        m_globalUniforms[name] = value;
+    }
+
+    const std::unordered_map<std::string, UniformValue> &RenderPipeline::getGlobalUniforms() const
+    {
+        return m_globalUniforms;
+    }
+
+    void RenderPipeline::clearGlobalUniforms()
+    {
+        m_globalUniforms.clear();
     }
 } // namespace nexo::renderer

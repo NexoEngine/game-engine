@@ -275,7 +275,7 @@ namespace nexo::renderer {
          *
          * @return A constant reference to a vector of `DrawCommand` objects.
          */
-        [[nodiscard]] const std::vector<DrawCommand> &getDrawCommands() const;
+        [[nodiscard]] std::vector<DrawCommand> &getDrawCommands();
 
         /**
          * @brief Sets the clear color used by the camera.
@@ -310,6 +310,36 @@ namespace nexo::renderer {
          */
         void resize(unsigned int width, unsigned int height) const;
 
+        /**
+         * @brief Sets global uniforms that apply to all draw commands in this pipeline.
+         *
+         * Global uniforms are set once per pipeline execution and include things like
+         * camera matrices, lighting data, and other scene-wide parameters.
+         *
+         * @param uniforms Map of uniform names to values
+         */
+        void setGlobalUniforms(const std::unordered_map<std::string, UniformValue> &uniforms);
+
+        /**
+         * @brief Adds a single global uniform.
+         *
+         * @param name The uniform name
+         * @param value The uniform value
+         */
+        void setGlobalUniform(const std::string &name, const UniformValue &value);
+
+        /**
+         * @brief Gets the current global uniforms.
+         *
+         * @return Reference to the global uniforms map
+         */
+        [[nodiscard]] const std::unordered_map<std::string, UniformValue> &getGlobalUniforms() const;
+
+        /**
+         * @brief Clears all global uniforms.
+         */
+        void clearGlobalUniforms();
+
        private:
         std::vector<DrawCommand> m_drawCommands;
         glm::vec4 m_cameraClearColor{};
@@ -318,6 +348,7 @@ namespace nexo::renderer {
 
         // Store all render passes
         std::unordered_map<PassId, std::shared_ptr<RenderPass>> passes;
+        std::unordered_map<std::string, UniformValue> m_globalUniforms;
 
         // For generating unique IDs
         PassId nextPassId = 0;
