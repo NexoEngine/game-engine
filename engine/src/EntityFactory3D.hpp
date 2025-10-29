@@ -65,6 +65,7 @@ namespace nexo {
         static ecs::Entity createCube(glm::vec3 pos, glm::vec3 size, glm::vec3 rotation,
                                       const components::Material& material);
 
+
         /**
          * @brief Creates a model entity from a given model asset.
          * Constructs a model entity at the specified position, with the given size and rotation.

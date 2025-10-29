@@ -19,6 +19,7 @@
 #include "src/DocumentWindows/MaterialInspector/MaterialInspector.hpp"
 #include "src/DocumentWindows/PrimitiveWindow/PrimitiveWindow.hpp"
 #include "src/DocumentWindows/SceneTreeWindow/SceneTreeWindow.hpp"
+#include "src/DocumentWindows/PerformanceWindow/PerformanceWindow.hpp"
 #include "src/Editor.hpp"
 
 #include <core/exceptions/Exceptions.hpp>
@@ -42,6 +43,7 @@ try {
     editor.registerWindow<nexo::editor::MaterialInspector>(NEXO_WND_USTRID_MATERIAL_INSPECTOR);
     editor.registerWindow<nexo::editor::PrimitiveWindow>(NEXO_WND_USTRID_PRIMITIVE_WINDOW);
     editor.registerWindow<nexo::editor::AssetManagerWindow>(NEXO_WND_USTRID_ASSET_MANAGER);
+    editor.registerWindow<nexo::editor::PerformanceMonitorWindow>(NEXO_WND_USTRID_PERFORMANCE_MONITOR);
 
     if (const auto defaultScene = editor
                                       .getWindow<nexo::editor::EditorScene>(

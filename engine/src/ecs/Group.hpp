@@ -17,6 +17,7 @@
 #include "Definitions.hpp"
 #include "ECSExceptions.hpp"
 #include "Exception.hpp"
+#include "Access.hpp"
 
 #include <algorithm>
 #include <functional>
@@ -70,6 +71,29 @@ namespace nexo::ecs {
     template<typename T>
     struct dependent_false : std::false_type {};
 
+    template<typename T>
+    struct unwrap_access_type {
+        using type = T;
+    };
+
+    template<typename T, ecs::AccessType Access>
+    struct unwrap_access_type<ecs::ComponentAccess<T, Access>> {
+        using type = T;
+    };
+
+    template<typename T>
+    struct unwrap_access_type<ecs::ReadSingleton<T>> {
+        using type = T;
+    };
+
+    template<typename T>
+    struct unwrap_access_type<ecs::WriteSingleton<T>> {
+        using type = T;
+    };
+
+    template<typename T>
+    using unwrap_access_type_t = typename unwrap_access_type<T>::type;
+
     /**
      * @brief Metafunction to check if a tuple contains a specific component type.
      *
@@ -89,10 +113,10 @@ namespace nexo::ecs {
      * @tparam T Component type to check.
      * @tparam Ptrs Pointer types stored in the tuple.
      */
-    template<typename T, typename... Ptrs>
-    struct tuple_contains_component<T, std::tuple<Ptrs...>>
-        : std::disjunction<std::is_same<T, typename std::decay_t<decltype(*std::declval<Ptrs>())>::component_type>...> {
-    };
+     template<typename T, typename... Ptrs>
+     struct tuple_contains_component<T, std::tuple<Ptrs...>>
+         : std::disjunction<std::is_same<T, unwrap_access_type_t<typename std::decay_t<decltype(*std::declval<Ptrs>())>::component_type>>...> {
+     };
 
     /**
      * @brief Convenience variable for tuple_contains_component.
@@ -116,13 +140,15 @@ namespace nexo::ecs {
     };
 
     /**
-     * @brief Alias for a function that extracts a field from a component.
+     * @brief Concept for a function that extracts a field from a component.
      *
+     * @tparam F Function type.
      * @tparam T Component type.
      * @tparam FieldType Type of the extracted field.
      */
-    template<typename T, typename FieldType>
-    using FieldExtractor = std::function<FieldType(const T&)>;
+    template<typename F, typename T, typename FieldType>
+    concept FieldExtractor = std::invocable<F, const T&> &&
+                            std::same_as<std::invoke_result_t<F, const T&>, FieldType>;
 
     /**
      * @brief Alias for a function that extracts a key from an entity.
@@ -131,6 +157,31 @@ namespace nexo::ecs {
      */
     template<typename KeyType>
     using EntityKeyExtractor = std::function<KeyType(Entity)>;
+
+    /**
+     * @brief Composite key for multi-key partitioning.
+     *
+     * @tparam KeyTypes Types of the keys used for partitioning.
+     */
+    template<typename... KeyTypes>
+    struct CompositeKey {
+        std::tuple<KeyTypes...> keys;
+
+        // Default constructor
+        CompositeKey() = default;
+
+        CompositeKey(KeyTypes... k) : keys(std::make_tuple(k...)) {}
+
+        bool operator==(const CompositeKey& other) const {
+            return keys == other.keys;
+        }
+
+        bool operator<(const CompositeKey& other) const {
+            return keys < other.keys;
+        }
+    };
+
+
 
     /**
      * @brief Group class for a view over entities with both owned and non‑owned components.
@@ -504,8 +555,9 @@ namespace nexo::ecs {
          * @param extractor Function to extract the field value.
          * @param ascending Set to true for ascending order (default true).
          */
-        template<typename CompType, typename FieldType>
-        void sortBy(FieldExtractor<CompType, FieldType> extractor, bool ascending = true)
+         template<typename CompType, typename FieldType, typename ExtractorType>
+             requires FieldExtractor<ExtractorType, CompType, FieldType>
+         void sortBy(ExtractorType extractor, bool ascending = true)
         {
             SortingOrder sortingOrder = ascending ? SortingOrder::ASCENDING : SortingOrder::DESCENDING;
 
@@ -630,6 +682,110 @@ namespace nexo::ecs {
         };
 
         /**
+         * @brief Specialization of PartitionView for CompositeKey to provide convenience methods.
+         *
+         * @tparam KeyTypes Types of the keys in the composite key.
+         */
+        template<typename... KeyTypes>
+        class PartitionView<CompositeKey<KeyTypes...>> {
+           public:
+            using CompositeKeyType = CompositeKey<KeyTypes...>;
+
+            /**
+             * @brief Constructs a PartitionView for CompositeKey.
+             *
+             * @param group Pointer to the group.
+             * @param partitions Reference to a vector of Partition objects.
+             */
+            PartitionView(Group* group, const std::vector<Partition<CompositeKeyType>>& partitions)
+                : m_group(group), m_partitions(partitions)
+            {}
+
+            /**
+             * @brief Retrieves a partition by composite key.
+             *
+             * @param key Composite key to search for.
+             * @return const Partition<CompositeKeyType>* Pointer to the partition if found; nullptr otherwise.
+             */
+            const Partition<CompositeKeyType>* getPartition(const CompositeKeyType& key) const
+            {
+                for (const auto& partition : m_partitions) {
+                    if (partition.key == key) return &partition;
+                }
+                return nullptr;
+            }
+
+            /**
+             * @brief Retrieves a partition by individual key values.
+             *
+             * @param keyValues Individual key values.
+             * @return const Partition<CompositeKeyType>* Pointer to partition if found.
+             */
+            const Partition<CompositeKeyType>* getPartition(KeyTypes... keyValues) const
+            {
+                CompositeKeyType key(keyValues...);
+                return getPartition(key);
+            }
+
+            /**
+             * @brief Iterates over entities in a specific partition using composite key.
+             *
+             * @tparam Func Callable type.
+             * @param key Composite key of the partition.
+             * @param func Function to apply to each entity.
+             */
+            template<typename Func>
+            void each(const CompositeKeyType& key, Func func) const
+            {
+                const auto* partition = getPartition(key);
+                if (!partition) return;
+
+                m_group->eachInRange(partition->startIndex, partition->count, func);
+            }
+
+            /**
+             * @brief Iterates over entities matching specific key values.
+             *
+             * @tparam Func Callable type.
+             * @param keyValues Individual key values.
+             * @param func Function to apply to each entity.
+             */
+            template<typename Func>
+            void each(KeyTypes... keyValues, Func func) const
+            {
+                CompositeKeyType key(keyValues...);
+                each(key, func);
+            }
+
+            /**
+             * @brief Gets all partition keys.
+             *
+             * @return std::vector<CompositeKeyType> Vector of composite partition keys.
+             */
+            std::vector<CompositeKeyType> getPartitionKeys() const
+            {
+                std::vector<CompositeKeyType> keys;
+                keys.reserve(m_partitions.size());
+                for (const auto& partition : m_partitions) keys.push_back(partition.key);
+                return keys;
+            }
+
+            /**
+             * @brief Returns the number of partitions.
+             *
+             * @return size_t Partition count.
+             */
+            [[nodiscard]] size_t partitionCount() const
+            {
+                return m_partitions.size();
+            }
+
+           private:
+            Group* m_group;                                           ///< Pointer to the group.
+            const std::vector<Partition<CompositeKeyType>>& m_partitions; ///< Reference to partitions.
+        };
+
+        /**
          * @brief Returns a partition view based on a component field.
          *
          * @tparam CompType Component type used to partition.
@@ -637,8 +793,9 @@ namespace nexo::ecs {
          * @param keyExtractor Function to extract the key from the component.
          * @return PartitionView<KeyType> View over the partitioned entities.
          */
-        template<typename CompType, typename KeyType>
-        PartitionView<KeyType> getPartitionView(FieldExtractor<CompType, KeyType> keyExtractor)
+         template<typename CompType, typename KeyType, typename ExtractorType>
+             requires FieldExtractor<ExtractorType, CompType, KeyType>
+         PartitionView<KeyType> getPartitionView(ExtractorType keyExtractor)
         {
             std::string typeId = typeid(KeyType).name();
             typeId += "_" + std::string(typeid(CompType).name());
@@ -660,6 +817,34 @@ namespace nexo::ecs {
 
             return getEntityPartitionView<KeyType>(typeId, entityKeyExtractor);
         }
+
+        /**
+         * @brief Returns a partition view based on multiple component fields.
+         *
+         * @tparam CompTypes Component types used to partition.
+         * @tparam KeyTypes Key types extracted from the components.
+         * @param keyExtractors Functions to extract keys from the components.
+         * @return PartitionView<CompositeKey<KeyTypes...>> View over the partitioned entities.
+         */
+         template<typename... CompTypes, typename... Extractors>
+         auto getMultiPartitionView(Extractors... keyExtractors)
+             -> PartitionView<CompositeKey<std::invoke_result_t<Extractors, const CompTypes&>...>>
+             requires(sizeof...(CompTypes) == sizeof...(Extractors) &&
+                      (FieldExtractor<Extractors, CompTypes, std::invoke_result_t<Extractors, const CompTypes&>> && ...))
+         {
+             std::string typeId = "multi_";
+             ((typeId += std::string(typeid(std::invoke_result_t<Extractors, const CompTypes&>).name()) + "_" +
+                       std::string(typeid(CompTypes).name()) + "_"), ...);
+
+             EntityKeyExtractor<CompositeKey<std::invoke_result_t<Extractors, const CompTypes&>...>> entityKeyExtractor =
+                 [this, keyExtractors...](Entity e) {
+                     return CompositeKey<std::invoke_result_t<Extractors, const CompTypes&>...>(
+                         extractKeyFromEntity<CompTypes, std::invoke_result_t<Extractors, const CompTypes&>>(e, keyExtractors)...
+                     );
+                 };
+
+             return getEntityPartitionView(typeId, entityKeyExtractor);
+         }
 
         /**
          * @brief Returns a partition view based directly on entity IDs.
@@ -775,6 +960,7 @@ namespace nexo::ecs {
             void rebuild() override
             {
                 if (!m_isDirty) return;
+                std::cout << "Rebuilding partitions...\n";
                 auto drivingArray      = std::get<0>(m_group->m_ownedArrays);
                 const size_t groupSize = drivingArray->groupSize();
 
@@ -948,6 +1134,32 @@ namespace nexo::ecs {
         }
 
         /**
+         * @brief Helper to extract a key from an entity using a specific component and extractor.
+         *
+         * @tparam CompType Component type.
+         * @tparam KeyType Key type.
+         * @tparam ExtractorType Type of the extractor function.
+         * @param e Entity.
+         * @param extractor Function to extract the key.
+         * @return KeyType Extracted key.
+         */
+        template<typename CompType, typename KeyType, typename ExtractorType>
+        KeyType extractKeyFromEntity(Entity e, ExtractorType extractor) const
+        {
+            if constexpr (tuple_contains_component_v<CompType, OwnedTuple>) {
+                auto compArray = getOwnedImpl<CompType>();
+                if (!compArray) THROW_EXCEPTION(InternalError, "Component array is null");
+                return extractor(compArray->get(e));
+            } else if constexpr (tuple_contains_component_v<CompType, NonOwnedTuple>) {
+                auto compArray = getNonOwnedImpl<CompType>();
+                if (!compArray) THROW_EXCEPTION(InternalError, "Component array is null");
+                return extractor(compArray->get(e));
+            } else {
+                static_assert(dependent_false<CompType>::value, "Component type not found in group");
+            }
+        }
+
+        /**
          * @brief Defines the direction for sorting operations
          */
         enum class SortingOrder { ASCENDING, DESCENDING };
@@ -963,3 +1175,14 @@ namespace nexo::ecs {
             m_partitionStorageMap; ///< Map storing partition data by ID.
     };
 } // namespace nexo::ecs
+
+template<typename... KeyTypes>
+struct std::hash<nexo::ecs::CompositeKey<KeyTypes...>> {
+    size_t operator()(const nexo::ecs::CompositeKey<KeyTypes...>& key) const {
+        return std::apply([](const auto&... args) {
+            size_t result = 0;
+            ((result ^= std::hash<std::decay_t<decltype(args)>>{}(args) + 0x9e3779b9 + (result << 6) + (result >> 2)), ...);
+            return result;
+        }, key.keys);
+    }
+};

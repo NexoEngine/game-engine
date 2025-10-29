@@ -33,6 +33,7 @@ namespace nexo::editor {
 #define NEXO_WND_USTRID_BOTTOM_BAR "###CommandsBar"
 #define NEXO_WND_USTRID_TEST "###TestWindow"
 #define NEXO_WND_USTRID_GAME_WINDOW "###GameWindow"
+#define NEXO_WND_USTRID_PERFORMANCE_MONITOR "###Performance Monitor"
 
     class ADocumentWindow : public IDocumentWindow {
        public:
