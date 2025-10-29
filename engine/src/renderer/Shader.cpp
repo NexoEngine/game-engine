@@ -118,31 +118,6 @@ namespace nexo::renderer {
         return false;
     }
 
-    bool NxShader::setUniform(const std::string& name, UniformValue value) const
-    {
-        return std::visit(
-            [this, &name]<typename T>(T&& arg) -> bool {
-                using DecayedT = std::decay_t<T>;
-                if constexpr (std::is_same_v<DecayedT, float>)
-                    return setUniformFloat(name, std::forward<T>(arg));
-                else if constexpr (std::is_same_v<DecayedT, glm::vec2>)
-                    return setUniformFloat2(name, std::forward<T>(arg));
-                else if constexpr (std::is_same_v<DecayedT, glm::vec3>)
-                    return setUniformFloat3(name, std::forward<T>(arg));
-                else if constexpr (std::is_same_v<DecayedT, glm::vec4>)
-                    return setUniformFloat4(name, std::forward<T>(arg));
-                else if constexpr (std::is_same_v<DecayedT, int>)
-                    return setUniformInt(name, std::forward<T>(arg));
-                else if constexpr (std::is_same_v<DecayedT, bool>)
-                    return setUniformBool(name, std::forward<T>(arg));
-                else if constexpr (std::is_same_v<DecayedT, glm::mat4>)
-                    return setUniformMatrix(name, std::forward<T>(arg));
-                else
-                    return false;
-            },
-            value);
-    }
-
     bool NxShader::hasUniform(const std::string& name) const
     {
         return m_uniformInfos.contains(name);

@@ -15,6 +15,7 @@
 
 #include "Shader.hpp"
 #include "UniformCache.hpp"
+#include "UniformValue.hpp"
 #include "VertexArray.hpp"
 
 namespace nexo::renderer {
@@ -67,6 +68,12 @@ namespace nexo::renderer {
         bool isOpaque       = true;
 
         float lineWidth = 1.5f;
+
+        template<typename T>
+        void setUniform(const std::string& name, T&& value) {
+            uniforms[name] = UniformValue(std::forward<T>(value));
+        }
+
 
         /**
          * @brief Executes the draw command.

@@ -44,10 +44,10 @@ namespace nexo::renderer {
 
         // Set uniforms
         if (shader) {
-            for (auto const& [name, val] : uniforms) {
-                std::visit([&](auto&& v) {
-                    shader->setUniform(name, v);
-                }, val);
+            for (const auto& [name, uniformValue] : uniforms) {
+                if (uniformValue.isValid()) {  // Only apply valid uniforms
+                    uniformValue.applyToShader(shader.get(), name);
+                }
             }
         }
 
