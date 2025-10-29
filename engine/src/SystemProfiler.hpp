@@ -150,7 +150,30 @@ private:
     size_t m_entitiesProcessed;
 };
 
+// Scope-based timer for fine-grained profiling
+class ScopeTimer {
+public:
+    ScopeTimer(const std::string& scopeName, size_t entities = 0)
+        : m_scopeName(scopeName), m_entities(entities) {
+        if (SystemProfiler::getInstance().isEnabled()) {
+            SystemProfiler::getInstance().startTiming(m_scopeName);
+        }
+    }
+
+    ~ScopeTimer() {
+        if (SystemProfiler::getInstance().isEnabled()) {
+            SystemProfiler::getInstance().endTiming(m_scopeName, m_entities);
+        }
+    }
+
+private:
+    std::string m_scopeName;
+    size_t m_entities;
+};
+
 } // namespace nexo::profiling
 
-// Convenience macro for automatic timing
+// Convenience macros for automatic timing
 #define PROFILE_SYSTEM(name, entities) nexo::profiling::SystemTimer _timer(name, entities)
+#define PROFILE_SCOPE(name) nexo::profiling::ScopeTimer _scope_timer(name)
+#define PROFILE_SCOPE_ENTITIES(name, entities) nexo::profiling::ScopeTimer _scope_timer(name, entities)
