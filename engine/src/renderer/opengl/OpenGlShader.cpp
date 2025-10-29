@@ -226,8 +226,11 @@ namespace nexo::renderer {
     bool NxOpenGlShader::setUniformFloat(const std::string &name, const float value) const
     {
         if (!NxShader::hasUniform(name)) return false;
-        if (NxShader::setUniformFloat(name, value)) return true; // Value was cached, no need to update
 
+        // Call parent method which now handles caching properly
+        if (NxShader::setUniformFloat(name, value)) return true; // Value was cached and unchanged
+
+        // Value changed, upload to GPU
         const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
@@ -242,8 +245,11 @@ namespace nexo::renderer {
     {
         const std::string &name = ShaderUniformsName.at(uniform);
         if (!NxShader::hasUniform(name)) return false;
-        if (NxShader::setUniformFloat(name, value)) return true;
 
+        // Call parent method which now handles caching properly
+        if (NxShader::setUniformFloat(name, value)) return true; // Value was cached and unchanged
+
+        // Value changed, upload to GPU
         const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
@@ -257,8 +263,11 @@ namespace nexo::renderer {
     bool NxOpenGlShader::setUniformFloat2(const std::string &name, const glm::vec2 &values) const
     {
         if (!NxShader::hasUniform(name)) return false;
-        if (NxShader::setUniformFloat2(name, values)) return true;
 
+        // Call parent method which now handles caching properly
+        if (NxShader::setUniformFloat2(name, values)) return true; // Value was cached and unchanged
+
+        // Value changed, upload to GPU
         const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
@@ -272,8 +281,11 @@ namespace nexo::renderer {
     bool NxOpenGlShader::setUniformFloat3(const std::string &name, const glm::vec3 &values) const
     {
         if (!NxShader::hasUniform(name)) return false;
-        if (NxShader::setUniformFloat3(name, values)) return true;
 
+        // Call parent method which now handles caching properly
+        if (NxShader::setUniformFloat3(name, values)) return true; // Value was cached and unchanged
+
+        // Value changed, upload to GPU
         const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
@@ -288,8 +300,11 @@ namespace nexo::renderer {
     {
         const std::string &name = ShaderUniformsName.at(uniform);
         if (!NxShader::hasUniform(name)) return false;
-        if (NxShader::setUniformFloat3(name, values)) return true;
 
+        // Call parent method which now handles caching properly
+        if (NxShader::setUniformFloat3(name, values)) return true; // Value was cached and unchanged
+
+        // Value changed, upload to GPU
         const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
@@ -303,8 +318,11 @@ namespace nexo::renderer {
     bool NxOpenGlShader::setUniformFloat4(const std::string &name, const glm::vec4 &values) const
     {
         if (!NxShader::hasUniform(name)) return false;
-        if (NxShader::setUniformFloat4(name, values)) return true;
 
+        // Call parent method which now handles caching properly
+        if (NxShader::setUniformFloat4(name, values)) return true; // Value was cached and unchanged
+
+        // Value changed, upload to GPU
         const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
@@ -319,8 +337,11 @@ namespace nexo::renderer {
     {
         const std::string &name = ShaderUniformsName.at(uniform);
         if (!NxShader::hasUniform(name)) return false;
-        if (NxShader::setUniformFloat4(name, values)) return true;
 
+        // Call parent method which now handles caching properly
+        if (NxShader::setUniformFloat4(name, values)) return true; // Value was cached and unchanged
+
+        // Value changed, upload to GPU
         const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
@@ -334,8 +355,11 @@ namespace nexo::renderer {
     bool NxOpenGlShader::setUniformMatrix(const std::string &name, const glm::mat4 &matrix) const
     {
         if (!NxShader::hasUniform(name)) return false;
-        if (NxShader::setUniformMatrix(name, matrix)) return true;
 
+        // Call parent method which now handles caching properly
+        if (NxShader::setUniformMatrix(name, matrix)) return true; // Value was cached and unchanged
+
+        // Value changed, upload to GPU
         const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
@@ -350,8 +374,11 @@ namespace nexo::renderer {
     {
         const std::string &name = ShaderUniformsName.at(uniform);
         if (!NxShader::hasUniform(name)) return false;
-        if (NxShader::setUniformMatrix(name, matrix)) return true;
 
+        // Call parent method which now handles caching properly
+        if (NxShader::setUniformMatrix(name, matrix)) return true; // Value was cached and unchanged
+
+        // Value changed, upload to GPU
         const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
@@ -365,8 +392,11 @@ namespace nexo::renderer {
     bool NxOpenGlShader::setUniformInt(const std::string &name, int value) const
     {
         if (!NxShader::hasUniform(name)) return false;
-        if (NxShader::setUniformInt(name, value)) return true;
 
+        // Call parent method which now handles caching properly
+        if (NxShader::setUniformInt(name, value)) return true; // Value was cached and unchanged
+
+        // Value changed, upload to GPU
         const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
@@ -380,8 +410,11 @@ namespace nexo::renderer {
     bool NxOpenGlShader::setUniformBool(const std::string &name, bool value) const
     {
         if (!NxShader::hasUniform(name)) return false;
-        if (NxShader::setUniformBool(name, value)) return true;
 
+        // Call parent method which now handles caching properly
+        if (NxShader::setUniformBool(name, value)) return true; // Value was cached and unchanged
+
+        // Value changed, upload to GPU
         const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);
@@ -396,8 +429,11 @@ namespace nexo::renderer {
     {
         const std::string &name = ShaderUniformsName.at(uniform);
         if (!NxShader::hasUniform(name)) return false;
-        if (NxShader::setUniformInt(name, value)) return true;
 
+        // Call parent method which now handles caching properly
+        if (NxShader::setUniformInt(name, value)) return true; // Value was cached and unchanged
+
+        // Value changed, upload to GPU
         const int location = getUniformLocation(name);
         if (location == -1) {
             LOG(NEXO_WARN, "For shader {}, uniform {} not found", m_name, name);

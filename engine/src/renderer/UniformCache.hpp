@@ -30,70 +30,77 @@ namespace nexo::renderer {
          *
          * @param name The name of the uniform variable.
          * @param value The float value to set.
+         * @return true if the value changed and needs GPU upload, false if unchanged.
          *
          * If the value is different from the current cached value, it updates the cache and marks it as dirty.
          */
-        void setFloat(const std::string& name, float value);
+        bool setFloat(const std::string& name, float value);
 
         /**
          * @brief Sets a 2D vector uniform value.
          *
          * @param name The name of the uniform variable.
          * @param value The vec2 value to set.
+         * @return true if the value changed and needs GPU upload, false if unchanged.
          *
          * If the value is different from the current cached value, it updates the cache and marks it as dirty.
          */
-        void setFloat2(const std::string& name, const glm::vec2& value);
+        bool setFloat2(const std::string& name, const glm::vec2& value);
 
         /**
          * @brief Sets a 3D vector uniform value.
          *
          * @param name The name of the uniform variable.
          * @param value The vec3 value to set.
+         * @return true if the value changed and needs GPU upload, false if unchanged.
          *
          * If the value is different from the current cached value, it updates the cache and marks it as dirty.
          */
-        void setFloat3(const std::string& name, const glm::vec3& value);
+        bool setFloat3(const std::string& name, const glm::vec3& value);
 
         /**
          * @brief Sets a 4D vector uniform value.
          *
          * @param name The name of the uniform variable.
          * @param value The vec4 value to set.
+         * @return true if the value changed and needs GPU upload, false if unchanged.
          *
          * If the value is different from the current cached value, it updates the cache and marks it as dirty.
          */
-        void setFloat4(const std::string& name, const glm::vec4& value);
+        bool setFloat4(const std::string& name, const glm::vec4& value);
 
         /**
          * @brief Sets an integer uniform value.
          *
          * @param name The name of the uniform variable.
          * @param value The integer value to set.
+         * @return true if the value changed and needs GPU upload, false if unchanged.
          *
          * If the value is different from the current cached value, it updates the cache and marks it as dirty.
          */
-        void setInt(const std::string& name, int value);
+        bool setInt(const std::string& name, int value);
 
         /**
          * @brief Sets a boolean uniform value.
          *
          * @param name The name of the uniform variable.
          * @param value The boolean value to set.
+         * @return true if the value changed and needs GPU upload, false if unchanged.
          *
          * If the value is different from the current cached value, it updates the cache and marks it as dirty.
          */
-        void setBool(const std::string& name, bool value);
+        bool setBool(const std::string& name, bool value);
 
         /**
          * @brief Sets a 4x4 matrix uniform value.
          *
          * @param name The name of the uniform variable.
          * @param value The mat4 value to set.
+         * @return true if the value changed and needs GPU upload, false if unchanged.
          *
          * If the value is different from the current cached value, it updates the cache and marks it as dirty.
          */
-        void setMatrix(const std::string& name, const glm::mat4& value);
+        bool setMatrix(const std::string& name, const glm::mat4& value);
 
         /**
          * @brief Checks if a uniform value is marked as dirty.
