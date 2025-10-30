@@ -137,9 +137,10 @@ namespace nexo::ecs {
          * @brief Registers a new component type within the ComponentManager.
          */
         template<typename T>
-        void registerComponent()
+        void registerComponent(const std::string& displayName = "")
         {
             m_componentManager->registerComponent<T>();
+            addComponentDescription(getComponentType<T>(), ComponentDescription{displayName, {}, true});
 
             m_getComponentFunctions[typeid(T)] = [this](const Entity entity) -> std::any {
                 return this->getComponent<T>(entity);
@@ -238,6 +239,12 @@ namespace nexo::ecs {
             m_entityManager->setSignature(entity, signature);
 
             m_systemManager->entitySignatureChanged(entity, oldSignature, signature);
+        }
+
+        template<typename T>
+        void addComponent(const Entity entity) const
+        {
+            addComponent(entity, T{});
         }
 
         /**
@@ -528,7 +535,7 @@ namespace nexo::ecs {
          * @brief Retrieves all registered component descriptions.
          *
          * @return const std::unordered_map<ComponentType, std::shared_ptr<ComponentDescription>>&
-         *         A const reference to the map of component types to their descriptions.
+         * A const reference to the map of component types to their descriptions.
          */
         [[nodiscard]] const std::unordered_map<ComponentType, std::shared_ptr<ComponentDescription>>&
         getComponentDescriptions() const
@@ -548,7 +555,7 @@ namespace nexo::ecs {
         {
             auto newQuerySystem = m_systemManager->registerQuerySystem<T>(std::forward<Args>(args)...);
             const std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
-            const Signature querySystemSignature   = newQuerySystem->getSignature();
+            const Signature querySystemSignature         = newQuerySystem->getSignature();
             for (Entity entity : livingEntities) {
                 const Signature entitySignature = m_entityManager->getSignature(entity);
                 if ((entitySignature & querySystemSignature) == querySystemSignature) {

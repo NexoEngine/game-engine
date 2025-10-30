@@ -61,7 +61,7 @@ namespace nexo::editor {
          */
         void show() override;
 
-        bool showToolbar      = false;
+        bool showToolbar      = true;
         bool isPhysicsRunning = false;
 
         /**

@@ -180,8 +180,8 @@ namespace nexo::editor {
             ImGui::EndGroup();
             const ImVec2 center = ImGui::GetMainViewport()->GetCenter();
             ImGui::SetNextWindowPos(center, ImGuiCond_Appearing, ImVec2(0.5f, 0.5f));
+            ImGui::TreePop();
         }
-        ImGui::TreePop();
 
         if (m_popupManager.showPopupModal("Create new material")) {
             createMaterialPopup(entity);
