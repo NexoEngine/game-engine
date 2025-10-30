@@ -17,6 +17,7 @@
 #include "DocumentWindows/EntityProperties/AEntityProperty.hpp"
 #include "core/scene/SceneManager.hpp"
 
+#include <DocumentWindows/PopupManager.hpp>
 #include <unordered_map>
 
 namespace nexo::editor {
@@ -213,5 +214,9 @@ namespace nexo::editor {
             }
             m_entityProperties[type] = std::move(property);
         }
+
+        void showAddComponentButton(ecs::Entity entity);
+
+        PopupManager m_popupManager;
     };
 }; // namespace nexo::editor

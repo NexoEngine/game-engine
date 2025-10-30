@@ -55,6 +55,7 @@ namespace nexo::editor {
         const auto& componentDescriptions = coordinator->getComponentDescriptions();
 
         for (const auto& [componentType, description] : componentDescriptions) {
+            if (description->internalComponent) continue;
             registerProperty(componentType, std::make_shared<TypeErasedProperty>(*this, componentType, description));
         }
     }

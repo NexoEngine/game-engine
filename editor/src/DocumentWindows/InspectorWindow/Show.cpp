@@ -63,6 +63,7 @@ namespace nexo::editor {
                 m_entityProperties[type]->show(entity);
             }
         }
+        showAddComponentButton(entity);
     }
 
     void InspectorWindow::show()

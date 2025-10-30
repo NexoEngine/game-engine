@@ -70,6 +70,7 @@ set(SRCS
         editor/src/DocumentWindows/InspectorWindow/Show.cpp
         editor/src/DocumentWindows/InspectorWindow/Shutdown.cpp
         editor/src/DocumentWindows/InspectorWindow/Update.cpp
+        editor/src/DocumentWindows/InspectorWindow/AddComponent.cpp
         editor/src/DocumentWindows/MaterialInspector/Init.cpp
         editor/src/DocumentWindows/MaterialInspector/Show.cpp
         editor/src/DocumentWindows/MaterialInspector/Shutdown.cpp

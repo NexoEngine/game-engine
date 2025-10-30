@@ -121,7 +121,7 @@ namespace nexo::editor {
          */
         struct TransparentHasher {
             using is_transparent = void; // Required for heterogeneous lookup
-            std::size_t operator()(std::string_view key) const noexcept
+            std::size_t operator()(const std::string_view key) const noexcept
             {
                 return std::hash<std::string_view>{}(key);
             }
