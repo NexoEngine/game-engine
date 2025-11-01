@@ -90,183 +90,187 @@ $(document).ready(function(){initNavTree('_buffer_8hpp_source.html',''); initRes
 <div class="contents">
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">//</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">//  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">//  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">//  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">//  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">//  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">//</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">//  Author:      Mehdy MORVAN</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">//  Date:        08/11/2024</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">//  Description: Header file for vertex buffer abstract class</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// ⢀⢀⢀⣤⣤⣤⡀⢀⢀⢀⢀⢀⢀⢠⣤⡄⢀⢀⢀⢀⣠⣤⣤⣤⣤⣤⣤⣤⣤⣤⡀⢀⢀⢀⢠⣤⣄⢀⢀⢀⢀⢀⢀⢀⣤⣤⢀⢀⢀⢀⢀⢀⢀⢀⣀⣄⢀⢀⢠⣄⣀⢀⢀⢀⢀⢀⢀⢀</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// ⢀⢀⢀⣿⣿⣿⣷⡀⢀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⡟⡛⡛⡛⡛⡛⡛⡛⢁⢀⢀⢀⢀⢻⣿⣦⢀⢀⢀⢀⢠⣾⡿⢃⢀⢀⢀⢀⢀⣠⣾⣿⢿⡟⢀⢀⡙⢿⢿⣿⣦⡀⢀⢀⢀⢀</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// ⢀⢀⢀⣿⣿⡛⣿⣷⡀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⡇⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⡙⣿⡷⢀⢀⣰⣿⡟⢁⢀⢀⢀⢀⢀⣾⣿⡟⢁⢀⢀⢀⢀⢀⢀⢀⡙⢿⣿⡆⢀⢀⢀</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// ⢀⢀⢀⣿⣿⢀⡈⢿⣷⡄⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⣇⣀⣀⣀⣀⣀⣀⣀⢀⢀⢀⢀⢀⢀⢀⡈⢀⢀⣼⣿⢏⢀⢀⢀⢀⢀⢀⣼⣿⡏⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⡘⣿⣿⢀⢀⢀</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// ⢀⢀⢀⣿⣿⢀⢀⡈⢿⣿⡄⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⣿⢿⢿⢿⢿⢿⢿⢿⢇⢀⢀⢀⢀⢀⢀⢀⢠⣾⣿⣧⡀⢀⢀⢀⢀⢀⢀⣿⣿⡇⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⣿⣿⢀⢀⢀</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">// ⢀⢀⢀⣿⣿⢀⢀⢀⡈⢿⣿⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⡇⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⣰⣿⡟⡛⣿⣷⡄⢀⢀⢀⢀⢀⢿⣿⣇⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⣿⣿⢀⢀⢀</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// ⢀⢀⢀⣿⣿⢀⢀⢀⢀⡈⢿⢀⢀⢸⣿⡇⢀⢀⢀⢀⡛⡟⢁⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⣼⣿⡟⢀⢀⡈⢿⣿⣄⢀⢀⢀⢀⡘⣿⣿⣄⢀⢀⢀⢀⢀⢀⢀⢀⢀⣼⣿⢏⢀⢀⢀</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">// ⢀⢀⢀⣿⣿⢀⢀⢀⢀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⢀⣀⣀⣀⣀⣀⣀⣀⣀⣀⡀⢀⢀⢀⣠⣾⡿⢃⢀⢀⢀⢀⢀⢻⣿⣧⡀⢀⢀⢀⡈⢻⣿⣷⣦⣄⢀⢀⣠⣤⣶⣿⡿⢋⢀⢀⢀⢀</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">// ⢀⢀⢀⢿⢿⢀⢀⢀⢀⢀⢀⢀⢀⢸⢿⢃⢀⢀⢀⢀⢻⢿⢿⢿⢿⢿⢿⢿⢿⢿⢃⢀⢀⢀⢿⡟⢁⢀⢀⢀⢀⢀⢀⢀⡙⢿⡗⢀⢀⢀⢀⢀⡈⡉⡛⡛⢀⢀⢹⡛⢋⢁⢀⢀⢀⢀⢀⢀</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">//</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"></span><span class="preprocessor">#pragma once</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &lt;initializer_list&gt;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &lt;iostream&gt;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">namespace </span>nexo::renderer {</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">enum class</span> NxShaderDataType {</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        NONE = 0,</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>        FLOAT,</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>        FLOAT2,</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        FLOAT3,</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        FLOAT4,</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        MAT3,</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        MAT4,</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        INT,</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        INT2,</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        INT3,</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        INT4,</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        BOOL</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    };</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span> </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keyword">static</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> shaderDataTypeSize(<span class="keyword">const</span> NxShaderDataType type)</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>    {</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>        <span class="keywordflow">switch</span> (type)</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>        {</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            <span class="keywordflow">case</span> NxShaderDataType::FLOAT:    <span class="keywordflow">return</span> 4;  <span class="comment">// 1 float (4 bytes)</span></div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            <span class="keywordflow">case</span> NxShaderDataType::FLOAT2:   <span class="keywordflow">return</span> 4 * 2;  <span class="comment">// 2 floats (8 bytes)</span></div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="keywordflow">case</span> NxShaderDataType::FLOAT3:   <span class="keywordflow">return</span> 4 * 3;  <span class="comment">// 3 floats (12 bytes)</span></div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>            <span class="keywordflow">case</span> NxShaderDataType::FLOAT4:   <span class="keywordflow">return</span> 4 * 4;  <span class="comment">// 4 floats (16 bytes)</span></div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keywordflow">case</span> NxShaderDataType::MAT3:     <span class="keywordflow">return</span> 4 * 3 * 3;  <span class="comment">// 3x3 matrix (36 bytes)</span></div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keywordflow">case</span> NxShaderDataType::MAT4:     <span class="keywordflow">return</span> 4 * 4 * 4;  <span class="comment">// 4x4 matrix (64 bytes)</span></div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="keywordflow">case</span> NxShaderDataType::INT:      <span class="keywordflow">return</span> 4;  <span class="comment">// 1 int (4 bytes)</span></div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <span class="keywordflow">case</span> NxShaderDataType::INT2:     <span class="keywordflow">return</span> 4 * 2;  <span class="comment">// 2 ints (8 bytes)</span></div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordflow">case</span> NxShaderDataType::INT3:     <span class="keywordflow">return</span> 4 * 3;  <span class="comment">// 3 ints (12 bytes)</span></div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <span class="keywordflow">case</span> NxShaderDataType::INT4:     <span class="keywordflow">return</span> 4 * 4;  <span class="comment">// 4 ints (16 bytes)</span></div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <span class="keywordflow">case</span> NxShaderDataType::BOOL:     <span class="keywordflow">return</span> 1;  <span class="comment">// 1 byte (1 bool)</span></div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            <span class="keywordflow">case</span> NxShaderDataType::NONE:     <span class="keywordflow">return</span> 0;  <span class="comment">// No type, return 0</span></div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>        }</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>        <span class="keywordflow">return</span> 0; <span class="comment">// Default case for undefined types</span></div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>    }</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno"><a class="line" href="structnexo_1_1renderer_1_1_nx_buffer_elements.html">  104</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_buffer_elements.html">NxBufferElements</a> {</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        std::string name;</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        NxShaderDataType type{};</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> size{};</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> offset{};</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        <span class="keywordtype">bool</span> normalized{};</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_buffer_elements.html">NxBufferElements</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_buffer_elements.html">NxBufferElements</a>(<span class="keyword">const</span> NxShaderDataType Type, std::string name, <span class="keyword">const</span> <span class="keywordtype">bool</span> normalized = <span class="keyword">false</span>)</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>            : name(std::move(name)), type(Type), size(shaderDataTypeSize(type)), offset(0) , normalized(normalized)</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>        {</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        }</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        [[nodiscard]] <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getComponentCount()<span class="keyword"> const</span></div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="keyword">        </span>{</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>            <span class="keywordflow">switch</span>(type)</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>            {</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                <span class="keywordflow">case</span> NxShaderDataType::FLOAT:     <span class="keywordflow">return</span> 1;</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                <span class="keywordflow">case</span> NxShaderDataType::FLOAT2:    <span class="keywordflow">return</span> 2;</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                <span class="keywordflow">case</span> NxShaderDataType::FLOAT3:    <span class="keywordflow">return</span> 3;</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                <span class="keywordflow">case</span> NxShaderDataType::FLOAT4:    <span class="keywordflow">return</span> 4;</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                <span class="keywordflow">case</span> NxShaderDataType::INT:       <span class="keywordflow">return</span> 1;</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                <span class="keywordflow">case</span> NxShaderDataType::INT2:      <span class="keywordflow">return</span> 2;</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                <span class="keywordflow">case</span> NxShaderDataType::INT3:      <span class="keywordflow">return</span> 3;</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                <span class="keywordflow">case</span> NxShaderDataType::INT4:      <span class="keywordflow">return</span> 4;</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                <span class="keywordflow">case</span> NxShaderDataType::MAT3:      <span class="keywordflow">return</span> 3 * 3;</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                <span class="keywordflow">case</span> NxShaderDataType::MAT4:      <span class="keywordflow">return</span> 4 * 4;</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                <span class="keywordflow">case</span> NxShaderDataType::BOOL:      <span class="keywordflow">return</span> 1;</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                <span class="keywordflow">default</span>: <span class="keywordflow">return</span> 0; <span class="comment">// Undefined type, return 0</span></div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>            }</div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>        }</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>    };</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_buffer_layout.html">  161</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_buffer_layout.html">NxBufferLayout</a> {</div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>            <a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_buffer_layout.html">NxBufferLayout</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>            <a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_buffer_layout.html">NxBufferLayout</a>(<span class="keyword">const</span> std::initializer_list&lt;NxBufferElements&gt; elements)</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>                : _elements(elements)</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>            {</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>                calculateOffsetAndStride();</div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>            };</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span> </div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>            [[nodiscard]] std::vector&lt;NxBufferElements&gt; getElements()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _elements; };</div>
-<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>            [[nodiscard]] <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getStride()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _stride; };</div>
-<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span> </div>
-<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>            std::vector&lt;NxBufferElements&gt;::iterator begin() { <span class="keywordflow">return</span> _elements.begin(); };</div>
-<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            std::vector&lt;NxBufferElements&gt;::iterator end() { <span class="keywordflow">return</span> _elements.end(); };</div>
-<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>            [[nodiscard]] std::vector&lt;NxBufferElements&gt;::const_iterator begin()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _elements.begin(); };</div>
-<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>            [[nodiscard]] std::vector&lt;NxBufferElements&gt;::const_iterator end()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _elements.end(); };</div>
-<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>        <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>            std::vector&lt;NxBufferElements&gt; _elements;</div>
-<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>            <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> _stride{};</div>
-<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
-<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>            <span class="keywordtype">void</span> calculateOffsetAndStride()</div>
-<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>            {</div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>                <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> offset = 0;</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>                _stride = 0;</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>                <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;element : _elements)</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>                {</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>                    element.offset = offset;</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>                    offset += element.size;</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                    _stride += element.size;</div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                }</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>            }</div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>    };</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
-<div class="line"><a id="l00203" name="l00203"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html">  203</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html">NxVertexBuffer</a> {</div>
-<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#aa9d2e0e46f81281d7f68730bd4c54e8a">  214</a></span>            <span class="keyword">virtual</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#aa9d2e0e46f81281d7f68730bd4c54e8a">~NxVertexBuffer</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span> </div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#aa43c79d32d66c0530363b52c08e8cd84">  225</a></span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#aa43c79d32d66c0530363b52c08e8cd84">bind</a>() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span> </div>
-<div class="line"><a id="l00236" name="l00236"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#a5795cdb235c20fa3e7bd992a132e3aa9">  236</a></span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#a5795cdb235c20fa3e7bd992a132e3aa9">unbind</a>() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a id="l00237" name="l00237"></a><span class="lineno">  237</span> </div>
-<div class="line"><a id="l00249" name="l00249"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#aebe18405e6bf4567bf4a216124995129">  249</a></span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#aebe18405e6bf4567bf4a216124995129">setLayout</a>(<span class="keyword">const</span> <a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_buffer_layout.html">NxBufferLayout</a> &amp;layout) = 0;</div>
-<div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span> </div>
-<div class="line"><a id="l00262" name="l00262"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#a336c3e29b3a9d33bd3ed9e2b86b245a5">  262</a></span>            [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_buffer_layout.html">NxBufferLayout</a> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#a336c3e29b3a9d33bd3ed9e2b86b245a5">getLayout</a>() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a id="l00263" name="l00263"></a><span class="lineno">  263</span> </div>
-<div class="line"><a id="l00276" name="l00276"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#ad97cf7940e2ebe96cfdb4c8321490704">  276</a></span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#ad97cf7940e2ebe96cfdb4c8321490704">setData</a>(<span class="keywordtype">void</span> *data, <span class="keywordtype">size_t</span> size) = 0;</div>
-<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span> </div>
-<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span>            [[nodiscard]] <span class="keyword">virtual</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getId() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a id="l00279" name="l00279"></a><span class="lineno">  279</span>    };</div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span> </div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_index_buffer.html">  289</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_index_buffer.html">NxIndexBuffer</a> {</div>
-<div class="line"><a id="l00290" name="l00290"></a><span class="lineno">  290</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#abbaa5898525182477231185e7bb1f2e8">  300</a></span>            <span class="keyword">virtual</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#abbaa5898525182477231185e7bb1f2e8">~NxIndexBuffer</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span> </div>
-<div class="line"><a id="l00311" name="l00311"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#acaf0cd5af33e902ad664e2212cc5bc15">  311</a></span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#acaf0cd5af33e902ad664e2212cc5bc15">bind</a>() <span class="keyword">const</span>  = 0;</div>
-<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span> </div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#a8ac3f67776688a4af08930544a1cfe02">  322</a></span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#a8ac3f67776688a4af08930544a1cfe02">unbind</a>() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span> </div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#a1d52d5af2b79280cdc5a450e0758138f">  336</a></span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#a1d52d5af2b79280cdc5a450e0758138f">setData</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> *data, <span class="keywordtype">size_t</span> size) = 0;</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span> </div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#ad42e1350b41fc7af6db4f9ada2751274">  349</a></span>            [[nodiscard]] <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#ad42e1350b41fc7af6db4f9ada2751274">getCount</a>() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span> </div>
-<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>            [[nodiscard]] <span class="keyword">virtual</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getId() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>    };</div>
-<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span> </div>
-<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>    std::shared_ptr&lt;NxVertexBuffer&gt; createVertexBuffer(<span class="keywordtype">float</span> *vertices, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> size);</div>
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span> </div>
-<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>    std::shared_ptr&lt;NxVertexBuffer&gt; createVertexBuffer(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> size);</div>
-<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span> </div>
-<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>    std::shared_ptr&lt;NxIndexBuffer&gt; createIndexBuffer();</div>
-<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span> </div>
-<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span> </div>
-<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>}</div>
-<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_buffer_layout_html"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_buffer_layout.html">nexo::renderer::NxBufferLayout</a></div><div class="ttdoc">Defines the structure and layout of elements in a vertex buffer.</div><div class="ttdef"><b>Definition:</b> Buffer.hpp:161</div></div>
-<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_index_buffer_html"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_index_buffer.html">nexo::renderer::NxIndexBuffer</a></div><div class="ttdoc">Abstract class representing an index buffer in the graphics pipeline.</div><div class="ttdef"><b>Definition:</b> Buffer.hpp:289</div></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">//  Author:      Mehdy MORVAN</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">//  Date:        08/11/2024</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">//  Description: Header file for vertex buffer abstract class</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">//</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment"></span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &lt;initializer_list&gt;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;utility&gt;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;iostream&gt;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="keyword">namespace </span>nexo::renderer {</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keyword">enum class</span> NxShaderDataType {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>        NONE = 0,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>        FLOAT,</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>        FLOAT2,</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        FLOAT3,</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        FLOAT4,</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        MAT3,</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        MAT4,</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        INT,</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        INT2,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        INT3,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        INT4,</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>        BOOL</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    };</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keyword">static</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> shaderDataTypeSize(<span class="keyword">const</span> NxShaderDataType type)</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        <span class="keywordflow">switch</span> (type)</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keywordflow">case</span> NxShaderDataType::FLOAT:    <span class="keywordflow">return</span> 4;  <span class="comment">// 1 float (4 bytes)</span></div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>            <span class="keywordflow">case</span> NxShaderDataType::FLOAT2:   <span class="keywordflow">return</span> 4 * 2;  <span class="comment">// 2 floats (8 bytes)</span></div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>            <span class="keywordflow">case</span> NxShaderDataType::FLOAT3:   <span class="keywordflow">return</span> 4 * 3;  <span class="comment">// 3 floats (12 bytes)</span></div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>            <span class="keywordflow">case</span> NxShaderDataType::FLOAT4:   <span class="keywordflow">return</span> 4 * 4;  <span class="comment">// 4 floats (16 bytes)</span></div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            <span class="keywordflow">case</span> NxShaderDataType::MAT3:     <span class="keywordflow">return</span> 4 * 3 * 3;  <span class="comment">// 3x3 matrix (36 bytes)</span></div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>            <span class="keywordflow">case</span> NxShaderDataType::MAT4:     <span class="keywordflow">return</span> 4 * 4 * 4;  <span class="comment">// 4x4 matrix (64 bytes)</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>            <span class="keywordflow">case</span> NxShaderDataType::INT:      <span class="keywordflow">return</span> 4;  <span class="comment">// 1 int (4 bytes)</span></div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>            <span class="keywordflow">case</span> NxShaderDataType::INT2:     <span class="keywordflow">return</span> 4 * 2;  <span class="comment">// 2 ints (8 bytes)</span></div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>            <span class="keywordflow">case</span> NxShaderDataType::INT3:     <span class="keywordflow">return</span> 4 * 3;  <span class="comment">// 3 ints (12 bytes)</span></div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            <span class="keywordflow">case</span> NxShaderDataType::INT4:     <span class="keywordflow">return</span> 4 * 4;  <span class="comment">// 4 ints (16 bytes)</span></div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>            <span class="keywordflow">case</span> NxShaderDataType::BOOL:     <span class="keywordflow">return</span> 1;  <span class="comment">// 1 byte (1 bool)</span></div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            <span class="keywordflow">case</span> NxShaderDataType::NONE:     <span class="keywordflow">return</span> 0;  <span class="comment">// No type, return 0</span></div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        }</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>        <span class="keywordflow">return</span> 0; <span class="comment">// Default case for undefined types</span></div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    }</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno"><a class="line" href="structnexo_1_1renderer_1_1_nx_buffer_elements.html">  108</a></span>    <span class="keyword">struct </span><a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_buffer_elements.html">NxBufferElements</a> {</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        std::string name;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>        NxShaderDataType type{};</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> size{};</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>        <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> offset{};</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordtype">bool</span> normalized{};</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_buffer_elements.html">NxBufferElements</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>        <a class="code hl_struct" href="structnexo_1_1renderer_1_1_nx_buffer_elements.html">NxBufferElements</a>(<span class="keyword">const</span> NxShaderDataType Type, std::string name, <span class="keyword">const</span> <span class="keywordtype">bool</span> normalized = <span class="keyword">false</span>)</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            : name(std::move(name)), type(Type), size(shaderDataTypeSize(type)), offset(0) , normalized(normalized)</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>        {</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        }</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        [[nodiscard]] <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getComponentCount()<span class="keyword"> const</span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span><span class="keyword">        </span>{</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>            <span class="keywordflow">switch</span>(type)</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>            {</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                <span class="keywordflow">case</span> NxShaderDataType::FLOAT:     <span class="keywordflow">return</span> 1;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                <span class="keywordflow">case</span> NxShaderDataType::FLOAT2:    <span class="keywordflow">return</span> 2;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                <span class="keywordflow">case</span> NxShaderDataType::FLOAT3:    <span class="keywordflow">return</span> 3;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                <span class="keywordflow">case</span> NxShaderDataType::FLOAT4:    <span class="keywordflow">return</span> 4;</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                <span class="keywordflow">case</span> NxShaderDataType::INT:       <span class="keywordflow">return</span> 1;</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                <span class="keywordflow">case</span> NxShaderDataType::INT2:      <span class="keywordflow">return</span> 2;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                <span class="keywordflow">case</span> NxShaderDataType::INT3:      <span class="keywordflow">return</span> 3;</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                <span class="keywordflow">case</span> NxShaderDataType::INT4:      <span class="keywordflow">return</span> 4;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                <span class="keywordflow">case</span> NxShaderDataType::MAT3:      <span class="keywordflow">return</span> 3 * 3;</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>                <span class="keywordflow">case</span> NxShaderDataType::MAT4:      <span class="keywordflow">return</span> 4 * 4;</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                <span class="keywordflow">case</span> NxShaderDataType::BOOL:      <span class="keywordflow">return</span> 1;</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>                <span class="keywordflow">default</span>: <span class="keywordflow">return</span> 0; <span class="comment">// Undefined type, return 0</span></div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>            }</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span>        }</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    };</div>
+<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_buffer_layout.html">  165</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_buffer_layout.html">NxBufferLayout</a> {</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>            <a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_buffer_layout.html">NxBufferLayout</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>            <a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_buffer_layout.html">NxBufferLayout</a>(<span class="keyword">const</span> std::initializer_list&lt;NxBufferElements&gt; elements)</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>                : _elements(elements)</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>            {</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>                calculateOffsetAndStride();</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>            };</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>            [[nodiscard]] std::vector&lt;NxBufferElements&gt; getElements()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _elements; };</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>            [[nodiscard]] <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getStride()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _stride; };</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span> </div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>            std::vector&lt;NxBufferElements&gt;::iterator begin() { <span class="keywordflow">return</span> _elements.begin(); };</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>            std::vector&lt;NxBufferElements&gt;::iterator end() { <span class="keywordflow">return</span> _elements.end(); };</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>            [[nodiscard]] std::vector&lt;NxBufferElements&gt;::const_iterator begin()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _elements.begin(); };</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span>            [[nodiscard]] std::vector&lt;NxBufferElements&gt;::const_iterator end()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> _elements.end(); };</div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>        <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>            std::vector&lt;NxBufferElements&gt; _elements;</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>            <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> _stride{};</div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span> </div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>            <span class="keywordtype">void</span> calculateOffsetAndStride()</div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>            {</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>                <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> offset = 0;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>                _stride = 0;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                <span class="keywordflow">for</span> (<span class="keyword">auto</span> &amp;element : _elements)</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                {</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>                    element.offset = offset;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>                    offset += element.size;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>                    _stride += element.size;</div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>                }</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>            }</div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>    };</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html">  207</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html">NxVertexBuffer</a> {</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#aa9d2e0e46f81281d7f68730bd4c54e8a">  218</a></span>            <span class="keyword">virtual</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#aa9d2e0e46f81281d7f68730bd4c54e8a">~NxVertexBuffer</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span> </div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#aa43c79d32d66c0530363b52c08e8cd84">  229</a></span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#aa43c79d32d66c0530363b52c08e8cd84">bind</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span> </div>
+<div class="line"><a id="l00240" name="l00240"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#a5795cdb235c20fa3e7bd992a132e3aa9">  240</a></span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#a5795cdb235c20fa3e7bd992a132e3aa9">unbind</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span> </div>
+<div class="line"><a id="l00253" name="l00253"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#aebe18405e6bf4567bf4a216124995129">  253</a></span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#aebe18405e6bf4567bf4a216124995129">setLayout</a>(<span class="keyword">const</span> <a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_buffer_layout.html">NxBufferLayout</a> &amp;layout) = 0;</div>
+<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
+<div class="line"><a id="l00266" name="l00266"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#a336c3e29b3a9d33bd3ed9e2b86b245a5">  266</a></span>            [[nodiscard]] <span class="keyword">virtual</span> <a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_buffer_layout.html">NxBufferLayout</a> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#a336c3e29b3a9d33bd3ed9e2b86b245a5">getLayout</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00267" name="l00267"></a><span class="lineno">  267</span> </div>
+<div class="line"><a id="l00280" name="l00280"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#ad97cf7940e2ebe96cfdb4c8321490704">  280</a></span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#ad97cf7940e2ebe96cfdb4c8321490704">setData</a>(<span class="keywordtype">void</span> *data, <span class="keywordtype">size_t</span> size) = 0;</div>
+<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span> </div>
+<div class="line"><a id="l00282" name="l00282"></a><span class="lineno">  282</span>            [[nodiscard]] <span class="keyword">virtual</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getId() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00283" name="l00283"></a><span class="lineno">  283</span>    };</div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span> </div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_index_buffer.html">  293</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1renderer_1_1_nx_index_buffer.html">NxIndexBuffer</a> {</div>
+<div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span>        <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#abbaa5898525182477231185e7bb1f2e8">  304</a></span>            <span class="keyword">virtual</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#abbaa5898525182477231185e7bb1f2e8">~NxIndexBuffer</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span> </div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#acaf0cd5af33e902ad664e2212cc5bc15">  315</a></span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#acaf0cd5af33e902ad664e2212cc5bc15">bind</a>() <span class="keyword">const</span>  = 0;</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span> </div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#a8ac3f67776688a4af08930544a1cfe02">  326</a></span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#a8ac3f67776688a4af08930544a1cfe02">unbind</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span> </div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#a1d52d5af2b79280cdc5a450e0758138f">  340</a></span>            <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#a1d52d5af2b79280cdc5a450e0758138f">setData</a>(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> *data, <span class="keywordtype">size_t</span> size) = 0;</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span> </div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno"><a class="line" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#ad42e1350b41fc7af6db4f9ada2751274">  353</a></span>            [[nodiscard]] <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code hl_function" href="classnexo_1_1renderer_1_1_nx_index_buffer.html#ad42e1350b41fc7af6db4f9ada2751274">getCount</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span> </div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>            [[nodiscard]] <span class="keyword">virtual</span> <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> getId() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>    };</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span> </div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>    std::shared_ptr&lt;NxVertexBuffer&gt; createVertexBuffer(<span class="keywordtype">float</span> *vertices, <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> size);</div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span> </div>
+<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>    std::shared_ptr&lt;NxVertexBuffer&gt; createVertexBuffer(<span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> size);</div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span> </div>
+<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>    std::shared_ptr&lt;NxIndexBuffer&gt; createIndexBuffer();</div>
+<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span> </div>
+<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span> </div>
+<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>}</div>
+<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_buffer_layout_html"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_buffer_layout.html">nexo::renderer::NxBufferLayout</a></div><div class="ttdoc">Defines the structure and layout of elements in a vertex buffer.</div><div class="ttdef"><b>Definition:</b> Buffer.hpp:165</div></div>
+<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_index_buffer_html"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_index_buffer.html">nexo::renderer::NxIndexBuffer</a></div><div class="ttdoc">Abstract class representing an index buffer in the graphics pipeline.</div><div class="ttdef"><b>Definition:</b> Buffer.hpp:293</div></div>
 <div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_index_buffer_html_a1d52d5af2b79280cdc5a450e0758138f"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_index_buffer.html#a1d52d5af2b79280cdc5a450e0758138f">nexo::renderer::NxIndexBuffer::setData</a></div><div class="ttdeci">virtual void setData(unsigned int *data, size_t size)=0</div><div class="ttdoc">Uploads new index data to the index buffer.</div></div>
 <div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_index_buffer_html_a8ac3f67776688a4af08930544a1cfe02"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_index_buffer.html#a8ac3f67776688a4af08930544a1cfe02">nexo::renderer::NxIndexBuffer::unbind</a></div><div class="ttdeci">virtual void unbind() const =0</div><div class="ttdoc">Unbinds the currently bound index buffer.</div></div>
 <div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_index_buffer_html_abbaa5898525182477231185e7bb1f2e8"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_index_buffer.html#abbaa5898525182477231185e7bb1f2e8">nexo::renderer::NxIndexBuffer::~NxIndexBuffer</a></div><div class="ttdeci">virtual ~NxIndexBuffer()=default</div><div class="ttdoc">Destroys the index buffer.</div></div>
 <div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_index_buffer_html_acaf0cd5af33e902ad664e2212cc5bc15"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_index_buffer.html#acaf0cd5af33e902ad664e2212cc5bc15">nexo::renderer::NxIndexBuffer::bind</a></div><div class="ttdeci">virtual void bind() const =0</div><div class="ttdoc">Binds the index buffer as the active buffer in the graphics pipeline.</div></div>
 <div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_index_buffer_html_ad42e1350b41fc7af6db4f9ada2751274"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_index_buffer.html#ad42e1350b41fc7af6db4f9ada2751274">nexo::renderer::NxIndexBuffer::getCount</a></div><div class="ttdeci">virtual size_t getCount() const =0</div><div class="ttdoc">Retrieves the number of indices in the index buffer.</div></div>
-<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_vertex_buffer_html"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html">nexo::renderer::NxVertexBuffer</a></div><div class="ttdoc">Abstract class representing a vertex buffer in the graphics pipeline.</div><div class="ttdef"><b>Definition:</b> Buffer.hpp:203</div></div>
+<div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_vertex_buffer_html"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html">nexo::renderer::NxVertexBuffer</a></div><div class="ttdoc">Abstract class representing a vertex buffer in the graphics pipeline.</div><div class="ttdef"><b>Definition:</b> Buffer.hpp:207</div></div>
 <div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_vertex_buffer_html_a336c3e29b3a9d33bd3ed9e2b86b245a5"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#a336c3e29b3a9d33bd3ed9e2b86b245a5">nexo::renderer::NxVertexBuffer::getLayout</a></div><div class="ttdeci">virtual NxBufferLayout getLayout() const =0</div><div class="ttdoc">Retrieves the layout of the vertex buffer.</div></div>
 <div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_vertex_buffer_html_a5795cdb235c20fa3e7bd992a132e3aa9"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#a5795cdb235c20fa3e7bd992a132e3aa9">nexo::renderer::NxVertexBuffer::unbind</a></div><div class="ttdeci">virtual void unbind() const =0</div><div class="ttdoc">Unbinds the currently bound vertex buffer.</div></div>
 <div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_vertex_buffer_html_aa43c79d32d66c0530363b52c08e8cd84"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#aa43c79d32d66c0530363b52c08e8cd84">nexo::renderer::NxVertexBuffer::bind</a></div><div class="ttdeci">virtual void bind() const =0</div><div class="ttdoc">Binds the vertex buffer as the active buffer in the graphics pipeline.</div></div>
 <div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_vertex_buffer_html_aa9d2e0e46f81281d7f68730bd4c54e8a"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#aa9d2e0e46f81281d7f68730bd4c54e8a">nexo::renderer::NxVertexBuffer::~NxVertexBuffer</a></div><div class="ttdeci">virtual ~NxVertexBuffer()=default</div><div class="ttdoc">Destroys the vertex buffer.</div></div>
 <div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_vertex_buffer_html_ad97cf7940e2ebe96cfdb4c8321490704"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#ad97cf7940e2ebe96cfdb4c8321490704">nexo::renderer::NxVertexBuffer::setData</a></div><div class="ttdeci">virtual void setData(void *data, size_t size)=0</div><div class="ttdoc">Uploads new data to the vertex buffer.</div></div>
 <div class="ttc" id="aclassnexo_1_1renderer_1_1_nx_vertex_buffer_html_aebe18405e6bf4567bf4a216124995129"><div class="ttname"><a href="classnexo_1_1renderer_1_1_nx_vertex_buffer.html#aebe18405e6bf4567bf4a216124995129">nexo::renderer::NxVertexBuffer::setLayout</a></div><div class="ttdeci">virtual void setLayout(const NxBufferLayout &amp;layout)=0</div><div class="ttdoc">Sets the layout of the vertex buffer.</div></div>
-<div class="ttc" id="astructnexo_1_1renderer_1_1_nx_buffer_elements_html"><div class="ttname"><a href="structnexo_1_1renderer_1_1_nx_buffer_elements.html">nexo::renderer::NxBufferElements</a></div><div class="ttdoc">Represents an individual element in a buffer layout.</div><div class="ttdef"><b>Definition:</b> Buffer.hpp:104</div></div>
+<div class="ttc" id="astructnexo_1_1renderer_1_1_nx_buffer_elements_html"><div class="ttname"><a href="structnexo_1_1renderer_1_1_nx_buffer_elements.html">nexo::renderer::NxBufferElements</a></div><div class="ttdoc">Represents an individual element in a buffer layout.</div><div class="ttdef"><b>Definition:</b> Buffer.hpp:108</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->

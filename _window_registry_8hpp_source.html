@@ -90,193 +90,197 @@ $(document).ready(function(){initNavTree('_window_registry_8hpp_source.html','')
 <div class="contents">
 <div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span> </div>
 <div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="comment">//</span></div>
-<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">//  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz</span></div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">//  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">//  zzz   zzz   zzz  zzzzzzzzzzzzz         zzzz        zzzz             zzz</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">//  zzz    zzz  zzz  z                  zzzz  zzzz      zzzz           zzzz</span></div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">//  zzz         zzz  zzzzzzzzzzzzz    zzzz       zzz      zzzzzzz  zzzzz</span></div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">//</span></div>
-<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">//  Author:      Mehdy MORVAN</span></div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">//  Date:        24/03/2025</span></div>
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">//  Description: Header file for the window registry class</span></div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="comment">// ⢀⢀⢀⣤⣤⣤⡀⢀⢀⢀⢀⢀⢀⢠⣤⡄⢀⢀⢀⢀⣠⣤⣤⣤⣤⣤⣤⣤⣤⣤⡀⢀⢀⢀⢠⣤⣄⢀⢀⢀⢀⢀⢀⢀⣤⣤⢀⢀⢀⢀⢀⢀⢀⢀⣀⣄⢀⢀⢠⣄⣀⢀⢀⢀⢀⢀⢀⢀</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="comment">// ⢀⢀⢀⣿⣿⣿⣷⡀⢀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⡟⡛⡛⡛⡛⡛⡛⡛⢁⢀⢀⢀⢀⢻⣿⣦⢀⢀⢀⢀⢠⣾⡿⢃⢀⢀⢀⢀⢀⣠⣾⣿⢿⡟⢀⢀⡙⢿⢿⣿⣦⡀⢀⢀⢀⢀</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="comment">// ⢀⢀⢀⣿⣿⡛⣿⣷⡀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⡇⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⡙⣿⡷⢀⢀⣰⣿⡟⢁⢀⢀⢀⢀⢀⣾⣿⡟⢁⢀⢀⢀⢀⢀⢀⢀⡙⢿⣿⡆⢀⢀⢀</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="comment">// ⢀⢀⢀⣿⣿⢀⡈⢿⣷⡄⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⣇⣀⣀⣀⣀⣀⣀⣀⢀⢀⢀⢀⢀⢀⢀⡈⢀⢀⣼⣿⢏⢀⢀⢀⢀⢀⢀⣼⣿⡏⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⡘⣿⣿⢀⢀⢀</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="comment">// ⢀⢀⢀⣿⣿⢀⢀⡈⢿⣿⡄⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⣿⢿⢿⢿⢿⢿⢿⢿⢇⢀⢀⢀⢀⢀⢀⢀⢠⣾⣿⣧⡀⢀⢀⢀⢀⢀⢀⣿⣿⡇⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⣿⣿⢀⢀⢀</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">// ⢀⢀⢀⣿⣿⢀⢀⢀⡈⢿⣿⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⡇⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⣰⣿⡟⡛⣿⣷⡄⢀⢀⢀⢀⢀⢿⣿⣇⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⣿⣿⢀⢀⢀</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="comment">// ⢀⢀⢀⣿⣿⢀⢀⢀⢀⡈⢿⢀⢀⢸⣿⡇⢀⢀⢀⢀⡛⡟⢁⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⣼⣿⡟⢀⢀⡈⢿⣿⣄⢀⢀⢀⢀⡘⣿⣿⣄⢀⢀⢀⢀⢀⢀⢀⢀⢀⣼⣿⢏⢀⢀⢀</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">// ⢀⢀⢀⣿⣿⢀⢀⢀⢀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⢀⣀⣀⣀⣀⣀⣀⣀⣀⣀⡀⢀⢀⢀⣠⣾⡿⢃⢀⢀⢀⢀⢀⢻⣿⣧⡀⢀⢀⢀⡈⢻⣿⣷⣦⣄⢀⢀⣠⣤⣶⣿⡿⢋⢀⢀⢀⢀</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="comment">// ⢀⢀⢀⢿⢿⢀⢀⢀⢀⢀⢀⢀⢀⢸⢿⢃⢀⢀⢀⢀⢻⢿⢿⢿⢿⢿⢿⢿⢿⢿⢃⢀⢀⢀⢿⡟⢁⢀⢀⢀⢀⢀⢀⢀⡙⢿⡗⢀⢀⢀⢀⢀⡈⡉⡛⡛⢀⢀⢹⡛⢋⢁⢀⢀⢀⢀⢀⢀</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">//</span></div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment"></span><span class="preprocessor">#pragma once</span></div>
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span> </div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="preprocessor">#include &quot;IDocumentWindow.hpp&quot;</span></div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="preprocessor">#include &quot;DockingRegistry.hpp&quot;</span></div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="preprocessor">#include &quot;exceptions/Exceptions.hpp&quot;</span></div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="preprocessor">#include &quot;Logger.hpp&quot;</span></div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &lt;typeindex&gt;</span></div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &lt;ranges&gt;</span></div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span> </div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="keyword">namespace </span>nexo::editor {</div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    std::shared_ptr&lt;T&gt; castWindow(<span class="keyword">const</span> std::shared_ptr&lt;IDocumentWindow&gt;&amp; ptr)</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    {</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">return</span> std::static_pointer_cast&lt;T&gt;(ptr);</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    }</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    std::shared_ptr&lt;T&gt; castWindow(std::shared_ptr&lt;IDocumentWindow&gt;&amp; ptr)</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    {</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        <span class="keywordflow">return</span> std::static_pointer_cast&lt;T&gt;(ptr);</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    }</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_window_registry.html">   62</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1editor_1_1_window_registry.html">WindowRegistry</a> {</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keyword">public</span>:</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="keywordtype">bool</span> hasWindow(<span class="keyword">const</span> std::string &amp;windowName)<span class="keyword"> const</span></div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span><span class="keyword">            </span>{</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[type, windows] : m_windows) {</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                    <span class="keywordflow">if</span> (std::ranges::any_of(windows, [&amp;windowName](<span class="keyword">const</span> <span class="keyword">auto</span> &amp;window) {</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                            <span class="keywordflow">return</span> window-&gt;getWindowName() == windowName;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                        })) {</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                        }</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                }</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            }</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span> </div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>            <span class="keyword">requires</span> std::derived_from&lt;T, IDocumentWindow&gt;</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_window_registry.html#a6b7aa383f22d28833b40fada263d180d">   90</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a6b7aa383f22d28833b40fada263d180d">registerWindow</a>(std::shared_ptr&lt;T&gt; window)</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>            {</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>                <span class="keyword">auto</span> &amp;windowsOfType = m_windows[<span class="keyword">typeid</span>(T)];</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>                <span class="keywordflow">if</span> (std::ranges::any_of(windowsOfType, [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span> &amp;existingWindow) {</div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                        <span class="keywordflow">return</span> existingWindow-&gt;getWindowName() == window-&gt;getWindowName();</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>                    }))</div>
-<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                {</div>
-<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                    THROW_EXCEPTION(<a class="code hl_class" href="classnexo_1_1editor_1_1_window_already_registered.html">WindowAlreadyRegistered</a>, <span class="keyword">typeid</span>(T), window-&gt;getWindowName());</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                }</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                windowsOfType.push_back(window);</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>            }</div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span> </div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>            <span class="keyword">requires</span> std::derived_from&lt;T, IDocumentWindow&gt;</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_window_registry.html#a9c392da3f437f9ff19bb4f4d73e80650">  114</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a9c392da3f437f9ff19bb4f4d73e80650">unregisterWindow</a>(<span class="keyword">const</span> std::string &amp;windowName)</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>            {</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>                <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a> = m_windows.find(<span class="keyword">typeid</span>(T));</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a> == m_windows.end()) {</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                    LOG(NEXO_WARN, <span class="stringliteral">&quot;Window of type {} not found&quot;</span>, <span class="keyword">typeid</span>(T).name());</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                }</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                <span class="keyword">auto</span> &amp;windowsOfType = <a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a>-&gt;second;</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                <span class="keyword">auto</span> found = std::ranges::find_if(windowsOfType, [&amp;windowName](<span class="keyword">const</span> <span class="keyword">auto</span> &amp;w) {</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                    <span class="keywordflow">return</span> w-&gt;getWindowName() == windowName;</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>                });</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span> </div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                <span class="keywordflow">if</span> (found == windowsOfType.end()) {</div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                    LOG(NEXO_WARN, <span class="stringliteral">&quot;Window of type {} with name {} not found&quot;</span>, <span class="keyword">typeid</span>(T).name(), windowName);</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                }</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span> </div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                windowsOfType.erase(found);</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>            }</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
-<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>            <span class="keyword">requires</span> std::derived_from&lt;T, IDocumentWindow&gt;</div>
-<div class="line"><a id="l00148" name="l00148"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_window_registry.html#a1a25c51fb4d4602de0312b70fb7e4e50">  148</a></span>            std::weak_ptr&lt;T&gt; getWindow(<span class="keyword">const</span> std::string &amp;windowName)<span class="keyword"> const</span></div>
-<div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span><span class="keyword">            </span>{</div>
-<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>                <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a> = m_windows.find(<span class="keyword">typeid</span>(T));</div>
-<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a> == m_windows.end())</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span>                {</div>
-<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>                    LOG(NEXO_WARN, <span class="stringliteral">&quot;Window of type {} not found&quot;</span>, <span class="keyword">typeid</span>(T).name());</div>
-<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>                    <span class="keywordflow">return</span> {};</div>
-<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>                }</div>
-<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span> </div>
-<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>                <span class="keyword">auto</span> &amp;windowsOfType = <a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a>-&gt;second;</div>
-<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>                <span class="keyword">auto</span> found = std::ranges::find_if(windowsOfType, [&amp;windowName](<span class="keyword">const</span> <span class="keyword">auto</span> &amp;w) {</div>
-<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>                    <span class="keywordflow">return</span> w-&gt;getWindowName() == windowName;</div>
-<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span>                });</div>
-<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
-<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>                <span class="keywordflow">if</span> (found == windowsOfType.end())</div>
-<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>                {</div>
-<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                    LOG(NEXO_WARN, <span class="stringliteral">&quot;Window of type {} with name {} not found&quot;</span>, <span class="keyword">typeid</span>(T).name(), windowName);</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>                    <span class="keywordflow">return</span> {};</div>
-<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>                }</div>
-<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span> </div>
-<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>                <span class="keywordflow">return</span> std::static_pointer_cast&lt;T&gt;(*found);</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>            }</div>
-<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span> </div>
-<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>            <span class="keyword">requires</span> std::derived_from&lt;T, IDocumentWindow&gt;</div>
-<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span>            std::ranges::transform_view&lt;</div>
-<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>                std::ranges::ref_view&lt;const std::vector&lt;std::shared_ptr&lt;IDocumentWindow&gt;&gt;&gt;,</div>
-<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>                std::shared_ptr&lt;T&gt;(*)(<span class="keyword">const</span> std::shared_ptr&lt;IDocumentWindow&gt;&amp;)</div>
-<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>            &gt;</div>
-<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>            getWindows() <span class="keyword">const</span></div>
-<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>            {</div>
-<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>                <span class="comment">// Helper: non-capturing function for casting:</span></div>
-<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>                std::shared_ptr&lt;T&gt;(*caster)(<span class="keyword">const</span> std::shared_ptr&lt;IDocumentWindow&gt;&amp;) = &amp;castWindow&lt;T&gt;;</div>
-<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span> </div>
-<div class="line"><a id="l00194" name="l00194"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">  194</a></span>                <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a> = m_windows.find(<span class="keyword">typeid</span>(T));</div>
-<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a> == m_windows.end()) {</div>
-<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>                    <span class="keyword">static</span> <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;IDocumentWindow&gt;&gt; empty;</div>
-<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span>                    <span class="keywordflow">return</span> std::ranges::transform_view(std::ranges::ref_view(empty), caster);</div>
-<div class="line"><a id="l00198" name="l00198"></a><span class="lineno">  198</span>                }</div>
-<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>                <span class="keywordflow">return</span> std::ranges::transform_view(std::ranges::ref_view(<a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a>-&gt;second), caster);</div>
-<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>            }</div>
-<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span> </div>
-<div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>            <span class="keyword">requires</span> std::derived_from&lt;T, IDocumentWindow&gt;</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span>            std::ranges::transform_view&lt;</div>
-<div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>                std::ranges::ref_view&lt;std::vector&lt;std::shared_ptr&lt;IDocumentWindow&gt;&gt;&gt;,</div>
-<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>                std::shared_ptr&lt;T&gt;(*)(std::shared_ptr&lt;IDocumentWindow&gt;&amp;)</div>
-<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            &gt;</div>
-<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            getWindows()</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>            {</div>
-<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>                <span class="comment">// Helper: non-capturing function for casting:</span></div>
-<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>                std::shared_ptr&lt;T&gt;(*caster)(std::shared_ptr&lt;IDocumentWindow&gt;&amp;) = &amp;castWindow&lt;T&gt;;</div>
-<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span> </div>
-<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>                <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a> = m_windows.find(<span class="keyword">typeid</span>(T));</div>
-<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a> == m_windows.end()) {</div>
-<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>                    <span class="keyword">static</span> std::vector&lt;std::shared_ptr&lt;IDocumentWindow&gt;&gt; empty;</div>
-<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>                    <span class="keywordflow">return</span> std::ranges::transform_view(std::ranges::ref_view(empty), caster);</div>
-<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>                }</div>
-<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>                <span class="keywordflow">return</span> std::ranges::transform_view(std::ranges::ref_view(<a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a>-&gt;second), caster);</div>
-<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>            }</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span> </div>
-<div class="line"><a id="l00241" name="l00241"></a><span class="lineno">  241</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a0ed98791adc8f744685090a4fdea114c">setDockId</a>(<span class="keyword">const</span> std::string&amp; name, ImGuiID <span class="keywordtype">id</span>);</div>
-<div class="line"><a id="l00242" name="l00242"></a><span class="lineno">  242</span> </div>
-<div class="line"><a id="l00252" name="l00252"></a><span class="lineno">  252</span>            std::optional&lt;ImGuiID&gt; <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a90c58ba036099b9bf9af637dbe10bf9f">getDockId</a>(<span class="keyword">const</span> std::string&amp; name) <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span> </div>
-<div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>            std::shared_ptr&lt;IDocumentWindow&gt; getFocusedWindow() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span> </div>
-<div class="line"><a id="l00265" name="l00265"></a><span class="lineno">  265</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a8c86999f2263ab95f426d944d245d443">resetDockId</a>(<span class="keyword">const</span> std::string &amp;name);</div>
-<div class="line"><a id="l00266" name="l00266"></a><span class="lineno">  266</span> </div>
-<div class="line"><a id="l00273" name="l00273"></a><span class="lineno">  273</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a38bbbe6bebf332fade0d9fd46a9925d6">setup</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00274" name="l00274"></a><span class="lineno">  274</span> </div>
-<div class="line"><a id="l00280" name="l00280"></a><span class="lineno">  280</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a335bd16da43451ef190a5d8e1563d5c5">shutdown</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00281" name="l00281"></a><span class="lineno">  281</span> </div>
-<div class="line"><a id="l00288" name="l00288"></a><span class="lineno">  288</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#ad63029fafd46a69a3c51c81e39d376a8">update</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00289" name="l00289"></a><span class="lineno">  289</span> </div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a32cfcee58903c379236b485b2410ca3c">render</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span> </div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>        <span class="keyword">private</span>:</div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>            std::unordered_map&lt;std::type_index, std::vector&lt;std::shared_ptr&lt;IDocumentWindow&gt;&gt;&gt; m_windows;</div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span> </div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>            DockingRegistry m_dockingRegistry;</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>    };</div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>}</div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_window_already_registered_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_already_registered.html">nexo::editor::WindowAlreadyRegistered</a></div><div class="ttdef"><b>Definition:</b> Exceptions.hpp:69</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html">nexo::editor::WindowRegistry</a></div><div class="ttdef"><b>Definition:</b> WindowRegistry.hpp:62</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a0ed98791adc8f744685090a4fdea114c"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a0ed98791adc8f744685090a4fdea114c">nexo::editor::WindowRegistry::setDockId</a></div><div class="ttdeci">void setDockId(const std::string &amp;name, ImGuiID id)</div><div class="ttdoc">Assigns a docking identifier to a window.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.cpp:41</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a32cfcee58903c379236b485b2410ca3c"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a32cfcee58903c379236b485b2410ca3c">nexo::editor::WindowRegistry::render</a></div><div class="ttdeci">void render() const</div><div class="ttdoc">Renders all open windows.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.cpp:80</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a335bd16da43451ef190a5d8e1563d5c5"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a335bd16da43451ef190a5d8e1563d5c5">nexo::editor::WindowRegistry::shutdown</a></div><div class="ttdeci">void shutdown() const</div><div class="ttdoc">Shuts down all registered windows.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.cpp:30</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a38bbbe6bebf332fade0d9fd46a9925d6"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a38bbbe6bebf332fade0d9fd46a9925d6">nexo::editor::WindowRegistry::setup</a></div><div class="ttdeci">void setup() const</div><div class="ttdoc">Initializes all managed windows.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.cpp:19</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a6b7aa383f22d28833b40fada263d180d"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a6b7aa383f22d28833b40fada263d180d">nexo::editor::WindowRegistry::registerWindow</a></div><div class="ttdeci">void registerWindow(std::shared_ptr&lt; T &gt; window)</div><div class="ttdoc">Adds a document window instance to the registry.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.hpp:90</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a8c86999f2263ab95f426d944d245d443"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a8c86999f2263ab95f426d944d245d443">nexo::editor::WindowRegistry::resetDockId</a></div><div class="ttdeci">void resetDockId(const std::string &amp;name)</div><div class="ttdoc">Removes a window's docking identifier.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.cpp:64</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a90c58ba036099b9bf9af637dbe10bf9f"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a90c58ba036099b9bf9af637dbe10bf9f">nexo::editor::WindowRegistry::getDockId</a></div><div class="ttdeci">std::optional&lt; ImGuiID &gt; getDockId(const std::string &amp;name) const</div><div class="ttdoc">Retrieves the docking identifier associated with a specified window.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.cpp:46</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a9c392da3f437f9ff19bb4f4d73e80650"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a9c392da3f437f9ff19bb4f4d73e80650">nexo::editor::WindowRegistry::unregisterWindow</a></div><div class="ttdeci">void unregisterWindow(const std::string &amp;windowName)</div><div class="ttdoc">Removes a window from the registry.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.hpp:114</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_ad63029fafd46a69a3c51c81e39d376a8"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#ad63029fafd46a69a3c51c81e39d376a8">nexo::editor::WindowRegistry::update</a></div><div class="ttdeci">void update() const</div><div class="ttdoc">Updates all registered windows.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.cpp:69</div></div>
-<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_af2bc25fe1c7a43318da41c3e0c442f09"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">nexo::editor::WindowRegistry::it</a></div><div class="ttdeci">const auto it</div><div class="ttdoc">Retrieves a mutable range view of document windows cast to a specified derived type.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.hpp:194</div></div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span><span class="comment">//  Author:      Mehdy MORVAN</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">//  Date:        24/03/2025</span></div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="comment">//  Description: Header file for the window registry class</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">//</span></div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span><span class="comment"></span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span> </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span><span class="preprocessor">#include &quot;IDocumentWindow.hpp&quot;</span></div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="preprocessor">#include &quot;DockingRegistry.hpp&quot;</span></div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="preprocessor">#include &quot;exceptions/Exceptions.hpp&quot;</span></div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="preprocessor">#include &quot;Logger.hpp&quot;</span></div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span> </div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="preprocessor">#include &lt;typeindex&gt;</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &lt;algorithm&gt;</span></div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span><span class="preprocessor">#include &lt;ranges&gt;</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span> </div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="keyword">namespace </span>nexo::editor {</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    std::shared_ptr&lt;T&gt; castWindow(<span class="keyword">const</span> std::shared_ptr&lt;IDocumentWindow&gt;&amp; ptr)</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    {</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>        <span class="keywordflow">return</span> std::static_pointer_cast&lt;T&gt;(ptr);</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    }</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    std::shared_ptr&lt;T&gt; castWindow(std::shared_ptr&lt;IDocumentWindow&gt;&amp; ptr)</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    {</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">return</span> std::static_pointer_cast&lt;T&gt;(ptr);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    }</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span> </div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_window_registry.html">   66</a></span>    <span class="keyword">class </span><a class="code hl_class" href="classnexo_1_1editor_1_1_window_registry.html">WindowRegistry</a> {</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>        <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span> </div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            <span class="keywordtype">bool</span> hasWindow(<span class="keyword">const</span> std::string &amp;windowName)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">            </span>{</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span> &amp;[type, windows] : m_windows) {</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                    <span class="keywordflow">if</span> (std::ranges::any_of(windows, [&amp;windowName](<span class="keyword">const</span> <span class="keyword">auto</span> &amp;window) {</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                            <span class="keywordflow">return</span> window-&gt;getWindowName() == windowName;</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                        })) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                        }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                }</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>            }</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>            <span class="keyword">requires</span> std::derived_from&lt;T, IDocumentWindow&gt;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_window_registry.html#a6b7aa383f22d28833b40fada263d180d">   94</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a6b7aa383f22d28833b40fada263d180d">registerWindow</a>(std::shared_ptr&lt;T&gt; window)</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>            {</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>                <span class="keyword">auto</span> &amp;windowsOfType = m_windows[<span class="keyword">typeid</span>(T)];</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>                <span class="keywordflow">if</span> (std::ranges::any_of(windowsOfType, [&amp;](<span class="keyword">const</span> <span class="keyword">auto</span> &amp;existingWindow) {</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>                        <span class="keywordflow">return</span> existingWindow-&gt;getWindowName() == window-&gt;getWindowName();</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>                    }))</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>                {</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>                    THROW_EXCEPTION(<a class="code hl_class" href="classnexo_1_1editor_1_1_window_already_registered.html">WindowAlreadyRegistered</a>, <span class="keyword">typeid</span>(T), window-&gt;getWindowName());</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>                }</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>                windowsOfType.push_back(window);</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>            }</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>            <span class="keyword">requires</span> std::derived_from&lt;T, IDocumentWindow&gt;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_window_registry.html#a9c392da3f437f9ff19bb4f4d73e80650">  118</a></span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a9c392da3f437f9ff19bb4f4d73e80650">unregisterWindow</a>(<span class="keyword">const</span> std::string &amp;windowName)</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>            {</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>                <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a> = m_windows.find(<span class="keyword">typeid</span>(T));</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a> == m_windows.end()) {</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                    LOG(NEXO_WARN, <span class="stringliteral">&quot;Window of type {} not found&quot;</span>, <span class="keyword">typeid</span>(T).name());</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>                    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>                }</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                <span class="keyword">auto</span> &amp;windowsOfType = <a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a>-&gt;second;</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                <span class="keyword">auto</span> found = std::ranges::find_if(windowsOfType, [&amp;windowName](<span class="keyword">const</span> <span class="keyword">auto</span> &amp;w) {</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>                    <span class="keywordflow">return</span> w-&gt;getWindowName() == windowName;</div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>                });</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span> </div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>                <span class="keywordflow">if</span> (found == windowsOfType.end()) {</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>                    LOG(NEXO_WARN, <span class="stringliteral">&quot;Window of type {} with name {} not found&quot;</span>, <span class="keyword">typeid</span>(T).name(), windowName);</div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>                    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>                }</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span> </div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>                windowsOfType.erase(found);</div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span>            }</div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span> </div>
+<div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>            <span class="keyword">requires</span> std::derived_from&lt;T, IDocumentWindow&gt;</div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_window_registry.html#a1a25c51fb4d4602de0312b70fb7e4e50">  152</a></span>            std::weak_ptr&lt;T&gt; getWindow(<span class="keyword">const</span> std::string &amp;windowName)<span class="keyword"> const</span></div>
+<div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span><span class="keyword">            </span>{</div>
+<div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>                <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a> = m_windows.find(<span class="keyword">typeid</span>(T));</div>
+<div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a> == m_windows.end())</div>
+<div class="line"><a id="l00156" name="l00156"></a><span class="lineno">  156</span>                {</div>
+<div class="line"><a id="l00157" name="l00157"></a><span class="lineno">  157</span>                    LOG(NEXO_WARN, <span class="stringliteral">&quot;Window of type {} not found&quot;</span>, <span class="keyword">typeid</span>(T).name());</div>
+<div class="line"><a id="l00158" name="l00158"></a><span class="lineno">  158</span>                    <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00159" name="l00159"></a><span class="lineno">  159</span>                }</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno">  160</span> </div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>                <span class="keyword">auto</span> &amp;windowsOfType = <a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a>-&gt;second;</div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>                <span class="keyword">auto</span> found = std::ranges::find_if(windowsOfType, [&amp;windowName](<span class="keyword">const</span> <span class="keyword">auto</span> &amp;w) {</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>                    <span class="keywordflow">return</span> w-&gt;getWindowName() == windowName;</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                });</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span> </div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>                <span class="keywordflow">if</span> (found == windowsOfType.end())</div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>                {</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>                    LOG(NEXO_WARN, <span class="stringliteral">&quot;Window of type {} with name {} not found&quot;</span>, <span class="keyword">typeid</span>(T).name(), windowName);</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>                    <span class="keywordflow">return</span> {};</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>                }</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>                <span class="keywordflow">return</span> std::static_pointer_cast&lt;T&gt;(*found);</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span>            }</div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span> </div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span>            <span class="keyword">requires</span> std::derived_from&lt;T, IDocumentWindow&gt;</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>            std::ranges::transform_view&lt;</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                std::ranges::ref_view&lt;const std::vector&lt;std::shared_ptr&lt;IDocumentWindow&gt;&gt;&gt;,</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>                std::shared_ptr&lt;T&gt;(*)(<span class="keyword">const</span> std::shared_ptr&lt;IDocumentWindow&gt;&amp;)</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span>            &gt;</div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span>            getWindows() <span class="keyword">const</span></div>
+<div class="line"><a id="l00194" name="l00194"></a><span class="lineno">  194</span>            {</div>
+<div class="line"><a id="l00195" name="l00195"></a><span class="lineno">  195</span>                <span class="comment">// Helper: non-capturing function for casting:</span></div>
+<div class="line"><a id="l00196" name="l00196"></a><span class="lineno">  196</span>                std::shared_ptr&lt;T&gt;(*caster)(<span class="keyword">const</span> std::shared_ptr&lt;IDocumentWindow&gt;&amp;) = &amp;castWindow&lt;T&gt;;</div>
+<div class="line"><a id="l00197" name="l00197"></a><span class="lineno">  197</span> </div>
+<div class="line"><a id="l00198" name="l00198"></a><span class="lineno"><a class="line" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">  198</a></span>                <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a> = m_windows.find(<span class="keyword">typeid</span>(T));</div>
+<div class="line"><a id="l00199" name="l00199"></a><span class="lineno">  199</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a> == m_windows.end()) {</div>
+<div class="line"><a id="l00200" name="l00200"></a><span class="lineno">  200</span>                    <span class="keyword">static</span> <span class="keyword">const</span> std::vector&lt;std::shared_ptr&lt;IDocumentWindow&gt;&gt; empty;</div>
+<div class="line"><a id="l00201" name="l00201"></a><span class="lineno">  201</span>                    <span class="keywordflow">return</span> std::ranges::transform_view(std::ranges::ref_view(empty), caster);</div>
+<div class="line"><a id="l00202" name="l00202"></a><span class="lineno">  202</span>                }</div>
+<div class="line"><a id="l00203" name="l00203"></a><span class="lineno">  203</span>                <span class="keywordflow">return</span> std::ranges::transform_view(std::ranges::ref_view(<a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a>-&gt;second), caster);</div>
+<div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>            }</div>
+<div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span> </div>
+<div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span>            <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>            <span class="keyword">requires</span> std::derived_from&lt;T, IDocumentWindow&gt;</div>
+<div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>            std::ranges::transform_view&lt;</div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span>                std::ranges::ref_view&lt;std::vector&lt;std::shared_ptr&lt;IDocumentWindow&gt;&gt;&gt;,</div>
+<div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>                std::shared_ptr&lt;T&gt;(*)(std::shared_ptr&lt;IDocumentWindow&gt;&amp;)</div>
+<div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>            &gt;</div>
+<div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>            getWindows()</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno">  225</span>            {</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>                <span class="comment">// Helper: non-capturing function for casting:</span></div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>                std::shared_ptr&lt;T&gt;(*caster)(std::shared_ptr&lt;IDocumentWindow&gt;&amp;) = &amp;castWindow&lt;T&gt;;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span> </div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>                <span class="keyword">const</span> <span class="keyword">auto</span> <a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a> = m_windows.find(<span class="keyword">typeid</span>(T));</div>
+<div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>                <span class="keywordflow">if</span> (<a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a> == m_windows.end()) {</div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>                    <span class="keyword">static</span> std::vector&lt;std::shared_ptr&lt;IDocumentWindow&gt;&gt; empty;</div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span>                    <span class="keywordflow">return</span> std::ranges::transform_view(std::ranges::ref_view(empty), caster);</div>
+<div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>                }</div>
+<div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span>                <span class="keywordflow">return</span> std::ranges::transform_view(std::ranges::ref_view(<a class="code hl_variable" href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">it</a>-&gt;second), caster);</div>
+<div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>            }</div>
+<div class="line"><a id="l00236" name="l00236"></a><span class="lineno">  236</span> </div>
+<div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a0ed98791adc8f744685090a4fdea114c">setDockId</a>(<span class="keyword">const</span> std::string&amp; name, ImGuiID <span class="keywordtype">id</span>);</div>
+<div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span> </div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>            std::optional&lt;ImGuiID&gt; <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a90c58ba036099b9bf9af637dbe10bf9f">getDockId</a>(<span class="keyword">const</span> std::string&amp; name) <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span> </div>
+<div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span>            std::shared_ptr&lt;IDocumentWindow&gt; getFocusedWindow() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span> </div>
+<div class="line"><a id="l00269" name="l00269"></a><span class="lineno">  269</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a8c86999f2263ab95f426d944d245d443">resetDockId</a>(<span class="keyword">const</span> std::string &amp;name);</div>
+<div class="line"><a id="l00270" name="l00270"></a><span class="lineno">  270</span> </div>
+<div class="line"><a id="l00277" name="l00277"></a><span class="lineno">  277</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a38bbbe6bebf332fade0d9fd46a9925d6">setup</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00278" name="l00278"></a><span class="lineno">  278</span> </div>
+<div class="line"><a id="l00284" name="l00284"></a><span class="lineno">  284</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a335bd16da43451ef190a5d8e1563d5c5">shutdown</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00285" name="l00285"></a><span class="lineno">  285</span> </div>
+<div class="line"><a id="l00292" name="l00292"></a><span class="lineno">  292</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#ad63029fafd46a69a3c51c81e39d376a8">update</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span> </div>
+<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>            <span class="keywordtype">void</span> <a class="code hl_function" href="classnexo_1_1editor_1_1_window_registry.html#a32cfcee58903c379236b485b2410ca3c">render</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span> </div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>        <span class="keyword">private</span>:</div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>            std::unordered_map&lt;std::type_index, std::vector&lt;std::shared_ptr&lt;IDocumentWindow&gt;&gt;&gt; m_windows;</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span> </div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>            DockingRegistry m_dockingRegistry;</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    };</div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>}</div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_window_already_registered_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_already_registered.html">nexo::editor::WindowAlreadyRegistered</a></div><div class="ttdef"><b>Definition:</b> Exceptions.hpp:73</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html">nexo::editor::WindowRegistry</a></div><div class="ttdef"><b>Definition:</b> WindowRegistry.hpp:66</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a0ed98791adc8f744685090a4fdea114c"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a0ed98791adc8f744685090a4fdea114c">nexo::editor::WindowRegistry::setDockId</a></div><div class="ttdeci">void setDockId(const std::string &amp;name, ImGuiID id)</div><div class="ttdoc">Assigns a docking identifier to a window.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.cpp:45</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a32cfcee58903c379236b485b2410ca3c"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a32cfcee58903c379236b485b2410ca3c">nexo::editor::WindowRegistry::render</a></div><div class="ttdeci">void render() const</div><div class="ttdoc">Renders all open windows.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.cpp:84</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a335bd16da43451ef190a5d8e1563d5c5"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a335bd16da43451ef190a5d8e1563d5c5">nexo::editor::WindowRegistry::shutdown</a></div><div class="ttdeci">void shutdown() const</div><div class="ttdoc">Shuts down all registered windows.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.cpp:34</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a38bbbe6bebf332fade0d9fd46a9925d6"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a38bbbe6bebf332fade0d9fd46a9925d6">nexo::editor::WindowRegistry::setup</a></div><div class="ttdeci">void setup() const</div><div class="ttdoc">Initializes all managed windows.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.cpp:23</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a6b7aa383f22d28833b40fada263d180d"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a6b7aa383f22d28833b40fada263d180d">nexo::editor::WindowRegistry::registerWindow</a></div><div class="ttdeci">void registerWindow(std::shared_ptr&lt; T &gt; window)</div><div class="ttdoc">Adds a document window instance to the registry.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.hpp:94</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a8c86999f2263ab95f426d944d245d443"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a8c86999f2263ab95f426d944d245d443">nexo::editor::WindowRegistry::resetDockId</a></div><div class="ttdeci">void resetDockId(const std::string &amp;name)</div><div class="ttdoc">Removes a window's docking identifier.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.cpp:68</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a90c58ba036099b9bf9af637dbe10bf9f"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a90c58ba036099b9bf9af637dbe10bf9f">nexo::editor::WindowRegistry::getDockId</a></div><div class="ttdeci">std::optional&lt; ImGuiID &gt; getDockId(const std::string &amp;name) const</div><div class="ttdoc">Retrieves the docking identifier associated with a specified window.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.cpp:50</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_a9c392da3f437f9ff19bb4f4d73e80650"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#a9c392da3f437f9ff19bb4f4d73e80650">nexo::editor::WindowRegistry::unregisterWindow</a></div><div class="ttdeci">void unregisterWindow(const std::string &amp;windowName)</div><div class="ttdoc">Removes a window from the registry.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.hpp:118</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_ad63029fafd46a69a3c51c81e39d376a8"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#ad63029fafd46a69a3c51c81e39d376a8">nexo::editor::WindowRegistry::update</a></div><div class="ttdeci">void update() const</div><div class="ttdoc">Updates all registered windows.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.cpp:73</div></div>
+<div class="ttc" id="aclassnexo_1_1editor_1_1_window_registry_html_af2bc25fe1c7a43318da41c3e0c442f09"><div class="ttname"><a href="classnexo_1_1editor_1_1_window_registry.html#af2bc25fe1c7a43318da41c3e0c442f09">nexo::editor::WindowRegistry::it</a></div><div class="ttdeci">const auto it</div><div class="ttdoc">Retrieves a mutable range view of document windows cast to a specified derived type.</div><div class="ttdef"><b>Definition:</b> WindowRegistry.hpp:198</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
