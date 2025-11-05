@@ -81,6 +81,7 @@ set(COMMON_SOURCES
         engine/src/scripting/native/Scripting.cpp
         engine/src/scripting/native/HostString.cpp
         engine/src/scripting/native/NativeApi.cpp
+        engine/src/core/crash/CrashTracker.cpp
 )
 
 # Add API-specific sources
@@ -131,8 +132,8 @@ find_package(assimp CONFIG REQUIRED)
 target_link_libraries(nexoRenderer PRIVATE assimp::assimp)
 
 # boost-dll
-find_package(Boost CONFIG REQUIRED COMPONENTS dll)
-target_link_libraries(nexoRenderer PRIVATE Boost::dll)
+find_package(Boost CONFIG REQUIRED COMPONENTS dll uuid)
+target_link_libraries(nexoRenderer PRIVATE Boost::dll Boost::uuid)
 
 # joltphysics
 find_package(Jolt CONFIG REQUIRED)
@@ -152,6 +153,31 @@ if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
     find_package(glfw3 CONFIG REQUIRED)
     find_package(glad CONFIG REQUIRED)
     target_link_libraries(nexoRenderer PRIVATE OpenGL::GL glfw glad::glad)
+endif()
+
+###########################################
+# Sentry Crash Tracking
+###########################################
+
+if(NEXO_ENABLE_SENTRY OR NEXO_SENTRY_DEBUG_MODE)
+    find_package(sentry CONFIG REQUIRED)
+    target_link_libraries(nexoRenderer PRIVATE sentry::sentry)
+
+    if(NEXO_ENABLE_SENTRY)
+        target_compile_definitions(nexoRenderer PRIVATE NEXO_SENTRY_ENABLED)
+        message(STATUS "Sentry crash tracking enabled (production mode)")
+    endif()
+
+    if(NEXO_SENTRY_DEBUG_MODE)
+        target_compile_definitions(nexoRenderer PRIVATE NEXO_SENTRY_DEBUG_MODE)
+        message(STATUS "Sentry debug mode enabled (local file output)")
+    endif()
+
+    if(DEFINED ENV{SENTRY_RELEASE})
+        target_compile_definitions(nexoRenderer PRIVATE NEXO_SENTRY_RELEASE="$ENV{SENTRY_RELEASE}")
+    elseif(DEFINED PROJECT_VERSION)
+        target_compile_definitions(nexoRenderer PRIVATE NEXO_SENTRY_RELEASE="${PROJECT_VERSION}")
+    endif()
 endif()
 
 target_compile_definitions(nexoRenderer PRIVATE NEXO_EXPORT)

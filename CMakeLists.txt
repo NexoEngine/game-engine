@@ -13,6 +13,15 @@ set(NEXO_BOOTSTRAP_VCPKG OFF CACHE BOOL "Enable vcpkg bootstrap")
 set(NEXO_BUILD_TESTS ON CACHE BOOL "Enable tests")
 set(NEXO_BUILD_EXAMPLES OFF CACHE BOOL "Enable examples")
 set(NEXO_GRAPHICS_API "OpenGL" CACHE STRING "Graphics API to use")
+set(NEXO_ENABLE_SENTRY ON CACHE BOOL "Enable Sentry crash tracking")
+set(NEXO_SENTRY_DEBUG_MODE OFF CACHE BOOL "Enable Sentry debug mode (local file output)")
+
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(NEXO_ENABLE_SENTRY OFF CACHE BOOL "Enable Sentry crash tracking" FORCE)
+    if (NOT DEFINED NEXO_SENTRY_DEBUG_MODE OR NEXO_SENTRY_DEBUG_MODE)
+        set(NEXO_SENTRY_DEBUG_MODE ON CACHE BOOL "Enable Sentry debug mode (local file output)" FORCE)
+    endif()
+endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(NEXO_COMPILER_FLAGS_ALL --std=c++${CMAKE_CXX_STANDARD})
@@ -23,15 +32,25 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(NEXO_LINKER_FLAGS_ALL "")
     set(NEXO_LINKER_FLAGS_DEBUG "")
     set(NEXO_LINKER_FLAGS_RELEASE "-flto")
+
+    if (NEXO_ENABLE_SENTRY OR NEXO_SENTRY_DEBUG_MODE)
+        list(APPEND NEXO_COMPILER_FLAGS_RELEASE -g -funwind-tables -fno-omit-frame-pointer)
+        list(APPEND NEXO_COMPILER_FLAGS_DEBUG -funwind-tables -fno-omit-frame-pointer)
+    endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(NEXO_COMPILER_FLAGS_ALL /nologo /W4 /std:c++${CMAKE_CXX_STANDARD} /Zc:preprocessor /utf-8)
     set(NEXO_COMPILER_FLAGS_DEBUG /Zi /Od /Zc:preprocessor /MDd /D_DEBUG /D_ITERATOR_DEBUG_LEVEL=2 /D_SECURE_SCL=1)
     set(NEXO_COMPILER_FLAGS_RELEASE /O2 /Zc:preprocessor /DNDEBUG /MD)
-    set(NEXO_COVERAGE_FLAGS "")  # MSVC doesn't support coverage in the same way
+    set(NEXO_COVERAGE_FLAGS "")
 
     set(NEXO_LINKER_FLAGS_ALL "")
     set(NEXO_LINKER_FLAGS_DEBUG "")
     set(NEXO_LINKER_FLAGS_RELEASE "/LTCG")
+
+    if (NEXO_ENABLE_SENTRY OR NEXO_SENTRY_DEBUG_MODE)
+        list(APPEND NEXO_COMPILER_FLAGS_RELEASE /Zi)
+        list(APPEND NEXO_LINKER_FLAGS_RELEASE /DEBUG /OPT:REF /OPT:ICF)
+    endif()
 else()
     message(WARNING "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}, using default flags")
 endif()
@@ -105,6 +124,39 @@ endif()
 message(STATUS "Running VCPKG...")
 include("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
 message(STATUS "VCPKG done.")
+
+# SENTRY CONFIGURATION
+if (NEXO_ENABLE_SENTRY OR NEXO_SENTRY_DEBUG_MODE)
+    message(STATUS "Sentry crash tracking enabled")
+    find_package(sentry CONFIG REQUIRED)
+
+    if (NEXO_ENABLE_SENTRY)
+        add_compile_definitions(NEXO_SENTRY_ENABLED)
+        message(STATUS "  Mode: Production (network reporting)")
+    endif()
+
+    if (NEXO_SENTRY_DEBUG_MODE)
+        add_compile_definitions(NEXO_SENTRY_DEBUG_MODE)
+        message(STATUS "  Mode: Debug (local file output)")
+    endif()
+
+    find_package(Git QUIET)
+    if(GIT_FOUND)
+        execute_process(
+            COMMAND ${GIT_EXECUTABLE} describe --tags --always --dirty
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            OUTPUT_VARIABLE NEXO_GIT_VERSION
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            ERROR_QUIET
+        )
+        if(NEXO_GIT_VERSION)
+            add_compile_definitions(NEXO_SENTRY_RELEASE="${NEXO_GIT_VERSION}")
+            message(STATUS "  Release version: ${NEXO_GIT_VERSION}")
+        endif()
+    endif()
+else()
+    message(STATUS "Sentry crash tracking disabled")
+endif()
 
 # SETUP EDITOR
 include("${CMAKE_CURRENT_SOURCE_DIR}/editor/CMakeLists.txt")

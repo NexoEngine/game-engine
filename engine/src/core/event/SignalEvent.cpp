@@ -18,10 +18,19 @@
 
 #include "SignalEvent.hpp"
 
+#if defined(NEXO_SENTRY_ENABLED) || defined(NEXO_SENTRY_DEBUG_MODE)
+#include "core/crash/CrashTracker.hpp"
+#endif
+
 namespace nexo::event {
 
     void SignalHandler::signalHandler(const int signal)
     {
+#if defined(NEXO_SENTRY_ENABLED) || defined(NEXO_SENTRY_DEBUG_MODE)
+        if (auto tracker = crash::CrashTracker::getInstance(); tracker->isInitialized()) {
+            tracker->addBreadcrumb("Signal received, emitting EventAnySignal", "signal", "warning");
+        }
+#endif
         emitEventToAll<EventAnySignal>(signal);
         switch (signal)
         {

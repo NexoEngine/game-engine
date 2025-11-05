@@ -1,4 +1,4 @@
-//// Exception.cpp ////////////////////////////////////////////////////////////
+//// PrivacyConsentDialog.hpp ////////////////////////////////////////////////
 //
 // ⢀⢀⢀⣤⣤⣤⡀⢀⢀⢀⢀⢀⢀⢠⣤⡄⢀⢀⢀⢀⣠⣤⣤⣤⣤⣤⣤⣤⣤⣤⡀⢀⢀⢀⢠⣤⣄⢀⢀⢀⢀⢀⢀⢀⣤⣤⢀⢀⢀⢀⢀⢀⢀⢀⣀⣄⢀⢀⢠⣄⣀⢀⢀⢀⢀⢀⢀⢀
 // ⢀⢀⢀⣿⣿⣿⣷⡀⢀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⡟⡛⡛⡛⡛⡛⡛⡛⢁⢀⢀⢀⢀⢻⣿⣦⢀⢀⢀⢀⢠⣾⡿⢃⢀⢀⢀⢀⢀⣠⣾⣿⢿⡟⢀⢀⡙⢿⢿⣿⣦⡀⢀⢀⢀⢀
@@ -10,53 +10,38 @@
 // ⢀⢀⢀⣿⣿⢀⢀⢀⢀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⢀⣀⣀⣀⣀⣀⣀⣀⣀⣀⡀⢀⢀⢀⣠⣾⡿⢃⢀⢀⢀⢀⢀⢻⣿⣧⡀⢀⢀⢀⡈⢻⣿⣷⣦⣄⢀⢀⣠⣤⣶⣿⡿⢋⢀⢀⢀⢀
 // ⢀⢀⢀⢿⢿⢀⢀⢀⢀⢀⢀⢀⢀⢸⢿⢃⢀⢀⢀⢀⢻⢿⢿⢿⢿⢿⢿⢿⢿⢿⢃⢀⢀⢀⢿⡟⢁⢀⢀⢀⢀⢀⢀⢀⡙⢿⡗⢀⢀⢀⢀⢀⡈⡉⡛⡛⢀⢀⢹⡛⢋⢁⢀⢀⢀⢀⢀⢀
 //
-//  Author:      Mehdy MORVAN
-//  Date:        12/11/2024
-//  Description: Source for the nexo exception base class
+//  Author:      Jean CARDONNE
+//  Date:        05/11/2025
+//  Description: Privacy consent dialog for crash reporting
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "Exception.hpp"
+#pragma once
 
-#include <format>
+#include <imgui.h>
+#include <string>
 
-#if defined(NEXO_SENTRY_ENABLED) || defined(NEXO_SENTRY_DEBUG_MODE)
-namespace nexo::crash { class CrashTracker; }
-#endif
+namespace nexo::editor {
 
-namespace nexo {
-    const char *Exception::what() const noexcept
-    {
-        return m_formattedMessage.c_str();
-    }
+    class PrivacyConsentDialog {
+        public:
+            PrivacyConsentDialog() = default;
+            ~PrivacyConsentDialog() = default;
 
-    const std::string& Exception::getMessage() const noexcept
-    {
-        return m_unformattedMessage;
-    }
+            bool shouldShow() const { return m_shouldShow; }
 
-    const std::string& Exception::getFormattedMessage() const noexcept
-    {
-        return m_formattedMessage;
-    }
+            void show();
 
-    const char* Exception::getFile() const noexcept
-    {
-        return m_location.file_name();
-    }
+            void checkAndShow();
 
-    unsigned int Exception::getLine() const noexcept
-    {
-        return m_location.line();
-    }
+        private:
+            bool m_shouldShow = false;
+            bool m_crashReportingConsent = true;
+            bool m_performanceMonitoringConsent = false;
+            bool m_dialogInitialized = false;
 
-    const char* Exception::getFunction() const noexcept
-    {
-        return m_location.function_name();
-    }
+            void saveConsent();
+            bool hasExistingConsent() const;
+    };
 
-    const std::source_location& Exception::getSourceLocation() const noexcept
-    {
-        return m_location;
-    }
 }
