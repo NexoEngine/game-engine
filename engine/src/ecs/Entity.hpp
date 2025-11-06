@@ -91,6 +91,6 @@ namespace nexo::ecs {
         std::deque<Entity> m_availableEntities{};
         std::vector<Entity> m_livingEntities{};
 
-        std::array<Signature, MAX_ENTITIES> m_signatures{};
+        std::array<Signature, MAX_ENTITIES> m_signatures;
     };
 } // namespace nexo::ecs
