@@ -21,6 +21,9 @@
 #include "components/Transform.hpp"
 #include "systems/PhysicsSystem.hpp"
 
+#include <Jolt/Physics/Body/BodyLockInterface.h>
+#include <Jolt/Physics/Body/MotionProperties.h>
+
 namespace nexo::editor {
 
     void PhysicsBodyProperty::show(const ecs::Entity entity)
@@ -51,12 +54,228 @@ namespace nexo::editor {
             }
 
             ImGui::Separator();
-            ImGui::Text("Body ID: %u", physicsBody.bodyID.GetIndex());
 
             const auto& app = Application::getInstance();
             if (const auto physicsSystem = app.getPhysicsSystem()) {
-                const bool isActive = physicsSystem->getBodyInterface()->IsActive(physicsBody.bodyID);
-                ImGui::Text("Active: %s", isActive ? "Yes" : "No");
+                auto* bodyInterface = physicsSystem->getBodyInterface();
+                const JPH::BodyID bodyID = physicsBody.bodyID;
+
+                // Debug Info Section
+                ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+                ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+                ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+                ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+                const bool debugOpen = ImGui::CollapsingHeader("Debug Information", ImGuiTreeNodeFlags_DefaultOpen);
+                ImGui::PopStyleColor(4);
+
+                if (debugOpen) {
+                    ImGui::Text("Body ID: %u", bodyID.GetIndex());
+                    const bool isActive = bodyInterface->IsActive(bodyID);
+                    ImGui::Text("Active: %s", isActive ? "Yes" : "No");
+
+                    // Position (read-only, comes from transform)
+                    const JPH::Vec3 pos = bodyInterface->GetPosition(bodyID);
+                    ImGui::Text("Position: (%.2f, %.2f, %.2f)", pos.GetX(), pos.GetY(), pos.GetZ());
+                }
+
+                // Only show physics properties for dynamic bodies
+                if (currentType == components::PhysicsBodyComponent::Type::Dynamic) {
+
+                    // Mass Properties
+                    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+                    const bool massOpen = ImGui::CollapsingHeader("Mass Properties", ImGuiTreeNodeFlags_DefaultOpen);
+                    ImGui::PopStyleColor(4);
+
+                    if (massOpen) {
+                        // Get mass info (read-only for now as Jolt mass editing requires shape recreation)
+                        const auto lockInterface = physicsSystem->getBodyLockInterface();
+                        JPH::BodyLockRead lock(*lockInterface, bodyID);
+                        if (lock.Succeeded()) {
+                            const JPH::Body& body = lock.GetBody();
+                            const JPH::MotionProperties* motionProps = body.GetMotionProperties();
+
+                            if (motionProps) {
+                                const float invMass = motionProps->GetInverseMass();
+                                const float mass = invMass > 0.0f ? 1.0f / invMass : 0.0f;
+
+                                ImGui::Text("Mass: %.3f kg", mass);
+                                ImGui::Text("Inverse Mass: %.6f", invMass);
+
+                                if (ImGui::IsItemHovered()) {
+                                    ImGui::SetTooltip("Mass is determined by shape and density.\nRecreate body to change mass.");
+                                }
+                            }
+                        }
+                    }
+
+                    // Velocity Controls
+                    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+                    const bool velocityOpen = ImGui::CollapsingHeader("Velocity", ImGuiTreeNodeFlags_DefaultOpen);
+                    ImGui::PopStyleColor(4);
+
+                    if (velocityOpen) {
+                        // Linear Velocity
+                        JPH::Vec3 linVel = bodyInterface->GetLinearVelocity(bodyID);
+                        float linVelArray[3] = {linVel.GetX(), linVel.GetY(), linVel.GetZ()};
+
+                        if (ImGui::DragFloat3("Linear Velocity", linVelArray, 0.1f, -100.0f, 100.0f, "%.2f m/s")) {
+                            bodyInterface->SetLinearVelocity(bodyID, JPH::Vec3(linVelArray[0], linVelArray[1], linVelArray[2]));
+                        }
+
+                        // Angular Velocity
+                        JPH::Vec3 angVel = bodyInterface->GetAngularVelocity(bodyID);
+                        float angVelArray[3] = {angVel.GetX(), angVel.GetY(), angVel.GetZ()};
+
+                        if (ImGui::DragFloat3("Angular Velocity", angVelArray, 0.1f, -10.0f, 10.0f, "%.2f rad/s")) {
+                            bodyInterface->SetAngularVelocity(bodyID, JPH::Vec3(angVelArray[0], angVelArray[1], angVelArray[2]));
+                        }
+
+                        // Quick reset button
+                        if (ImGui::Button("Reset Velocities")) {
+                            bodyInterface->SetLinearVelocity(bodyID, JPH::Vec3::sZero());
+                            bodyInterface->SetAngularVelocity(bodyID, JPH::Vec3::sZero());
+                        }
+                    }
+
+                    // Physics Material Properties
+                    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+                    const bool materialOpen = ImGui::CollapsingHeader("Material Properties", ImGuiTreeNodeFlags_DefaultOpen);
+                    ImGui::PopStyleColor(4);
+
+                    if (materialOpen) {
+                        const auto lockInterface = physicsSystem->getBodyLockInterface();
+                        JPH::BodyLockRead lock(*lockInterface, bodyID);
+                        if (lock.Succeeded()) {
+                            const JPH::Body& body = lock.GetBody();
+
+                            // Friction
+                            float friction = body.GetFriction();
+                            if (ImGui::SliderFloat("Friction", &friction, 0.0f, 1.0f, "%.3f")) {
+                                bodyInterface->SetFriction(bodyID, friction);
+                            }
+                            if (ImGui::IsItemHovered()) {
+                                ImGui::SetTooltip("Surface friction (0 = ice, 1 = rubber)");
+                            }
+
+                            // Restitution (Bounciness)
+                            float restitution = body.GetRestitution();
+                            if (ImGui::SliderFloat("Restitution", &restitution, 0.0f, 1.0f, "%.3f")) {
+                                bodyInterface->SetRestitution(bodyID, restitution);
+                            }
+                            if (ImGui::IsItemHovered()) {
+                                ImGui::SetTooltip("Bounciness (0 = no bounce, 1 = perfect bounce)");
+                            }
+                        }
+                    }
+
+                    // Constraints and Limits
+                    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+                    const bool constraintsOpen = ImGui::CollapsingHeader("Constraints and Limits");
+                    ImGui::PopStyleColor(4);
+
+                    if (constraintsOpen) {
+                        const auto lockInterface = physicsSystem->getBodyLockInterface();
+
+                        // Read current values
+                        float linearDamping = 0.0f;
+                        float angularDamping = 0.0f;
+                        float maxLinVel = 0.0f;
+                        float maxAngVel = 0.0f;
+
+                        {
+                            JPH::BodyLockRead readLock(*lockInterface, bodyID);
+                            if (readLock.Succeeded()) {
+                                const JPH::Body& body = readLock.GetBody();
+                                const JPH::MotionProperties* motionProps = body.GetMotionProperties();
+
+                                if (motionProps) {
+                                    linearDamping = motionProps->GetLinearDamping();
+                                    angularDamping = motionProps->GetAngularDamping();
+                                    maxLinVel = motionProps->GetMaxLinearVelocity();
+                                    maxAngVel = motionProps->GetMaxAngularVelocity();
+                                }
+                            }
+                        }
+
+                        // Display and edit
+                        bool needsUpdate = false;
+                        float newLinearDamping = linearDamping;
+                        float newAngularDamping = angularDamping;
+
+                        if (ImGui::SliderFloat("Linear Damping", &newLinearDamping, 0.0f, 1.0f, "%.3f")) {
+                            needsUpdate = true;
+                        }
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("Resistance to linear motion (air resistance)");
+                        }
+
+                        if (ImGui::SliderFloat("Angular Damping", &newAngularDamping, 0.0f, 1.0f, "%.3f")) {
+                            needsUpdate = true;
+                        }
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("Resistance to rotation");
+                        }
+
+                        // Apply changes if needed
+                        if (needsUpdate) {
+                            JPH::BodyLockWrite writeLock(*lockInterface, bodyID);
+                            if (writeLock.Succeeded()) {
+                                JPH::Body& body = writeLock.GetBody();
+                                JPH::MotionProperties* motionProps = body.GetMotionProperties();
+
+                                if (motionProps) {
+                                    motionProps->SetLinearDamping(newLinearDamping);
+                                    motionProps->SetAngularDamping(newAngularDamping);
+                                }
+                            }
+                        }
+
+                        ImGui::Text("Max Linear Velocity: %.1f m/s", maxLinVel);
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("Maximum linear velocity (set by physics system)");
+                        }
+
+                        ImGui::Text("Max Angular Velocity: %.1f rad/s", maxAngVel);
+                        if (ImGui::IsItemHovered()) {
+                            ImGui::SetTooltip("Maximum angular velocity (set by physics system)");
+                        }
+                    }
+
+                    // Real-time Visual Feedback
+                    ImGui::PushStyleColor(ImGuiCol_Header, ImVec4(0.2f, 0.2f, 0.2f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.3f, 0.3f, 0.3f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.15f, 0.15f, 0.15f, 1.0f));
+                    ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(1.0f, 1.0f, 1.0f, 1.0f));
+                    const bool debugVizOpen = ImGui::CollapsingHeader("Real-time Debug Visualization");
+                    ImGui::PopStyleColor(4);
+
+                    if (debugVizOpen) {
+                        static bool showVelocity = false;
+                        static bool showForces = false;
+
+                        ImGui::Checkbox("Show Velocity Arrows", &showVelocity);
+                        ImGui::Checkbox("Show Applied Forces", &showForces);
+
+                        if (showVelocity) {
+                            const JPH::Vec3 linVel = bodyInterface->GetLinearVelocity(bodyID);
+                            const float speed = linVel.Length();
+                            ImGui::Text("Current Speed: %.2f m/s", speed);
+                            ImGui::ProgressBar(speed / 50.0f, ImVec2(-1, 0));
+                        }
+                    }
+                }
             }
 
             ImGui::TreePop();
@@ -161,3 +380,4 @@ namespace nexo::editor {
     }
 
 } // namespace nexo::editor
+
