@@ -19,10 +19,10 @@
 #include <variant>
 #include <vector>
 
+#include "Json.hpp"
 #include "Asset.hpp"
 #include "AssetCatalog.hpp"
 #include "AssetImporterInput.hpp"
-#include "json.hpp"
 
 namespace nexo::assets {
     struct AssetDependency;

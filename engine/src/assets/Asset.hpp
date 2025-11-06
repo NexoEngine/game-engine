@@ -20,9 +20,9 @@
 #include <cstdint>
 #include <filesystem>
 
+#include "Json.hpp"
 #include "AssetLocation.hpp"
 #include "AssetRef.hpp"
-#include "json.hpp"
 
 #undef ERROR // Avoid conflict with Windows.h
 

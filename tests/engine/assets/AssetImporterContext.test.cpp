@@ -12,13 +12,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <gtest/gtest.h>
 #include "assets/AssetImporterContext.hpp"
+#include <gtest/gtest.h>
+#include "Json.hpp"
 #include "assets/Asset.hpp"
 #include "assets/AssetCatalog.hpp"
-#include "assets/Assets/Texture/Texture.hpp"
 #include "assets/Assets/Model/Model.hpp"
-#include "json.hpp"
+#include "assets/Assets/Texture/Texture.hpp"
 
 namespace nexo::assets {
 

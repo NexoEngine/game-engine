@@ -26,6 +26,7 @@
 #include <loguru.hpp>
 #include <thread>
 
+#include "components/TransformSerializer.hpp"
 #include "scripting/native/ManagedTypedef.hpp"
 #include "scripting/native/Scripting.hpp"
 
@@ -52,6 +53,16 @@ try {
         defaultScene->setDefault();
 
     editor.init();
+
+    nexo::components::TransformComponent testTransform = {
+        .pos  = glm::vec3(0.0f, 0.0f, 0.0f),
+        .size = glm::vec3(1.0f, 1.0f, 1.0f),
+        .quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f),
+    };
+
+    nexo::json transformJson;
+    nexo::save::serialize(transformJson, testTransform);
+    LOG(NEXO_INFO, "Serialized TransformComponent: {}", transformJson.dump(4));
 
     while (editor.isOpen()) {
         auto start = std::chrono::high_resolution_clock::now();
