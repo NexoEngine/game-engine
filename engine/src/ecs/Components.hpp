@@ -324,6 +324,36 @@ namespace nexo::ecs {
         }
 
         /**
+         * @brief Adds a component to an entity using type ID and constructor
+         *
+         * Adds the component using the component type ID and a constructor function,
+         * useful for runtime component type handling. Updates any groups that
+         * match the entity's new signature.
+         *
+         * @param entity The entity to add the component to
+         * @param componentType The type ID of the component to add
+         * @param constructor Pointer to the constructor function
+         * @param oldSignature The entity's signature before adding the component
+         * @param newSignature The entity's signature after adding the component
+         *
+         * @pre componentType must be a valid-registered component type
+         */
+        void addComponentWithConstructor(const Entity entity, const ComponentType componentType,
+                                         void (*constructor)(void* memoryDst), const Signature oldSignature,
+                                         const Signature newSignature)
+        {
+            getComponentArray(componentType)->insertRawWithConstructor(entity, constructor);
+
+            for (const auto& group : std::ranges::views::values(m_groupRegistry)) {
+                // Check if entity qualifies now but did not qualify before.
+                if (((oldSignature & group->allSignature()) != group->allSignature()) &&
+                    ((newSignature & group->allSignature()) == group->allSignature())) {
+                    group->addToGroup(entity);
+                }
+            }
+        }
+
+        /**
          * @brief Removes a component from an entity using type ID
          *
          * Removes the component using the component type ID and updates any groups that
