@@ -140,7 +140,8 @@ namespace nexo::ecs {
         void registerComponent(const std::string& displayName = "")
         {
             m_componentManager->registerComponent<T>();
-            addComponentDescription(getComponentType<T>(), ComponentDescription{displayName, {}, true});
+            addComponentDescription(getComponentType<T>(),
+                                    ComponentDescription{displayName, {}, true, [](void* memoryDst) { new (memoryDst) T{}; }});
 
             m_getComponentFunctions[typeid(T)] = [this](const Entity entity) -> std::any {
                 return this->getComponent<T>(entity);
@@ -265,6 +266,30 @@ namespace nexo::ecs {
             const Signature oldSignature = signature;
             signature.set(componentType, true);
             m_componentManager->addComponent(entity, componentType, componentData, oldSignature, signature);
+
+            m_entityManager->setSignature(entity, signature);
+
+            m_systemManager->entitySignatureChanged(entity, oldSignature, signature);
+        }
+
+        /**
+         * @brief Adds a component to an entity using ComponentType, default-constructs it,
+         * updates its signature, and notifies systems.
+         *
+         * @param entity - The ID of the entity.
+         * @param componentType - The ID of the component type to add.
+         */
+        void addComponentWithDefault(const Entity entity, const ComponentType componentType) const
+        {
+            Signature signature          = m_entityManager->getSignature(entity);
+            const Signature oldSignature = signature;
+            signature.set(componentType, true);
+            const auto& componentDescription = m_componentDescriptions.at(componentType);
+            if (componentDescription == nullptr) {
+                THROW_EXCEPTION(ComponentNotRegistered);
+            }
+            m_componentManager->addComponentWithConstructor(entity, componentType, componentDescription->constructor, oldSignature,
+                                                            signature);
 
             m_entityManager->setSignature(entity, signature);
 

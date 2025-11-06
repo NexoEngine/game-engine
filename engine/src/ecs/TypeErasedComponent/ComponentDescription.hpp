@@ -28,9 +28,10 @@
 namespace nexo::ecs {
 
     struct ComponentDescription {
-        std::string name;          // Name of the component
-        std::vector<Field> fields; // List of fields in the component
-        bool internalComponent = false; // Indicates if the component is internal
+        std::string name;                     // Name of the component
+        std::vector<Field> fields;            // List of fields in the component
+        bool internalComponent = false;       // Indicates if the component is internal
+        void (*constructor)(void* memoryDst); // Pointer to the constructor function
     };
 
 } // namespace nexo::ecs

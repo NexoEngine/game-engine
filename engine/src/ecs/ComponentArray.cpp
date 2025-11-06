@@ -64,6 +64,32 @@ namespace nexo::ecs {
         ++m_size;
     }
 
+    void TypeErasedComponentArray::insertRawWithConstructor(Entity entity, void (*constructor)(void* memoryDst))
+    {
+        if (entity >= MAX_ENTITIES) THROW_EXCEPTION(OutOfRange, entity);
+
+        ensureSparseCapacity(entity);
+
+        if (hasComponent(entity)) {
+            LOG(NEXO_WARN, "Entity {} already has component", entity);
+            return;
+        }
+
+        const size_t newIndex = m_size;
+        m_sparse[entity]      = newIndex;
+        m_dense.push_back(entity);
+
+        // Resize component data vector if needed
+        const size_t requiredSize = (m_size + 1) * m_componentSize;
+        if (m_componentData.size() < requiredSize) {
+            m_componentData.resize(requiredSize);
+        }
+
+        // Call the constructor to initialize the component in place
+        constructor(m_componentData.data());
+        ++m_size;
+    }
+
     void TypeErasedComponentArray::remove(const Entity entity)
     {
         if (!hasComponent(entity)) THROW_EXCEPTION(ComponentNotFound, entity);
