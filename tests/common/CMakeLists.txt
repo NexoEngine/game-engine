@@ -37,6 +37,10 @@ add_executable(common_tests
     ${BASEDIR}/Exceptions.test.cpp
     ${BASEDIR}/Vector.test.cpp
     ${BASEDIR}/Light.test.cpp
+    ${BASEDIR}/save/Serialization.test.cpp
+    ${BASEDIR}/save/SerializationContext.test.cpp
+    ${BASEDIR}/save/SerializationFocused.test.cpp
+    ${BASEDIR}/save/SerializationIntegration.test.cpp
 )
 
 # Find glm and add its include directories
