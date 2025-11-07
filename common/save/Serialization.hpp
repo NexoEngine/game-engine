@@ -24,6 +24,7 @@
 
 #include "Json.hpp"
 #include "SerializationContext.hpp"
+#include "SerializationException.hpp"
 
 namespace nexo::save {
 
@@ -143,7 +144,7 @@ namespace nexo::save {
 
     template<typename T>
     void deserialize(const json& j, T& value, const SerializationContext& ctx = SerializationContext{}) {
-        const uint32_t data_version = j.value("version", 0u);
+        const uint32_t data_version = j.is_object() ? j.value("version", 0u) : 0u;
         deserialize<T>(j, value, data_version, ctx);
     }
 
