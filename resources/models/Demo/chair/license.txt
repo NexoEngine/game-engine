@@ -1,0 +1,11 @@
+Model Information:
+* title:	white simple chaire
+* source:	https://sketchfab.com/3d-models/white-simple-chaire-a548da7b94a64c4cac50aaa24a68ea98
+* author:	brahimsemlali (https://sketchfab.com/brahimsemlali)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "white simple chaire" (https://sketchfab.com/3d-models/white-simple-chaire-a548da7b94a64c4cac50aaa24a68ea98) by brahimsemlali (https://sketchfab.com/brahimsemlali) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -435,7 +435,7 @@ namespace nexo {
          * @param state New GameState to set
          * Resets video system when entering play mode
          */
-        void setGameState(GameState state)
+        void setGameState(const GameState state)
         {
             m_gameState = state;
             if (state == GameState::PLAY_MODE) {

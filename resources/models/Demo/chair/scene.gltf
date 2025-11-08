@@ -1,0 +1,415 @@
+{
+  "accessors": [
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 866,
+      "max": [
+        24.53413200378418,
+        26.471158981323242,
+        40.47617721557617
+      ],
+      "min": [
+        -29.25679588317871,
+        -13.807650566101074,
+        -0.47617799043655396
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 10392,
+      "componentType": 5126,
+      "count": 866,
+      "max": [
+        0.9996898174285889,
+        0.9999985098838806,
+        0.9999971389770508
+      ],
+      "min": [
+        -0.9998701214790344,
+        -0.9999626278877258,
+        -0.999997079372406
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "componentType": 5125,
+      "count": 5184,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 20784,
+      "componentType": 5126,
+      "count": 324,
+      "max": [
+        38.36161422729492,
+        21.268617630004883,
+        0.7500004768371582
+      ],
+      "min": [
+        -33.304527282714844,
+        -22.322603225708008,
+        -0.7500004172325134
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 24672,
+      "componentType": 5126,
+      "count": 324,
+      "max": [
+        0.9794855713844299,
+        0.9998832941055298,
+        1.0
+      ],
+      "min": [
+        -0.9795172810554504,
+        -0.9999563694000244,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 20736,
+      "componentType": 5125,
+      "count": 1788,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 28560,
+      "componentType": 5126,
+      "count": 324,
+      "max": [
+        38.36161422729492,
+        21.268617630004883,
+        0.7500004768371582
+      ],
+      "min": [
+        -33.304527282714844,
+        -22.322603225708008,
+        -0.7500004172325134
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 1,
+      "byteOffset": 32448,
+      "componentType": 5126,
+      "count": 324,
+      "max": [
+        0.9794855713844299,
+        0.9998832941055298,
+        1.0
+      ],
+      "min": [
+        -0.9795172810554504,
+        -0.9999563694000244,
+        -1.0
+      ],
+      "type": "VEC3"
+    },
+    {
+      "bufferView": 0,
+      "byteOffset": 27888,
+      "componentType": 5125,
+      "count": 1788,
+      "type": "SCALAR"
+    }
+  ],
+  "asset": {
+    "extras": {
+      "author": "brahimsemlali (https://sketchfab.com/brahimsemlali)",
+      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
+      "source": "https://sketchfab.com/3d-models/white-simple-chaire-a548da7b94a64c4cac50aaa24a68ea98",
+      "title": "white simple chaire"
+    },
+    "generator": "Sketchfab-16.74.0",
+    "version": "2.0"
+  },
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteLength": 35040,
+      "name": "floatBufferViews",
+      "target": 34963
+    },
+    {
+      "buffer": 0,
+      "byteLength": 36336,
+      "byteOffset": 35040,
+      "byteStride": 12,
+      "name": "floatBufferViews",
+      "target": 34962
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 71376,
+      "uri": "scene.bin"
+    }
+  ],
+  "extensionsUsed": [
+    "KHR_materials_clearcoat"
+  ],
+  "materials": [
+    {
+      "doubleSided": true,
+      "name": "Material_290",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.992157,
+          0.952941,
+          0.862745,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.8659290123473531
+      }
+    },
+    {
+      "doubleSided": true,
+      "extensions": {
+        "KHR_materials_clearcoat": {
+          "clearcoatFactor": 1.0,
+          "clearcoatRoughnessFactor": 0.04
+        }
+      },
+      "name": "Material_291",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.5054543983643133,
+          0.49059636099178927,
+          0.49059636099178927,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.5626653338372078
+      }
+    }
+  ],
+  "meshes": [
+    {
+      "name": "furniture_megapack_1821_Material #290_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 1,
+            "POSITION": 0
+          },
+          "indices": 2,
+          "material": 0,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "furniture_megapack_1822_Material #291_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 4,
+            "POSITION": 3
+          },
+          "indices": 5,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    },
+    {
+      "name": "furniture_megapack_1823_Material #291_0",
+      "primitives": [
+        {
+          "attributes": {
+            "NORMAL": 7,
+            "POSITION": 6
+          },
+          "indices": 8,
+          "material": 1,
+          "mode": 4
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "children": [
+        1
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "Sketchfab_model"
+    },
+    {
+      "children": [
+        2
+      ],
+      "matrix": [
+        0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.009999999776482582,
+        0.0,
+        0.0,
+        -0.009999999776482582,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0
+      ],
+      "name": "0139_fbx.fbx"
+    },
+    {
+      "children": [
+        3
+      ],
+      "name": "RootNode"
+    },
+    {
+      "children": [
+        4,
+        6,
+        8
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        2.220446049250313e-16,
+        -1.0,
+        0.0,
+        0.0,
+        1.0,
+        2.220446049250313e-16,
+        0.0,
+        0.4419698715209961,
+        -3.6024856567382813,
+        -0.059882164001464844,
+        1.0
+      ],
+      "name": "01_139"
+    },
+    {
+      "children": [
+        5
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        -1.6292068472090193e-07,
+        0.9999999999999868,
+        0.0,
+        0.0,
+        -0.9999999999999868,
+        -1.6292068472090193e-07,
+        0.0,
+        2.2476511001586914,
+        20.0,
+        14.170428276062012,
+        1.0
+      ],
+      "name": "furniture_megapack_1821"
+    },
+    {
+      "mesh": 0,
+      "name": "furniture_megapack_1821_Material #290_0"
+    },
+    {
+      "children": [
+        7
+      ],
+      "matrix": [
+        0.766044495347444,
+        -0.6427874547146932,
+        -5.5511147922535377e-17,
+        0.0,
+        -1.0472337558242728e-07,
+        -1.2480449762541923e-07,
+        -0.9999999999999868,
+        0.0,
+        0.6427874547146848,
+        0.7660444953474339,
+        -1.6292067034713597e-07,
+        0.0,
+        -1.9387739896774292,
+        -1.0952353477478027e-06,
+        -19.372968673706055,
+        1.0
+      ],
+      "name": "furniture_megapack_1822"
+    },
+    {
+      "mesh": 1,
+      "name": "furniture_megapack_1822_Material #291_0"
+    },
+    {
+      "children": [
+        9
+      ],
+      "matrix": [
+        0.7660444790371865,
+        0.6427873814241227,
+        -0.0,
+        -0.0,
+        -7.665163337389203e-09,
+        9.134989653603043e-09,
+        -0.9999999999999999,
+        -0.0,
+        0.6427873814241227,
+        -0.7660444790371864,
+        -1.192487866183506e-08,
+        -0.0,
+        -1.9387739896774292,
+        -1.0952353477478027e-06,
+        -19.372968673706055,
+        1.0
+      ],
+      "name": "furniture_megapack_1823"
+    },
+    {
+      "mesh": 2,
+      "name": "furniture_megapack_1823_Material #291_0"
+    }
+  ],
+  "scene": 0,
+  "scenes": [
+    {
+      "name": "Sketchfab_Scene",
+      "nodes": [
+        0
+      ]
+    }
+  ]
+}
