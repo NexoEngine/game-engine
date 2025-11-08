@@ -3,8 +3,13 @@
 
 layout(location=0) in vec3 aPos;
 
-uniform mat4 uMatModel;
+uniform int uModelIndex;
+
 uniform vec3 uColor;
+
+layout(std430, binding = 0) buffer ModelMatrices {
+    mat4 uMatModelBuffer[];
+};
 
 layout(std140, binding = 1) uniform PerView {
     mat4 uViewProjection;
@@ -17,7 +22,9 @@ out vec3 vColor;
 void main()
 {
     vColor = uColor;
-    gl_Position = uViewProjection * uMatModel * vec4(aPos, 1.0);
+    mat4 model = uMatModelBuffer[uModelIndex];
+
+    gl_Position = uViewProjection * model * vec4(aPos, 1.0);
 }
 
 #type fragment

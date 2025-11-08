@@ -26,6 +26,7 @@
 #include "core/event/Input.hpp"
 #include "math/Projection.hpp"
 #include "math/Vector.hpp"
+#include "renderPasses/GPUResources.hpp"
 #include "renderPasses/Masks.hpp"
 #include "renderer/DrawCommand.hpp"
 #include "renderer/ShaderLibrary.hpp"
@@ -140,14 +141,17 @@ namespace nexo::system {
         return cmd;
     }
 
-    static renderer::DrawCommand createSelectedDrawCommand(const components::StaticMeshComponent &mesh,
+    renderer::DrawCommand RenderCommandSystem::createSelectedDrawCommand(const components::StaticMeshComponent &mesh,
                                                            const std::shared_ptr<assets::Material> &materialAsset,
-                                                           const components::TransformComponent &transform)
+                                                           int modelIndex)
     {
         PROFILE_SCOPE("RenderCommandSystem::createSelectedDrawCommand");
 
         renderer::DrawCommand cmd;
         cmd.vao             = mesh.vao;
+        if (!m_materialIDs.contains(materialAsset->getID()))
+            m_materialIDs[materialAsset->getID()] = m_lastMaterialID++;
+        cmd.materialId = m_materialIDs[materialAsset->getID()];
         const bool isOpaque = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->isOpaque : true;
         if (isOpaque) {
             cmd.shader = renderer::ShaderLibrary::getInstance().get("Flat color");
@@ -161,24 +165,27 @@ namespace nexo::system {
                 albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
             cmd.setUniform("uMaterial.albedoTexIndex", renderer::NxRenderer3D::get().getTextureIndex(albedoTexture));
         }
-        cmd.setUniform("uMatModel", transform.worldMatrix);
+        cmd.setUniform("uModelIndex", modelIndex);
         cmd.filterMask = 0;
         cmd.filterMask = renderer::F_OUTLINE_MASK;
         return cmd;
     }
 
-    static renderer::DrawCommand createDrawCommand(const ecs::Entity entity,
+    renderer::DrawCommand RenderCommandSystem::createDrawCommand(const ecs::Entity entity,
                                                    const std::shared_ptr<renderer::NxShader> &shader,
                                                    const components::StaticMeshComponent &mesh,
                                                    const std::shared_ptr<assets::Material> &materialAsset,
-                                                   const components::TransformComponent &transform)
+                                                   int modelIndex)
     {
         PROFILE_SCOPE("RenderCommandSystem::createDrawCommand");
 
         renderer::DrawCommand cmd;
         cmd.vao    = mesh.vao;
         cmd.shader = shader;
-        cmd.setUniform("uMatModel", transform.worldMatrix);
+        if (!m_materialIDs.contains(materialAsset->getID()))
+            m_materialIDs[materialAsset->getID()] = m_lastMaterialID++;
+        cmd.materialId = m_materialIDs[materialAsset->getID()];
+        cmd.setUniform("uModelIndex", modelIndex);
         cmd.setUniform("uEntityId", static_cast<int>(entity));
 
         {
@@ -251,6 +258,8 @@ namespace nexo::system {
 
         // Profile draw command creation
         std::vector<renderer::DrawCommand> drawCommands;
+        std::vector<glm::mat4> modelMatrices;
+        modelMatrices.reserve(partition->count);
         {
             PROFILE_SCOPE_ENTITIES("RenderCommandSystem::DrawCommandCreation", partition->count);
             drawCommands.reserve(partition->count * 2); // Pre-allocate for potential selected entities
@@ -273,21 +282,27 @@ namespace nexo::system {
                     if (!shader) continue;
                 }
 
-                drawCommands.push_back(createDrawCommand(entity, shader, meshSpan[i], materialAsset, transform));
+                drawCommands.push_back(createDrawCommand(entity, shader, meshSpan[i], materialAsset, modelMatrices.size()));
 
                 if (coord->entityHasComponent<components::SelectedTag>(entity)) {
-                    drawCommands.push_back(createSelectedDrawCommand(meshSpan[i], materialAsset, transform));
+                    drawCommands.push_back(createSelectedDrawCommand(meshSpan[i], materialAsset, modelMatrices.size()));
                 }
+                modelMatrices.push_back(transform.worldMatrix);
             }
         }
+
+        // std::sort(drawCommands.begin(), drawCommands.end(),
+        //     [](const renderer::DrawCommand& a, const renderer::DrawCommand& b) {
+        //         if (a.shader->getProgramId() != b.shader->getProgramId()) return a.shader->getProgramId() < b.shader->getProgramId();
+        //         if (a.materialId != b.materialId) return a.materialId < b.materialId;
+        //         return a.vao->getId() < b.vao->getId();
+        //     });
 
         // Profile camera and uniform setup
         {
             PROFILE_SCOPE_ENTITIES("RenderCommandSystem::CameraSetup", renderContext.cameras.size());
             for (auto &camera : renderContext.cameras) {
-                {
-                    PROFILE_SCOPE_ENTITIES("RenderCommandSystem::UniformUpdates", drawCommands.size());
-                }
+                camera.pipeline.setStorageBufferData(INSTANCE_BUFFER, modelMatrices.data(), sizeof(glm::mat4) * modelMatrices.size());
 
                 {
                     PROFILE_SCOPE("RenderCommandSystem::PipelineAddCommands");

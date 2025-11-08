@@ -16,6 +16,7 @@
 #include "Access.hpp"
 #include "DrawCommand.hpp"
 #include "GroupSystem.hpp"
+#include "assets/Asset.hpp"
 #include "components/MaterialComponent.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
@@ -61,5 +62,15 @@ namespace nexo::system {
         static void setupLights(renderer::RenderPipeline &pipeline, const components::LightContext& lightContext);
         void setupGlobalLights(std::unordered_map<std::string, renderer::UniformValue> &globalUniforms,
                                                    const components::LightContext &lightContext);
+        renderer::DrawCommand createDrawCommand(const ecs::Entity entity,
+                                                       const std::shared_ptr<renderer::NxShader> &shader,
+                                                       const components::StaticMeshComponent &mesh,
+                                                       const std::shared_ptr<assets::Material> &materialAsset,
+                                                       int modelIndex);
+        renderer::DrawCommand createSelectedDrawCommand(const components::StaticMeshComponent &mesh,
+                                                               const std::shared_ptr<assets::Material> &materialAsset,
+                                                               int modelIndex);
+        unsigned int m_lastMaterialID = 0;
+        std::unordered_map<assets::AssetID, unsigned int> m_materialIDs;
     };
 } // namespace nexo::system

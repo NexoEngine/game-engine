@@ -16,6 +16,7 @@
 #include "Application.hpp"
 #include "components/BillboardMesh.hpp"
 #include "components/Editor.hpp"
+#include "renderPasses/GPUResources.hpp"
 #include "renderPasses/Masks.hpp"
 #include "renderer/Renderer3D.hpp"
 #include "renderer/ShaderLibrary.hpp"
@@ -103,7 +104,7 @@ namespace nexo::system {
     static renderer::DrawCommand createSelectedDrawCommand(const glm::vec3 &cameraPosition,
                                                            const components::BillboardComponent &mesh,
                                                            const std::shared_ptr<assets::Material> &materialAsset,
-                                                           const components::TransformComponent &transform)
+                                                           int modelIndex)
     {
         renderer::DrawCommand cmd;
         cmd.vao             = mesh.vao;
@@ -120,9 +121,7 @@ namespace nexo::system {
                 albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
             cmd.uniforms["uMaterial.albedoTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(albedoTexture);
         }
-        const glm::mat4 &billboardRotation = createBillboardTransformMatrix(cameraPosition, transform);
-        cmd.uniforms["uMatModel"]          = glm::translate(glm::mat4(1.0f), transform.pos) * billboardRotation *
-                                    glm::scale(glm::mat4(1.0f), glm::vec3(transform.size.x, transform.size.y, 1.0f));
+        cmd.uniforms["uModelIndex"]     = modelIndex;
         cmd.filterMask = 0;
         cmd.filterMask = renderer::F_OUTLINE_MASK;
         return cmd;
@@ -132,14 +131,12 @@ namespace nexo::system {
                                                    const std::shared_ptr<renderer::NxShader> &shader,
                                                    const components::BillboardComponent &billboard,
                                                    const std::shared_ptr<assets::Material> &materialAsset,
-                                                   const components::TransformComponent &transform)
+                                                   int modelIndex)
     {
         renderer::DrawCommand cmd;
         cmd.vao                            = billboard.vao;
         cmd.shader                         = shader;
-        const glm::mat4 &billboardRotation = createBillboardTransformMatrix(cameraPosition, transform);
-        cmd.uniforms["uMatModel"]          = glm::translate(glm::mat4(1.0f), transform.pos) * billboardRotation *
-                                    glm::scale(glm::mat4(1.0f), glm::vec3(transform.size.x, transform.size.y, 1.0f));
+        cmd.uniforms["uModelIndex"]        = modelIndex;
         cmd.uniforms["uEntityId"] = static_cast<int>(entity);
 
         cmd.uniforms["uMaterial.albedoColor"] =
@@ -209,6 +206,9 @@ namespace nexo::system {
 
         for (auto &camera : renderContext.cameras) {
             std::vector<renderer::DrawCommand> drawCommands;
+            std::vector<glm::mat4> modelMatrices;
+            modelMatrices.reserve(partition->count);
+            const unsigned int instanceSsboCount = camera.pipeline.getStorageBufferSize(INSTANCE_BUFFER) / sizeof(glm::mat4);
             for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
                 const ecs::Entity entity = entitySpan[i];
                 if (coord->entityHasComponent<components::CameraComponent>(entity) && sceneType != SceneType::EDITOR)
@@ -220,21 +220,22 @@ namespace nexo::system {
                     materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : "";
                 auto shader = renderer::ShaderLibrary::getInstance().get(shaderStr);
                 auto cmd =
-                    createDrawCommand(entity, camera.cameraPosition, shader, billboard, materialAsset, transform);
-                cmd.uniforms["uViewProjection"] = camera.viewProjectionMatrix;
-                cmd.uniforms["uCamPos"]         = camera.cameraPosition;
-                setupLights(cmd, renderContext.sceneLights);
+                    createDrawCommand(entity, camera.cameraPosition, shader, billboard, materialAsset, modelMatrices.size() + instanceSsboCount);
                 drawCommands.push_back(cmd);
+
+                const glm::mat4 &billboardRotation = createBillboardTransformMatrix(camera.cameraPosition, transform);
+                const auto transformMatrix          = glm::translate(glm::mat4(1.0f), transform.pos) * billboardRotation *
+                                            glm::scale(glm::mat4(1.0f), glm::vec3(transform.size.x, transform.size.y, 1.0f));
 
                 if (coord->entityHasComponent<components::SelectedTag>(entity)) {
                     auto selectedCmd =
-                        createSelectedDrawCommand(camera.cameraPosition, billboard, materialAsset, transform);
-                    selectedCmd.uniforms["uViewProjection"] = camera.viewProjectionMatrix;
-                    selectedCmd.uniforms["uCamPos"]         = camera.cameraPosition;
-                    setupLights(selectedCmd, renderContext.sceneLights);
+                        createSelectedDrawCommand(camera.cameraPosition, billboard, materialAsset, modelMatrices.size() + instanceSsboCount);
                     drawCommands.push_back(selectedCmd);
                 }
+                modelMatrices.push_back(transformMatrix);
             }
+            camera.pipeline.appendStorageBufferData(INSTANCE_BUFFER, modelMatrices.data(), modelMatrices.size() * sizeof(glm::mat4));
+            modelMatrices.clear();
             camera.pipeline.addDrawCommands(drawCommands);
         }
     }

@@ -52,6 +52,8 @@ namespace nexo::renderer {
          */
         void setData(void* data, unsigned int size) override;
 
+        void appendData(void* data, unsigned int size) override;
+
         /**
          * @brief Returns the OpenGL buffer object ID.
          * @return The OpenGL buffer ID.
