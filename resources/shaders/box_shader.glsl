@@ -3,9 +3,14 @@
 
 layout(location=0) in vec3 aPos;
 
-uniform mat4 uViewProjection;
 uniform mat4 uMatModel;
 uniform vec3 uColor;
+
+layout(std140, binding = 1) uniform PerView {
+    mat4 uViewProjection;
+    vec3 uCamPos;
+    float _pad0;   // padding to satisfy std140 (vec3 takes 16 bytes)
+};
 
 out vec3 vColor;
 
