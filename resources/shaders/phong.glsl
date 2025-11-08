@@ -4,10 +4,18 @@ layout(location = 0) in vec3 aPos;
 layout(location = 1) in vec2 aTexCoord;
 layout(location = 2) in vec3 aNormal;
 
-uniform int uModelIndex;
+struct InstanceData {
+    mat4 model;
+    int  entityId;
+    // padding for std430: an int is 4 bytes, but the next element (if any)
+    // would need 16-byte alignment, so you can add 3 ints or a vec3 if needed later.
+    int _pad0;
+    int _pad1;
+    int _pad2;
+};
 
-layout(std430, binding = 0) buffer ModelMatrices {
-    mat4 uMatModelBuffer[];
+layout(std430, binding = 0) buffer Instances {
+    InstanceData uInstances[];
 };
 
 layout(std140, binding = 1) uniform PerView {
@@ -16,13 +24,19 @@ layout(std140, binding = 1) uniform PerView {
     float _pad0;   // padding to satisfy std140 (vec3 takes 16 bytes)
 };
 
+uniform int uInstanceOffset; // per-draw, shared across instances in this batch
+
 out vec3 vFragPos;
 out vec2 vTexCoord;
 out vec3 vNormal;
+flat out int vEntityId;
 
 void main()
 {
-    mat4 model = uMatModelBuffer[uModelIndex];
+    int idx = uInstanceOffset + int(gl_InstanceID);
+    mat4 model = uInstances[idx].model;
+    vEntityId = uInstances[idx].entityId;
+
     vec4 worldPos = model * vec4(aPos, 1.0);
     vFragPos = worldPos.xyz;
 
@@ -97,6 +111,7 @@ layout(std140, binding = 2) uniform LightBlock {
 in vec3 vFragPos;
 in vec2 vTexCoord;
 in vec3 vNormal;
+flat in int vEntityId;
 
 uniform sampler2D uTexture[32];
 
@@ -121,8 +136,6 @@ struct Material {
     int opacityTexIndex; // Default: 0 (white texture)
 };
 uniform Material uMaterial;
-
-uniform int uEntityId;
 
 vec3 CalcDirLight(DirectionalLight light, vec3 normal, vec3 viewDir)
 {
@@ -206,5 +219,5 @@ void main()
     }
 
     FragColor = vec4(result, 1.0);
-    EntityID = uEntityId;
+    EntityID = vEntityId;
 }
