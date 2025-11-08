@@ -37,21 +37,5 @@ namespace nexo::system {
          * If no billboard entities are found for the active scene, a warning is logged.
          */
         void update();
-
-       private:
-        /** @brief Sets up the lighting uniforms in the given shader.
-         *
-         * This static helper function binds the provided shader and sets uniforms for ambient, directional,
-         * point, and spotlights based on the current lightContext data. After updating the uniforms, the shader is
-         * unbound.
-         * @param cmd The draw command containing the shader to set up.
-         * @param lightContext The light context containing lighting information for the scene.
-         * @note The light context must contain valid values for:
-         *  - ambientLight
-         *  - directionalLights (and directionalLightCount)
-         *  - pointLights (and pointLightCount)
-         *  - spotLights (and spotLightCount)
-         */
-        static void setupLights(renderer::DrawCommand& cmd, const components::LightContext& lightContext);
     };
 } // namespace nexo::system

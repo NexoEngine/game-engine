@@ -16,6 +16,7 @@
 #include "Access.hpp"
 #include "DrawCommand.hpp"
 #include "GroupSystem.hpp"
+#include "VertexArray.hpp"
 #include "assets/Asset.hpp"
 #include "components/MaterialComponent.hpp"
 #include "components/RenderContext.hpp"
@@ -24,6 +25,31 @@
 #include "components/Transform.hpp"
 
 namespace nexo::system {
+
+    struct RenderItem {
+        ecs::Entity entity;
+        std::shared_ptr<renderer::NxShader> shader;
+        std::shared_ptr<renderer::NxVertexArray> mesh;              // or vao + indexCount
+        std::shared_ptr<nexo::assets::Material> material;      // whatever you use
+        uint32_t filterMask;          // forward, outline, etc.
+        bool isTransparent;
+
+        // instance data index (index into the global instances array)
+        uint32_t instanceIndex;
+
+        glm::mat4 modelMatrix;   // NEW
+    };
+
+    struct RenderBatch {
+        std::shared_ptr<renderer::NxShader> shader;
+        std::shared_ptr<renderer::NxVertexArray> mesh;
+        std::shared_ptr<nexo::assets::Material> material;
+        unsigned int materialIndex;
+        uint32_t filterMask;
+
+        uint32_t instanceOffset;   // first instance index in SSBO
+        uint32_t instanceCount;    // how many instances in this batch
+    };
 
     /**
      * @brief System responsible for rendering the scene.
@@ -57,20 +83,5 @@ namespace nexo::system {
          * If no renderable entities are found for the active scene, a warning is logged.
          */
         void update();
-
-       private:
-        static void setupLights(renderer::RenderPipeline &pipeline, const components::LightContext& lightContext);
-        void setupGlobalLights(std::unordered_map<std::string, renderer::UniformValue> &globalUniforms,
-                                                   const components::LightContext &lightContext);
-        renderer::DrawCommand createDrawCommand(const ecs::Entity entity,
-                                                       const std::shared_ptr<renderer::NxShader> &shader,
-                                                       const components::StaticMeshComponent &mesh,
-                                                       const std::shared_ptr<assets::Material> &materialAsset,
-                                                       int modelIndex);
-        renderer::DrawCommand createSelectedDrawCommand(const components::StaticMeshComponent &mesh,
-                                                               const std::shared_ptr<assets::Material> &materialAsset,
-                                                               int modelIndex);
-        unsigned int m_lastMaterialID = 0;
-        std::unordered_map<assets::AssetID, unsigned int> m_materialIDs;
     };
 } // namespace nexo::system
