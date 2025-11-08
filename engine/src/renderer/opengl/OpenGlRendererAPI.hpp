@@ -126,6 +126,8 @@ namespace nexo::renderer {
          */
         void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, size_t indexCount = 0, CommandType primitiveType = CommandType::MESH) override;
 
+        void drawIndexedInstanced(const std::shared_ptr<NxVertexArray> &vertexArray, size_t indexCount = 0, unsigned int instanceCount = 1, CommandType primitiveType = CommandType::MESH) override;
+
         /**
          * @brief Renders non-indexed geometry using OpenGL.
          *
