@@ -52,7 +52,11 @@ namespace nexo::renderer {
         }
 
         if (type == CommandType::MESH && vao) {
-            NxRenderCommand::drawIndexed(vao, vao->getIndexBuffer()->getCount());
+            if (instanced) {
+                NxRenderCommand::drawIndexedInstanced(vao, vao->getIndexBuffer()->getCount(), instanceCount);
+            } else {
+                NxRenderCommand::drawIndexed(vao, vao->getIndexBuffer()->getCount());
+            }
         } else if (type == CommandType::FULL_SCREEN) {
             NxRenderCommand::drawUnIndexed(6);
         } else if (type == CommandType::LINE) {

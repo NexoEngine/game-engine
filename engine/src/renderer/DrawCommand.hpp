@@ -62,11 +62,14 @@ namespace nexo::renderer {
 
         std::shared_ptr<NxVertexArray> vao;
         std::shared_ptr<NxShader> shader;
-        unsigned int materialId;
         std::unordered_map<std::string, UniformValue> uniforms;
 
         uint32_t filterMask = 0xFFFFFFFF;
         bool isOpaque       = true;
+
+        uint32_t instanceOffset = 0;      // uniform uInstanceOffset
+        uint32_t instanceCount  = 1;      // for glDraw*Instanced
+        bool     instanced      = false;
 
         float lineWidth = 1.5f;
 
