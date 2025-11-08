@@ -29,26 +29,24 @@ namespace nexo::system {
     struct RenderItem {
         ecs::Entity entity;
         std::shared_ptr<renderer::NxShader> shader;
-        std::shared_ptr<renderer::NxVertexArray> mesh;              // or vao + indexCount
-        std::shared_ptr<nexo::assets::Material> material;      // whatever you use
-        uint32_t filterMask;          // forward, outline, etc.
+        std::shared_ptr<renderer::NxVertexArray> mesh;
+        int materialIndex;
+        uint32_t filterMask;
         bool isTransparent;
 
-        // instance data index (index into the global instances array)
         uint32_t instanceIndex;
 
-        glm::mat4 modelMatrix;   // NEW
+        glm::mat4 modelMatrix;
     };
 
     struct RenderBatch {
         std::shared_ptr<renderer::NxShader> shader;
         std::shared_ptr<renderer::NxVertexArray> mesh;
-        std::shared_ptr<nexo::assets::Material> material;
-        unsigned int materialIndex;
+        int materialIndex;
         uint32_t filterMask;
 
-        uint32_t instanceOffset;   // first instance index in SSBO
-        uint32_t instanceCount;    // how many instances in this batch
+        uint32_t instanceOffset;
+        uint32_t instanceCount;
     };
 
     /**

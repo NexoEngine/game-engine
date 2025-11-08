@@ -57,6 +57,8 @@ namespace nexo {
         camera.pipeline.addUniformBuffer(PER_VIEW_UBO, renderer::RESERVED_BINDING_POINTS.at(PER_VIEW_UBO), perViewUBO);
         auto lightUBO = renderer::NxShaderUniformBuffer::create(sizeof(renderer::GpuLightBlock));
         camera.pipeline.addUniformBuffer(LIGHT_UBO, renderer::RESERVED_BINDING_POINTS.at(LIGHT_UBO), lightUBO);
+        auto materialSSBO = renderer::NxShaderStorageBuffer::create(sizeof(renderer::GpuMaterial) * 1000);
+        camera.pipeline.addStorageBuffer(MATERIAL_BUFFER, renderer::RESERVED_BINDING_POINTS.at(MATERIAL_BUFFER), materialSSBO);
 
         ecs::Entity newCamera = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent<components::TransformComponent>(newCamera, transform);
