@@ -70,6 +70,7 @@ namespace nexo {
         Application::m_coordinator->addComponent(newCube, renderComponent);
 
         components::RootComponent rootComponent;
+        rootComponent.name = std::format("Cube_{}", newCube);
         Application::m_coordinator->addComponent(newCube, rootComponent);
 
         return newCube;
@@ -104,6 +105,7 @@ namespace nexo {
         Application::m_coordinator->addComponent(newCube, renderComponent);
 
         components::RootComponent rootComponent;
+        rootComponent.name = std::format("Cube_{}", newCube);
         Application::m_coordinator->addComponent(newCube, rootComponent);
 
         return newCube;
@@ -138,6 +140,7 @@ namespace nexo {
         Application::m_coordinator->addComponent(newBillboard, renderComponent);
 
         components::RootComponent rootComponent;
+        rootComponent.name = std::format("Billboard_{}", newBillboard);
         Application::m_coordinator->addComponent(newBillboard, rootComponent);
 
         return newBillboard;
@@ -172,6 +175,7 @@ namespace nexo {
         Application::m_coordinator->addComponent(newBillboard, renderComponent);
 
         components::RootComponent rootComponent;
+        rootComponent.name = std::format("Billboard_{}", newBillboard);
         Application::m_coordinator->addComponent(newBillboard, rootComponent);
 
         return newBillboard;
@@ -204,6 +208,7 @@ namespace nexo {
         Application::m_coordinator->addComponent(newTetrahedron, uuid);
 
         components::RootComponent rootComponent;
+        rootComponent.name = std::format("Tetrahedron_{}", newTetrahedron);
         Application::m_coordinator->addComponent(newTetrahedron, rootComponent);
 
         return newTetrahedron;
@@ -235,6 +240,7 @@ namespace nexo {
         Application::m_coordinator->addComponent(newTetrahedron, uuid);
 
         components::RootComponent rootComponent;
+        rootComponent.name = std::format("Tetrahedron_{}", newTetrahedron);
         Application::m_coordinator->addComponent(newTetrahedron, rootComponent);
 
         return newTetrahedron;
@@ -266,6 +272,7 @@ namespace nexo {
         Application::m_coordinator->addComponent(newPyramid, uuid);
 
         components::RootComponent rootComponent;
+        rootComponent.name = std::format("Pyramid_{}", newPyramid);
         Application::m_coordinator->addComponent(newPyramid, rootComponent);
 
         return newPyramid;
@@ -296,6 +303,7 @@ namespace nexo {
         Application::m_coordinator->addComponent(newPyramid, uuid);
 
         components::RootComponent rootComponent;
+        rootComponent.name = std::format("Pyramid_{}", newPyramid);
         Application::m_coordinator->addComponent(newPyramid, rootComponent);
 
         return newPyramid;
@@ -328,6 +336,7 @@ namespace nexo {
         Application::m_coordinator->addComponent(newCylinder, uuid);
 
         components::RootComponent rootComponent;
+        rootComponent.name = std::format("Cylinder_{}", newCylinder);
         Application::m_coordinator->addComponent(newCylinder, rootComponent);
 
         return newCylinder;
@@ -359,6 +368,7 @@ namespace nexo {
         Application::m_coordinator->addComponent(newCylinder, uuid);
 
         components::RootComponent rootComponent;
+        rootComponent.name = std::format("Cylinder_{}", newCylinder);
         Application::m_coordinator->addComponent(newCylinder, rootComponent);
 
         return newCylinder;
@@ -391,6 +401,7 @@ namespace nexo {
         Application::m_coordinator->addComponent(newSphere, uuid);
 
         components::RootComponent rootComponent;
+        rootComponent.name = std::format("Sphere_{}", newSphere);
         Application::m_coordinator->addComponent(newSphere, rootComponent);
 
         return newSphere;
@@ -421,6 +432,7 @@ namespace nexo {
         Application::m_coordinator->addComponent(newSphere, uuid);
 
         components::RootComponent rootComponent;
+        rootComponent.name = std::format("Sphere_{}", newSphere);
         Application::m_coordinator->addComponent(newSphere, rootComponent);
 
         return newSphere;
