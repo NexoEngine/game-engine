@@ -87,9 +87,12 @@ namespace nexo::renderer {
         int _padCount1;
     };
 
+    #define INSTANCE_BUFFER "ModelMatrices"
+
     #define NB_RESERVED "NB_RESERVED"
 
     inline const std::unordered_map<std::string, unsigned int> RESERVED_BINDING_POINTS = {
+        {INSTANCE_BUFFER, 0},
         {PER_VIEW_UBO, 1},
         {LIGHT_UBO, 2},
         {NB_RESERVED, 3}

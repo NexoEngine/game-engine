@@ -214,6 +214,10 @@ namespace nexo::renderer {
 
         if (!m_renderTarget) THROW_EXCEPTION(NxPipelineRenderTargetNotSetException);
 
+        for (const auto& [name, ssbo] : m_ssbos) {
+            ssbo->bindBase(m_bufferBindingLocations[name]);
+        }
+
         for (const auto& [name, ubo] : m_ubos) {
             ubo->bindBase(m_bufferBindingLocations[name]);
         }
@@ -301,5 +305,17 @@ namespace nexo::renderer {
     {
         if (m_ssbos.find(name) == m_ssbos.end()) return;
         m_ssbos[name]->setData(data, size);
+    }
+
+    void RenderPipeline::appendStorageBufferData(const std::string &name, void *data, unsigned int size)
+    {
+        if (m_ssbos.find(name) == m_ssbos.end()) return;
+        m_ssbos[name]->appendData(data, size);
+    }
+
+    unsigned int RenderPipeline::getStorageBufferSize(const std::string &name)
+    {
+        if (m_ssbos.find(name) == m_ssbos.end()) return 0;
+        return m_ssbos[name]->getSize();
     }
 } // namespace nexo::renderer

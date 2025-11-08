@@ -3,7 +3,11 @@
 layout(location = 0) in vec2 aPos;
 layout(location = 1) in vec2 aTexCoord;
 
-uniform mat4 uMatModel;
+uniform int uModelIndex;
+
+layout(std430, binding = 0) buffer ModelMatrices {
+    mat4 uMatModelBuffer[];
+};
 
 layout(std140, binding = 1) uniform PerView {
     mat4 uViewProjection;
@@ -15,7 +19,8 @@ out vec2 vTexCoord;
 
 void main()
 {
-    vec4 worldPos = uMatModel * vec4(aPos.xy, 1.0, 1.0);
+    mat4 model = uMatModelBuffer[uModelIndex];
+    vec4 worldPos = model * vec4(aPos.xy, 1.0, 1.0);
     vTexCoord = aTexCoord;
     gl_Position = uViewProjection * worldPos;
 }
