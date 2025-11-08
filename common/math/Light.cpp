@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Light.hpp"
+#include <cmath>
 
 namespace nexo::math {
 	std::pair<float, float> computeAttenuationFromDistance(const float distance)
