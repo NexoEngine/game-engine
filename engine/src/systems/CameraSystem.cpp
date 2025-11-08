@@ -23,6 +23,7 @@
 #include "core/event/KeyCodes.hpp"
 #include "core/event/WindowEvent.hpp"
 #include "SystemProfiler.hpp"
+#include "renderPasses/GPUResources.hpp"
 
 namespace nexo::system {
 
@@ -48,20 +49,24 @@ namespace nexo::system {
         }
         nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No camera found in scene {}, skipping", sceneName));
 
-        const auto cameraSpan              = get<components::CameraComponent>();
+        auto cameraSpan              = get<components::CameraComponent>();
         const auto transformComponentArray = get<components::TransformComponent>();
         renderContext.cameras.reserve(partition->count);
 
         for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
-            const auto &cameraComponent = cameraSpan[i];
+            auto &cameraComponent = cameraSpan[i];
             if (!cameraComponent.render) continue;
             const auto &transformComponent       = transformComponentArray->get(entitySpan[i]);
             glm::mat4 projectionMatrix           = cameraComponent.getProjectionMatrix();
             glm::mat4 viewMatrix                 = cameraComponent.getViewMatrix(transformComponent);
             const glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
-            components::CameraContext context{viewProjectionMatrix, transformComponent.pos, cameraComponent.clearColor,
-                                              cameraComponent.m_renderTarget, cameraComponent.pipeline};
+            components::CameraContext context{viewProjectionMatrix, transformComponent.pos,
+                                              cameraComponent.m_renderTarget->getSize(), cameraComponent.pipeline};
             renderContext.cameras.push_back(context);
+            renderer::GpuPerView perView{};
+            perView.uViewProjection = viewProjectionMatrix;
+            perView.uCamPos = transformComponent.pos;
+            cameraComponent.pipeline.setUniformBufferData(PER_VIEW_UBO, &perView, sizeof(perView));
         }
     }
 

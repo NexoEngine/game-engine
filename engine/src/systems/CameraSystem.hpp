@@ -43,7 +43,7 @@ namespace nexo::system {
      */
     class CameraContextSystem final
         : public ecs::GroupSystem<
-              ecs::Owned<ecs::Read<components::CameraComponent>>,
+              ecs::Owned<ecs::Write<components::CameraComponent>>,
               ecs::NonOwned<ecs::Read<components::SceneTag>, ecs::Read<components::TransformComponent>>,
               ecs::WriteSingleton<components::RenderContext>> {
        public:
