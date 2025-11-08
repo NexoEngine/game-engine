@@ -8,11 +8,11 @@ uniform vec3 uColor;
 struct InstanceData {
     mat4 model;
     int  entityId;
+    int materialIndex;
     // padding for std430: an int is 4 bytes, but the next element (if any)
     // would need 16-byte alignment, so you can add 3 ints or a vec3 if needed later.
     int _pad0;
     int _pad1;
-    int _pad2;
 };
 
 layout(std430, binding = 0) buffer Instances {
