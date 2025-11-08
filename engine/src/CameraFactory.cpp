@@ -51,7 +51,7 @@ namespace nexo {
         }
         camera.clearColor = clearColor;
 
-        auto instanceBuffer = renderer::NxShaderStorageBuffer::create(sizeof(glm::mat4) * 1000);
+        auto instanceBuffer = renderer::NxShaderStorageBuffer::create(sizeof(renderer::GpuInstanceData) * 1000);
         camera.pipeline.addStorageBuffer(INSTANCE_BUFFER, renderer::RESERVED_BINDING_POINTS.at(INSTANCE_BUFFER), instanceBuffer);
         auto perViewUBO = renderer::NxShaderUniformBuffer::create(sizeof(renderer::GpuPerView));
         camera.pipeline.addUniformBuffer(PER_VIEW_UBO, renderer::RESERVED_BINDING_POINTS.at(PER_VIEW_UBO), perViewUBO);
