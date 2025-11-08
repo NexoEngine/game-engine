@@ -168,3 +168,4 @@ endif ()
 
 target_compile_definitions(nexoRenderer PRIVATE NEXO_EXPORT)
 set_target_properties(nexoRenderer PROPERTIES ENABLE_EXPORTS ON)
+add_compile_options(/bigobj)
