@@ -18,9 +18,13 @@
 #type vertex
 #version 430
 
-uniform mat4 uViewProjection = mat4(1.0);
 uniform float uGridSize;
-uniform vec3 uCamPos;
+
+layout(std140, binding = 1) uniform PerView {
+    mat4 uViewProjection;
+    vec3 uCamPos;
+    float _pad0;   // padding to satisfy std140 (vec3 takes 16 bytes)
+};
 
 out vec3 FragPos;
 
@@ -68,9 +72,14 @@ void main()
 layout(location = 0) out vec4 FragColor;
 in vec3 FragPos;
 
+layout(std140, binding = 1) uniform PerView {
+    mat4 uViewProjection;
+    vec3 uCamPos;
+    float _pad0;   // padding to satisfy std140 (vec3 takes 16 bytes)
+};
+
 uniform vec3 uMouseWorldPos;
 uniform float uTime;
-uniform vec3 uCamPos;
 uniform float uGridSize = 100.0;
 uniform float uGridMinPixelsBetweenCells = 2.0;
 uniform float uGridCellSize = 0.025;
