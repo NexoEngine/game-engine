@@ -44,6 +44,7 @@ set(COMMON_SOURCES
         engine/src/renderer/DrawCommand.cpp
         engine/src/renderer/RenderPipeline.cpp
         engine/src/renderer/UniformValue.cpp
+        engine/src/renderer/ShaderUniformBuffer.cpp
         engine/src/renderer/primitives/Cube.cpp
         engine/src/renderer/primitives/Billboard.cpp
         engine/src/renderer/primitives/Tetrahedron.cpp
@@ -101,6 +102,7 @@ if (NEXO_GRAPHICS_API STREQUAL "OpenGL")
             engine/src/renderer/opengl/OpenGlRendererApi.cpp
             engine/src/renderer/opengl/OpenGlFramebuffer.cpp
             engine/src/renderer/opengl/OpenGlShaderReflection.cpp
+            engine/src/renderer/opengl/OpenGlShaderUniformBuffer.cpp
     )
 endif ()
 
