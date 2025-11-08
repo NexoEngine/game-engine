@@ -155,6 +155,11 @@ namespace nexo::renderer {
             _rendererApi->drawIndexed(vertexArray, indexCount, primitiveType);
         }
 
+        static void drawIndexedInstanced(const std::shared_ptr<NxVertexArray> &vertexArray, size_t indexCount = 0, unsigned int instanceCount = 1, CommandType primitiveType = CommandType::MESH)
+        {
+            _rendererApi->drawIndexedInstanced(vertexArray, indexCount, instanceCount, primitiveType);
+        }
+
         /**
          * @brief Draws non-indexed primitives.
          *

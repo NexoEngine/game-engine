@@ -165,6 +165,8 @@ namespace nexo::renderer {
          */
         virtual void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, size_t count = 0, CommandType primitiveType = CommandType::MESH) = 0;
 
+        virtual void drawIndexedInstanced(const std::shared_ptr<NxVertexArray> &vertexArray, size_t indexCount = 0, unsigned int instanceCount = 1, CommandType primitiveType = CommandType::MESH) = 0;
+
         /**
          * @brief Draws geometry without using indices.
          *

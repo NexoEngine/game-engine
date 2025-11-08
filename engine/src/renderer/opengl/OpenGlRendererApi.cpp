@@ -132,6 +132,21 @@ namespace nexo::renderer {
         glDrawElements(glType, static_cast<int>(count), GL_UNSIGNED_INT, nullptr);
     }
 
+    void NxOpenGlRendererApi::drawIndexedInstanced(const std::shared_ptr<NxVertexArray> &vertexArray, size_t indexCount, unsigned int instanceCount, CommandType primitiveType)
+    {
+        if (!m_initialized) THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
+        if (!vertexArray) THROW_EXCEPTION(NxInvalidValue, "OPENGL", "Vertex array cannot be null");
+        const size_t count = indexCount ? indexCount : vertexArray->getIndexBuffer()->getCount();
+        const GLenum glType = nexoPrimitiveTypeToGLType(primitiveType);
+        glDrawElementsInstanced(
+            glType,
+            static_cast<int>(count),
+            GL_UNSIGNED_INT,
+            nullptr,
+            instanceCount
+        );
+    }
+
     void NxOpenGlRendererApi::drawUnIndexed(size_t verticesCount)
     {
         if (!m_initialized) THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
