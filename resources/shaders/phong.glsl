@@ -4,8 +4,13 @@ layout(location = 0) in vec3 aPos;
 layout(location = 1) in vec2 aTexCoord;
 layout(location = 2) in vec3 aNormal;
 
-uniform mat4 uViewProjection;
 uniform mat4 uMatModel;
+
+layout(std140, binding = 1) uniform PerView {
+    mat4 uViewProjection;
+    vec3 uCamPos;
+    float _pad0;   // padding to satisfy std140 (vec3 takes 16 bytes)
+};
 
 out vec3 vFragPos;
 out vec2 vTexCoord;
@@ -34,27 +39,54 @@ layout(location = 1) out int EntityID;
 // Light definitions.
 struct DirectionalLight {
     vec3 direction;
+    float _pad0;  // pad vec3 to 16 bytes
     vec4 color;
 };
 
 struct PointLight {
     vec3 position;
+    float _pad1;  // pad
     vec4 color;
-
     float constant;
     float linear;
     float quadratic;
+    float _pad2;  // pad to 16-byte multiple
 };
 
 struct SpotLight {
     vec3 position;
+    float _pad3;
+
     vec3 direction;
+    float _pad4;
+
     vec4 color;
+
     float cutOff;
     float outerCutoff;
     float constant;
     float linear;
+
     float quadratic;
+    float _pad5;
+    float _pad6;
+    float _pad7;
+};
+
+// Light block UBO
+layout(std140, binding = 2) uniform LightBlock {
+    vec3 uAmbientLight;
+    float _padAmbient;
+
+    DirectionalLight uDirLight;
+
+    PointLight uPointLights[MAX_POINT_LIGHTS];
+    SpotLight  uSpotLights[MAX_SPOT_LIGHTS];
+
+    int uNumPointLights;
+    int uNumSpotLights;
+    int _padCount0;
+    int _padCount1;
 };
 
 in vec3 vFragPos;
@@ -63,14 +95,11 @@ in vec3 vNormal;
 
 uniform sampler2D uTexture[32];
 
-uniform vec3 uCamPos;
-
-uniform vec3 uAmbientLight;
-uniform DirectionalLight uDirLight;
-uniform PointLight uPointLights[MAX_POINT_LIGHTS];
-uniform int uNumPointLights;
-uniform SpotLight uSpotLights[MAX_SPOT_LIGHTS];
-uniform int uNumSpotLights;
+layout(std140, binding = 1) uniform PerView {
+    mat4 uViewProjection;
+    vec3 uCamPos;
+    float _pad0;   // padding to satisfy std140 (vec3 takes 16 bytes)
+};
 
 struct Material {
     vec4 albedoColor;
