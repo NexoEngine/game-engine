@@ -39,7 +39,7 @@ namespace Nexo
         public UInt32 PerspectiveCameraTarget;
         public UInt32 PhysicsBodyComponent;
     }
-    
+
     /// <summary>
     /// Provides interop functionality for calling native C++ functions from C# using function pointers.
     /// </summary>
@@ -65,16 +65,16 @@ namespace Nexo
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate UInt32 CreateCubeDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
-            
+
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate UInt32 CreateTetrahedronDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
-            
+
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate UInt32 CreatePyramidDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color);
-            
+
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate UInt32 CreateCylinderDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSegment);
-            
+
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate UInt32 CreateSphereDelegate(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSubdivision);
 
@@ -84,31 +84,31 @@ namespace Nexo
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate void CreateBodyFromShapeDelegate(UInt32 entityId, Vector3 position, Vector3 size, Vector3 rotation, UInt32 shapeType, UInt32 motionType);
-            
+
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate void ApplyForceDelegate(UInt32 entityId, Vector3 force);
-            
+
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate ref Transform GetTransformDelegate(UInt32 entityId);
-            
+
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate IntPtr NxGetComponentDelegate(UInt32 entityId, UInt32 typeId);
-            
+
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate void NxAddComponentDelegate(UInt32 entityId, UInt32 typeId, void *componentData);
-            
+
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate void NxRemoveComponentDelegate(UInt32 entityId, UInt32 typeId);
-            
+
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate void NxDestroyEntityDelegate(UInt32 entityId);
-            
+
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate bool NxHasComponentDelegate(UInt32 entityId, UInt32 typeId);
-            
+
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate Int64 NxRegisterComponentDelegate(String name, UInt64 componentSize, Field *fields, UInt64 fieldCount);
-            
+
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate ComponentTypeIds NxGetComponentTypeIdsDelegate();
 
@@ -138,7 +138,7 @@ namespace Nexo
         private static NativeApiCallbacks s_callbacks;
         private static ComponentTypeIds _componentTypeIds;
         private static readonly Dictionary<Type, UInt32> _typeToNativeIdMap = new();
-        
+
         /// <summary>
         /// Initialize the native API with the provided struct pointer and size.
         /// </summary>
@@ -161,11 +161,11 @@ namespace Nexo
                 Logger.Log(LogLevel.Fatal, "Failed to initialize type map for component type IDs.");
                 return 1;
             }
-            
+
             Logger.Log(LogLevel.Info, "Native API initialized.");
             return 0;
         }
-        
+
         private static Int32 InitializeTypeMap()
         {
             var fields = typeof(ComponentTypeIds).GetFields();
@@ -380,7 +380,7 @@ namespace Nexo
                 Console.WriteLine($"Error calling ApplyForce: {ex.Message}");
             }
         }
-        
+
         public static ref Transform GetTransform(UInt32 entityId)
         {
             try
@@ -393,7 +393,7 @@ namespace Nexo
                 throw new InvalidOperationException($"Failed to get transform for entity {entityId}", ex);
             }
         }
-        
+
         public static unsafe ref T GetComponent<T>(UInt32 entityId) where T : unmanaged
         {
             if (!_typeToNativeIdMap.TryGetValue(typeof(T), out var typeId))
@@ -405,7 +405,7 @@ namespace Nexo
 
             return ref Unsafe.AsRef<T>((void*)ptr);
         }
-        
+
         public static unsafe void AddComponent<T>(UInt32 entityId, ref T componentData) where T : unmanaged
         {
             if (!_typeToNativeIdMap.TryGetValue(typeof(T), out var typeId))
@@ -420,7 +420,7 @@ namespace Nexo
                 Console.WriteLine($"Error calling AddComponent<{typeof(T)}>: {ex.Message}");
             }
         }
-        
+
         public static void RemoveComponent<T>(UInt32 entityId) where T : unmanaged
         {
             if (!_typeToNativeIdMap.TryGetValue(typeof(T), out var typeId))
@@ -446,7 +446,7 @@ namespace Nexo
                 Console.WriteLine($"Error calling DestroyEntity: {ex.Message}");
             }
         }
-        
+
         public static bool HasComponent<T>(UInt32 entityId)
         {
             if (!_typeToNativeIdMap.TryGetValue(typeof(T), out var typeId))
@@ -463,7 +463,7 @@ namespace Nexo
             }
         }
 
-        
+
         public static unsafe Int64 RegisterComponent(Type componentType)
         {
             var name = componentType.Name;
@@ -474,7 +474,7 @@ namespace Nexo
                 var size = (UInt64)Marshal.SizeOf(componentType);
 
                 Logger.Log(LogLevel.Info, $"Registering component {name}");
-                
+
                 fieldArray = FieldArray.CreateFieldArrayFromType(componentType);
 
                 var typeId = s_callbacks.NxRegisterComponent.Invoke(name, size, fieldArray.GetPointer(), (UInt64)fieldArray.Count);
@@ -502,7 +502,7 @@ namespace Nexo
                 fieldArray?.Dispose();
             }
         }
-        
+
         private static UInt32 _cubeId = 0;
         private struct DemonstrationComponent : IComponentBase
         {
@@ -517,96 +517,96 @@ namespace Nexo
         public static void DemonstrateNativeCalls()
         {
             Console.WriteLine("=== Starting Native Call Demonstration ===");
-            
+
             // Call the void function
             Console.WriteLine("Calling HelloFromNative:");
             HelloFromNative();
-            
+
             // Call the function that returns an int
             const Int32 a = 42;
             const Int32 b = 123;
             Console.WriteLine($"Calling AddNumbers({a}, {b}):");
             Int32 result = AddNumbers(a, b);
             Console.WriteLine($"Result: {result}");
-            
+
             // Call the function that returns a string
             Console.WriteLine("Calling GetNativeMessage:");
             String message = GetNativeMessage();
             Logger.Log(LogLevel.Info, $"Logging from C# :) got native message: {message}");
-            
+
             // Call the function that creates a cube
-            Console.WriteLine("Calling CreateCube:");
-            UInt32 cubeId = CreateCube(new Vector3(1, 4.2f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), new Vector4(1, 0, 0, 1));
-            _cubeId = cubeId;
-            
-            var demonstrationComponent = new DemonstrationComponent
-            {
-                DemonstrationId = 1,
-                DemonstrationVector = new Vector3(0.5f, 0.5f, 0.5f)
-            };
-            AddComponent(_cubeId, ref demonstrationComponent);
-            Console.WriteLine($"Created cube with ID: {cubeId}");
-
-            // HasComponent test
-            if (HasComponent<DemonstrationComponent>(cubeId))
-                Console.WriteLine("Entity has a DemonstrationComponent!");
-            else
-                Console.WriteLine("Entity does NOT have a DemonstrationComponent.");
-            
-            if (HasComponent<Transform>(cubeId))
-                Console.WriteLine("Entity has a Transform!");
-            else
-                Console.WriteLine("Entity does NOT have a Transform.");
-            
-            if (HasComponent<AmbientLight>(cubeId))
-                Console.WriteLine("Entity has a AmbientLight!");
-            else
-                Console.WriteLine("Entity does NOT have a AmbientLight.");
-            
-            RemoveComponent<DemonstrationComponent>(_cubeId);
-            
-            // HasComponent test
-            if (HasComponent<DemonstrationComponent>(cubeId))
-                Console.WriteLine("Entity has a DemonstrationComponent!");
-            else
-                Console.WriteLine("Entity does NOT have a DemonstrationComponent.");
-            
-            if (HasComponent<Transform>(cubeId))
-                Console.WriteLine("Entity has a Transform!");
-            else
-                Console.WriteLine("Entity does NOT have a Transform.");
-            
-            if (HasComponent<AmbientLight>(cubeId))
-                Console.WriteLine("Entity has a AmbientLight!");
-            else
-                Console.WriteLine("Entity does NOT have a AmbientLight.");
-            
-            var demonstrationComponent2 = new DemonstrationComponent
-            {
-                DemonstrationId = 2,
-                DemonstrationVector = new Vector3(3f, 2f, 1f)
-            };
-            AddComponent(_cubeId, ref demonstrationComponent2);
-            
-            UInt32 cube2 = CreateCube(new Vector3(1, 35.0f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), new Vector4(1, 0, 0, 1));
-            CreateBodyFromShape(cube2, new Vector3(1, 35.0f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), ShapeType.Box, MotionType.Dynamic);
-            
-            Vector3 force = new Vector3(0, 800000, 0);
-            ApplyForce(cube2, force);
-            Console.WriteLine("Force applied to entity ");
-            
-            // Call the function that gets a transform
-            Console.WriteLine($"Calling GetComponent({cubeId}):");
-            ref Transform transform = ref GetComponent<Transform>(cubeId);
-            Console.WriteLine($"Transform for cube {cubeId}: Position: {transform.pos}, Scale: {transform.size}, Rotation Quat: {transform.quat}");
-
-            // Write the localMatrix for the cube
-            Console.WriteLine($"Local Matrix for cube {cubeId}:\n{transform.localMatrix}");
-            
-            
-            Console.WriteLine("=== Native Call Demonstration Complete ===");
+//             Console.WriteLine("Calling CreateCube:");
+//             UInt32 cubeId = CreateCube(new Vector3(1, 4.2f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), new Vector4(1, 0, 0, 1));
+//             _cubeId = cubeId;
+//
+//             var demonstrationComponent = new DemonstrationComponent
+//             {
+//                 DemonstrationId = 1,
+//                 DemonstrationVector = new Vector3(0.5f, 0.5f, 0.5f)
+//             };
+//             AddComponent(_cubeId, ref demonstrationComponent);
+//             Console.WriteLine($"Created cube with ID: {cubeId}");
+//
+//             // HasComponent test
+//             if (HasComponent<DemonstrationComponent>(cubeId))
+//                 Console.WriteLine("Entity has a DemonstrationComponent!");
+//             else
+//                 Console.WriteLine("Entity does NOT have a DemonstrationComponent.");
+//
+//             if (HasComponent<Transform>(cubeId))
+//                 Console.WriteLine("Entity has a Transform!");
+//             else
+//                 Console.WriteLine("Entity does NOT have a Transform.");
+//
+//             if (HasComponent<AmbientLight>(cubeId))
+//                 Console.WriteLine("Entity has a AmbientLight!");
+//             else
+//                 Console.WriteLine("Entity does NOT have a AmbientLight.");
+//
+//             RemoveComponent<DemonstrationComponent>(_cubeId);
+//
+//             // HasComponent test
+//             if (HasComponent<DemonstrationComponent>(cubeId))
+//                 Console.WriteLine("Entity has a DemonstrationComponent!");
+//             else
+//                 Console.WriteLine("Entity does NOT have a DemonstrationComponent.");
+//
+//             if (HasComponent<Transform>(cubeId))
+//                 Console.WriteLine("Entity has a Transform!");
+//             else
+//                 Console.WriteLine("Entity does NOT have a Transform.");
+//
+//             if (HasComponent<AmbientLight>(cubeId))
+//                 Console.WriteLine("Entity has a AmbientLight!");
+//             else
+//                 Console.WriteLine("Entity does NOT have a AmbientLight.");
+//
+//             var demonstrationComponent2 = new DemonstrationComponent
+//             {
+//                 DemonstrationId = 2,
+//                 DemonstrationVector = new Vector3(3f, 2f, 1f)
+//             };
+//             AddComponent(_cubeId, ref demonstrationComponent2);
+//
+//             UInt32 cube2 = CreateCube(new Vector3(1, 35.0f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), new Vector4(1, 0, 0, 1));
+//             CreateBodyFromShape(cube2, new Vector3(1, 35.0f, 3), new Vector3(1, 1, 1), new Vector3(7, 8, 9), ShapeType.Box, MotionType.Dynamic);
+//
+//             Vector3 force = new Vector3(0, 800000, 0);
+//             ApplyForce(cube2, force);
+//             Console.WriteLine("Force applied to entity ");
+//
+//             // Call the function that gets a transform
+//             Console.WriteLine($"Calling GetComponent({cubeId}):");
+//             ref Transform transform = ref GetComponent<Transform>(cubeId);
+//             Console.WriteLine($"Transform for cube {cubeId}: Position: {transform.pos}, Scale: {transform.size}, Rotation Quat: {transform.quat}");
+//
+//             // Write the localMatrix for the cube
+//             Console.WriteLine($"Local Matrix for cube {cubeId}:\n{transform.localMatrix}");
+//
+//
+//             Console.WriteLine("=== Native Call Demonstration Complete ===");
         }
-        
+
         private static float _angle = 0.0f;
         private static float _breathingScale = 1.0f;
 
@@ -614,23 +614,23 @@ namespace Nexo
         public static void Update(Double deltaTime)
         {
             ref Transform transform = ref GetComponent<Transform>(_cubeId);
-            
+
             // Rotating cube effect
             float rotationSpeed = 1.0f; // radians per second
             transform.quat = Quaternion.CreateFromAxisAngle(Vector3.UnitY, (float)deltaTime * rotationSpeed) * transform.quat;
-            
+
             // Circling cube effect
             float speed = 1.0f;
             float radius = 7.0f;
             Vector3 origin = new Vector3(0, 5, 0);
 
             _angle += (float)(speed * deltaTime);
-            
+
             if (_angle > MathF.PI * 2.0f)
             {
                 _angle = 0.0f;
             }
-            
+
             transform.pos = origin + new Vector3(
                 (float)Math.Cos(_angle) * radius,
                 0,

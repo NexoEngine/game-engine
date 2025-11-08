@@ -100,7 +100,7 @@ namespace nexo {
          */
         static ecs::Entity createSpotLight(glm::vec3 position, glm::vec3 direction,
                                            glm::vec3 color = {1.0f, 1.0f, 1.0f}, float linear = 0.09f,
-                                           float quadratic = 0.032f, float cutOff = glm::cos(glm::radians(12.5f)),
-                                           float outerCutOff = glm::cos(glm::radians(15.0f)));
+                                           float quadratic = 0.032f, float cutOff = 12.5f,
+                                           float outerCutOff = 15.0f);
     };
 } // namespace nexo

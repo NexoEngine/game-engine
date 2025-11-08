@@ -312,7 +312,7 @@ namespace nexo {
         auto &renderContext        = m_coordinator->getSingletonComponent<components::RenderContext>();
 
         if (isInPlayMode()) {
-            m_scriptingSystem->update();
+            // m_scriptingSystem->update();
         }
 
         if (!m_isMinimized) {

@@ -217,9 +217,35 @@ namespace nexo::assets {
 
             auto materialComponent = std::make_unique<components::Material>();
 
+            // aiColor4D color;
+            // if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
+            //     materialComponent->albedoColor = {color.r, color.g, color.b, color.a};
+            // }
+            // aiColor4D color;
+            // auto linearToSRGB = [](float linear) -> float {
+            //     if (linear <= 0.0031308f) {
+            //         return 12.92f * linear;
+            //     } else {
+            //         return 1.055f * std::pow(linear, 1.0f/2.4f) - 0.055f;
+            //     }
+            // };
+
+            // if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
+            //     materialComponent->albedoColor = {
+            //         linearToSRGB(color.r),
+            //         linearToSRGB(color.g),
+            //         linearToSRGB(color.b),
+            //         color.a
+            //     };
+            // }
+
             aiColor4D color;
-            if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
+            if (material->Get(AI_MATKEY_BASE_COLOR, color) == AI_SUCCESS) {
                 materialComponent->albedoColor = {color.r, color.g, color.b, color.a};
+                LOG(NEXO_INFO, "Loaded base color as albedo: ({}, {}, {}, {})", color.r, color.g, color.b, color.a);
+            } else if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
+                materialComponent->albedoColor = {color.r, color.g, color.b, color.a};
+                LOG(NEXO_INFO, "Loaded diffuse color: ({}, {}, {}, {})", color.r, color.g, color.b, color.a);
             }
 
             if (material->Get(AI_MATKEY_COLOR_SPECULAR, color) == AI_SUCCESS) {

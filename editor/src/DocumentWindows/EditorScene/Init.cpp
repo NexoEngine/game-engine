@@ -13,6 +13,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <components/Video.hpp>
+#include <math/Light.hpp>
+#include <random>
+
 #include "CameraFactory.hpp"
 #include "EditorScene.hpp"
 #include "EntityFactory3D.hpp"
@@ -86,15 +89,14 @@ namespace nexo::editor {
 
         scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
         scene.addEntity(LightFactory::createAmbientLight({1.0f, 1.0f, 1.0f}));
-        scene.addEntity(LightFactory::createDirectionalLight({0.0f, -0.8f, 0.0f}));
 
         m_sceneUuid = app.getSceneManager().getScene(m_sceneId).getUuid();
         if (m_defaultScene) {
-            // loadDefaultEntities();
-            physicScene(glm::vec3{-60.0f, 0.0f, 0.0f});
-            videoScene(glm::vec3{-15.0f, 0.0f, 0.0f});
-            lightsScene(glm::vec3{50.0f, 0.0f, 0.0f});
-            forestScene({100.0f, 1.0f, 0.0f});
+            loadDefaultEntities();
+            // physicScene(glm::vec3{-60.0f, 0.0f, 0.0f});
+            // videoScene(glm::vec3{-15.0f, 0.0f, 0.0f});
+            // lightsScene(glm::vec3{50.0f, 0.0f, 0.0f});
+            // forestScene({100.0f, 1.0f, 0.0f});
         }
     }
 
@@ -112,19 +114,19 @@ namespace nexo::editor {
         switch (shapeType) {
             case Box:
                 entity = EntityFactory3D::createCube(pos, size, rotation, color);
-            break;
+                break;
             case Sphere:
                 entity = EntityFactory3D::createSphere(pos, size, rotation, color, 1);
-            break;
+                break;
             case Cylinder:
                 entity = EntityFactory3D::createCylinder(pos, size, rotation, color, 8);
-            break;
+                break;
             case Tetrahedron:
                 entity = EntityFactory3D::createTetrahedron(pos, size, rotation, color);
-            break;
+                break;
             case Pyramid:
                 entity = EntityFactory3D::createPyramid(pos, size, rotation, color);
-            break;
+                break;
             default:
                 THROW_EXCEPTION(UnsupportedEntityShapeType);
         }
@@ -169,8 +171,112 @@ namespace nexo::editor {
                                   static_cast<unsigned int>(m_contentSize.y));
     }
 
-    void EditorScene::loadDefaultEntities()
-    {}
+    void EditorScene::loadDefaultEntities(const glm::vec3& offset) const
+    {
+        auto& app           = getApp();
+        scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
+        const auto& catalog = nexo::assets::AssetCatalog::getInstance();
+
+        const assets::AssetLocation fullRoomModel("my_package::full_room@Demo");
+        const auto fullRoomAssetRef = catalog.getAsset(fullRoomModel).as<assets::Model>();
+        const auto fullRoom         = EntityFactory3D::createModel(
+            fullRoomAssetRef, {0.0 + offset.x, 0.0 + offset.y, 0.0 + offset.z}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
+        scene.addEntity(fullRoom);
+
+        const auto backWall =
+            EntityFactory3D::createCube({10.0f + offset.x, 7.0f + offset.y, 0.0f + offset.z}, {0.5f, 14.0f, 20.0f},
+                                        {0.0f, 0.0f, 0.0f}, {0.29f, 0.41f, 0.45f, 1.0f});
+        scene.addEntity(backWall);
+
+        const auto leftWall =
+            EntityFactory3D::createCube({0.0f + offset.x, 7.0f + offset.y, 10.0f + offset.z}, {20.0f, 14.0f, 0.5f},
+                                        {0.0f, 0.0f, 0.0f}, {0.15f, 0.21f, 0.25f, 1.0f});
+        scene.addEntity(leftWall);
+
+        const auto rightWall =
+            EntityFactory3D::createCube({0.0f + offset.x, 7.0f + offset.y, -10.0f + offset.z}, {20.0f, 14.0f, 0.5f},
+                                        {0.0f, 0.0f, 0.0f}, {0.15f, 0.21f, 0.25f, 1.0f});
+        scene.addEntity(rightWall);
+
+        const auto [linear, quad] = math::computeAttenuationFromDistance(70.0f);
+        const auto pointLightTop  = LightFactory::createPointLight({0.0f + offset.x, 14.0f + offset.y, 0.0f + offset.z},
+                                                                   {1, 1, 1}, linear, quad);
+        utils::addPropsTo(pointLightTop, utils::PropsType::POINT_LIGHT);
+        scene.addEntity(pointLightTop);
+
+        const auto [linear2, quad2] = math::computeAttenuationFromDistance(13.0f);
+        const auto deskSpotLight = LightFactory::createSpotLight({7.94f + offset.x, 5.20f + offset.y, 2.75f + offset.z},
+                                                                 {-0.30f, -0.30f, -0.30f}, {1.0f, 0.90f, 0.46f},
+                                                                 linear2, quad2, 33.50f, 43.0f);
+        utils::addPropsTo(deskSpotLight, utils::PropsType::SPOT_LIGHT);
+        scene.addEntity(deskSpotLight);
+
+        const auto [linear3, quad3] = math::computeAttenuationFromDistance(100.0f);
+        const auto standSpotLightTop =
+            LightFactory::createSpotLight({8.48f + offset.x, 7.10f + offset.y, -8.06f + offset.z}, {0.0f, 1.0f, 0.0f},
+                                          {1.0f, 1.0f, 0.64f}, linear3, quad3, 55.50f, 75.5f);
+        utils::addPropsTo(standSpotLightTop, utils::PropsType::SPOT_LIGHT);
+        scene.addEntity(standSpotLightTop);
+
+        const auto standSpotLightBottom =
+            LightFactory::createSpotLight({8.48f + offset.x, 6.5f + offset.y, -8.06f + offset.z}, {0.0f, -1.0f, 0.0f},
+                                          {1.0f, 1.0f, 0.64f}, linear3, quad3, 16.50f, 43.5f);
+        utils::addPropsTo(standSpotLightBottom, utils::PropsType::SPOT_LIGHT);
+        scene.addEntity(standSpotLightBottom);
+
+        const auto [linear4, quad4] = math::computeAttenuationFromDistance(50.0f);
+        const auto garlandPos       = std::vector<glm::vec3>{{9.16f + offset.x, 5.35f + offset.y, -1.68f + offset.z},
+                                                             {9.16f + offset.x, 5.10f + offset.y, -1.16f + offset.z},
+                                                             {9.16f + offset.x, 4.95f + offset.y, -0.62f + offset.z},
+                                                             {9.16f + offset.x, 4.91f + offset.y, -0.06 + offset.z},
+                                                             {9.16f + offset.x, 4.97f + offset.y, 0.50f + offset.z},
+                                                             {9.16f + offset.x, 5.12f + offset.y, 1.04f + offset.z},
+                                                             {9.16f + offset.x, 5.36f + offset.y, 1.55f + offset.z}};
+        const auto garlandColors =
+            std::vector<glm::vec3>{{1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f, 0.0f},
+                                   {1.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 1.0f}, {1.0f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}};
+        for (int i = 0; i < garlandPos.size(); ++i) {
+            const auto garlandSpotLight = LightFactory::createSpotLight(garlandPos[i], {1.0f, -0.6f, 0.0f},
+                                                                        garlandColors[i], linear4, quad4, 20.0f, 30.0f);
+            utils::addPropsTo(garlandSpotLight, utils::PropsType::SPOT_LIGHT);
+            scene.addEntity(garlandSpotLight);
+        }
+
+        const assets::AssetLocation corkBoardModel("my_package::cork_board@Demo");
+        const auto corkBoardAssetRef = catalog.getAsset(corkBoardModel).as<assets::Model>();
+        const auto corkBoard =
+            EntityFactory3D::createModel(corkBoardAssetRef, {9.63f + offset.x, 5.59f + offset.y, 0.0f + offset.z},
+                                         {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
+        scene.addEntity(corkBoard);
+
+        const assets::AssetLocation frameModel("my_package::frame@Demo");
+        const auto frameAssetRef = catalog.getAsset(frameModel).as<assets::Model>();
+        const auto frame =
+            EntityFactory3D::createModel(frameAssetRef, {9.7f + offset.x, 5.69f + offset.y, 3.96f + offset.z},
+                                         {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
+        scene.addEntity(frame);
+
+        const assets::AssetLocation duckModel("my_package::duck@Demo");
+        const auto duckAssetRef = catalog.getAsset(duckModel).as<assets::Model>();
+        const auto duck =
+            EntityFactory3D::createModel(duckAssetRef, {7.09f + offset.x, 3.88f + offset.y, -1.07f + offset.z},
+                                         {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
+        scene.addEntity(duck);
+
+        const assets::AssetLocation laptopModel("my_package::laptop@Demo");
+        const auto laptopAssetRef = catalog.getAsset(laptopModel).as<assets::Model>();
+        const auto laptop =
+            EntityFactory3D::createModel(laptopAssetRef, {7.05f + offset.x, 4.0f + offset.y, 0.0f + offset.z},
+                                         {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
+        scene.addEntity(laptop);
+
+        const assets::AssetLocation bretzelModel("my_package::bretzel@Demo");
+        const auto bretzelAssetRef = catalog.getAsset(bretzelModel).as<assets::Model>();
+        const auto bretzel =
+            EntityFactory3D::createModel(bretzelAssetRef, {7.4f + offset.x, 4.04f + offset.y, -2.98f + offset.z},
+                                         {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
+        scene.addEntity(bretzel);
+    }
 
     void EditorScene::lightsScene(const glm::vec3& offset) const
     {
@@ -366,8 +472,9 @@ namespace nexo::editor {
         auto& app           = getApp();
         scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
 
-        const auto floor = EntityFactory3D::createCube({0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z},
-                                                 {20.0f, 1.0f, 20.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f});
+        const auto floor =
+            EntityFactory3D::createCube({0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z}, {20.0f, 1.0f, 20.0f},
+                                        {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f});
         scene.addEntity(floor);
 
         const auto& catalog = nexo::assets::AssetCatalog::getInstance();

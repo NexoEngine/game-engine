@@ -32,9 +32,15 @@ namespace nexo::editor {
         }
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/logoNexo.png");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/logo_nexo.png");
             assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Texture>(assets::AssetLocation("nexo_logo@Random"), fileInput);
+            importer.importAsset<assets::Texture>(assets::AssetLocation("logo_nexo@Random"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/logo_nexo_bg.png");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("logo_nexo_bg@Random"), fileInput);
         }
         // Models
         {
@@ -56,59 +62,126 @@ namespace nexo::editor {
             assets::ImporterFileInput fileInput{path};
             importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Sword@Models"), fileInput);
         }
+        // Demo Models
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/frog.glb");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/bretzel/bretzel.gltf");
             assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Frog@Models"), fileInput);
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::bretzel@Demo"), fileInput);
         }
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/plane.glb");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/chair/chair.gltf");
             assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Plane@Models"), fileInput);
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::chair@Demo"), fileInput);
         }
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/bench.glb");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/cork_board/cork_board.gltf");
             assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Bench@Models"), fileInput);
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::cork_board@Demo"), fileInput);
         }
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/earth.glb");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/duck/duck.gltf");
             assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Earth@Models"), fileInput);
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::duck@Demo"), fileInput);
         }
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/tree.glb");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/fan/fan.gltf");
             assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Tree@Models"), fileInput);
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::fan@Demo"), fileInput);
         }
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/log.glb");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/full_room/full_room.gltf");
             assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Log@Models"), fileInput);
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::full_room@Demo"), fileInput);
         }
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/rubixCube.glb");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/laptop/laptop.gltf");
             assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::RubixCube@Models"), fileInput);
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::laptop@Demo"), fileInput);
         }
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/cup.glb");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/polaroid/polaroid.gltf");
             assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Cup@Models"), fileInput);
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::polaroid@Demo"), fileInput);
         }
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/plant.glb");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/bin.glb");
             assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Plant@Models"), fileInput);
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::bin@Demo"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/coffee.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::coffee@Demo"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/desk_frame.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::desk_frame@Demo"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/desk_light.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::desk_light@Demo"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/earth.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::earth@Demo"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/frame.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::frame@Demo"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/garland.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::garland@Demo"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/plane.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::plane@Demo"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/plant.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::plant@Demo"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/rubix_cube.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::rubix_cube@Demo"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/small_plant.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::small_plant@Demo"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/stand_light.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::stand_light@Demo"), fileInput);
         }
         // Textures
         {
@@ -134,6 +207,36 @@ namespace nexo::editor {
             std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/dirt.jpg");
             assets::ImporterFileInput fileInput{path};
             importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::dirt@Textures"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/Checkerboard.png");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::Checkerboard@Textures"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/container2.png");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::container2@Textures"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/campus.jpg");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::campus@Textures/Picture"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/cathedral.jpg");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::cathedral@Textures/Picture"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/Thomas_Guigs.jpg");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::Thomas_Guigs@Textures/Picture"), fileInput);
         }
         // Register for file drop events
         Application::getInstance().getEventManager()->registerListener<event::EventFileDrop>(this);

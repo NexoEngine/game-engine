@@ -57,7 +57,7 @@ namespace nexo::editor {
          */
         void show() override;
 
-        bool showToolbar      = false;
+        bool showToolbar      = true;
         bool isPhysicsRunning = false;
 
         /**
@@ -259,10 +259,10 @@ namespace nexo::editor {
         /**
          * @brief Populates the scene with default entities.
          *
-         * Creates standard light sources (ambient, directional, point, spot)
-         * and a simple ground plane in the scene.
+         *
+         * @param offset A glm::vec3 representing the positional offset to apply to all spheres.
          */
-        static void loadDefaultEntities();
+        void loadDefaultEntities(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
 
         /**
          * @brief Creates a physics-enabled entity in the scene.
@@ -295,8 +295,8 @@ namespace nexo::editor {
          * @param rotation The rotation of the model in Euler angles (degrees).
          */
         void addModelToScene(const std::string& modelPath, const glm::vec3& position,
-                                          const glm::vec3& scale    = {1.0f, 1.0f, 1.0f},
-                                          const glm::vec3& rotation = {0.0f, 0.0f, 0.0f}) const;
+                             const glm::vec3& scale    = {1.0f, 1.0f, 1.0f},
+                             const glm::vec3& rotation = {0.0f, 0.0f, 0.0f}) const;
 
         /**
          * @brief Renders the toolbar overlay within the main scene view.

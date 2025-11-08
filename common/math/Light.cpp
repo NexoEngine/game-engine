@@ -15,7 +15,7 @@
 #include "Light.hpp"
 
 namespace nexo::math {
-	std::pair<float, float> computeAttenuationFromDistance(float distance)
+	std::pair<float, float> computeAttenuationFromDistance(const float distance)
 	{
 		// Clamp distance to the min/max of the table
 		if (distance <= s_attenuationTable[0].distance)
@@ -52,4 +52,26 @@ namespace nexo::math {
 
 		return { linear, quadratic };
 	}
+
+    float computeDistanceFromAttenuation(const float linear, const float quadratic)
+    {
+        // Find the closest matching entry in the table
+        float closestDistance = s_attenuationTable[0].distance;
+        float minDiff = std::abs(s_attenuationTable[0].linear - linear) +
+                        std::abs(s_attenuationTable[0].quadratic - quadratic);
+
+        for (int i = 1; i < s_attenuationCount; ++i)
+        {
+            const float diff = std::abs(s_attenuationTable[i].linear - linear) +
+                         std::abs(s_attenuationTable[i].quadratic - quadratic);
+            if (diff < minDiff)
+            {
+                minDiff = diff;
+                closestDistance = s_attenuationTable[i].distance;
+            }
+        }
+
+        return closestDistance;
+    }
+
 }

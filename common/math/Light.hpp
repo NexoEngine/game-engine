@@ -54,4 +54,16 @@ namespace nexo::math {
      * @return A pair of floats where the first is the linear attenuation factor and the second is the quadratic attenuation factor.
      */
 	std::pair<float, float> computeAttenuationFromDistance(float distance);
+
+	/**
+     * @brief Estimates the distance at which a light would have the specified linear and quadratic attenuation factors.
+     *
+     * The function searches the attenuation table for the entry that best matches the provided linear and
+     * quadratic factors and returns the corresponding distance.
+     *
+     * @param linear The linear attenuation factor.
+     * @param quadratic The quadratic attenuation factor.
+     * @return The estimated distance from the light source.
+     */
+	float computeDistanceFromAttenuation(float linear, float quadratic);
 }
