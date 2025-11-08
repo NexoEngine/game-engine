@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <glm/glm.hpp>
+#include <string>
 
 namespace nexo::renderer {
 
