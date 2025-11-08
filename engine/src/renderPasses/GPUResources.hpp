@@ -92,9 +92,54 @@ namespace nexo::renderer {
     struct GpuInstanceData {
         glm::mat4 model;
         int       entityId;
+        int materialIndex;
         int       _pad0;
         int       _pad1;
-        int       _pad2;
+    };
+
+    #define MATERIAL_BUFFER "MaterialBuffer"
+
+    struct GpuMaterial {
+        // vec4 albedoColor;
+        glm::vec4 albedoColor;          // 0..15
+
+        // int albedoTexIndex;
+        int  albedoTexIndex;            // 16..19
+        int  _pad0[3];                  // 20..31 (pad so next vec4 is 16-byte aligned)
+
+        // vec4 specularColor;
+        glm::vec4 specularColor;        // 32..47
+
+        // int specularTexIndex;
+        int  specularTexIndex;          // 48..51
+        int  _pad1[3];                  // 52..63
+
+        // vec3 emissiveColor;
+        glm::vec3 emissiveColor;        // 64..75
+        float _pad2;                    // 76..79 (pad to 16-byte boundary)
+
+        // int emissiveTexIndex;
+        int  emissiveTexIndex;          // 80..83
+
+        // float roughness;
+        float roughness;                // 84..87
+
+        // int roughnessTexIndex;
+        int  roughnessTexIndex;         // 88..91
+
+        // float metallic;
+        float metallic;                 // 92..95
+
+        // int metallicTexIndex;
+        int  metallicTexIndex;          // 96..99
+
+        // float opacity;
+        float opacity;                  // 100..103
+
+        // int opacityTexIndex;
+        int  opacityTexIndex;           // 104..107
+
+        int _pad3[1];                   // 108..111 → struct size 112 bytes
     };
 
     #define NB_RESERVED "NB_RESERVED"
@@ -103,7 +148,8 @@ namespace nexo::renderer {
         {INSTANCE_BUFFER, 0},
         {PER_VIEW_UBO, 1},
         {LIGHT_UBO, 2},
-        {NB_RESERVED, 3}
+        {MATERIAL_BUFFER, 3},
+        {NB_RESERVED, 4}
     };
 
 }
