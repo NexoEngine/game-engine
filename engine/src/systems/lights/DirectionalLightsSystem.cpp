@@ -17,12 +17,13 @@
 #include "components/Light.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
+#include "renderPasses/GPUResources.hpp"
 
 namespace nexo::system {
-    void DirectionalLightsSystem::update()
+    renderer::GpuDirectionalLight DirectionalLightsSystem::update()
     {
         auto &renderContext = getSingleton<components::RenderContext>();
-        if (renderContext.sceneRendered == -1) return;
+        if (renderContext.sceneRendered == -1) return {};
 
         const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
@@ -35,7 +36,7 @@ namespace nexo::system {
         const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
         if (!partition) {
             LOG_ONCE(NEXO_WARN, "No directional light found in scene {}, skipping", sceneName);
-            return;
+            return {};
         }
         nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No directional light found in scene {}, skipping", sceneName));
 
@@ -50,6 +51,9 @@ namespace nexo::system {
 
         const auto &lights   = get<components::DirectionalLightComponent>(); // now 'lights' names the container
         const auto &dirLight = lights[0];
-        renderContext.sceneLights.dirLight = dirLight;
+        renderer::GpuDirectionalLight gpuDirLight{};
+        gpuDirLight.color = glm::vec4(dirLight.color, 1.0f);
+        gpuDirLight.direction = dirLight.direction;
+        return gpuDirLight;
     }
 } // namespace nexo::system

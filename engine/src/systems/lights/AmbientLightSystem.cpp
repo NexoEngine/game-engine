@@ -19,10 +19,10 @@
 #include "components/Light.hpp"
 
 namespace nexo::system {
-    void AmbientLightSystem::update()
+    glm::vec3 AmbientLightSystem::update()
     {
         auto &renderContext = getSingleton<components::RenderContext>();
-        if (renderContext.sceneRendered == -1) return;
+        if (renderContext.sceneRendered == -1) return {};
 
         const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
@@ -35,7 +35,7 @@ namespace nexo::system {
         const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
         if (!partition) {
             LOG_ONCE(NEXO_WARN, "No ambient light found in scene {}, skipping", sceneName);
-            return;
+            return {};
         }
         Logger::resetOnce(NEXO_LOG_ONCE_KEY("No ambient light found in scene {}, skipping", sceneName));
 
@@ -47,6 +47,6 @@ namespace nexo::system {
                 NEXO_LOG_ONCE_KEY("For scene {}, found {} ambient lights, only one is supported, picking the first one",
                                   sceneName, partition->count));
 
-        renderContext.sceneLights.ambientLight = get<components::AmbientLightComponent>()[0].color;
+        return get<components::AmbientLightComponent>()[0].color;
     }
 } // namespace nexo::system
