@@ -311,7 +311,7 @@ namespace nexo {
 
     void Application::run(const SceneInfo &sceneInfo)
     {
-        //PROFILE_SYSTEM("Application::run", 0);
+        PROFILE_SYSTEM("Application::run", 0);
         static bool areVideoLoaded = false;
         auto &renderContext        = m_coordinator->getSingletonComponent<components::RenderContext>();
 
@@ -342,7 +342,7 @@ namespace nexo {
                     areVideoLoaded = true;
                 }
                 {
-                    //PROFILE_SYSTEM("CameraPipeline", static_cast<size_t>(renderContext.cameras.size()));
+                    PROFILE_SYSTEM("CameraPipeline", static_cast<size_t>(renderContext.cameras.size()));
                     for (auto &camera : renderContext.cameras) {
                         camera.pipeline.execute();
                     }
@@ -352,12 +352,8 @@ namespace nexo {
                 renderer::NxRenderer3D::get().unbindTextures();
 
                 if (isInPlayMode()) {
-                    {
-                        m_physicsSystem->update();
-                    }
-                    {
-                        m_renderVideoSystem->update();
-                    }
+                    m_physicsSystem->update();
+                    m_renderVideoSystem->update();
                 }
             }
             if (m_SceneManager.getScene(sceneInfo.id).isActive()) {
