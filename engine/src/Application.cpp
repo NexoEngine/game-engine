@@ -311,7 +311,7 @@ namespace nexo {
 
     void Application::run(const SceneInfo &sceneInfo)
     {
-        PROFILE_SYSTEM("Application::run", 0);
+        //PROFILE_SYSTEM("Application::run", 0);
         static bool areVideoLoaded = false;
         auto &renderContext        = m_coordinator->getSingletonComponent<components::RenderContext>();
 
