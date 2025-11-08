@@ -22,6 +22,7 @@ namespace nexo::renderer {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id);
         glBufferData(GL_SHADER_STORAGE_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+        m_capacity = size;
     }
 
     void NxOpenGlShaderStorageBuffer::bind() const
@@ -39,10 +40,16 @@ namespace nexo::renderer {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     }
 
-    void NxOpenGlShaderStorageBuffer::setData(void* data, size_t size)
+    void NxOpenGlShaderStorageBuffer::setData(void* data, unsigned int size)
     {
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_id);
-        glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, size, data);
+        if (size > m_capacity) {
+            size_t newCapacity = std::max(size, m_capacity * 2);
+            glBufferData(GL_SHADER_STORAGE_BUFFER, newCapacity, data, GL_DYNAMIC_DRAW);
+            m_capacity = newCapacity;
+        } else {
+            glBufferSubData(GL_SHADER_STORAGE_BUFFER, 0, size, data);
+        }
         glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
     }
 } // namespace nexo::renderer

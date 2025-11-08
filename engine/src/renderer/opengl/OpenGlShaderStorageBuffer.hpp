@@ -50,7 +50,7 @@ namespace nexo::renderer {
          * @param data Pointer to the data to upload.
          * @param size Size in bytes of the data.
          */
-        void setData(void* data, size_t size) override;
+        void setData(void* data, unsigned int size) override;
 
         /**
          * @brief Returns the OpenGL buffer object ID.
@@ -60,8 +60,5 @@ namespace nexo::renderer {
         {
             return m_id;
         };
-
-       private:
-        unsigned int m_id{};
     };
 } // namespace nexo::renderer
