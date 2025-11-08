@@ -18,6 +18,8 @@
 #include "DrawCommand.hpp"
 #include "Framebuffer.hpp"
 #include "RenderPass.hpp"
+#include "ShaderStorageBuffer.hpp"
+#include "ShaderUniformBuffer.hpp"
 
 namespace nexo::renderer {
 
@@ -340,6 +342,13 @@ namespace nexo::renderer {
          */
         void clearGlobalUniforms();
 
+        void addUniformBuffer(const std::string &name, unsigned int bindingLocation, const std::shared_ptr<renderer::NxShaderUniformBuffer> &buffer);
+
+        void addStorageBuffer(const std::string &name, unsigned int bindingLocation, const std::shared_ptr<renderer::NxShaderStorageBuffer> &buffer);
+
+        void setUniformBufferData(const std::string &name, void *data, unsigned int size);
+        void setStorageBufferData(const std::string &name, void *data, unsigned int size);
+
        private:
         std::vector<DrawCommand> m_drawCommands;
         glm::vec4 m_cameraClearColor{};
@@ -349,6 +358,10 @@ namespace nexo::renderer {
         // Store all render passes
         std::unordered_map<PassId, std::shared_ptr<RenderPass>> passes;
         std::unordered_map<std::string, UniformValue> m_globalUniforms;
+
+        std::unordered_map<std::string, std::shared_ptr<renderer::NxShaderUniformBuffer>> m_ubos;
+        std::unordered_map<std::string, std::shared_ptr<renderer::NxShaderStorageBuffer>> m_ssbos;
+        std::unordered_map<std::string, unsigned int> m_bufferBindingLocations;
 
         // For generating unique IDs
         PassId nextPassId = 0;
