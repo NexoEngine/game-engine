@@ -162,9 +162,12 @@ namespace nexo::system {
         const auto meshSpan      = get<components::StaticMeshComponent>();
         const auto materialSpan  = get<components::MaterialComponent>();
 
-        // Profile draw command creation
         std::vector<RenderItem> renderItems;
         renderItems.reserve(partition->count);
+        std::vector<renderer::GpuMaterial> gpuMaterials;
+        gpuMaterials.reserve(partition->count);
+        std::unordered_map<const void*, uint32_t> materialToIndex;
+        materialToIndex.reserve(partition->count);
         for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
             const ecs::Entity entity = entitySpan[i];
             if (coord->entityHasComponent<components::CameraComponent>(entity) && sceneType != SceneType::EDITOR)
@@ -172,6 +175,52 @@ namespace nexo::system {
 
             const auto &transform     = transformSpan[i];
             const auto &materialAsset = materialSpan[i].material.lock();
+            const auto* matKey = materialAsset.get();
+            uint32_t materialIndex;
+            auto it = materialToIndex.find(matKey);
+            if (it == materialToIndex.end()) {
+                renderer::GpuMaterial gpuMat{};
+
+                const auto& src = *materialAsset->getData();
+
+                gpuMat.albedoColor      = src.albedoColor;
+                gpuMat.albedoTexIndex   = renderer::NxRenderer3D::get().getTextureIndex(
+                                              src.albedoTexture.lock() && src.albedoTexture.lock()->isLoaded()
+                                                  ? src.albedoTexture.lock()->getData()->texture
+                                                  : nullptr);
+
+                gpuMat.specularColor    = src.specularColor;
+                gpuMat.specularTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                                              src.metallicMap.lock() && src.metallicMap.lock()->isLoaded()
+                                                  ? src.metallicMap.lock()->getData()->texture
+                                                  : nullptr);
+
+                gpuMat.emissiveColor    = src.emissiveColor;
+                gpuMat.emissiveTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                                              src.emissiveMap.lock() && src.emissiveMap.lock()->isLoaded()
+                                                  ? src.emissiveMap.lock()->getData()->texture
+                                                  : nullptr);
+
+                gpuMat.roughness        = src.roughness;
+                gpuMat.roughnessTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                                               src.roughnessMap.lock() && src.roughnessMap.lock()->isLoaded()
+                                                   ? src.roughnessMap.lock()->getData()->texture
+                                                   : nullptr);
+
+                gpuMat.metallic         = src.metallic;
+                gpuMat.metallicTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                                               src.metallicMap.lock() && src.metallicMap.lock()->isLoaded()
+                                                   ? src.metallicMap.lock()->getData()->texture
+                                                   : nullptr);
+
+                gpuMat.opacity          = src.opacity;
+
+                materialIndex = static_cast<uint32_t>(gpuMaterials.size());
+                gpuMaterials.push_back(gpuMat);
+                materialToIndex[matKey] = materialIndex;
+            } else {
+                materialIndex = it->second;
+            }
 
             std::string shaderStr;
             std::shared_ptr<renderer::NxShader> shader;
@@ -183,7 +232,7 @@ namespace nexo::system {
             item.entity        = entity;
             item.shader        = shader;
             item.mesh          = meshSpan[i].vao;
-            item.material      = materialAsset;
+            item.materialIndex      = materialIndex;
             item.filterMask    = renderer::F_FORWARD_PASS;
             item.isTransparent = false;
             item.modelMatrix = transform.worldMatrix;
@@ -195,14 +244,12 @@ namespace nexo::system {
                 sel.entity = entity;
                 sel.mesh = meshSpan[i].vao;
                 sel.modelMatrix = transform.worldMatrix;
-                // Optional: use a dedicated mask shader if different
                 if (materialAsset->getData()->isOpaque) {
                     sel.shader = renderer::ShaderLibrary::getInstance().get("Flat color");
                 } else {
                     sel.shader = renderer::ShaderLibrary::getInstance().get("Albedo unshaded transparent");
                 }
-                sel.material = materialAsset;
-                // material can be nullptr or same; we won’t use heavy material uniforms anyway
+                sel.materialIndex = materialIndex;
                 renderItems.push_back(sel);
             }
         }
@@ -211,7 +258,7 @@ namespace nexo::system {
             [](const RenderItem& a, const RenderItem& b) {
                 if (a.filterMask     != b.filterMask)     return a.filterMask     < b.filterMask;
                 if (a.shader         != b.shader)         return a.shader         < b.shader;
-                if (a.material       != b.material)       return a.material       < b.material;
+                if (a.materialIndex       != b.materialIndex)       return a.materialIndex       < b.materialIndex;
                 if (a.mesh           != b.mesh)           return a.mesh           < b.mesh;
                 return false;
             });
@@ -223,6 +270,7 @@ namespace nexo::system {
             renderer::GpuInstanceData inst{};
             inst.model    = item.modelMatrix;
             inst.entityId = static_cast<int>(item.entity);
+            inst.materialIndex = item.materialIndex;
             instances.push_back(inst);
 
             item.instanceIndex = index;
@@ -236,7 +284,7 @@ namespace nexo::system {
 
             current.shader        = first.shader;
             current.mesh          = first.mesh;
-            current.material      = first.material;
+            current.materialIndex      = first.materialIndex;
             current.filterMask    = first.filterMask;
             current.instanceOffset = first.instanceIndex;
             current.instanceCount  = 1;
@@ -247,7 +295,7 @@ namespace nexo::system {
                 bool sameBatch =
                     item.shader     == current.shader &&
                     item.mesh->getId()       == current.mesh->getId() &&
-                    item.material   == current.material &&
+                    item.materialIndex   == current.materialIndex &&
                     item.filterMask == current.filterMask;
 
                 if (sameBatch) {
@@ -256,7 +304,7 @@ namespace nexo::system {
                     batches.push_back(current);
                     current.shader        = item.shader;
                     current.mesh          = item.mesh;
-                    current.material      = item.material;
+                    current.materialIndex      = item.materialIndex;
                     current.filterMask    = item.filterMask;
                     current.instanceOffset = item.instanceIndex;
                     current.instanceCount  = 1;
@@ -280,56 +328,14 @@ namespace nexo::system {
                 LOG(NEXO_INFO, "Instanced batch detected");
             }
 
-            // Set per-batch uniforms:
             cmd.setUniform("uInstanceOffset", static_cast<int>(batch.instanceOffset));
-            if (batch.filterMask == renderer::F_FORWARD_PASS) {
-                cmd.setUniform("uMaterial.albedoColor",
-                    batch.material && batch.material->isLoaded() ? batch.material->getData()->albedoColor : glm::vec4(0.0f));
-                const auto albedoTextureAsset =
-                    batch.material && batch.material->isLoaded() ? batch.material->getData()->albedoTexture.lock() : nullptr;
-                const auto albedoTexture =
-                    albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
-                cmd.setUniform("uMaterial.albedoTexIndex", renderer::NxRenderer3D::get().getTextureIndex(albedoTexture));
-
-                cmd.setUniform("uMaterial.specularColor",
-                    batch.material && batch.material->isLoaded() ? batch.material->getData()->specularColor : glm::vec4(0.0f));
-                const auto specularTextureAsset =
-                    batch.material && batch.material->isLoaded() ? batch.material->getData()->metallicMap.lock() : nullptr;
-                const auto specularTexture = specularTextureAsset && specularTextureAsset->isLoaded() ?
-                                                 specularTextureAsset->getData()->texture : nullptr;
-                cmd.setUniform("uMaterial.specularTexIndex", renderer::NxRenderer3D::get().getTextureIndex(specularTexture));
-
-                cmd.setUniform("uMaterial.emissiveColor",
-                    batch.material && batch.material->isLoaded() ? batch.material->getData()->emissiveColor : glm::vec3(0.0f));
-                const auto emissiveTextureAsset =
-                    batch.material && batch.material->isLoaded() ? batch.material->getData()->emissiveMap.lock() : nullptr;
-                const auto emissiveTexture = emissiveTextureAsset && emissiveTextureAsset->isLoaded() ?
-                                                 emissiveTextureAsset->getData()->texture : nullptr;
-                cmd.setUniform("uMaterial.emissiveTexIndex", renderer::NxRenderer3D::get().getTextureIndex(emissiveTexture));
-
-                cmd.setUniform("uMaterial.roughness",
-                    batch.material && batch.material->isLoaded() ? batch.material->getData()->roughness : 1.0f);
-                const auto roughnessTextureAsset =
-                    batch.material && batch.material->isLoaded() ? batch.material->getData()->roughnessMap.lock() : nullptr;
-                const auto roughnessTexture = roughnessTextureAsset && roughnessTextureAsset->isLoaded() ?
-                                                  roughnessTextureAsset->getData()->texture : nullptr;
-                cmd.setUniform("uMaterial.roughnessTexIndex", renderer::NxRenderer3D::get().getTextureIndex(roughnessTexture));
-            } else if (batch.filterMask == renderer::F_OUTLINE_MASK) {
-                cmd.setUniform("uMaterial.albedoColor",
-                    batch.material && batch.material->isLoaded() ? batch.material->getData()->albedoColor : glm::vec4(0.0f));
-                const auto albedoTextureAsset =
-                    batch.material && batch.material->isLoaded() ? batch.material->getData()->albedoTexture.lock() : nullptr;
-                const auto albedoTexture =
-                    albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
-                cmd.setUniform("uMaterial.albedoTexIndex", renderer::NxRenderer3D::get().getTextureIndex(albedoTexture));
-            }
-
             drawCommands.push_back(cmd);
         }
 
         std::cout << " Draw count " << drawCommands.size() << " commands" << std::endl;
         for (auto &camera : renderContext.cameras) {
             camera.pipeline.setStorageBufferData(INSTANCE_BUFFER, instances.data(), sizeof(renderer::GpuInstanceData) * instances.size());
+            camera.pipeline.setStorageBufferData(MATERIAL_BUFFER, gpuMaterials.data(), sizeof(renderer::GpuMaterial) * gpuMaterials.size());
             camera.pipeline.addDrawCommands(drawCommands);
 
             if (sceneType == SceneType::EDITOR && renderContext.gridParams.enabled)
