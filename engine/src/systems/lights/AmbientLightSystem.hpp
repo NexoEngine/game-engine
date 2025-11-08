@@ -48,6 +48,6 @@ namespace nexo::system {
          *
          * If no ambient light is found for the active scene, a warning is logged.
          */
-        void update();
+        glm::vec3 update();
     };
 } // namespace nexo::system

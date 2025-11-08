@@ -16,9 +16,16 @@
 #include "components/Light.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
+#include "components/Transform.hpp"
 #include "ecs/GroupSystem.hpp"
+#include "renderPasses/GPUResources.hpp"
 
 namespace nexo::system {
+
+    struct PointLightContext {
+        unsigned int nbPointLights = 0;
+        std::array<renderer::GpuPointLight, MAX_POINT_LIGHTS> pointLights;
+    };
 
     /**
      * @brief System responsible for updating point lights in the scene.
@@ -37,7 +44,7 @@ namespace nexo::system {
      * @throws TooManyPointLightsException if the count of point light entities exceeds MAX_POINT_LIGHTS.
      */
     class PointLightsSystem final : public ecs::GroupSystem<ecs::Owned<ecs::Read<components::PointLightComponent>>,
-                                                            ecs::NonOwned<ecs::Read<components::SceneTag>>,
+                                                            ecs::NonOwned<ecs::Read<components::SceneTag>, ecs::Read<components::TransformComponent>>,
                                                             ecs::WriteSingleton<components::RenderContext>> {
        public:
         /**
@@ -50,6 +57,6 @@ namespace nexo::system {
          * MAX_POINT_LIGHTS, a TooManyPointLightsException is thrown.
          * If no point lights are found for the active scene, a warning is logged.
          */
-        void update();
+        PointLightContext update();
     };
 } // namespace nexo::system

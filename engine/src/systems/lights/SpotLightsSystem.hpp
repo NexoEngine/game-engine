@@ -17,8 +17,15 @@
 #include "components/Light.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
+#include "components/Transform.hpp"
+#include "renderPasses/GPUResources.hpp"
 
 namespace nexo::system {
+
+    struct SpotLightContext {
+        unsigned int nbSpotLights = 0;
+        std::array<renderer::GpuSpotLight, MAX_SPOT_LIGHTS> spotLights;
+    };
 
     /**
      * @brief System responsible for updating spot lights in the scene.
@@ -37,7 +44,7 @@ namespace nexo::system {
      * @throws TooManySpotLightsException if the count of spot light entities exceeds MAX_SPOT_LIGHTS.
      */
     class SpotLightsSystem final : public ecs::GroupSystem<ecs::Owned<ecs::Read<components::SpotLightComponent>>,
-                                                           ecs::NonOwned<ecs::Read<components::SceneTag>>,
+                                                           ecs::NonOwned<ecs::Read<components::SceneTag>, ecs::Read<components::TransformComponent>>,
                                                            ecs::WriteSingleton<components::RenderContext>> {
        public:
         /**
@@ -49,6 +56,6 @@ namespace nexo::system {
          * MAX_SPOT_LIGHTS, a TooManySpotLightsException is thrown.
          * If no spotlight are found for the active scene, a warning is logged.
          */
-        void update();
+        SpotLightContext update();
     };
 } // namespace nexo::system

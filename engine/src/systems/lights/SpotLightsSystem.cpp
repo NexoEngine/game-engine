@@ -19,15 +19,18 @@
 #include "components/SceneComponents.hpp"
 #include "core/exceptions/Exceptions.hpp"
 #include "SystemProfiler.hpp"
+#include "renderPasses/GPUResources.hpp"
 
 namespace nexo::system {
-    void SpotLightsSystem::update()
+    SpotLightContext SpotLightsSystem::update()
     {
         const std::span<const ecs::Entity> entitySpan = m_group->entities();
+        const auto spotLightsSpan = get<components::SpotLightComponent>();
+        const auto transformComponentArray = get<components::TransformComponent>();
         PROFILE_SYSTEM("SpotLightSystem", entitySpan.size());
 
         auto &renderContext = getSingleton<components::RenderContext>();
-        if (renderContext.sceneRendered == -1) return;
+        if (renderContext.sceneRendered == -1) return {};
 
         const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
 
@@ -40,17 +43,31 @@ namespace nexo::system {
         const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
         if (!partition) {
             LOG_ONCE(NEXO_WARN, "No spot light found in scene {}, skipping", sceneName);
-            return;
+            return {};
         }
         nexo::Logger::resetOnce(NEXO_LOG_ONCE_KEY("No spot light found in scene {}, skipping", sceneName));
 
         if (partition->count > MAX_SPOT_LIGHTS)
             THROW_EXCEPTION(core::TooManySpotLightsException, sceneRendered, partition->count);
 
-
+        SpotLightContext out{};
         for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
-            renderContext.sceneLights.spotLights[renderContext.sceneLights.spotLightCount] = entitySpan[i];
-            renderContext.sceneLights.spotLightCount++;
+            const ecs::Entity entity = entitySpan[i];
+            const auto &transform = transformComponentArray->get(entity);
+            const auto &spotLight = spotLightsSpan[i];
+
+            renderer::GpuSpotLight gpuSpotLight{};
+            gpuSpotLight.color = glm::vec4(spotLight.color, 1.0f);
+            gpuSpotLight.constant = spotLight.constant;
+            gpuSpotLight.linear = spotLight.linear;
+            gpuSpotLight.quadratic = spotLight.quadratic;
+            gpuSpotLight.cutOff = spotLight.cutOff;
+            gpuSpotLight.direction = spotLight.direction;
+            gpuSpotLight.outerCutoff = spotLight.outerCutoff;
+            gpuSpotLight.position = transform.pos;
+
+            out.spotLights[out.nbSpotLights++] = gpuSpotLight;
         }
+        return out;
     }
 } // namespace nexo::system
