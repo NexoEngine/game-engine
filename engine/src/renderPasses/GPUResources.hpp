@@ -89,6 +89,14 @@ namespace nexo::renderer {
 
     #define INSTANCE_BUFFER "ModelMatrices"
 
+    struct GpuInstanceData {
+        glm::mat4 model;
+        int       entityId;
+        int       _pad0;
+        int       _pad1;
+        int       _pad2;
+    };
+
     #define NB_RESERVED "NB_RESERVED"
 
     inline const std::unordered_map<std::string, unsigned int> RESERVED_BINDING_POINTS = {
