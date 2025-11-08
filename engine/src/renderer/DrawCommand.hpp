@@ -62,6 +62,7 @@ namespace nexo::renderer {
 
         std::shared_ptr<NxVertexArray> vao;
         std::shared_ptr<NxShader> shader;
+        unsigned int materialId;
         std::unordered_map<std::string, UniformValue> uniforms;
 
         uint32_t filterMask = 0xFFFFFFFF;

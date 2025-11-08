@@ -348,6 +348,8 @@ namespace nexo::renderer {
 
         void setUniformBufferData(const std::string &name, void *data, unsigned int size);
         void setStorageBufferData(const std::string &name, void *data, unsigned int size);
+        void appendStorageBufferData(const std::string &name, void *data, unsigned int size);
+        unsigned int getStorageBufferSize(const std::string &name);
 
        private:
         std::vector<DrawCommand> m_drawCommands;
