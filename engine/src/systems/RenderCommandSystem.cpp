@@ -38,67 +38,6 @@
 
 namespace nexo::system {
 
-    /**
-     * @brief Sets up the lighting uniforms in the given shader.
-     *
-     * This static helper function binds the provided shader and sets uniforms for ambient, directional,
-     * point, and spotlights based on the current lightContext data. After updating the uniforms, the shader is
-     * unbound.
-     *
-     * @param cmd
-     * @param lightContext The light context containing lighting information for the scene.
-     *
-     * @note The light context must contain valid values for:
-     *  - ambientLight
-     *  - directionalLights (and directionalLightCount)
-     *  - pointLights (and pointLightCount)
-     *  - spotLights (and spotLightCount)
-     */
-    void RenderCommandSystem::setupLights(renderer::RenderPipeline &pipeline, const components::LightContext &lightContext)
-    {
-        PROFILE_SCOPE("RenderCommandSystem::setupLights");
-        pipeline.setGlobalUniform("uAmbientLight", lightContext.ambientLight);
-        pipeline.setGlobalUniform("uNumPointLights", static_cast<int>(lightContext.pointLightCount));
-        pipeline.setGlobalUniform("uNumSpotLights", static_cast<int>(lightContext.spotLightCount));
-
-        const auto &directionalLight        = lightContext.dirLight;
-        pipeline.setGlobalUniform("uDirLight.direction", directionalLight.direction);
-        pipeline.setGlobalUniform("uDirLight.color", glm::vec4(directionalLight.color, 1.0f));
-
-        {
-            PROFILE_SCOPE_ENTITIES("RenderCommandSystem::setupLights::PointLights", lightContext.pointLightCount);
-            const auto &pointLightComponentArray = coord->getComponentArray<components::PointLightComponent>();
-            const auto &transformComponentArray  = coord->getComponentArray<components::TransformComponent>();
-            for (unsigned int i = 0; i < lightContext.pointLightCount; ++i) {
-                const auto &pointLight = pointLightComponentArray->get(lightContext.pointLights[i]);
-                const auto &transform  = transformComponentArray->get(lightContext.pointLights[i]);
-                pipeline.setGlobalUniform(std::format("uPointLights[{}].position", i), transform.pos);
-                pipeline.setGlobalUniform(std::format("uPointLights[{}].color", i), glm::vec4(pointLight.color, 1.0f));
-                pipeline.setGlobalUniform(std::format("uPointLights[{}].constant", i), pointLight.constant);
-                pipeline.setGlobalUniform(std::format("uPointLights[{}].linear", i), pointLight.linear);
-                pipeline.setGlobalUniform(std::format("uPointLights[{}].quadratic", i), pointLight.quadratic);
-            }
-        }
-
-        {
-            PROFILE_SCOPE_ENTITIES("RenderCommandSystem::setupLights::SpotLights", lightContext.spotLightCount);
-            const auto &spotLightComponentArray = coord->getComponentArray<components::SpotLightComponent>();
-            const auto &transformComponentArray  = coord->getComponentArray<components::TransformComponent>();
-            for (unsigned int i = 0; i < lightContext.spotLightCount; ++i) {
-                const auto &spotLight = spotLightComponentArray->get(lightContext.spotLights[i]);
-                const auto &transform = transformComponentArray->get(lightContext.spotLights[i]);
-                pipeline.setGlobalUniform(std::format("uSpotLights[{}].position", i), transform.pos);
-                pipeline.setGlobalUniform(std::format("uSpotLights[{}].color", i), glm::vec4(spotLight.color, 1.0f));
-                pipeline.setGlobalUniform(std::format("uSpotLights[{}].constant", i), spotLight.constant);
-                pipeline.setGlobalUniform(std::format("uSpotLights[{}].linear", i), spotLight.linear);
-                pipeline.setGlobalUniform(std::format("uSpotLights[{}].quadratic", i), spotLight.quadratic);
-                pipeline.setGlobalUniform(std::format("uSpotLights[{}].direction", i), spotLight.direction);
-                pipeline.setGlobalUniform(std::format("uSpotLights[{}].cutOff", i), spotLight.cutOff);
-                pipeline.setGlobalUniform(std::format("uSpotLights[{}].outerCutoff", i), spotLight.outerCutoff);
-            }
-        }
-    }
-
     static renderer::DrawCommand createOutlineDrawCommand(const components::CameraContext &camera)
     {
         PROFILE_SCOPE("RenderCommandSystem::createOutlineDrawCommand");
@@ -116,7 +55,7 @@ namespace nexo::system {
         cmd.setUniform("uDepthTexture", 1);
         cmd.setUniform("uDepthMaskTexture", 2);
         cmd.setUniform("uTime", static_cast<float>(glfwGetTime()));
-        const glm::vec2 screenSize = {camera.renderTarget->getSize().x, camera.renderTarget->getSize().y};
+        const glm::vec2 screenSize = {camera.renderTargetSize.x, camera.renderTargetSize.y};
         cmd.setUniform("uScreenSize", screenSize);
         cmd.setUniform("uOutlineWidth", 10.0f);
         return cmd;
@@ -149,7 +88,7 @@ namespace nexo::system {
             PROFILE_SCOPE("RenderCommandSystem::createGridDrawCommand::MouseWorldPos");
             const glm::vec2 globalMousePos   = event::getMousePosition();
             glm::vec3 mouseWorldPos          = camera.cameraPosition; // Default position (camera position)
-            const glm::vec2 renderTargetSize = camera.renderTarget->getSize();
+            const glm::vec2 renderTargetSize = camera.renderTargetSize;
 
             if (renderContext.isChildWindow) {
                 // viewportBounds[0] is min (top-left), viewportBounds[1] is max (bottom-right)
@@ -348,9 +287,6 @@ namespace nexo::system {
             for (auto &camera : renderContext.cameras) {
                 {
                     PROFILE_SCOPE_ENTITIES("RenderCommandSystem::UniformUpdates", drawCommands.size());
-                    camera.pipeline.setGlobalUniform("uViewProjection", camera.viewProjectionMatrix);
-                    camera.pipeline.setGlobalUniform("uCamPos", camera.cameraPosition);
-                    setupLights(camera.pipeline, renderContext.sceneLights);
                 }
 
                 {
