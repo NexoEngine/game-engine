@@ -34,7 +34,6 @@
 #include "SystemProfiler.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
-#include <unistd.h>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
 #include <algorithm>
