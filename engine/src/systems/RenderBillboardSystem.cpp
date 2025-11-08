@@ -23,58 +23,6 @@
 #include "SystemProfiler.hpp"
 
 namespace nexo::system {
-    /**
-     * @brief Sets up the lighting uniforms in the given shader.
-     *
-     * This static helper function binds the provided shader and sets uniforms for ambient, directional,
-     * point, and spotlights based on the current lightContext data. After updating the uniforms, the shader is unbound.
-     *
-     * @param cmd The draw command containing the shader to set up.
-     * @param lightContext The light context containing lighting information for the scene.
-     *
-     * @note The light context must contain valid values for:
-     *  - ambientLight
-     *  - directionalLights (and directionalLightCount)
-     *  - pointLights (and pointLightCount)
-     *  - spotLights (and spotLightCount)
-     */
-    void RenderBillboardSystem::setupLights(renderer::DrawCommand &cmd, const components::LightContext &lightContext)
-    {
-        cmd.uniforms["uAmbientLight"] = lightContext.ambientLight;
-
-        cmd.uniforms["uNumPointLights"] = static_cast<int>(lightContext.pointLightCount);
-        cmd.uniforms["uNumSpotLights"]  = static_cast<int>(lightContext.spotLightCount);
-
-        const auto &directionalLight        = lightContext.dirLight;
-        cmd.uniforms["uDirLight.direction"] = directionalLight.direction;
-        cmd.uniforms["uDirLight.color"]     = glm::vec4(directionalLight.color, 1.0f);
-
-        const auto &pointLightComponentArray = coord->getComponentArray<components::PointLightComponent>();
-        const auto &transformComponentArray  = coord->getComponentArray<components::TransformComponent>();
-        for (unsigned int i = 0; i < lightContext.pointLightCount; ++i) {
-            const auto &pointLight = pointLightComponentArray->get(lightContext.pointLights[i]);
-            const auto &transform  = transformComponentArray->get(lightContext.pointLights[i]);
-            cmd.uniforms[std::format("uPointLights[{}].position", i)]  = transform.pos;
-            cmd.uniforms[std::format("uPointLights[{}].color", i)]     = glm::vec4(pointLight.color, 1.0f);
-            cmd.uniforms[std::format("uPointLights[{}].constant", i)]  = pointLight.constant;
-            cmd.uniforms[std::format("uPointLights[{}].linear", i)]    = pointLight.linear;
-            cmd.uniforms[std::format("uPointLights[{}].quadratic", i)] = pointLight.quadratic;
-        }
-
-        const auto &spotLightComponentArray = coord->getComponentArray<components::SpotLightComponent>();
-        for (unsigned int i = 0; i < lightContext.spotLightCount; ++i) {
-            const auto &spotLight = spotLightComponentArray->get(lightContext.spotLights[i]);
-            const auto &transform = transformComponentArray->get(lightContext.spotLights[i]);
-            cmd.uniforms[std::format("uSpotLights[{}].position", i)]    = transform.pos;
-            cmd.uniforms[std::format("uSpotLights[{}].color", i)]       = glm::vec4(spotLight.color, 1.0f);
-            cmd.uniforms[std::format("uSpotLights[{}].constant", i)]    = spotLight.constant;
-            cmd.uniforms[std::format("uSpotLights[{}].linear", i)]      = spotLight.linear;
-            cmd.uniforms[std::format("uSpotLights[{}].quadratic", i)]   = spotLight.quadratic;
-            cmd.uniforms[std::format("uSpotLights[{}].direction", i)]   = spotLight.direction;
-            cmd.uniforms[std::format("uSpotLights[{}].cutOff", i)]      = spotLight.cutOff;
-            cmd.uniforms[std::format("uSpotLights[{}].outerCutoff", i)] = spotLight.outerCutoff;
-        }
-    }
 
     static glm::mat4 createBillboardTransformMatrix(const glm::vec3 &cameraPosition,
                                                     const components::TransformComponent &transform,
@@ -101,142 +49,249 @@ namespace nexo::system {
                 glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)};
     }
 
-    static renderer::DrawCommand createSelectedDrawCommand(const glm::vec3 &cameraPosition,
-                                                           const components::BillboardComponent &mesh,
-                                                           const std::shared_ptr<assets::Material> &materialAsset,
-                                                           int modelIndex)
-    {
-        renderer::DrawCommand cmd;
-        cmd.vao             = mesh.vao;
-        const bool isOpaque = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->isOpaque : true;
-        if (isOpaque)
-            cmd.shader = renderer::ShaderLibrary::getInstance().get("Flat color");
-        else {
-            cmd.shader = renderer::ShaderLibrary::getInstance().get("Albedo unshaded transparent");
-            cmd.uniforms["uMaterial.albedoColor"] =
-                materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoColor : glm::vec4(0.0f);
-            const auto albedoTextureAsset =
-                materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoTexture.lock() : nullptr;
-            const auto albedoTexture =
-                albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
-            cmd.uniforms["uMaterial.albedoTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(albedoTexture);
-        }
-        cmd.uniforms["uModelIndex"]     = modelIndex;
-        cmd.filterMask = 0;
-        cmd.filterMask = renderer::F_OUTLINE_MASK;
-        return cmd;
-    }
-
-    static renderer::DrawCommand createDrawCommand(const ecs::Entity entity, const glm::vec3 &cameraPosition,
-                                                   const std::shared_ptr<renderer::NxShader> &shader,
-                                                   const components::BillboardComponent &billboard,
-                                                   const std::shared_ptr<assets::Material> &materialAsset,
-                                                   int modelIndex)
-    {
-        renderer::DrawCommand cmd;
-        cmd.vao                            = billboard.vao;
-        cmd.shader                         = shader;
-        cmd.uniforms["uModelIndex"]        = modelIndex;
-        cmd.uniforms["uEntityId"] = static_cast<int>(entity);
-
-        cmd.uniforms["uMaterial.albedoColor"] =
-            materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoColor : glm::vec4(0.0f);
-        const auto albedoTextureAsset =
-            materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoTexture.lock() : nullptr;
-        const auto albedoTexture =
-            albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
-        cmd.uniforms["uMaterial.albedoTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(albedoTexture);
-
-        cmd.uniforms["uMaterial.specularColor"] =
-            materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->specularColor : glm::vec4(0.0f);
-        const auto specularTextureAsset =
-            materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->metallicMap.lock() : nullptr;
-        const auto specularTexture                 = specularTextureAsset && specularTextureAsset->isLoaded() ?
-                                                         specularTextureAsset->getData()->texture :
-                                                         nullptr;
-        cmd.uniforms["uMaterial.specularTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(specularTexture);
-
-        cmd.uniforms["uMaterial.emissiveColor"] =
-            materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->emissiveColor : glm::vec3(0.0f);
-        const auto emissiveTextureAsset =
-            materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->emissiveMap.lock() : nullptr;
-        const auto emissiveTexture                 = emissiveTextureAsset && emissiveTextureAsset->isLoaded() ?
-                                                         emissiveTextureAsset->getData()->texture :
-                                                         nullptr;
-        cmd.uniforms["uMaterial.emissiveTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(emissiveTexture);
-
-        cmd.uniforms["uMaterial.roughness"] =
-            materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->roughness : 1.0f;
-        const auto roughnessTextureAsset =
-            materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->roughnessMap.lock() : nullptr;
-        const auto roughnessTexture                 = roughnessTextureAsset && roughnessTextureAsset->isLoaded() ?
-                                                          roughnessTextureAsset->getData()->texture :
-                                                          nullptr;
-        cmd.uniforms["uMaterial.roughnessTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(roughnessTexture);
-
-        cmd.filterMask = 0;
-        cmd.filterMask |= renderer::F_FORWARD_PASS;
-        return cmd;
-    }
-
     void RenderBillboardSystem::update()
     {
         const std::span<const ecs::Entity> entitySpan = m_group->entities();
         PROFILE_SYSTEM("RenderBillboardSystem", entitySpan.size());
-        auto &renderContext = getSingleton<components::RenderContext>();
+
+        auto& renderContext = getSingleton<components::RenderContext>();
         if (renderContext.sceneRendered == -1) return;
 
         const auto sceneRendered  = static_cast<unsigned int>(renderContext.sceneRendered);
         const SceneType sceneType = renderContext.sceneType;
 
         const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
-            [](const components::SceneTag &tag) { return tag.id; });
-        const auto *partition        = scenePartition.getPartition(sceneRendered);
-        auto &app                    = Application::getInstance();
-        const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
+            [](const components::SceneTag& tag) { return tag.id; });
+        const auto* partition        = scenePartition.getPartition(sceneRendered);
+        auto& app                    = Application::getInstance();
+        const std::string& sceneName = app.getSceneManager().getScene(sceneRendered).getName();
         if (!partition) {
-            LOG_ONCE(NEXO_WARN, "Nothing to render in scene {}, skipping", sceneName);
+            LOG_ONCE(NEXO_WARN, "Nothing to render (billboards) in scene {}, skipping", sceneName);
             return;
         }
-        Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render in scene {}, skipping", sceneName));
+        Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render (billboards) in scene {}, skipping", sceneName));
 
-        const auto transformComponentArray            = get<components::TransformComponent>();
-        const auto billboardSpan                      = get<components::BillboardComponent>();
-        const auto materialComponentArray             = get<components::MaterialComponent>();
+        const auto transformComponentArray = get<components::TransformComponent>();
+        const auto billboardSpan = get<components::BillboardComponent>();
+        const auto materialComponentArray  = get<components::MaterialComponent>();
 
-        for (auto &camera : renderContext.cameras) {
-            std::vector<renderer::DrawCommand> drawCommands;
-            std::vector<glm::mat4> modelMatrices;
-            modelMatrices.reserve(partition->count);
-            const unsigned int instanceSsboCount = camera.pipeline.getStorageBufferSize(INSTANCE_BUFFER) / sizeof(glm::mat4);
+        for (auto& camera : renderContext.cameras) {
+            std::vector<RenderItem> renderItems;
+            renderItems.reserve(partition->count);
             for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
                 const ecs::Entity entity = entitySpan[i];
+
                 if (coord->entityHasComponent<components::CameraComponent>(entity) && sceneType != SceneType::EDITOR)
                     continue;
-                const auto &transform     = transformComponentArray->get(entitySpan[i]);
-                const auto &materialAsset = materialComponentArray->get(entitySpan[i]).material.lock();
-                const auto &billboard     = billboardSpan[i];
-                std::string shaderStr =
-                    materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : "";
-                auto shader = renderer::ShaderLibrary::getInstance().get(shaderStr);
-                auto cmd =
-                    createDrawCommand(entity, camera.cameraPosition, shader, billboard, materialAsset, modelMatrices.size() + instanceSsboCount);
-                drawCommands.push_back(cmd);
 
-                const glm::mat4 &billboardRotation = createBillboardTransformMatrix(camera.cameraPosition, transform);
-                const auto transformMatrix          = glm::translate(glm::mat4(1.0f), transform.pos) * billboardRotation *
-                                            glm::scale(glm::mat4(1.0f), glm::vec3(transform.size.x, transform.size.y, 1.0f));
+                const auto& transform     = transformComponentArray->get(entity);
+                const auto& billboard     = billboardSpan[i];
+                const auto& materialAsset = materialComponentArray->get(entity).material.lock();
 
+                std::string shaderStr;
+                std::shared_ptr<renderer::NxShader> shader;
+                shaderStr = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : "";
+                shader    = renderer::ShaderLibrary::getInstance().get(shaderStr);
+                if (!shader) continue;
+
+                RenderItem item;
+                item.entity        = entity;
+                item.shader        = shader;
+                item.mesh          = billboard.vao;
+                item.material      = materialAsset;
+                item.filterMask    = renderer::F_FORWARD_PASS;
+                item.isTransparent = !(materialAsset && materialAsset->isLoaded() &&
+                                        materialAsset->getData()->isOpaque);
+
+                const glm::mat4 billboardRotation =
+                    createBillboardTransformMatrix(camera.cameraPosition, transform);
+                glm::mat4 model =
+                    glm::translate(glm::mat4(1.0f), transform.pos) *
+                    billboardRotation *
+                    glm::scale(glm::mat4(1.0f),
+                                glm::vec3(transform.size.x, transform.size.y, 1.0f));
+
+                item.modelMatrix = model;
+
+                renderItems.push_back(item);
                 if (coord->entityHasComponent<components::SelectedTag>(entity)) {
-                    auto selectedCmd =
-                        createSelectedDrawCommand(camera.cameraPosition, billboard, materialAsset, modelMatrices.size() + instanceSsboCount);
-                    drawCommands.push_back(selectedCmd);
+                    RenderItem sel = item;
+                    sel.filterMask = renderer::F_OUTLINE_MASK;
+                    sel.entity = entity;
+                    sel.mesh = billboard.vao;
+                    sel.modelMatrix = model;
+                    if (materialAsset->getData()->isOpaque) {
+                        sel.shader = renderer::ShaderLibrary::getInstance().get("Flat color");
+                    } else {
+                        sel.shader = renderer::ShaderLibrary::getInstance().get("Albedo unshaded transparent");
+                    }
+                    sel.material = materialAsset;
+                    renderItems.push_back(sel);
                 }
-                modelMatrices.push_back(transformMatrix);
             }
-            camera.pipeline.appendStorageBufferData(INSTANCE_BUFFER, modelMatrices.data(), modelMatrices.size() * sizeof(glm::mat4));
-            modelMatrices.clear();
+
+            if (renderItems.empty())
+                continue;
+
+            std::sort(renderItems.begin(), renderItems.end(),
+                [](const RenderItem& a, const RenderItem& b) {
+                    if (a.filterMask != b.filterMask) return a.filterMask < b.filterMask;
+                    if (a.shader     != b.shader)     return a.shader     < b.shader;
+                    if (a.material   != b.material)   return a.material   < b.material;
+                    if (a.mesh       != b.mesh)       return a.mesh       < b.mesh;
+                    return false;
+                });
+
+
+            const std::size_t currentBufferSizeBytes =
+                camera.pipeline.getStorageBufferSize(INSTANCE_BUFFER);
+            const std::uint32_t baseInstanceOffset =
+                static_cast<std::uint32_t>(currentBufferSizeBytes / sizeof(renderer::GpuInstanceData));
+
+            std::vector<renderer::GpuInstanceData> billboardInstances;
+            billboardInstances.reserve(renderItems.size());
+
+            std::uint32_t localIndex = 0;
+            for (auto& item : renderItems) {
+                renderer::GpuInstanceData inst{};
+                inst.model    = item.modelMatrix;
+                inst.entityId = static_cast<int>(item.entity);
+                billboardInstances.push_back(inst);
+
+                item.instanceIndex = baseInstanceOffset + localIndex;
+                ++localIndex;
+            }
+
+            std::vector<RenderBatch> batches;
+            batches.reserve(renderItems.size());
+
+            RenderBatch current{};
+            auto& first = renderItems[0];
+
+            current.shader         = first.shader;
+            current.mesh           = first.mesh;
+            current.material       = first.material;
+            current.filterMask     = first.filterMask;
+            current.instanceOffset = first.instanceIndex;
+            current.instanceCount  = 1;
+
+            for (std::size_t i = 1; i < renderItems.size(); ++i) {
+                const auto& item = renderItems[i];
+
+                const bool sameBatch =
+                    item.shader     == current.shader &&
+                    item.mesh       == current.mesh &&
+                    item.material   == current.material &&
+                    item.filterMask == current.filterMask;
+
+                if (sameBatch) {
+                    ++current.instanceCount;
+                } else {
+                    batches.push_back(current);
+
+                    current.shader         = item.shader;
+                    current.mesh           = item.mesh;
+                    current.material       = item.material;
+                    current.filterMask     = item.filterMask;
+                    current.instanceOffset = item.instanceIndex;
+                    current.instanceCount  = 1;
+                }
+            }
+
+            batches.push_back(current);
+
+            std::vector<renderer::DrawCommand> drawCommands;
+            drawCommands.reserve(batches.size());
+
+            for (const auto& batch : batches) {
+                renderer::DrawCommand cmd;
+                cmd.vao           = batch.mesh;
+                cmd.shader        = batch.shader;
+                cmd.filterMask    = batch.filterMask;
+                cmd.instanceOffset = batch.instanceOffset;
+                cmd.instanceCount  = batch.instanceCount;
+                cmd.instanced      = (batch.instanceCount > 1);
+
+                if (cmd.instanced) {
+                    LOG(NEXO_INFO, "Billboard instanced batch detected (instances = {})",
+                        batch.instanceCount);
+                }
+
+                cmd.setUniform("uInstanceOffset", static_cast<int>(batch.instanceOffset));
+
+                const auto& materialAsset = batch.material;
+
+                if (batch.filterMask == renderer::F_FORWARD_PASS) {
+                    cmd.setUniform("uMaterial.albedoColor",
+                        materialAsset && materialAsset->isLoaded() ?
+                            materialAsset->getData()->albedoColor : glm::vec4(0.0f));
+
+                    const auto albedoTextureAsset =
+                        materialAsset && materialAsset->isLoaded() ?
+                            materialAsset->getData()->albedoTexture.lock() : nullptr;
+                    const auto albedoTexture =
+                        albedoTextureAsset && albedoTextureAsset->isLoaded() ?
+                            albedoTextureAsset->getData()->texture : nullptr;
+                    cmd.setUniform("uMaterial.albedoTexIndex",
+                        renderer::NxRenderer3D::get().getTextureIndex(albedoTexture));
+
+                    cmd.setUniform("uMaterial.specularColor",
+                        materialAsset && materialAsset->isLoaded() ?
+                            materialAsset->getData()->specularColor : glm::vec4(0.0f));
+                    const auto specularTextureAsset =
+                        materialAsset && materialAsset->isLoaded() ?
+                            materialAsset->getData()->metallicMap.lock() : nullptr;
+                    const auto specularTexture =
+                        specularTextureAsset && specularTextureAsset->isLoaded() ?
+                            specularTextureAsset->getData()->texture : nullptr;
+                    cmd.setUniform("uMaterial.specularTexIndex",
+                        renderer::NxRenderer3D::get().getTextureIndex(specularTexture));
+
+                    cmd.setUniform("uMaterial.emissiveColor",
+                        materialAsset && materialAsset->isLoaded() ?
+                            materialAsset->getData()->emissiveColor : glm::vec3(0.0f));
+                    const auto emissiveTextureAsset =
+                        materialAsset && materialAsset->isLoaded() ?
+                            materialAsset->getData()->emissiveMap.lock() : nullptr;
+                    const auto emissiveTexture =
+                        emissiveTextureAsset && emissiveTextureAsset->isLoaded() ?
+                            emissiveTextureAsset->getData()->texture : nullptr;
+                    cmd.setUniform("uMaterial.emissiveTexIndex",
+                        renderer::NxRenderer3D::get().getTextureIndex(emissiveTexture));
+
+                    cmd.setUniform("uMaterial.roughness",
+                        materialAsset && materialAsset->isLoaded() ?
+                            materialAsset->getData()->roughness : 1.0f);
+                    const auto roughnessTextureAsset =
+                        materialAsset && materialAsset->isLoaded() ?
+                            materialAsset->getData()->roughnessMap.lock() : nullptr;
+                    const auto roughnessTexture =
+                        roughnessTextureAsset && roughnessTextureAsset->isLoaded() ?
+                            roughnessTextureAsset->getData()->texture : nullptr;
+                    cmd.setUniform("uMaterial.roughnessTexIndex",
+                        renderer::NxRenderer3D::get().getTextureIndex(roughnessTexture));
+                } else if (batch.filterMask == renderer::F_OUTLINE_MASK) {
+                    cmd.setUniform("uMaterial.albedoColor",
+                        batch.material && batch.material->isLoaded() ? batch.material->getData()->albedoColor : glm::vec4(0.0f));
+                    const auto albedoTextureAsset =
+                        batch.material && batch.material->isLoaded() ? batch.material->getData()->albedoTexture.lock() : nullptr;
+                    const auto albedoTexture =
+                        albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
+                    cmd.setUniform("uMaterial.albedoTexIndex", renderer::NxRenderer3D::get().getTextureIndex(albedoTexture));
+                }
+
+                drawCommands.push_back(cmd);
+            }
+
+            if (!billboardInstances.empty()) {
+                camera.pipeline.appendStorageBufferData(
+                    INSTANCE_BUFFER,
+                    billboardInstances.data(),
+                    billboardInstances.size() * sizeof(renderer::GpuInstanceData));
+            }
+
             camera.pipeline.addDrawCommands(drawCommands);
         }
     }
+
 } // namespace nexo::system
