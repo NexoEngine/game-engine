@@ -211,6 +211,10 @@ namespace nexo::renderer {
 
         if (!m_renderTarget) THROW_EXCEPTION(NxPipelineRenderTargetNotSetException);
 
+        for (const auto& [name, ubo] : m_ubos) {
+            ubo->bindBase(m_bufferBindingLocations[name]);
+        }
+
         for (PassId id : m_plan) {
             if (passes.contains(id)) passes[id]->execute(*this);
         }
@@ -270,5 +274,29 @@ namespace nexo::renderer {
     void RenderPipeline::clearGlobalUniforms()
     {
         m_globalUniforms.clear();
+    }
+
+    void RenderPipeline::addUniformBuffer(const std::string &name, unsigned int bindingLocation, const std::shared_ptr<renderer::NxShaderUniformBuffer> &buffer)
+    {
+        m_ubos[name] = buffer;
+        m_bufferBindingLocations[name] = bindingLocation;
+    }
+
+    void RenderPipeline::addStorageBuffer(const std::string &name, unsigned int bindingLocation, const std::shared_ptr<renderer::NxShaderStorageBuffer> &buffer)
+    {
+        m_ssbos[name] = buffer;
+        m_bufferBindingLocations[name] = bindingLocation;
+    }
+
+    void RenderPipeline::setUniformBufferData(const std::string &name, void *data, unsigned int size)
+    {
+        if (m_ubos.find(name) == m_ubos.end()) return;
+        m_ubos[name]->setData(data, size);
+    }
+
+    void RenderPipeline::setStorageBufferData(const std::string &name, void *data, unsigned int size)
+    {
+        if (m_ssbos.find(name) == m_ssbos.end()) return;
+        m_ssbos[name]->setData(data, size);
     }
 } // namespace nexo::renderer
