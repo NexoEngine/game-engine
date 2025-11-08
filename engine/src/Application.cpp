@@ -332,7 +332,7 @@ namespace nexo {
                 m_transformMatrixSystem->update();
                 m_transformHierarchySystem->update();
                 m_cameraContextSystem->update();
-                m_lightSystem->update();
+                m_lightSystem->update(renderContext);
                 m_renderCommandSystem->update();
                 m_renderBillboardSystem->update();
 
