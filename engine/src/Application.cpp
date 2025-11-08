@@ -342,7 +342,7 @@ namespace nexo {
                     areVideoLoaded = true;
                 }
                 {
-                    PROFILE_SYSTEM("CameraPipeline", static_cast<size_t>(renderContext.cameras.size()));
+                    //PROFILE_SYSTEM("CameraPipeline", static_cast<size_t>(renderContext.cameras.size()));
                     for (auto &camera : renderContext.cameras) {
                         camera.pipeline.execute();
                     }
