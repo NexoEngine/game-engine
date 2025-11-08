@@ -16,10 +16,12 @@
 
 #include <utility>
 #include "Application.hpp"
+#include "ShaderUniformBuffer.hpp"
 #include "components/Camera.hpp"
 #include "components/Transform.hpp"
 #include "components/Uuid.hpp"
 #include "renderPasses/ForwardPass.hpp"
+#include "renderPasses/GPUResources.hpp"
 
 namespace nexo {
     ecs::Entity CameraFactory::createPerspectiveCamera(glm::vec3 pos, unsigned int width, unsigned int height,
@@ -47,6 +49,10 @@ namespace nexo {
             camera.pipeline.setRenderTarget(camera.m_renderTarget);
         }
         camera.clearColor = clearColor;
+        auto perViewUBO = renderer::NxShaderUniformBuffer::create(sizeof(renderer::GpuPerView));
+        camera.pipeline.addUniformBuffer(PER_VIEW_UBO, renderer::RESERVED_BINDING_POINTS.at(PER_VIEW_UBO), perViewUBO);
+        auto lightUBO = renderer::NxShaderUniformBuffer::create(sizeof(renderer::GpuLightBlock));
+        camera.pipeline.addUniformBuffer(LIGHT_UBO, renderer::RESERVED_BINDING_POINTS.at(LIGHT_UBO), lightUBO);
 
         ecs::Entity newCamera = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent<components::TransformComponent>(newCamera, transform);
