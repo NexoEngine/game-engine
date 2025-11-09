@@ -182,37 +182,68 @@ namespace nexo::system {
 
                 const auto& src = *materialAsset->getData();
 
-                gpuMat.albedoColor      = src.albedoColor;
-                gpuMat.albedoTexIndex   = renderer::NxRenderer3D::get().getTextureIndex(
-                                              src.albedoTexture.lock() && src.albedoTexture.lock()->isLoaded()
-                                                  ? src.albedoTexture.lock()->getData()->texture
-                                                  : nullptr);
+                gpuMat.albedoTexIndex = 0;
+                gpuMat.emissiveTexIndex = 0;
+                gpuMat.metallicTexIndex = 0;
+                gpuMat.roughnessTexIndex = 0;
+                gpuMat.aoTexIndex = 0;
+                gpuMat.normalTexIndex = 0;
+                gpuMat.opacityTexIndex = 0;
+                gpuMat.ormTexIndex = 0;
 
-                gpuMat.specularColor    = src.specularColor;
-                gpuMat.specularTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
-                                              src.metallicMap.lock() && src.metallicMap.lock()->isLoaded()
-                                                  ? src.metallicMap.lock()->getData()->texture
-                                                  : nullptr);
+                // Base color
+                gpuMat.albedoColor = src.albedoColor;
+                gpuMat.albedoTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                    src.albedoTexture.lock() && src.albedoTexture.lock()->isLoaded()
+                        ? src.albedoTexture.lock()->getData()->texture
+                        : nullptr);
 
-                gpuMat.emissiveColor    = src.emissiveColor;
+                // Emissive properties
+                gpuMat.emissiveColor = src.emissiveColor;
                 gpuMat.emissiveTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
-                                              src.emissiveMap.lock() && src.emissiveMap.lock()->isLoaded()
-                                                  ? src.emissiveMap.lock()->getData()->texture
-                                                  : nullptr);
+                    src.emissiveMap.lock() && src.emissiveMap.lock()->isLoaded()
+                        ? src.emissiveMap.lock()->getData()->texture
+                        : nullptr);
 
-                gpuMat.roughness        = src.roughness;
-                gpuMat.roughnessTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
-                                               src.roughnessMap.lock() && src.roughnessMap.lock()->isLoaded()
-                                                   ? src.roughnessMap.lock()->getData()->texture
-                                                   : nullptr);
+                // // Surface properties
+                gpuMat.metallic = src.metallic;
+                gpuMat.roughness = src.roughness;
+                gpuMat.ao = src.ao;                    // ADD THIS
+                gpuMat.normalScale = src.normalScale;  // ADD THIS
+                gpuMat.opacity = src.opacity;
 
-                gpuMat.metallic         = src.metallic;
-                gpuMat.metallicTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
-                                               src.metallicMap.lock() && src.metallicMap.lock()->isLoaded()
-                                                   ? src.metallicMap.lock()->getData()->texture
-                                                   : nullptr);
+                // // Handle combined vs separate metallic/roughness textures
+                if (src.metallicRoughnessMap.lock() && src.metallicRoughnessMap.lock()->isLoaded()) {
+                    // Use combined ORM texture (modern glTF workflow)
+                    gpuMat.ormTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                        src.metallicRoughnessMap.lock()->getData()->texture);
+                    gpuMat.metallicTexIndex = 0;  // Not used when ORM is present
+                    gpuMat.roughnessTexIndex = 0; // Not used when ORM is present
+                } else {
+                    // Use separate textures (legacy workflow)
+                    gpuMat.metallicTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                        src.metallicMap.lock() && src.metallicMap.lock()->isLoaded()
+                            ? src.metallicMap.lock()->getData()->texture
+                            : nullptr);
 
-                gpuMat.opacity          = src.opacity;
+                    gpuMat.roughnessTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                        src.roughnessMap.lock() && src.roughnessMap.lock()->isLoaded()
+                            ? src.roughnessMap.lock()->getData()->texture
+                            : nullptr);
+
+                    gpuMat.ormTexIndex = 0; // Not used
+                }
+
+                // Additional PBR textures
+                gpuMat.aoTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                    src.aoMap.lock() && src.aoMap.lock()->isLoaded()
+                        ? src.aoMap.lock()->getData()->texture
+                        : nullptr);
+
+                gpuMat.normalTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                    src.normalMap.lock() && src.normalMap.lock()->isLoaded()
+                        ? src.normalMap.lock()->getData()->texture
+                        : nullptr);
 
                 materialIndex = static_cast<uint32_t>(gpuMaterials.size());
                 gpuMaterials.push_back(gpuMat);
@@ -323,15 +354,12 @@ namespace nexo::system {
             cmd.instanceOffset = batch.instanceOffset;
             cmd.instanceCount  = batch.instanceCount;
             cmd.instanced      = (batch.instanceCount > 1);
-            if (cmd.instanced) {
-                LOG(NEXO_INFO, "Instanced batch detected");
-            }
 
             cmd.setUniform("uInstanceOffset", static_cast<int>(batch.instanceOffset));
             drawCommands.push_back(cmd);
         }
 
-        std::cout << " Draw count " << drawCommands.size() << " commands" << std::endl;
+        //std::cout << " Draw count " << drawCommands.size() << " commands" << std::endl;
         for (auto &camera : renderContext.cameras) {
             camera.pipeline.setStorageBufferData(INSTANCE_BUFFER, instances.data(), sizeof(renderer::GpuInstanceData) * instances.size());
             camera.pipeline.setStorageBufferData(MATERIAL_BUFFER, gpuMaterials.data(), sizeof(renderer::GpuMaterial) * gpuMaterials.size());
