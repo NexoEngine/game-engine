@@ -24,12 +24,14 @@
 #include "Buffer.hpp"
 #include "Path.hpp"
 #include "VertexArray.hpp"
+#include "assets/AssetImporterContext.hpp"
 #include "math/Bounds.hpp"
 
 #include "ModelParameters.hpp"
 #include "assets/AssetImporterBase.hpp"
 #include "assets/Assets/Model/Model.hpp"
 #include "renderer/Renderer3D.hpp"
+#include "renderer/Texture.hpp"
 
 #include "core/exceptions/Exceptions.hpp"
 
@@ -59,7 +61,7 @@ namespace nexo::assets {
         auto model = std::make_unique<Model>();
 
         const auto param     = ctx.getParameters<ModelImportParameters>();
-        constexpr int flags  = aiProcess_Triangulate | aiProcess_GenNormals;
+        constexpr int flags  = aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_CalcTangentSpace;
         const aiScene* scene = nullptr;
         if (std::holds_alternative<ImporterFileInput>(ctx.input))
             scene = m_importer.ReadFile(std::get<ImporterFileInput>(ctx.input).filePath.string(), flags);
@@ -71,6 +73,19 @@ namespace nexo::assets {
             // log error TODO: improve error handling in importers
             if (scene) m_importer.FreeScene();
             throw core::LoadModelException(ctx.location.getFullLocation(), m_importer.GetErrorString());
+        }
+
+        LOG(NEXO_INFO, "Scene loaded successfully:");
+        LOG(NEXO_INFO, "  - {} materials", scene->mNumMaterials);
+        LOG(NEXO_INFO, "  - {} embedded textures", scene->mNumTextures);
+        LOG(NEXO_INFO, "  - {} meshes", scene->mNumMeshes);
+
+        if (scene->mNumTextures == 0) {
+            if (std::holds_alternative<ImporterFileInput>(ctx.input)) {
+                const auto& fileInput = std::get<ImporterFileInput>(ctx.input);
+                LOG(NEXO_WARN, "No embedded textures in file: {}", fileInput.filePath.string());
+                LOG(NEXO_WARN, "File extension: {}", fileInput.filePath.extension().string());
+            }
         }
 
         loadSceneEmbeddedTextures(ctx, scene);
@@ -85,50 +100,145 @@ namespace nexo::assets {
 
     void ModelImporter::loadSceneEmbeddedTextures(AssetImporterContext& ctx, const aiScene* scene)
     {
+        LOG(NEXO_INFO, "Loading embedded textures: {} textures found", scene->mNumTextures);
+
         m_textures.reserve(scene->mNumTextures);
         // Load embedded textures
         for (unsigned int i = 0; i < scene->mNumTextures; ++i) {
             aiTexture* texture = scene->mTextures[i];
+            LOG(NEXO_INFO, "Embedded texture {}: filename='{}', {}x{}, hint='{}'",
+                i, texture->mFilename.C_Str(), texture->mWidth, texture->mHeight,
+                texture->achFormatHint);
+
             auto loadedTexture = loadEmbeddedTexture(ctx, texture);
+            if (loadedTexture) {
+                LOG(NEXO_INFO, "Successfully loaded embedded texture: {}", texture->mFilename.C_Str());
+            } else {
+                LOG(NEXO_ERROR, "Failed to load embedded texture: {}", texture->mFilename.C_Str());
+            }
             m_textures.try_emplace(texture->mFilename.C_Str(), loadedTexture);
         }
     }
 
-    AssetRef<Texture> ModelImporter::loadEmbeddedTexture(AssetImporterContext& ctx, aiTexture* texture)
+    AssetRef<Texture> ModelImporter::loadEmbeddedTexture(AssetImporterContext& ctx,
+                                                         aiTexture* texture,
+                                                         renderer::TextureType suggestedType)
     {
+        LOG(NEXO_DEBUG, "Loading embedded texture: '{}' (suggested type: {})",
+            texture->mFilename.C_Str(), static_cast<int>(suggestedType));
+
         if (texture->mHeight == 0) { // Compressed texture
             AssetImporter assetImporter;
-            const ImporterInputVariant inputVariant = ImporterMemoryInput{
-                // Reinterpret cast to uint8_t* because this is raw memory data, not aiTexels, see assimp docs
+            AssetImporterContext textureCtx;
+            textureCtx.input = ImporterMemoryInput{
                 .memoryData = std::vector<uint8_t>(reinterpret_cast<uint8_t*>(texture->pcData),
                                                    reinterpret_cast<uint8_t*>(texture->pcData) + texture->mWidth),
-                .formatHint = std::string(texture->achFormatHint)};
+                .formatHint = std::string(texture->achFormatHint)
+            };
+            textureCtx.location = ctx.genUniqueDependencyLocation<Texture>();
 
-            return assetImporter.importAsset<Texture>(ctx.genUniqueDependencyLocation<Texture>(), inputVariant);
+            // Auto-detect texture type from filename if not specified
+            renderer::TextureType detectedType = detectTextureTypeFromFilename(texture->mFilename.C_Str());
+            if (detectedType == renderer::TextureType::ALBEDO && suggestedType != renderer::TextureType::ALBEDO) {
+                detectedType = suggestedType;
+            }
+
+            TextureImportParameters texParams;
+            texParams.textureType    = detectedType;
+            texParams.generateMipmaps = true;
+            textureCtx.setParameters(texParams);
+
+            assetImporter.setCustomContext(&textureCtx);
+
+            return assetImporter.importAsset<Texture>(textureCtx.location, textureCtx.input);
         }
-        // Uncompressed texture
-        auto& catalog = AssetCatalog::getInstance();
 
+        // ───── Uncompressed embedded texture (width x height, aiTexel buffer) ─────
         renderer::NxTextureFormat format;
-        if (texture->achFormatHint[0] == '\0') { // if empty, then ARGB888
-            renderer::NxTextureFormatConvertArgb8ToRgba8(reinterpret_cast<uint8_t*>(texture->pcData),
-                                                         static_cast<unsigned long>(texture->mWidth) *
-                                                             static_cast<unsigned long>(texture->mHeight) *
-                                                             sizeof(aiTexel));
+        if (texture->achFormatHint[0] == '\0') {
+            renderer::NxTextureFormatConvertArgb8ToRgba8(
+                reinterpret_cast<uint8_t*>(texture->pcData),
+                static_cast<unsigned long>(texture->mWidth) *
+                static_cast<unsigned long>(texture->mHeight) *
+                sizeof(aiTexel));
             format = renderer::NxTextureFormat::RGBA8;
         } else {
             format = convertAssimpHintToNxTextureFormat(texture->achFormatHint);
         }
 
         if (format == renderer::NxTextureFormat::INVALID) {
-            LOG(NEXO_WARN, "ModelImporter: Model {}: Texture {} has an invalid format hint: {}",
-                std::quoted(ctx.location.getFullLocation()), texture->mFilename.C_Str(), texture->achFormatHint);
+            LOG(NEXO_WARN,
+                "ModelImporter: Model {}: Texture {} has an invalid format hint: {}",
+                std::quoted(ctx.location.getFullLocation()),
+                texture->mFilename.C_Str(),
+                texture->achFormatHint);
             return nullptr;
         }
 
-        return catalog.createAsset<Texture>(ctx.genUniqueDependencyLocation<Texture>(),
-                                            reinterpret_cast<uint8_t*>(texture->pcData), texture->mWidth,
-                                            texture->mHeight, format);
+        // Type awareness from filename + suggested type
+        renderer::TextureType detectedType = detectTextureTypeFromFilename(texture->mFilename.C_Str());
+        if (detectedType == renderer::TextureType::ALBEDO && suggestedType != renderer::TextureType::ALBEDO) {
+            detectedType = suggestedType;
+        }
+
+        // 1) Create renderer texture from the raw embedded pixels
+        std::shared_ptr<renderer::NxTexture2D> rendererTexture =
+            renderer::NxTexture2D::create(
+                reinterpret_cast<uint8_t*>(texture->pcData),
+                static_cast<unsigned int>(texture->mWidth),
+                static_cast<unsigned int>(texture->mHeight),
+                format,
+                detectedType,
+                /*generateMipmaps*/ true);
+
+        if (!rendererTexture) {
+            LOG(NEXO_ERROR,
+                "ModelImporter: Failed to create renderer texture for embedded '{}'",
+                texture->mFilename.C_Str());
+            return nullptr;
+        }
+
+        // 2) Build TextureData like TextureImporter does
+        auto textureData = std::make_unique<TextureData>();
+        textureData->texture     = rendererTexture;
+        textureData->textureType = detectedType;
+
+        // 3) Register as an asset in the catalog (same pattern as materials)
+        auto& catalog = AssetCatalog::getInstance();
+        const auto loc = ctx.genUniqueDependencyLocation<Texture>();
+
+        const auto textureRef = catalog.createAsset<Texture>(
+            loc,
+            std::move(textureData));   // forwarded to Texture's ctor
+
+        return textureRef;
+    }
+
+
+    // Add this helper function
+    renderer::TextureType ModelImporter::detectTextureTypeFromFilename(const std::string& filename) {
+        std::string lowerName = filename;
+        std::transform(lowerName.begin(), lowerName.end(), lowerName.begin(), ::tolower);
+
+        if (lowerName.find("normal") != std::string::npos || lowerName.find("bump") != std::string::npos) {
+            return renderer::TextureType::NORMAL;
+        } else if (lowerName.find("metallicroughness") != std::string::npos || lowerName.find("metallic_roughness") != std::string::npos) {
+            return renderer::TextureType::COMBINED_MR;
+        } else if (lowerName.find("orm") != std::string::npos) {
+            return renderer::TextureType::COMBINED_ORM;
+        } else if (lowerName.find("metallic") != std::string::npos) {
+            return renderer::TextureType::METALLIC;
+        } else if (lowerName.find("roughness") != std::string::npos) {
+            return renderer::TextureType::ROUGHNESS;
+        } else if (lowerName.find("ao") != std::string::npos || lowerName.find("occlusion") != std::string::npos) {
+            return renderer::TextureType::AO;
+        } else if (lowerName.find("emissive") != std::string::npos || lowerName.find("emission") != std::string::npos) {
+            return renderer::TextureType::EMISSIVE;
+        } else if (lowerName.find("basecolor") != std::string::npos || lowerName.find("diffuse") != std::string::npos || lowerName.find("albedo") != std::string::npos) {
+            return renderer::TextureType::ALBEDO;
+        }
+
+        return renderer::TextureType::ALBEDO; // Default
     }
 
     renderer::NxTextureFormat ModelImporter::convertAssimpHintToNxTextureFormat(const char achFormatHint[9])
@@ -214,55 +324,82 @@ namespace nexo::assets {
 
         for (unsigned int matIdx = 0; matIdx < scene->mNumMaterials; ++matIdx) {
             aiMaterial const* material = scene->mMaterials[matIdx];
-
             auto materialComponent = std::make_unique<components::Material>();
 
-            // aiColor4D color;
-            // if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
-            //     materialComponent->albedoColor = {color.r, color.g, color.b, color.a};
-            // }
-            // aiColor4D color;
-            // auto linearToSRGB = [](float linear) -> float {
-            //     if (linear <= 0.0031308f) {
-            //         return 12.92f * linear;
-            //     } else {
-            //         return 1.055f * std::pow(linear, 1.0f/2.4f) - 0.055f;
-            //     }
-            // };
+            LOG(NEXO_DEBUG, "Material {} texture inventory:", matIdx);
+            for (int type = aiTextureType_NONE; type <= aiTextureType_TRANSMISSION; type++) {
+                auto textureType = static_cast<aiTextureType>(type);
+                unsigned int count = material->GetTextureCount(textureType);
+                if (count > 0) {
+                    aiString path;
+                    if (material->GetTexture(textureType, 0, &path) == AI_SUCCESS) {
+                        LOG(NEXO_DEBUG, "  Type {}: {} textures, first = '{}'", type, count, path.C_Str());
+                    }
+                }
+            }
 
-            // if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
-            //     materialComponent->albedoColor = {
-            //         linearToSRGB(color.r),
-            //         linearToSRGB(color.g),
-            //         linearToSRGB(color.b),
-            //         color.a
-            //     };
-            // }
-
+            // Enhanced PBR Material Property Loading
             aiColor4D color;
-            if (material->Get(AI_MATKEY_BASE_COLOR, color) == AI_SUCCESS) {
+            bool hasBaseColor = false;
+
+            // Priority 1: glTF base color first (modern PBR)
+            if (material->Get("$mat.gltf.pbrMetallicRoughness.baseColorFactor", 0, 0, color) == AI_SUCCESS) {
                 materialComponent->albedoColor = {color.r, color.g, color.b, color.a};
-                LOG(NEXO_INFO, "Loaded base color as albedo: ({}, {}, {}, {})", color.r, color.g, color.b, color.a);
-            } else if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
+                hasBaseColor = true;
+            }
+            // Priority 2: Standard base color
+            else if (material->Get(AI_MATKEY_BASE_COLOR, color) == AI_SUCCESS) {
                 materialComponent->albedoColor = {color.r, color.g, color.b, color.a};
-                LOG(NEXO_INFO, "Loaded diffuse color: ({}, {}, {}, {})", color.r, color.g, color.b, color.a);
+                hasBaseColor = true;
+            }
+            // Priority 3: Fallback to diffuse for legacy materials
+            else if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
+                materialComponent->albedoColor = {color.r, color.g, color.b, color.a};
+                hasBaseColor = true;
             }
 
-            if (material->Get(AI_MATKEY_COLOR_SPECULAR, color) == AI_SUCCESS) {
-                materialComponent->specularColor = {color.r, color.g, color.b, color.a};
+            // Enhanced Metallic Factor Loading
+            if (float metallic = 0.0f; material->Get("$mat.gltf.pbrMetallicRoughness.metallicFactor", 0, 0, metallic) == AI_SUCCESS) {
+                materialComponent->metallic = metallic;
+            } else if (float metallic = 0.0f; material->Get(AI_MATKEY_METALLIC_FACTOR, metallic) == AI_SUCCESS) {
+                materialComponent->metallic = metallic;
             }
 
+            // Enhanced Roughness Factor Loading
+            if (float roughness = 0.5f; material->Get("$mat.gltf.pbrMetallicRoughness.roughnessFactor", 0, 0, roughness) == AI_SUCCESS) {
+                materialComponent->roughness = roughness;
+            } else if (float roughness = 0.5f; material->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness) == AI_SUCCESS) {
+                materialComponent->roughness = roughness;
+            } else {
+                // Convert legacy shininess to PBR roughness
+                float shininess = 32.0f;
+                if (material->Get(AI_MATKEY_SHININESS, shininess) == AI_SUCCESS) {
+                    // Convert Blinn-Phong shininess to PBR roughness (approximate)
+                    materialComponent->roughness = sqrt(2.0f / (shininess + 2.0f));
+                    materialComponent->roughness = glm::clamp(materialComponent->roughness, 0.0f, 1.0f);
+                }
+            }
+
+            // Enhanced Emissive Loading
             if (material->Get(AI_MATKEY_COLOR_EMISSIVE, color) == AI_SUCCESS) {
                 materialComponent->emissiveColor = {color.r, color.g, color.b};
+
+                // Check for emissive strength/factor (glTF extension)
+                float emissiveStrength = 1.0f;
+                if (material->Get("$mat.gltf.emissiveStrength", 0, 0, emissiveStrength) == AI_SUCCESS) {
+                    materialComponent->emissiveColor *= emissiveStrength;
+                }
             }
 
-            if (float roughness = 0.0f; material->Get(AI_MATKEY_ROUGHNESS_FACTOR, roughness) == AI_SUCCESS) {
-                materialComponent->roughness = roughness;
+            float normalScale = 1.0f;
+            if (material->Get("$mat.gltf.normalTextureScale", 0, 0, normalScale) == AI_SUCCESS) {
+                materialComponent->normalScale = normalScale;
             }
 
-            // Load Metallic
-            if (float metallic = 0.0f; material->Get(AI_MATKEY_METALLIC_FACTOR, metallic) == AI_SUCCESS) {
-                materialComponent->metallic = metallic;
+            // Load AO factor
+            float aoFactor = 1.0f;
+            if (material->Get("$mat.gltf.occlusionTexture.strength", 0, 0, aoFactor) == AI_SUCCESS) {
+                materialComponent->ao = aoFactor;
             }
 
             if (float opacity = 1.0f; material->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS) {
@@ -300,49 +437,210 @@ namespace nexo::assets {
                 // OPAQUE mode - not transparent
             }
 
+            LOG(NEXO_INFO, "Material {}: albedo=({},{},{},{}), metallic={}, roughness={}, ao={}, normalScale={}",
+                matIdx,
+                materialComponent->albedoColor.x, materialComponent->albedoColor.y, materialComponent->albedoColor.z, materialComponent->albedoColor.w,
+                materialComponent->metallic, materialComponent->roughness, materialComponent->ao, materialComponent->normalScale);
+
+            // Add material name
+            aiString materialName;
+            if (material->Get(AI_MATKEY_NAME, materialName) == AI_SUCCESS) {
+                LOG(NEXO_INFO, "Loading material '{}' (index {})", materialName.C_Str(), matIdx);
+            } else {
+                LOG(NEXO_INFO, "Loading unnamed material (index {})", matIdx);
+            }
+
             // Load Textures
-            auto loadTexture = [&](aiTextureType type) -> AssetRef<Texture> {
-                if (material->GetTextureCount(type) > 1) {
-                    LOG(NEXO_WARN,
-                        "ModelImporter: Model {}: Material {} has more than one texture of type {}, only the first one "
-                        "will be used.",
-                        std::quoted(ctx.location.getFullLocation()), matIdx, type);
+            auto loadTextureWithType = [&](aiTextureType assimpType, renderer::TextureType nexoType) -> AssetRef<Texture> {
+
+                if (material->GetTextureCount(assimpType) == 0) {
+                    return nullptr;
                 }
 
                 aiString aiStr;
-                if (material->GetTexture(type, 0, &aiStr) == AI_SUCCESS) {
+                if (material->GetTexture(assimpType, 0, &aiStr) == AI_SUCCESS) {
                     const char* cStr = aiStr.C_Str();
-                    if (cStr[0] == '*' || scene->GetEmbeddedTexture(cStr)) {
-                        // Embedded texture
+                    LOG(NEXO_DEBUG, "Found texture path: '{}'", cStr);
+
+                    // Check for embedded textures first (GLB files)
+                    if (cStr[0] == '*') {
+                        LOG(NEXO_DEBUG, "Loading embedded texture by index: {}", cStr);
+                        // Extract index from "*0", "*1", etc.
+                        int embeddedIndex = std::atoi(cStr + 1);
+                        if (embeddedIndex >= 0 && embeddedIndex < static_cast<int>(scene->mNumTextures)) {
+                            aiTexture* embeddedTexture = scene->mTextures[embeddedIndex];
+                            // Load embedded texture with type awareness
+                            auto embeddedAsset = loadEmbeddedTexture(ctx, embeddedTexture, nexoType);
+                            if (embeddedAsset) {
+                                LOG(NEXO_INFO, "Successfully loaded embedded texture {} as type {}",
+                                    embeddedTexture->mFilename.C_Str(), static_cast<int>(nexoType));
+                                //m_textures.try_emplace(embeddedKey, embeddedAsset);
+                                return embeddedAsset;
+                            }
+                        }
+                    } else if (scene->GetEmbeddedTexture(cStr)) {
+                        LOG(NEXO_DEBUG, "Loading embedded texture by name: {}", cStr);
                         if (const auto it = m_textures.find(cStr); it != m_textures.end()) {
                             return it->second;
                         }
+
+                        // Find the embedded texture
+                        aiTexture* embeddedTexture = const_cast<aiTexture*>(scene->GetEmbeddedTexture(cStr));
+                        if (embeddedTexture) {
+                            auto embeddedAsset = loadEmbeddedTexture(ctx, embeddedTexture, nexoType);
+                            if (embeddedAsset) {
+                                m_textures.try_emplace(cStr, embeddedAsset);
+                                return embeddedAsset;
+                            }
+                        }
+                    } else {
+                        // External file (GLTF workflow) - your existing code
+                        const std::filesystem::path texturePath = (modelDirectory / cStr).lexically_normal();
+                        const auto texturePathStr = texturePath.string();
+
+                        LOG(NEXO_DEBUG, "Loading external texture: {}", texturePathStr);
+
+                        AssetImporter assetImporter;
+                        AssetImporterContext textureCtx;
+                        textureCtx.input    = ImporterFileInput{ .filePath = texturePath };
+                        textureCtx.location = ctx.genUniqueDependencyLocation<Texture>();
+
+                        TextureImportParameters texParams;
+                        texParams.textureType    = nexoType;
+                        texParams.generateMipmaps = true;
+                        textureCtx.setParameters(texParams);
+
+                        assetImporter.setCustomContext(&textureCtx);
+
+                        auto result = assetImporter.importAsset<Texture>(textureCtx.location, textureCtx.input);
+                        if (result) {
+                            LOG(NEXO_INFO, "Successfully loaded external texture '{}' as type {}",
+                                texturePathStr, static_cast<int>(nexoType));
+                            return result;
+                        }
                     }
-                    const std::filesystem::path texturePath = (modelDirectory / cStr).lexically_normal();
-                    const auto texturePathStr               = texturePath.string();
-                    if (const auto it = m_textures.find(texturePathStr.c_str()); it != m_textures.end()) {
-                        return it->second;
+                }
+
+                return nullptr;
+            };
+            auto loadTextureWithFallbacks = [&](const std::vector<std::pair<aiTextureType, renderer::TextureType>>& typeOptions) -> AssetRef<Texture> {
+                for (const auto& [assimpType, nexoType] : typeOptions) {
+                    if (auto texture = loadTextureWithType(assimpType, nexoType)) {
+                        return texture;
                     }
-                    AssetImporter assetImporter;
-                    const ImporterInputVariant inputVariant = ImporterFileInput{.filePath = texturePath};
-                    auto assetTexture =
-                        assetImporter.importAsset<Texture>(ctx.genUniqueDependencyLocation<Texture>(), inputVariant);
-                    m_textures.try_emplace(texturePathStr.c_str(), assetTexture);
-                    return assetTexture;
                 }
                 return nullptr;
             };
 
-            materialComponent->albedoTexture = loadTexture(aiTextureType_DIFFUSE);
-            materialComponent->normalMap     = loadTexture(aiTextureType_NORMALS);
-            materialComponent->metallicMap =
-                loadTexture(aiTextureType_SPECULAR); // Specular can store metallic in some cases
-            materialComponent->roughnessMap = loadTexture(aiTextureType_SHININESS);
-            materialComponent->emissiveMap  = loadTexture(aiTextureType_EMISSIVE);
+            // Use the type-aware loader
+            materialComponent->albedoTexture = loadTextureWithFallbacks({
+                {aiTextureType_BASE_COLOR, renderer::TextureType::ALBEDO},
+                {aiTextureType_DIFFUSE, renderer::TextureType::ALBEDO},
+                {aiTextureType_UNKNOWN, renderer::TextureType::ALBEDO}  // Sometimes stored as unknown
+            });
 
-            LOG(NEXO_INFO, "Loaded material: Diffuse = {}, Normal = {}, Metallic = {}, Roughness = {}",
-                materialComponent->albedoTexture ? "Yes" : "No", materialComponent->normalMap ? "Yes" : "No",
-                materialComponent->metallicMap ? "Yes" : "No", materialComponent->roughnessMap ? "Yes" : "No");
+            materialComponent->normalMap = loadTextureWithFallbacks({
+                {aiTextureType_NORMAL_CAMERA, renderer::TextureType::NORMAL},
+                {aiTextureType_NORMALS, renderer::TextureType::NORMAL},
+                {aiTextureType_HEIGHT, renderer::TextureType::NORMAL}  // Sometimes height is used for normals
+            });
+
+            materialComponent->metallicMap = loadTextureWithFallbacks({
+                {aiTextureType_METALNESS, renderer::TextureType::METALLIC},
+                {aiTextureType_SPECULAR, renderer::TextureType::METALLIC},  // Legacy
+                {aiTextureType_REFLECTION, renderer::TextureType::METALLIC} // Alternative
+            });
+
+            materialComponent->roughnessMap = loadTextureWithFallbacks({
+                {aiTextureType_DIFFUSE_ROUGHNESS, renderer::TextureType::ROUGHNESS},
+                {aiTextureType_SHININESS, renderer::TextureType::ROUGHNESS},  // Legacy conversion
+                {aiTextureType_UNKNOWN, renderer::TextureType::ROUGHNESS}
+            });
+
+            materialComponent->aoMap = loadTextureWithFallbacks({
+                {aiTextureType_AMBIENT_OCCLUSION, renderer::TextureType::AO},
+                {aiTextureType_LIGHTMAP, renderer::TextureType::AO},
+                {aiTextureType_UNKNOWN, renderer::TextureType::AO}
+            });
+
+            materialComponent->emissiveMap = loadTextureWithFallbacks({
+                {aiTextureType_EMISSIVE, renderer::TextureType::EMISSIVE},
+                {aiTextureType_EMISSION_COLOR, renderer::TextureType::EMISSIVE}
+            });
+
+            materialComponent->heightMap = loadTextureWithFallbacks({
+                {aiTextureType_HEIGHT, renderer::TextureType::HEIGHT},
+                {aiTextureType_DISPLACEMENT, renderer::TextureType::HEIGHT}
+            });
+
+            auto loadMetallicRoughnessTexture = [&]() -> AssetRef<Texture> {
+                // Try multiple approaches to find combined textures
+                std::vector<std::pair<std::string, renderer::TextureType>> patterns = {
+                    {"metallicRoughness", renderer::TextureType::COMBINED_MR},
+                    {"metallic_roughness", renderer::TextureType::COMBINED_MR},
+                    {"metalRough", renderer::TextureType::COMBINED_MR},
+                    {"mr.", renderer::TextureType::COMBINED_MR},
+                    {"orm", renderer::TextureType::COMBINED_ORM},
+                    {"occlusion", renderer::TextureType::COMBINED_ORM}
+                };
+
+                // Method 1: Check all UNKNOWN textures for naming patterns
+                for (unsigned int i = 0; i < material->GetTextureCount(aiTextureType_UNKNOWN); ++i) {
+                    aiString path;
+                    if (material->GetTexture(aiTextureType_UNKNOWN, i, &path) == AI_SUCCESS) {
+                        std::string pathStr = path.C_Str();
+                        std::transform(pathStr.begin(), pathStr.end(), pathStr.begin(), ::tolower);
+
+                        for (const auto& [pattern, textureType] : patterns) {
+                            if (pathStr.find(pattern) != std::string::npos) {
+                                LOG(NEXO_INFO, "Found combined texture '{}' with pattern '{}'", path.C_Str(), pattern);
+
+                                AssetImporter assetImporter;
+                                AssetImporterContext textureCtx;
+                                textureCtx.input = ImporterFileInput{.filePath = (modelDirectory / path.C_Str()).lexically_normal()};
+                                textureCtx.location = ctx.genUniqueDependencyLocation<Texture>();
+
+                                TextureImportParameters texParams;
+                                texParams.textureType = textureType;
+                                texParams.generateMipmaps = true;
+                                textureCtx.setParameters(texParams);
+
+                                assetImporter.setCustomContext(&textureCtx);
+
+                                try {
+                                    auto result = assetImporter.importAsset<Texture>(textureCtx.location, textureCtx.input);
+                                    if (result) {
+                                        return result;
+                                    }
+                                } catch (const std::exception& e) {
+                                    LOG(NEXO_WARN, "Failed to load combined texture '{}': {}", path.C_Str(), e.what());
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return nullptr;
+            };
+
+            materialComponent->metallicRoughnessMap = loadMetallicRoughnessTexture();
+            LOG(NEXO_INFO, "Material {} PBR Summary:", matIdx);
+            LOG(NEXO_INFO, "  Albedo: ({},{},{},{}) (texture: {})",
+                materialComponent->albedoColor.x, materialComponent->albedoColor.y,
+                materialComponent->albedoColor.z, materialComponent->albedoColor.w,
+                materialComponent->albedoTexture ? "Yes" : "No");
+            LOG(NEXO_INFO, "  Normal: {} (scale: {})",
+                materialComponent->normalMap ? "Yes" : "No",
+                materialComponent->normalScale);
+            LOG(NEXO_INFO, "  Material: Metallic={} (tex: {}), Roughness={} (tex: {})",
+                materialComponent->metallic, materialComponent->metallicMap ? "Yes" : "No",
+                materialComponent->roughness, materialComponent->roughnessMap ? "Yes" : "No");
+            LOG(NEXO_INFO, "  Combined MR: {}", materialComponent->metallicRoughnessMap ? "Yes" : "No");
+            LOG(NEXO_INFO, "  AO: {} (tex: {})", materialComponent->ao, materialComponent->aoMap ? "Yes" : "No");
+            LOG(NEXO_INFO, "  Emissive: ({},{},{}) (tex: {})",
+                materialComponent->emissiveColor.x, materialComponent->emissiveColor.y,
+                materialComponent->emissiveColor.z,
+                materialComponent->emissiveMap ? "Yes" : "No");
 
             const auto materialRef = AssetCatalog::getInstance().createAsset<Material>(
                 ctx.genUniqueDependencyLocation<Material>(), std::move(materialComponent));
@@ -421,6 +719,15 @@ namespace nexo::assets {
 
             if (mesh->HasNormals()) {
                 vertex.normal = {mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z};
+            }
+
+            if (mesh->HasTangentsAndBitangents()) {
+                vertex.tangent = {mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z};
+                vertex.bitangent = {mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z};
+            } else {
+                // Generate default tangent space if not available
+                vertex.tangent = {1.0f, 0.0f, 0.0f};
+                vertex.bitangent = {0.0f, 1.0f, 0.0f};
             }
 
             if (mesh->mTextureCoords[0])
