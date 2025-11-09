@@ -83,6 +83,12 @@ namespace nexo::editor {
         }
         {
             assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/domino/domino.gltf");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::domino@Demo"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
             std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/duck/duck.gltf");
             assets::ImporterFileInput fileInput{path};
             importer.importAsset<assets::Model>(assets::AssetLocation("my_package::duck@Demo"), fileInput);
@@ -95,7 +101,7 @@ namespace nexo::editor {
         }
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/full_room/fullRoom.gltf");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/full_room/full_room.gltf");
             assets::ImporterFileInput fileInput{path};
             importer.importAsset<assets::Model>(assets::AssetLocation("my_package::full_room@Demo"), fileInput);
         }

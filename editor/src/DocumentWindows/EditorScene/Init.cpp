@@ -12,9 +12,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include <components/Name.hpp>
 #include <components/Video.hpp>
+#include <iomanip>
 #include <math/Light.hpp>
 #include <random>
+#include <sstream>
 
 #include "CameraFactory.hpp"
 #include "EditorScene.hpp"
@@ -171,6 +174,31 @@ namespace nexo::editor {
                                   static_cast<unsigned int>(m_contentSize.y));
     }
 
+    ecs::Entity FindEntityByName(const char* name)
+    {
+        if (!name) {
+            LOG(NEXO_ERROR, "NxFindEntityByName: name is null");
+            return static_cast<ecs::Entity>(-1);
+        }
+
+        auto& app            = Application::getInstance();
+        auto& coordinator    = *Application::m_coordinator;
+        const auto& scene    = app.getSceneManager().getScene(0);
+        const auto& entities = scene.getEntities();
+
+        for (const auto entity : entities) {
+            if (coordinator.entityHasComponent<components::NameComponent>(entity)) {
+                const auto& nameComponent = coordinator.getComponent<components::NameComponent>(entity);
+                if (nameComponent.name == name) {
+                    return entity;
+                }
+            }
+        }
+
+        LOG(NEXO_WARN, "NxFindEntityByName: Entity with name '{}' not found", name);
+        return static_cast<ecs::Entity>(-1);
+    }
+
     void EditorScene::loadDefaultEntities(const glm::vec3& offset) const
     {
         auto& app           = getApp();
@@ -245,7 +273,7 @@ namespace nexo::editor {
         const assets::AssetLocation corkBoardModel("my_package::cork_board@Demo");
         const auto corkBoardAssetRef = catalog.getAsset(corkBoardModel).as<assets::Model>();
         const auto corkBoard =
-            EntityFactory3D::createModel(corkBoardAssetRef, {9.63f + offset.x, 5.59f + offset.y, 0.0f + offset.z},
+            EntityFactory3D::createModel(corkBoardAssetRef, {9.63f + offset.x, 5.69f + offset.y, 0.0f + offset.z},
                                          {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
         scene.addEntity(corkBoard);
 
@@ -276,6 +304,74 @@ namespace nexo::editor {
             EntityFactory3D::createModel(bretzelAssetRef, {7.4f + offset.x, 4.04f + offset.y, -2.98f + offset.z},
                                          {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
         scene.addEntity(bretzel);
+
+        // Get dominos pos
+        std::vector<glm::vec3> dominoPositions = {
+            {8.21f, 4.04f, -3.74}, {8.21f, 4.04f, -3.64}, {8.16f, 4.04f, -3.54}, {8.09f, 4.04f, -3.48},
+            {8.00f, 4.04f, -3.43}, {7.90f, 4.05f, -3.40}, {7.81f, 4.05f, -3.38}, {7.71f, 4.05f, -3.36},
+            {7.61f, 4.05f, -3.35}, {7.51f, 4.05f, -3.33}, {7.41f, 4.05f, -3.33}, {7.31f, 4.05f, -3.32},
+            {7.21f, 4.05f, -3.31}, {7.11f, 4.05f, -3.31}, {7.01f, 4.05f, -3.30}, {6.91f, 4.05f, -3.30},
+            {6.81f, 4.05f, -3.30}, {6.71f, 4.05f, -3.30}, {6.61f, 4.05f, -3.30}, {6.51f, 4.05f, -3.30},
+            {6.40f, 4.05f, -3.30}, {6.30f, 4.05f, -3.30}, {6.20f, 4.05f, -3.30}, {6.11f, 4.05f, -3.26},
+            {6.02f, 4.05f, -3.22}, {5.92f, 4.05f, -3.19}, {5.83f, 4.05f, -3.14}, {5.75f, 4.05f, -3.09},
+            {5.67f, 4.06f, -3.03}, {5.64f, 4.06f, -2.94}, {5.70f, 4.06f, -2.86}, {5.79f, 4.06f, -2.80},
+            {5.88f, 4.06f, -2.76}, {5.97f, 4.06f, -2.72}, {6.06f, 4.06f, -2.67}, {6.15f, 4.06f, -2.63},
+            {6.24f, 4.07f, -2.58}, {6.33f, 4.07f, -2.53}, {6.40f, 4.07f, -2.46}, {6.46f, 4.07f, -2.39},
+            {6.48f, 4.07f, -2.29}, {6.44f, 4.07f, -2.20}, {6.39f, 4.07f, -2.11}, {6.31f, 4.07f, -2.05},
+            {6.24f, 4.07f, -1.98}, {6.17f, 4.07f, -1.91}, {6.11f, 4.07f, -1.83}, {6.05f, 4.07f, -1.74},
+            {5.99f, 4.07f, -1.66}, {5.95f, 4.07f, -1.57}, {5.90f, 4.07f, -1.48}, {5.87f, 4.07f, -1.39},
+            {5.85f, 4.07f, -1.29}, {5.90f, 4.07f, -1.20}, {5.99f, 4.06f, -1.18}, {6.09f, 4.06f, -1.18},
+            {6.19f, 4.06f, -1.20}, {6.29f, 4.06f, -1.23}, {6.38f, 4.06f, -1.26}, {6.48f, 4.06f, -1.29},
+            {6.57f, 4.06f, -1.33}, {6.66f, 4.06f, -1.37}, {6.75f, 4.05f, -1.41}, {6.84f, 4.05f, -1.46},
+            {6.93f, 4.05f, -1.50}, {7.02f, 4.05f, -1.55}, {7.11f, 4.05f, -1.60}, {7.20f, 4.05f, -1.65},
+            {7.29f, 4.05f, -1.69}, {7.39f, 4.05f, -1.70}, {7.49f, 4.05f, -1.70}, {7.59f, 4.05f, -1.71},
+            {7.69f, 4.05f, -1.72}, {7.79f, 4.05f, -1.73}, {7.89f, 4.05f, -1.74}, {7.99f, 4.05f, -1.74},
+            {8.09f, 4.05f, -1.74}, {8.19f, 4.05f, -1.73}, {8.29f, 4.05f, -1.72}, {8.38f, 4.05f, -1.69},
+            {8.44f, 4.04f, -1.62}, {8.43f, 4.04f, -1.52}, {8.38f, 4.04f, -1.44}, {8.32f, 4.04f, -1.36},
+            {8.25f, 4.04f, -1.29}, {8.19f, 4.04f, -1.21}, {8.12f, 4.04f, -1.14}, {8.05f, 4.04f, -1.06},
+            {7.98f, 4.04f, -0.99}, {7.92f, 4.04f, -0.91}, {7.87f, 4.04f, -0.82}, {7.83f, 4.04f, -0.73},
+            {7.83f, 4.04f, -0.63}, {7.85f, 4.04f, -0.54}, {7.93f, 4.04f, -0.48}, {8.01f, 4.04f, -0.42},
+            {8.11f, 4.04f, -0.39}, {8.21f, 4.04f, -0.36}, {8.30f, 4.04f, -0.34}, {8.40f, 4.04f, -0.31},
+            {8.49f, 4.04f, -0.28}, {8.58f, 4.04f, -0.23}, {8.66f, 4.04f, -0.17}, {8.72f, 4.04f, -0.09},
+            {8.78f, 4.04f, -0.00}, {8.82f, 4.04f, 0.09},  {8.85f, 4.04f, 0.18},  {8.87f, 4.04f, 0.28},
+            {8.88f, 4.05f, 0.38},  {8.88f, 4.05f, 0.48},  {8.87f, 4.05f, 0.58},  {8.85f, 4.05f, 0.68},
+            {8.82f, 4.05f, 0.77},  {8.77f, 4.05f, 0.86},  {8.72f, 4.05f, 0.95},  {8.66f, 4.05f, 1.03},
+            {8.59f, 4.05f, 1.10},  {8.52f, 4.05f, 1.17},  {8.44f, 4.05f, 1.23},  {8.35f, 4.05f, 1.29},
+            {8.27f, 4.06f, 1.33},  {8.17f, 4.06f, 1.37},  {8.08f, 4.06f, 1.41},  {7.99f, 4.06f, 1.45},
+            {7.89f, 4.06f, 1.47},  {7.79f, 4.06f, 1.49},  {7.69f, 4.06f, 1.51},  {7.60f, 4.06f, 1.54},
+            {7.50f, 4.06f, 1.57},  {7.40f, 4.06f, 1.60},  {7.30f, 4.06f, 1.61},  {7.20f, 4.06f, 1.61},
+            {7.10f, 4.06f, 1.61},  {7.00f, 4.07f, 1.61},  {6.90f, 4.07f, 1.61},  {6.80f, 4.07f, 1.61},
+            {6.70f, 4.07f, 1.60},  {6.60f, 4.07f, 1.61},  {6.50f, 4.07f, 1.61},  {6.40f, 4.07f, 1.63},
+            {6.30f, 4.07f, 1.65},  {6.21f, 4.07f, 1.68},  {6.12f, 4.07f, 1.72},  {6.03f, 4.07f, 1.77},
+            {5.96f, 4.07f, 1.84},  {5.89f, 4.07f, 1.91},  {5.83f, 4.07f, 1.99},  {5.77f, 4.07f, 2.08},
+            {5.73f, 4.07f, 2.17},  {5.68f, 4.07f, 2.26},  {5.66f, 4.07f, 2.35},  {5.63f, 4.07f, 2.45},
+            {5.62f, 4.07f, 2.55},  {5.62f, 4.07f, 2.65},  {5.62f, 4.07f, 2.75},  {5.65f, 4.07f, 2.85},
+            {5.68f, 4.07f, 2.94},  {5.72f, 4.07f, 3.04},  {5.77f, 4.07f, 3.12},  {5.84f, 4.07f, 3.19},
+            {5.91f, 4.07f, 3.26},  {6.00f, 4.07f, 3.32},  {6.09f, 4.07f, 3.36},  {6.18f, 4.07f, 3.39},
+            {6.28f, 4.07f, 3.41},  {6.38f, 4.07f, 3.43},  {6.48f, 4.07f, 3.44},  {6.58f, 4.07f, 3.46},
+            {6.68f, 4.07f, 3.45},  {6.78f, 4.07f, 3.44},  {6.88f, 4.07f, 3.43},  {6.97f, 4.07f, 3.39},
+            {7.06f, 4.07f, 3.35},  {7.14f, 4.07f, 3.29},  {7.21f, 4.07f, 3.22},  {7.28f, 4.07f, 3.14},
+            {7.33f, 4.07f, 3.06},  {7.39f, 4.07f, 2.97},  {7.43f, 4.07f, 2.88},  {7.47f, 4.07f, 2.79},
+            {7.51f, 4.07f, 2.70},  {7.54f, 4.07f, 2.60},  {7.58f, 4.07f, 2.51},  {7.62f, 4.07f, 2.42},
+            {7.66f, 4.07f, 2.32},  {7.70f, 4.07f, 2.23},  {7.74f, 4.07f, 2.14},  {7.79f, 4.07f, 2.06},
+            {7.85f, 4.07f, 1.97},  {7.92f, 4.07f, 1.90},  {7.99f, 4.07f, 1.83},  {8.08f, 4.07f, 1.78},
+            {8.17f, 4.07f, 1.73},  {8.26f, 4.07f, 1.70},  {8.36f, 4.07f, 1.68},  {8.46f, 4.07f, 1.67},
+            {8.56f, 4.07f, 1.66},  {8.66f, 4.07f, 1.64},  {8.76f, 4.07f, 1.63}};
+
+        for (auto pos : dominoPositions) {
+            pos += offset;
+            const assets::AssetLocation dominoModel("my_package::domino@Demo");
+            const auto dominoAssetRef = catalog.getAsset(dominoModel).as<assets::Model>();
+            const auto domino =
+                EntityFactory3D::createModel(dominoAssetRef, pos, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
+            const JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromShape(
+            domino, Application::m_coordinator->getComponent<components::TransformComponent>(domino),system::ShapeType::Box,
+            JPH::EMotionType::Dynamic);
+            if (bodyId.IsInvalid()) {
+                THROW_EXCEPTION(InvalidBodyId, domino);
+            }
+            scene.addEntity(domino);
+        }
     }
 
     void EditorScene::lightsScene(const glm::vec3& offset) const
