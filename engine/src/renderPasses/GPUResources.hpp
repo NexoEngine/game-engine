@@ -100,46 +100,33 @@ namespace nexo::renderer {
     #define MATERIAL_BUFFER "MaterialBuffer"
 
     struct GpuMaterial {
-        // vec4 albedoColor;
+        // Base color (albedo) - 16 bytes aligned
         glm::vec4 albedoColor;          // 0..15
 
-        // int albedoTexIndex;
-        int  albedoTexIndex;            // 16..19
-        int  _pad0[3];                  // 20..31 (pad so next vec4 is 16-byte aligned)
+        // Texture indices - 16 bytes aligned
+        int albedoTexIndex;             // 16..19
+        int emissiveTexIndex;           // 20..23
+        int metallicTexIndex;           // 24..27
+        int roughnessTexIndex;          // 28..31
 
-        // vec4 specularColor;
-        glm::vec4 specularColor;        // 32..47
+        // Emissive color + metallic - 16 bytes aligned
+        glm::vec3 emissiveColor;        // 32..43
+        float metallic;                 // 44..47
 
-        // int specularTexIndex;
-        int  specularTexIndex;          // 48..51
-        int  _pad1[3];                  // 52..63
+        // Surface properties - 16 bytes aligned
+        float roughness;                // 48..51
+        float ao;                       // 52..55
+        float normalScale;              // 56..59
+        float opacity;                  // 60..63
 
-        // vec3 emissiveColor;
-        glm::vec3 emissiveColor;        // 64..75
-        float _pad2;                    // 76..79 (pad to 16-byte boundary)
+        // More texture indices - 16 bytes aligned
+        int aoTexIndex;                 // 64..67
+        int normalTexIndex;             // 68..71
+        int opacityTexIndex;            // 72..75
+        int ormTexIndex;                // 76..79
 
-        // int emissiveTexIndex;
-        int  emissiveTexIndex;          // 80..83
-
-        // float roughness;
-        float roughness;                // 84..87
-
-        // int roughnessTexIndex;
-        int  roughnessTexIndex;         // 88..91
-
-        // float metallic;
-        float metallic;                 // 92..95
-
-        // int metallicTexIndex;
-        int  metallicTexIndex;          // 96..99
-
-        // float opacity;
-        float opacity;                  // 100..103
-
-        // int opacityTexIndex;
-        int  opacityTexIndex;           // 104..107
-
-        int _pad3[1];                   // 108..111 → struct size 112 bytes
+        // Explicit padding to match std430
+        int _pad0[4];                   // 80..95
     };
 
     #define NB_RESERVED "NB_RESERVED"
