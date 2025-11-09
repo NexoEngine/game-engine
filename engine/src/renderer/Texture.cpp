@@ -99,4 +99,23 @@ namespace nexo::renderer {
 #endif
     }
 
+    std::shared_ptr<NxTexture2D> NxTexture2D::create(const std::string &path, TextureType type, bool generateMipmaps)
+    {
+#ifdef NX_GRAPHICS_API_OPENGL
+        return std::make_shared<NxOpenGlTexture2D>(path, type, generateMipmaps);
+#else
+        THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
+#endif
+    }
+
+    std::shared_ptr<NxTexture2D> NxTexture2D::create(const uint8_t *buffer, unsigned int width, unsigned int height,
+                                    NxTextureFormat format, TextureType type, bool generateMipmaps)
+    {
+        #ifdef NX_GRAPHICS_API_OPENGL
+                return std::make_shared<NxOpenGlTexture2D>(buffer, width, height, format, type, generateMipmaps);
+        #else
+                THROW_EXCEPTION(NxUnknownGraphicsApi, "UNKNOWN");
+        #endif
+    }
+
 } // namespace nexo::renderer

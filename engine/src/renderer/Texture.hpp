@@ -19,6 +19,18 @@
 
 namespace nexo::renderer {
 
+    enum class TextureType {
+        ALBEDO,      // sRGB, linear filtering, mipmaps
+        NORMAL,      // Linear, linear filtering, mipmaps
+        METALLIC,    // Linear, linear filtering, mipmaps
+        ROUGHNESS,   // Linear, linear filtering, mipmaps
+        AO,          // Linear, linear filtering, mipmaps
+        EMISSIVE,    // sRGB, linear filtering, mipmaps
+        HEIGHT,       // Linear, linear filtering, mipmaps
+        COMBINED_MR,
+        COMBINED_ORM,
+    };
+
     /**
      * @class NxTexture
      * @brief Abstract base class for representing textures in a rendering system.
@@ -147,6 +159,11 @@ namespace nexo::renderer {
         RG8,    // 2 channels RED GREEN, 8 bits per channel
         RGB8,   // 3 channels RED GREEN BLUE, 8 bits per channel
         RGBA8,  // 4 channels RED GREEN BLUE ALPHA, 8 bits per channel
+
+        RGB16F,
+        RGBA16F,
+        RGB32F,
+        RGBA32F,
 
         _NB_FORMATS_ // Number of texture formats, used for array sizing
     };
@@ -285,6 +302,11 @@ namespace nexo::renderer {
          * ```
          */
         static std::shared_ptr<NxTexture2D> create(const std::string &path);
+
+        static std::shared_ptr<NxTexture2D> create(const std::string &path, TextureType type, bool generateMipmaps = true);
+
+        static std::shared_ptr<NxTexture2D> create(const uint8_t *buffer, unsigned int width, unsigned int height,
+                                                    NxTextureFormat format, TextureType type, bool generateMipmaps = true);
     };
 
 } // namespace nexo::renderer

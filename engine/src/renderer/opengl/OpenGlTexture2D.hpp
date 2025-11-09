@@ -18,6 +18,16 @@
 #include "renderer/Texture.hpp"
 
 namespace nexo::renderer {
+
+    enum class ChannelSwizzle {
+        RED = GL_RED,
+        GREEN = GL_GREEN,
+        BLUE = GL_BLUE,
+        ALPHA = GL_ALPHA,
+        ZERO = GL_ZERO,
+        ONE = GL_ONE
+    };
+
     /**
      * @class NxOpenGlTexture2D
      * @brief OpenGL-specific implementation of the `NxTexture2D` class.
@@ -125,6 +135,15 @@ namespace nexo::renderer {
          */
         NxOpenGlTexture2D(const uint8_t *buffer, unsigned int len);
 
+        NxOpenGlTexture2D(const std::string &path, TextureType type, bool generateMipmaps = true);
+
+        // Constructor with buffer and texture type
+        NxOpenGlTexture2D(const uint8_t *buffer, unsigned int len, TextureType type, bool generateMipmaps = true);
+
+        // Constructor with explicit format and texture type
+        NxOpenGlTexture2D(const uint8_t *buffer, unsigned int width, unsigned int height,
+                          NxTextureFormat format, TextureType type, bool generateMipmaps = true);
+
         [[nodiscard]] unsigned int getWidth() const override
         {
             return m_width;
@@ -223,8 +242,8 @@ namespace nexo::renderer {
          * ingestDataFromStb(data, width, height, channels, path);
          * ```
          */
-        void ingestDataFromStb(const uint8_t *data, int width, int height, int channels,
-                               const std::string &debugPath = "(buffer)");
+        void ingestDataFromStb(const uint8_t *data, int width, int height,
+                                int channels, const std::string &debugPath = "(buffer)", TextureType type = TextureType::ALBEDO);
 
         /**
          * @brief Creates an OpenGL texture with the specified parameters.
@@ -241,7 +260,15 @@ namespace nexo::renderer {
          * ```
          */
         void createOpenGLTexture(const uint8_t *buffer, unsigned int width, unsigned int height, GLint internalFormat,
-                                 GLenum dataFormat);
+                                 GLenum dataFormat, bool isSRGB = false, TextureType type = TextureType::ALBEDO);
+
+        void configureForTextureType(TextureType type);
+        void setChannelSwizzle(ChannelSwizzle r, ChannelSwizzle g, ChannelSwizzle b, ChannelSwizzle a);
+        void configureSTBForTextureType(TextureType type);
+        void ingestHDRDataFromStb(const float *data, int width, int height,
+                                    int channels, const std::string &debugPath, TextureType type);
+        void createHDROpenGLTexture(const float *buffer, unsigned int width, unsigned int height,
+                                    GLint internalFormat, GLenum dataFormat, TextureType type);
 
         std::string m_path;
         unsigned int m_width{};
@@ -249,5 +276,6 @@ namespace nexo::renderer {
         unsigned int m_id{};
         GLint m_internalFormat{};
         GLenum m_dataFormat{};
+        TextureType m_textureType{};
     };
 } // namespace nexo::renderer
