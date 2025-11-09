@@ -1,0 +1,11 @@
+Model Information:
+* title:	Diablo
+* source:	https://sketchfab.com/3d-models/diablo-fbd864f53f514b179a8d21579ca915f0
+* author:	Vasian-Digital3D (https://sketchfab.com/Vasian-Digital3D)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Diablo" (https://sketchfab.com/3d-models/diablo-fbd864f53f514b179a8d21579ca915f0) by Vasian-Digital3D (https://sketchfab.com/Vasian-Digital3D) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
