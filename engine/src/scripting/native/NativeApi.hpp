@@ -102,9 +102,10 @@ namespace nexo::scripting {
         NEXO_RET(ecs::Entity) NxCreateSphere(Vector3 position, Vector3 size, Vector3 rotation, Vector4 color, UInt32 nbSubdivision);
 
         NEXO_RET(ecs::Entity) NxCreatePointLight(Vector3 position, Vector4 color, float linear, float quadratic);
-        
+
         // Entity query functions
         NEXO_RET(ecs::Entity) NxFindEntityByName(const char* name);
+        NEXO_RET(void) NxMarkHierarchyDirty(ecs::Entity entity);
 
         // Physics functions
         NEXO_RET(void) NxCreateBodyFromShape(ecs::Entity entity, Vector3 position, Vector3 size, Vector3 rotation, UInt32 shapeType, UInt32 motionType);
@@ -125,11 +126,11 @@ namespace nexo::scripting {
         ApiCallback<ecs::Entity(Vector3, Vector3, Vector3, Vector4, UInt32)> NxCreateSphere{&scripting::NxCreateSphere};
 
         ApiCallback<ecs::Entity(Vector3, Vector4, float, float)> NxCreatePointLight{&scripting::NxCreatePointLight};
-        
+
         // Physics callbacks (MUST match C# order!)
         ApiCallback<void(ecs::Entity, Vector3, Vector3, Vector3, UInt32, UInt32)> NxCreateBodyFromShape{&scripting::NxCreateBodyFromShape};
         ApiCallback<void(ecs::Entity, Vector3)> NxApplyForce{&scripting::NxApplyForce};
-        
+
         // Entity query callbacks
         ApiCallback<ecs::Entity(const char*)> NxFindEntityByName{&scripting::NxFindEntityByName};
 
@@ -140,6 +141,7 @@ namespace nexo::scripting {
         ApiCallback<void(ecs::Entity)> NxDestroyEntity{&scripting::NxDestroyEntity};
         ApiCallback<bool(ecs::Entity, UInt32)> NxHasComponent{&scripting::NxHasComponent};
         ApiCallback<Int64(const char*, UInt64, const Field *, UInt64)> NxRegisterComponent{&scripting::NxRegisterComponent};
+        ApiCallback<void(ecs::Entity)> NxMarkHierarchyDirty{&scripting::NxMarkHierarchyDirty};
         ApiCallback<ComponentTypeIds()> NxGetComponentTypeIds{&scripting::NxGetComponentTypeIds};
     };
 
