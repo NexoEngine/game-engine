@@ -30,7 +30,7 @@ public class PlaneRotationSystem : SystemBase
 
     // Flight parameters
     private Single _angle = 0.0f;
-    private const Single FlightSpeed = 0.5f;)
+    private const Single FlightSpeed = 0.5f;
     private const Single FlightRadius = 15.0f;
     private readonly Vector3 _centerPosition = new Vector3(0.0f, 0.0f, 20.0f);
 
