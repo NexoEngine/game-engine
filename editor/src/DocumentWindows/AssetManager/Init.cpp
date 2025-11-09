@@ -51,6 +51,24 @@ namespace nexo::editor {
         }
         {
             assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/corvette/scene.gltf");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::corvette@Models"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/diablo/scene.gltf");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::diablo@Models"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/study_room/scene.gltf");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::study_room@Models"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
             std::filesystem::path path =
                 Path::resolvePathRelativeToExe("../resources/models/SmilingFace/SmilingFace.gltf");
             assets::ImporterFileInput fileInput{path};
@@ -219,7 +237,7 @@ namespace nexo::editor {
             assets::ImporterFileInput fileInput{path};
             importer.importAsset<assets::Model>(assets::AssetLocation("my_package::stand_light@Demo"), fileInput);
         }
-        // Textures
+        // // Textures
         {
             assets::AssetImporter importer;
             std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/grass.jpg");
