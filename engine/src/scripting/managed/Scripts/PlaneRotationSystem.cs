@@ -110,6 +110,8 @@ public class PlaneRotationSystem : SystemBase
                 transform.pos = newPosition;
 
                 transform.quat = finalRotation;
+                transform.dirty = true;
+                NativeInterop.MarkHierarchyDirty(planeId);
             }
             catch (Exception ex)
             {
