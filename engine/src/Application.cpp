@@ -18,6 +18,7 @@
 
 #include "Application.hpp"
 
+#include "components/Parent.hpp"
 #include "renderer/Renderer3D.hpp"
 #include "SystemProfiler.hpp"
 #include "systems/ScriptingSystem.hpp"
@@ -255,9 +256,9 @@ namespace nexo {
         static bool areVideoLoaded = false;
         auto &renderContext        = m_coordinator->getSingletonComponent<components::RenderContext>();
 
-        // if (isInPlayMode()) {
-        //     m_scriptingSystem->update();
-        // }
+        if (isInPlayMode()) {
+            m_scriptingSystem->update();
+        }
 
         if (!m_isMinimized) {
             renderContext.sceneRendered = static_cast<int>(sceneInfo.id);
