@@ -60,6 +60,8 @@ public class FanRotationSystem : SystemBase
 
             Quaternion rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, deltaTime * RotationSpeed);
             transform.quat = rotation * transform.quat;
+            transform.dirty = true;
+            NativeInterop.MarkHierarchyDirty(_fanEntityId);
         }
         catch (Exception ex)
         {
@@ -75,4 +77,3 @@ public class FanRotationSystem : SystemBase
         _fanFound = false;
     }
 }
-

@@ -26,6 +26,7 @@ namespace Nexo.Scripts;
 public class EarthRotationSystem : SystemBase
 {
     private readonly List<UInt32> _earthEntities = new();
+    UInt32 earthEntity = 0;
     private Boolean _earthFound = false;
 
     private const Single RotationSpeed = 0.5f;
@@ -83,6 +84,8 @@ public class EarthRotationSystem : SystemBase
                 ref Transform transform = ref NativeInterop.GetComponent<Transform>(earthId);
 
                 transform.quat = rotation * transform.quat;
+                transform.dirty = true;
+                NativeInterop.MarkHierarchyDirty(earthId);
             }
             catch (Exception ex)
             {
