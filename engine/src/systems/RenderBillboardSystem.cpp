@@ -107,11 +107,11 @@ namespace nexo::system {
                                                       ? src.albedoTexture.lock()->getData()->texture
                                                       : nullptr);
 
-                    gpuMat.specularColor    = src.specularColor;
-                    gpuMat.specularTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
-                                                  src.metallicMap.lock() && src.metallicMap.lock()->isLoaded()
-                                                      ? src.metallicMap.lock()->getData()->texture
-                                                      : nullptr);
+                    // gpuMat.specularColor    = src.specularColor;
+                    // gpuMat.specularTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                    //                               src.metallicMap.lock() && src.metallicMap.lock()->isLoaded()
+                    //                                   ? src.metallicMap.lock()->getData()->texture
+                    //                                   : nullptr);
 
                     gpuMat.emissiveColor    = src.emissiveColor;
                     gpuMat.emissiveTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
