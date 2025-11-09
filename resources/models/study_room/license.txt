@@ -1,0 +1,11 @@
+Model Information:
+* title:	Study Room
+* source:	https://sketchfab.com/3d-models/study-room-fa8ad9ebd8f04bb6aff2d286ef9720ed
+* author:	Daemon (https://sketchfab.com/daemon)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Study Room" (https://sketchfab.com/3d-models/study-room-fa8ad9ebd8f04bb6aff2d286ef9720ed) by Daemon (https://sketchfab.com/daemon) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
