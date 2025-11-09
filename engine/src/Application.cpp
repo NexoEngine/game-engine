@@ -82,9 +82,7 @@ namespace nexo {
                 renderContext.viewportBounds[1] = sceneInfo.viewportBounds[1];
             }
             if (m_SceneManager.getScene(sceneInfo.id).isRendered()) {
-
-                m_transformMatrixSystem->update();
-                m_transformHierarchySystem->update();
+                m_transformSystem->update();
                 m_cameraContextSystem->update();
                 m_lightSystem->update(renderContext);
                 m_renderCommandSystem->update();
@@ -182,5 +180,22 @@ namespace nexo {
 
         // Clear the children list to avoid dangling references
         transform->get().children.clear();
+    }
+
+    void Application::markHierarchyDirty(ecs::Entity entity)
+    {
+        ecs::Entity currentEntity = entity;
+        ecs::Entity rootEntity = entity;
+
+        while (m_coordinator->entityHasComponent<components::ParentComponent>(currentEntity)) {
+            const auto& parentComp = m_coordinator->getComponent<components::ParentComponent>(currentEntity);
+            currentEntity = parentComp.parent;
+            rootEntity = currentEntity;
+        }
+
+        if (m_coordinator->entityHasComponent<components::RootComponent>(rootEntity)) {
+            auto& rootComp = m_coordinator->getComponent<components::RootComponent>(rootEntity);
+            rootComp.hierarchyDirty = true;
+        }
     }
 } // namespace nexo
