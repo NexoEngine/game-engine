@@ -70,6 +70,13 @@ namespace nexo::renderer {
                                                       NxRenderer3DStorage::maxTextureSlots);
         albedoUnshadedTransparent->unbind();
 
+        const auto pbr = ShaderLibrary::getInstance().get("PBR"); // or whatever its name is
+        pbr->bind();
+        pbr->setUniformIntArray("uTexture", samplers.data(),
+                                NxRenderer3DStorage::maxTextureSlots);
+        // or use NxShaderUniforms::TEXTURE_SAMPLER if that maps to "uTexture[0]"
+        pbr->unbind();
+
         m_storage->textureSlots[0] = m_storage->whiteTexture;
 
         LOG(NEXO_DEV, "NxRenderer3D initialized");
