@@ -41,6 +41,7 @@ namespace nexo::components {
         std::string name = "Root";
         assets::AssetRef<assets::Model> modelRef;
         int childCount = 0;
+        bool hierarchyDirty = false;
 
         struct Memento {
             std::string name;
