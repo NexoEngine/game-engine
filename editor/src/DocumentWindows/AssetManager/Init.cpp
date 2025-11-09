@@ -143,6 +143,12 @@ namespace nexo::editor {
         }
         {
             assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/epitech.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::epitech@Demo"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
             std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/frame.glb");
             assets::ImporterFileInput fileInput{path};
             importer.importAsset<assets::Model>(assets::AssetLocation("my_package::frame@Demo"), fileInput);
@@ -152,6 +158,18 @@ namespace nexo::editor {
             std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/garland.glb");
             assets::ImporterFileInput fileInput{path};
             importer.importAsset<assets::Model>(assets::AssetLocation("my_package::garland@Demo"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/nexo.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::nexo@Demo"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/nexo_gradient/nexo_gradient.gltf");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::nexo_gradient@Demo"), fileInput);
         }
         {
             assets::AssetImporter importer;
@@ -276,7 +294,7 @@ namespace nexo::editor {
         }
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/kaben.png");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/kaben.jpg");
             assets::ImporterFileInput fileInput{path};
             importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::kaben@Textures/Picture"), fileInput);
         }
