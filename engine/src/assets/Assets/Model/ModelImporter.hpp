@@ -129,6 +129,8 @@ namespace nexo::assets {
          */
         Mesh processMesh(const AssetImporterContext& ctx, aiMesh* mesh, const aiScene* scene) const;
 
+        renderer::TextureType detectTextureTypeFromFilename(const std::string& filename);
+
         /**
          * @brief Convert Assimp texture format hint to engine texture format.
          *
