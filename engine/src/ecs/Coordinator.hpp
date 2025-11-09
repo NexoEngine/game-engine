@@ -472,35 +472,50 @@ namespace nexo::ecs {
          * @tparam Components The component types to filter by.
          * @return std::set<Entity> A set of entities that contain all the specified components.
          */
-        template<typename... Components>
-        [[nodiscard]] std::vector<Entity> getAllEntitiesWith() const
-        {
-            // Prepare signatures
-            Signature requiredSignature;
-            Signature excludeSignature;
+         template<typename... Components>
+         [[nodiscard]] std::vector<Entity> getAllEntitiesWith() const
+         {
+             Signature requiredSignature;
+             Signature excludeSignature;
+             (processComponentSignature<Components>(requiredSignature, excludeSignature), ...);
 
-            // Process each component type
-            (processComponentSignature<Components>(requiredSignature, excludeSignature), ...);
+             std::span<const Entity> baseSpan = m_entityManager->getLivingEntities();
+             std::size_t minSize              = baseSpan.size();
 
-            // Query entities
-            std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
-            std::vector<Entity> result;
-            result.reserve(livingEntities.size());
+             auto considerRequiredArray = [&](auto tag) {
+                 using C = decltype(tag);
 
-            for (Entity entity : livingEntities) {
-                const Signature entitySignature = m_entityManager->getSignature(entity);
+                 if constexpr (!is_exclude_v<C>) {
+                     using Actual = C;
 
-                // Entity must have all required components
-                const bool hasAllRequired = (entitySignature & requiredSignature) == requiredSignature;
+                     auto compArray = m_componentManager->getComponentArray<Actual>();
+                     const auto span = compArray->entities();
 
-                // Entity must not have any excluded components
-                const bool hasAnyExcluded = (entitySignature & excludeSignature).any();
+                     if (span.size() < minSize) {
+                         minSize  = span.size();
+                         baseSpan = span;
+                     }
+                 }
+             };
 
-                if (hasAllRequired && !hasAnyExcluded) result.push_back(entity);
-            }
+             (considerRequiredArray(Components{}), ...);
 
-            return result;
-        }
+             std::vector<Entity> result;
+             result.reserve(minSize);
+
+             for (Entity entity : baseSpan) {
+                 const Signature entitySignature = m_entityManager->getSignature(entity);
+
+                 const bool hasAllRequired = (entitySignature & requiredSignature) == requiredSignature;
+                 const bool hasAnyExcluded = (entitySignature & excludeSignature).any();
+
+                 if (hasAllRequired && !hasAnyExcluded) {
+                     result.push_back(entity);
+                 }
+             }
+
+             return result;
+         }
 
         /**
          * @brief Gets the component type ID for a specific component type.
