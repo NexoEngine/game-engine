@@ -161,15 +161,9 @@ namespace nexo::editor {
         }
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/nexo.glb");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/nexo/nexo_gradient.gltf");
             assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::nexo@Demo"), fileInput);
-        }
-        {
-            assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/nexo_gradient/nexo_gradient.gltf");
-            assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::nexo_gradient@Demo"), fileInput);
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::NEXO@Demo"), fileInput);
         }
         {
             assets::AssetImporter importer;
