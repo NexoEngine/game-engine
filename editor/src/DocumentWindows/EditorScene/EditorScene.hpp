@@ -448,21 +448,6 @@ namespace nexo::editor {
          */
         static void captureInitialTransformStates(const std::vector<int>& entities);
 
-        /**  * @brief Applies a world transformation delta to multiple entities.
-         *
-         * This function takes a source entity's old and new world transformation matrices,
-         * computes the delta transformation, and applies this delta to a list of target entities.
-         * Each target entity's TransformComponent is updated to reflect the new world position,
-         * rotation, and scale based on the computed delta.
-         *
-         * @param sourceEntity The entity whose transformation change is the basis for the delta.
-         * @param oldWorldMatrix The original world transformation matrix of the source entity.
-         * @param newWorldMatrix The new world transformation matrix of the source entity.
-         * @param targetEntities A vector of entity IDs to which the delta transformation will be applied.
-         */
-        static void applyTransformToEntities(ecs::Entity sourceEntity, const glm::mat4& oldWorldMatrix,
-                                             const glm::mat4& newWorldMatrix, const std::vector<int>& targetEntities);
-
         /**  * @brief Creates undo actions for transform changes on multiple entities.
          *
          * This method generates and records undo actions for a set of entities that have undergone

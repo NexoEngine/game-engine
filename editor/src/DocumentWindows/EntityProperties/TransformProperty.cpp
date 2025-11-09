@@ -39,6 +39,7 @@ namespace nexo::editor {
             ImNexo::Transform(transformComponent, lastDisplayedEuler);
             if (ImNexo::isItemActivated()) {
                 beforeState = transformComponentCopy.save();
+                Application::getInstance().markHierarchyDirty(entity);
             } else if (ImNexo::isItemDeactivated()) {
                 auto afterState = transformComponent.save();
                 auto action     = std::make_unique<ComponentChangeAction<components::TransformComponent>>(
