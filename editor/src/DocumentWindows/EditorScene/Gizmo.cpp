@@ -194,15 +194,36 @@ namespace nexo::editor {
     {
         const glm::mat4 parentWorldMatrix = getEntityParentWorldMatrix(entity);
 
-        // Calculate local matrix by inverting parent world matrix and multiplying by entity's world matrix
-        const glm::mat4 localMatrix = glm::inverse(parentWorldMatrix) * worldMatrix;
+        // Calculate what the local matrix should be to achieve the desired world matrix
+        const glm::mat4 desiredLocalMatrix = glm::inverse(parentWorldMatrix) * worldMatrix;
 
+        // Decompose the desired local matrix back to local transform properties
         glm::vec3 skew;
         glm::vec4 perspective;
-        glm::decompose(localMatrix, transform.size, transform.quat, transform.pos, skew, perspective);
+        glm::decompose(desiredLocalMatrix, transform.size, transform.quat, transform.pos, skew, perspective);
 
-        transform.quat        = glm::normalize(transform.quat);
+        transform.quat = glm::normalize(transform.quat);
         transform.worldMatrix = worldMatrix;
+        transform.dirty = true;
+        Application::getInstance().markHierarchyDirty(entity);
+    }
+
+    static glm::mat4 getCurrentWorldMatrix(const ecs::Entity entity)
+    {
+        const auto& coord = nexo::Application::m_coordinator;
+        const auto transform = coord->tryGetComponent<components::TransformComponent>(entity);
+
+        if (!transform) return glm::mat4(1.0f);
+
+        // If the transform is dirty, we need to compute what the world matrix would be
+        if (transform->get().dirty) {
+            const glm::mat4 parentWorldMatrix = getEntityParentWorldMatrix(entity);
+            const glm::mat4 localMatrix = calculateWorldMatrix(transform->get());
+            return parentWorldMatrix * localMatrix;
+        }
+
+        // Use the cached world matrix if it's up to date
+        return transform->get().worldMatrix;
     }
 
     float* EditorScene::getSnapSettingsForOperation(const ImGuizmo::OPERATION operation)
@@ -224,26 +245,6 @@ namespace nexo::editor {
             if (transform) {
                 s_initialTransformStates[entity] = transform->get().save();
             }
-        }
-    }
-
-    void EditorScene::applyTransformToEntities(const ecs::Entity sourceEntity, const glm::mat4& oldWorldMatrix,
-                                               const glm::mat4& newWorldMatrix, const std::vector<int>& targetEntities)
-    {
-        const auto& coord = Application::m_coordinator;
-
-        const glm::mat4 deltaMatrix = newWorldMatrix * glm::inverse(oldWorldMatrix);
-
-        // Apply to all selected entities except the source
-        for (const auto& entity : targetEntities) {
-            if (entity == static_cast<int>(sourceEntity)) continue;
-
-            const auto entityTransform = coord->tryGetComponent<components::TransformComponent>(entity);
-            if (!entityTransform) continue;
-
-            // Apply world space delta and convert back to local space
-            glm::mat4 newEntityWorldMatrix = deltaMatrix * entityTransform->get().worldMatrix;
-            updateLocalTransformFromWorld(entityTransform->get(), newEntityWorldMatrix, entity);
         }
     }
 
@@ -355,18 +356,14 @@ namespace nexo::editor {
 
         // 1) M₀ = parentWorld * T(pos) * R(quat) * S(size)
         const glm::mat4 parentWorld = getEntityParentWorldMatrix(primaryEntity);
-        const glm::mat4 Tpos        = glm::translate(glm::mat4(1.0f), primaryTransform->get().pos);
-        const glm::mat4 Rrot        = glm::toMat4(primaryTransform->get().quat);
-        const glm::mat4 Sscale      = glm::scale(glm::mat4(1.0f), primaryTransform->get().size);
-        const glm::mat4 M0          = parentWorld * Tpos * Rrot * Sscale;
+        const glm::mat4 localMatrix = calculateWorldMatrix(primaryTransform->get());
+        const glm::mat4 M0 = parentWorld * localMatrix;
 
-        // 2) “centroid offset” = T(centroidLocal)
+        // 2) Apply centroid offset for gizmo display
         const glm::mat4 C_offset = glm::translate(glm::mat4(1.0f), primaryTransform->get().localCenter);
-
-        // 3) M1 = M0 * C_offset
         glm::mat4 worldTransformMatrix = M0 * C_offset;
 
-        // (We’ll need “M₀” again after manipulation for decomposing back.)
+        // Store original for delta calculation
         const glm::mat4 originalWorldMatrix_ModelOrigin = M0;
 
         if (!ImGuizmo::IsUsing()) s_lastOperation = getActiveGuizmoOperation();
@@ -382,30 +379,30 @@ namespace nexo::editor {
         const bool isUsingGizmo = ImGuizmo::IsUsing();
 
         if (isUsingGizmo) {
-            // Disable camera movement during manipulation
             camera.active = false;
 
-            const glm::mat4 newWorldMatrix_Centroid    = worldTransformMatrix;
-            const glm::mat4 invCentroidOffset          = glm::inverse(C_offset);
+            const glm::mat4 newWorldMatrix_Centroid = worldTransformMatrix;
+            const glm::mat4 invCentroidOffset = glm::inverse(C_offset);
             const glm::mat4 newWorldMatrix_ModelOrigin = newWorldMatrix_Centroid * invCentroidOffset;
 
-            // Update the primary entity's local transform based on the new world transform
+            // Update local transform properties (NOT world matrix)
             updateLocalTransformFromWorld(primaryTransform->get(), newWorldMatrix_ModelOrigin, primaryEntity);
 
+            // Apply same transformation to other selected entities
             const glm::mat4 deltaMatrix = newWorldMatrix_ModelOrigin * glm::inverse(originalWorldMatrix_ModelOrigin);
 
             for (const auto entity : selectedEntities) {
                 if (static_cast<unsigned int>(entity) == primaryEntity) continue;
+
                 const auto tComp = coord->tryGetComponent<components::TransformComponent>(entity);
                 if (!tComp) continue;
 
-                // “OtherEntity_world₀” = tComp->worldMatrix
-                glm::mat4 otherWorldMatrix_0 = tComp->get().worldMatrix;
-                // “OtherEntity_world₁” = deltaMatrix * otherWorldMatrix_0
-                glm::mat4 otherWorldMatrix_1 = deltaMatrix * otherWorldMatrix_0;
+                // Get the current world matrix for this entity
+                const glm::mat4 otherCurrentWorld = getCurrentWorldMatrix(entity);
+                const glm::mat4 otherNewWorld = deltaMatrix * otherCurrentWorld;
 
-                // Now convert that new world matrix back to local space of “entity”:
-                updateLocalTransformFromWorld(tComp->get(), otherWorldMatrix_1, entity);
+                // Update local properties only
+                updateLocalTransformFromWorld(tComp->get(), otherNewWorld, entity);
             }
         } else if (s_wasUsingGizmo) {
             // Re-enable camera when done
