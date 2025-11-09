@@ -15,6 +15,7 @@
 #pragma once
 
 #include "assets/Asset.hpp"
+#include "renderer/Texture.hpp"
 
 #include <Texture.hpp>
 
@@ -22,6 +23,7 @@ namespace nexo::assets {
 
     struct TextureData {
         std::shared_ptr<renderer::NxTexture2D> texture;
+        renderer::TextureType textureType;
     };
 
     /**

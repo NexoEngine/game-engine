@@ -85,7 +85,7 @@ namespace nexo::assets {
          * @param texture The embedded texture to load.
          * @return An AssetRef to the loaded Texture asset.
          */
-        AssetRef<Texture> loadEmbeddedTexture(AssetImporterContext& ctx, aiTexture* texture);
+        AssetRef<Texture> loadEmbeddedTexture(AssetImporterContext& ctx, aiTexture* texture, renderer::TextureType suggestedType = renderer::TextureType::ALBEDO);
 
         /**
          * @brief Load materials from the Assimp scene.
@@ -124,6 +124,8 @@ namespace nexo::assets {
          * @return A Mesh representing the processed Assimp mesh.
          */
         Mesh processMesh(const AssetImporterContext& ctx, aiMesh* mesh, const aiScene* scene) const;
+
+        renderer::TextureType detectTextureTypeFromFilename(const std::string& filename);
 
         /**
          * @brief Convert Assimp texture format hint to engine texture format.
