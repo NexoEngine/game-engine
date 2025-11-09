@@ -21,6 +21,7 @@
 #include "renderer/RendererExceptions.hpp"
 #include "renderer/Renderer.hpp"
 #include "renderer/Renderer3D.hpp"
+#include "systems/TransformSystem.hpp"
 
 #include <memory>
 
@@ -186,8 +187,6 @@ namespace nexo {
         m_renderCommandSystem           = m_coordinator->registerGroupSystem<system::RenderCommandSystem>();
         m_renderBillboardSystem         = m_coordinator->registerGroupSystem<system::RenderBillboardSystem>();
         m_renderVideoSystem             = m_coordinator->registerGroupSystem<system::RenderVideoSystem>();
-        m_transformHierarchySystem      = m_coordinator->registerGroupSystem<system::TransformHierarchySystem>();
-        m_transformMatrixSystem         = m_coordinator->registerQuerySystem<system::TransformMatrixSystem>();
         m_physicsSystem                 = m_coordinator->registerQuerySystem<system::PhysicsSystem>();
         m_physicsSystem->init();
 
@@ -200,6 +199,7 @@ namespace nexo {
 
         m_scriptingSystem = std::make_shared<system::ScriptingSystem>();
         m_aabbdebugSystem = m_coordinator->registerQuerySystem<system::AABBDebugSystem>();
+        m_transformSystem = m_coordinator->registerGroupSystem<system::TransformSystem>();
     }
 
     int Application::initScripting() const
