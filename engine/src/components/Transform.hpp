@@ -52,6 +52,8 @@ namespace nexo::components {
 
         glm::vec3 localCenter = {0.0f, 0.0f, 0.0f};
 
+        bool dirty = true;
+
         std::vector<ecs::Entity> children{};
     };
 } // namespace nexo::components
