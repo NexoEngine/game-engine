@@ -95,7 +95,7 @@ namespace nexo::editor {
         }
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/full_room/full_room.gltf");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/full_room/fullRoom.gltf");
             assets::ImporterFileInput fileInput{path};
             importer.importAsset<assets::Model>(assets::AssetLocation("my_package::full_room@Demo"), fileInput);
         }
@@ -234,9 +234,57 @@ namespace nexo::editor {
         }
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/Thomas_Guigs.jpg");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/Thomas_Guigs.png");
             assets::ImporterFileInput fileInput{path};
             importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::Thomas_Guigs@Textures/Picture"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/guillaume.jpg");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::guillaume@Textures/Picture"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/jean.jpg");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::jean@Textures/Picture"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/mehdy.jpg");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::mehdy@Textures/Picture"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/fdlm.jpg");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::fdlm@Textures/Picture"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/guizmo.png");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::guizmo@Textures/Picture"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/leo.png");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::leo@Textures/Picture"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/kaben.png");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::kaben@Textures/Picture"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/baz.jpg");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::baz@Textures/Picture"), fileInput);
         }
         // Register for file drop events
         Application::getInstance().getEventManager()->registerListener<event::EventFileDrop>(this);
