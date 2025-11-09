@@ -74,11 +74,11 @@ namespace nexo::system {
 
         // Update only if dirty or forced (parent was dirty)
         if (!transform.dirty) {
+            bool anyDirty = false;
             for (const ecs::Entity childEntity : transform.children) {
-                if (lookForDirtyChildren(transformArray, childEntity, transform.worldMatrix))
-                    return true;
+                anyDirty = lookForDirtyChildren(transformArray, childEntity, transform.worldMatrix);
             }
-            return false;
+            return anyDirty;
         }
 
         // Calculate local transformation matrix
