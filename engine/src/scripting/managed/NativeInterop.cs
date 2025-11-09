@@ -89,6 +89,9 @@ namespace Nexo
             public delegate void ApplyForceDelegate(UInt32 entityId, Vector3 force);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate UInt32 FindEntityByNameDelegate(String name);
+
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate ref Transform GetTransformDelegate(UInt32 entityId);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
@@ -125,6 +128,7 @@ namespace Nexo
             public CreatePointLight NxCreatePointLight;
             public CreateBodyFromShapeDelegate NxCreateBodyFromShape;
             public ApplyForceDelegate NxApplyForce;
+            public FindEntityByNameDelegate NxFindEntityByName;
             public GetTransformDelegate NxGetTransform;
             public NxGetComponentDelegate NxGetComponent;
             public NxAddComponentDelegate NxAddComponent;
@@ -378,6 +382,29 @@ namespace Nexo
             catch (Exception ex)
             {
                 Console.WriteLine($"Error calling ApplyForce: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Finds an entity by its name
+        /// </summary>
+        /// <param name="name">Name of the entity to find</param>
+        /// <returns>Entity ID or UInt32.MaxValue if not found</returns>
+        public static UInt32 FindEntityByName(String name)
+        {
+            try
+            {
+                var result = s_callbacks.NxFindEntityByName.Invoke(name);
+                if (result == UInt32.MaxValue)
+                {
+                    Logger.Log(LogLevel.Warn, $"Entity with name '{name}' not found");
+                }
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Logger.Log(LogLevel.Error, $"Error calling FindEntityByName: {ex.Message}");
+                return UInt32.MaxValue;
             }
         }
 

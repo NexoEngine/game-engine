@@ -150,45 +150,45 @@ public class CubeSystem : SystemBase
         Byte maxCubes = 10;
         Byte maxLights = 5;
         
-        // If 2 seconds have passed since last spawn, spawn a new cube
-        if (worldState.Time.TotalTime % 2.0 < deltaTime)
-        {
-            Vector3 position = new Vector3(1, 4.2f, 3);
-            Vector3 size = new Vector3(1, 1, 1);
-            Vector3 rotation = new Vector3(7, 8, 9);
-            Vector4 color = new Vector4(
-                Random.Shared.NextSingle(),
-                Random.Shared.NextSingle(),
-                Random.Shared.NextSingle(),
-                1.0f
-            );
-
-            if (_spawnLightOrCube)
-            {
-                if (_lights.Count < maxLights)
-                {
-                    SpawnLight(position, _colors[_colorIndex]);
-                    _colorIndex = (_colorIndex + 1) % _colors.Count;
-                }
-            } else
-            {
-                if (_cubes.Count < maxCubes)
-                {
-                    SpawnCube(position, size, rotation, color);
-                }
-            }
-            Logger.Log(LogLevel.Info, $"Spawned new {(_spawnLightOrCube ? "light" : "cube")}, total cubes: {_cubes.Count}, total lights: {_lights.Count}");
-            _spawnLightOrCube ^= true;
-        }
-        
-        foreach (var cubeId in _cubes)
-        {
-            MoveCube(cubeId, deltaTime);
-        }
-        foreach (var lightId in _lights)
-        {
-            MoveLight(lightId, deltaTime);
-        }
+        // // If 2 seconds have passed since last spawn, spawn a new cube
+        // if (worldState.Time.TotalTime % 2.0 < deltaTime)
+        // {
+        //     Vector3 position = new Vector3(1, 4.2f, 3);
+        //     Vector3 size = new Vector3(1, 1, 1);
+        //     Vector3 rotation = new Vector3(7, 8, 9);
+        //     Vector4 color = new Vector4(
+        //         Random.Shared.NextSingle(),
+        //         Random.Shared.NextSingle(),
+        //         Random.Shared.NextSingle(),
+        //         1.0f
+        //     );
+        //
+        //     if (_spawnLightOrCube)
+        //     {
+        //         if (_lights.Count < maxLights)
+        //         {
+        //             SpawnLight(position, _colors[_colorIndex]);
+        //             _colorIndex = (_colorIndex + 1) % _colors.Count;
+        //         }
+        //     } else
+        //     {
+        //         if (_cubes.Count < maxCubes)
+        //         {
+        //             SpawnCube(position, size, rotation, color);
+        //         }
+        //     }
+        //     Logger.Log(LogLevel.Info, $"Spawned new {(_spawnLightOrCube ? "light" : "cube")}, total cubes: {_cubes.Count}, total lights: {_lights.Count}");
+        //     _spawnLightOrCube ^= true;
+        // }
+        //
+        // foreach (var cubeId in _cubes)
+        // {
+        //     MoveCube(cubeId, deltaTime);
+        // }
+        // foreach (var lightId in _lights)
+        // {
+        //     MoveLight(lightId, deltaTime);
+        // }
     }
     
     protected override void OnShutdown(WorldState worldState)

@@ -38,6 +38,9 @@ set(SOURCES
     Systems/SystemBase.cs
     Systems/WorldState.cs
     Scripts/CubeSystem.cs
+    Scripts/EarthRotationSystem.cs
+    Scripts/FanRotationSystem.cs
+    Scripts/PlaneRotationSystem.cs
 )
 
 # Locate the dotnet executable
