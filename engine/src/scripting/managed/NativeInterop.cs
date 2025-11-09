@@ -92,7 +92,7 @@ namespace Nexo
             public delegate UInt32 FindEntityByNameDelegate(String name);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
-            public delegate ref Transform GetTransformDelegate(UInt32 entityId);
+            public unsafe delegate IntPtr GetTransformDelegate(UInt32 entityId);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate IntPtr NxGetComponentDelegate(UInt32 entityId, UInt32 typeId);
@@ -111,6 +111,9 @@ namespace Nexo
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate Int64 NxRegisterComponentDelegate(String name, UInt64 componentSize, Field *fields, UInt64 fieldCount);
+
+            [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
+            public delegate void NxMarkHierarchyDirtyDelegate(UInt32 entityId);
 
             [UnmanagedFunctionPointer(CallingConvention.Winapi, CharSet = CharSet.Ansi)]
             public delegate ComponentTypeIds NxGetComponentTypeIdsDelegate();
@@ -136,6 +139,7 @@ namespace Nexo
             public NxDestroyEntityDelegate NxDestroyEntity;
             public NxHasComponentDelegate NxHasComponent;
             public NxRegisterComponentDelegate NxRegisterComponent;
+            public NxMarkHierarchyDirtyDelegate NxMarkHierarchyDirty;
             public NxGetComponentTypeIdsDelegate NxGetComponentTypeIds;
         }
 
@@ -408,11 +412,15 @@ namespace Nexo
             }
         }
 
-        public static ref Transform GetTransform(UInt32 entityId)
+        public static unsafe ref Transform GetTransform(UInt32 entityId)
         {
             try
             {
-                return ref s_callbacks.NxGetTransform.Invoke(entityId);
+                IntPtr ptr = s_callbacks.NxGetTransform.Invoke(entityId);
+                if (ptr == IntPtr.Zero)
+                    throw new InvalidOperationException($"Transform not found for entity {entityId}");
+
+                return ref Unsafe.AsRef<Transform>((void*)ptr);
             }
             catch (Exception ex)
             {
@@ -527,6 +535,18 @@ namespace Nexo
             finally
             {
                 fieldArray?.Dispose();
+            }
+        }
+
+        public static void MarkHierarchyDirty(UInt32 entityId)
+        {
+            try
+            {
+                s_callbacks.NxMarkHierarchyDirty.Invoke(entityId);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error calling MarkHierarchyDirty: {ex.Message}");
             }
         }
 
