@@ -294,5 +294,11 @@ namespace nexo::scripting {
             return static_cast<ecs::Entity>(-1);
         }
 
+        void NxMarkHierarchyDirty(ecs::Entity entity)
+        {
+            auto& app = Application::getInstance();
+            app.markHierarchyDirty(entity);
+        }
+
     } // extern "C"
 } // namespace nexo::scripting
