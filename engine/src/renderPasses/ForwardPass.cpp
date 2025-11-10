@@ -49,6 +49,14 @@ namespace nexo::renderer {
             shadowMapFb->bindDepthAsTexture(DIR_SHADOW_TEX_UNIT);
         }
 
+        for (int i = 0; i < pipeline.getNbPointLights() && i < 10; ++i) {
+            const auto& sm = pipeline.getShadowMap(i);
+            if (!sm.depthCube) continue;
+
+            glActiveTexture(GL_TEXTURE0 + 32 + i);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, sm.depthCube);
+        }
+
         std::vector<DrawCommand> &drawCommands = pipeline.getDrawCommands();
         int currentBatch = -1;
 
