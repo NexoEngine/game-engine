@@ -70,6 +70,7 @@ namespace nexo::renderer {
         uint32_t instanceOffset = 0;      // uniform uInstanceOffset
         uint32_t instanceCount  = 1;      // for glDraw*Instanced
         bool     instanced      = false;
+        unsigned int textureBatchIndex = 0;
 
         float lineWidth = 1.5f;
 

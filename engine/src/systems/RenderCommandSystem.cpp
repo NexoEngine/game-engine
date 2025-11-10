@@ -167,6 +167,12 @@ namespace nexo::system {
         gpuMaterials.reserve(partition->count);
         std::unordered_map<const void*, uint32_t> materialToIndex;
         materialToIndex.reserve(partition->count);
+        auto &renderer3D = renderer::NxRenderer3D::get();
+
+        std::vector<unsigned int> materialTextureBatch;
+        materialTextureBatch.reserve(partition->count);
+
+        bool firstMaterial = true;
         for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
             const ecs::Entity entity = entitySpan[i];
             if (coord->entityHasComponent<components::CameraComponent>(entity) && sceneType != SceneType::EDITOR)
@@ -178,6 +184,11 @@ namespace nexo::system {
             uint32_t materialIndex;
             auto it = materialToIndex.find(matKey);
             if (it == materialToIndex.end()) {
+                if (!firstMaterial) {
+                    renderer3D.switchToNextTextureBatch();
+                } else {
+                    firstMaterial = false;
+                }
                 renderer::GpuMaterial gpuMat{};
 
                 const auto& src = *materialAsset->getData();
@@ -208,8 +219,8 @@ namespace nexo::system {
                 // // Surface properties
                 gpuMat.metallic = src.metallic;
                 gpuMat.roughness = src.roughness;
-                gpuMat.ao = src.ao;                    // ADD THIS
-                gpuMat.normalScale = src.normalScale;  // ADD THIS
+                gpuMat.ao = src.ao;
+                gpuMat.normalScale = src.normalScale;
                 gpuMat.opacity = src.opacity;
 
                 // // Handle combined vs separate metallic/roughness textures
@@ -247,6 +258,8 @@ namespace nexo::system {
 
                 materialIndex = static_cast<uint32_t>(gpuMaterials.size());
                 gpuMaterials.push_back(gpuMat);
+                materialTextureBatch.push_back(renderer3D.getInternalStorage()->currentTextureBatchIndex);
+
                 materialToIndex[matKey] = materialIndex;
             } else {
                 materialIndex = it->second;
@@ -266,6 +279,7 @@ namespace nexo::system {
             item.filterMask    = renderer::F_FORWARD_PASS;
             item.isTransparent = false;
             item.modelMatrix = transform.worldMatrix;
+            item.textureBatchIndex = materialTextureBatch[materialIndex];
             renderItems.push_back(item);
 
             if (coord->entityHasComponent<components::SelectedTag>(entity)) {
@@ -274,6 +288,7 @@ namespace nexo::system {
                 sel.entity = entity;
                 sel.mesh = meshSpan[i].vao;
                 sel.modelMatrix = transform.worldMatrix;
+                sel.textureBatchIndex = item.textureBatchIndex;
                 if (materialAsset->getData()->isOpaque) {
                     sel.shader = renderer::ShaderLibrary::getInstance().get("Flat color");
                 } else {
@@ -318,6 +333,7 @@ namespace nexo::system {
             current.filterMask    = first.filterMask;
             current.instanceOffset = first.instanceIndex;
             current.instanceCount  = 1;
+            current.textureBatchIndex = first.textureBatchIndex;
 
             for (size_t i = 1; i < renderItems.size(); ++i) {
                 const auto& item = renderItems[i];
@@ -326,7 +342,8 @@ namespace nexo::system {
                     item.shader     == current.shader &&
                     item.mesh->getId()       == current.mesh->getId() &&
                     item.materialIndex   == current.materialIndex &&
-                    item.filterMask == current.filterMask;
+                    item.filterMask == current.filterMask &&
+                    item.textureBatchIndex == current.textureBatchIndex;
 
                 if (sameBatch) {
                     current.instanceCount++;
@@ -338,6 +355,7 @@ namespace nexo::system {
                     current.filterMask    = item.filterMask;
                     current.instanceOffset = item.instanceIndex;
                     current.instanceCount  = 1;
+                    current.textureBatchIndex = item.textureBatchIndex;
                 }
             }
 
@@ -354,12 +372,12 @@ namespace nexo::system {
             cmd.instanceOffset = batch.instanceOffset;
             cmd.instanceCount  = batch.instanceCount;
             cmd.instanced      = (batch.instanceCount > 1);
+            cmd.textureBatchIndex = batch.textureBatchIndex;
 
             cmd.setUniform("uInstanceOffset", static_cast<int>(batch.instanceOffset));
             drawCommands.push_back(cmd);
         }
 
-        //std::cout << " Draw count " << drawCommands.size() << " commands" << std::endl;
         for (auto &camera : renderContext.cameras) {
             camera.pipeline.setStorageBufferData(INSTANCE_BUFFER, instances.data(), sizeof(renderer::GpuInstanceData) * instances.size());
             camera.pipeline.setStorageBufferData(MATERIAL_BUFFER, gpuMaterials.data(), sizeof(renderer::GpuMaterial) * gpuMaterials.size());
