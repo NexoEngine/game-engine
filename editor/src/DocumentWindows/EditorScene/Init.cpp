@@ -32,6 +32,7 @@
 #include "renderPasses/GridPass.hpp"
 #include "renderPasses/MaskPass.hpp"
 #include "renderPasses/OutlinePass.hpp"
+#include "renderPasses/ShadowPass.hpp"
 #include "utils/EditorProps.hpp"
 
 namespace nexo::editor {
@@ -66,20 +67,24 @@ namespace nexo::editor {
                                                              static_cast<unsigned int>(m_contentSize.y));
         auto outlinePass        = std::make_shared<renderer::OutlinePass>();
         auto gridPass           = std::make_shared<renderer::GridPass>();
+        auto shadowPass         = std::make_shared<renderer::ShadowPass>(2048);
 
         const renderer::PassId forwardId = cameraComponent.pipeline.getFinalOutputPass();
         const renderer::PassId maskId    = cameraComponent.pipeline.addRenderPass(std::move(maskPass));
         const renderer::PassId outlineId = cameraComponent.pipeline.addRenderPass(std::move(outlinePass));
         const renderer::PassId gridId    = cameraComponent.pipeline.addRenderPass(std::move(gridPass));
+        const renderer::PassId shadowId    = cameraComponent.pipeline.addRenderPass(std::move(shadowPass));
         // Set up prerequisites
         cameraComponent.pipeline.addPrerequisite(outlineId, maskId);
         cameraComponent.pipeline.addPrerequisite(outlineId, forwardId);
         cameraComponent.pipeline.addPrerequisite(gridId, outlineId);
+        cameraComponent.pipeline.addPrerequisite(forwardId, shadowId);
 
         // Set up effects
         cameraComponent.pipeline.addEffect(forwardId, outlineId);
         cameraComponent.pipeline.addEffect(maskId, outlineId);
         cameraComponent.pipeline.addEffect(outlineId, gridId);
+        cameraComponent.pipeline.addEffect(shadowId, forwardId);
 
         // Set the final output pass explicitly
         cameraComponent.pipeline.setFinalOutputPass(gridId);
