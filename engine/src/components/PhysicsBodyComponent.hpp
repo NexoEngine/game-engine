@@ -16,6 +16,7 @@
 
 #include <Jolt/Jolt.h>
 #include <Jolt/Physics/Body/BodyID.h>
+#include <glm/gtc/quaternion.hpp>
 
 namespace nexo::components {
     struct PhysicsBodyComponent {
@@ -39,5 +40,7 @@ namespace nexo::components {
 
         JPH::BodyID bodyID;
         Type type{};
+        glm::vec3 lastPos{};
+        glm::quat lastRot{};
     };
 } // namespace nexo::components
