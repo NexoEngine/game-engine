@@ -36,6 +36,19 @@ namespace nexo::renderer {
         renderTarget->clearAttachment<int>(1, -1);
         auto &renderer3D = NxRenderer3D::get();
 
+        std::shared_ptr<NxFramebuffer> shadowMapFb = nullptr;
+        for (auto prereq : prerequisites) {
+            auto p = pipeline.getRenderPass(prereq);
+            if (p && p->getId() == Passes::SHADOW) {
+                shadowMapFb = p->getOutput();
+            }
+        }
+
+        constexpr int DIR_SHADOW_TEX_UNIT = 31;
+        if (shadowMapFb) {
+            shadowMapFb->bindDepthAsTexture(DIR_SHADOW_TEX_UNIT);
+        }
+
         std::vector<DrawCommand> &drawCommands = pipeline.getDrawCommands();
         int currentBatch = -1;
 
@@ -48,6 +61,8 @@ namespace nexo::renderer {
                 for (const auto &[name, value] : globalUniforms) {
                     cmd.uniforms[name] = value;
                 }
+                cmd.uniforms["uDirShadowTexIndex"] = UniformValue{DIR_SHADOW_TEX_UNIT};
+
                 cmd.execute();
             }
         }
