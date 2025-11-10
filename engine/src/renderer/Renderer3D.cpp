@@ -60,6 +60,11 @@ namespace nexo::renderer {
         pbr->bind();
         pbr->setUniformIntArray("uTexture", samplers.data(),
                                 NxRenderer3DStorage::maxTextureSlots);
+        int cubeSamplers[10];
+        for (int i = 0; i < 10; ++i) {
+            cubeSamplers[i] = 32 + i; // texture units 32..(32+10-1)
+        }
+        pbr->setUniformIntArray("uPointShadowMaps", cubeSamplers, 10);
         pbr->unbind();
 
         m_storage->textureSlotsBatch.clear();
