@@ -88,7 +88,7 @@ namespace nexo::editor {
         m_activeCamera = m_editorCamera;
 
         scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
-        scene.addEntity(LightFactory::createAmbientLight({1.0f, 1.0f, 1.0f}));
+        scene.addEntity(LightFactory::createAmbientLight({0.02f, 0.02f, 0.02f}));
 
         m_sceneUuid = app.getSceneManager().getScene(m_sceneId).getUuid();
         if (m_defaultScene) {
