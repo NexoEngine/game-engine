@@ -48,6 +48,7 @@ namespace nexo::renderer {
         // Load all required shaders with error handling
         safeLoadShader("Phong", "../resources/shaders/phong.glsl");
         safeLoadShader("PBR", "../resources/shaders/pbr.glsl");
+        safeLoadShader("Shadow depth", "../resources/shaders/shadow_depth.glsl");
         safeLoadShader("Outline pulse flat", "../resources/shaders/outline_pulse_flat.glsl");
         safeLoadShader("Outline pulse transparent flat", "../resources/shaders/outline_pulse_transparent_flat.glsl");
         safeLoadShader("Albedo unshaded transparent", "../resources/shaders/albedo_unshaded_transparent.glsl");
