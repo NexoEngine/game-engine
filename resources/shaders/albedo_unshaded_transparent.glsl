@@ -53,18 +53,28 @@ flat in int vEntityId;
 flat in int vMaterialIndex;
 
 struct Material {
-    vec4 albedoColor;
-    int albedoTexIndex; // Default: 0 (white texture)
-    vec4 specularColor;
-    int specularTexIndex; // Default: 0 (white texture)
-    vec3 emissiveColor;
-    int emissiveTexIndex; // Default: 0 (white texture)
-    float roughness;
-    int roughnessTexIndex; // Default: 0 (white texture)
-    float metallic;
-    int metallicTexIndex; // Default: 0 (white texture)
-    float opacity;
-    int opacityTexIndex; // Default: 0 (white texture)
+    vec4 albedoColor;           // 0..15
+
+    int albedoTexIndex;         // 16..19
+    int emissiveTexIndex;       // 20..23
+    int metallicTexIndex;       // 24..27
+    int roughnessTexIndex;      // 28..31
+
+    vec3 emissiveColor;         // 32..43
+    float metallic;             // 44..47
+
+    float roughness;            // 48..51
+    float ao;                   // 52..55
+    float normalScale;          // 56..59
+    float opacity;              // 60..63
+
+    int aoTexIndex;             // 64..67
+    int normalTexIndex;         // 68..71
+    int opacityTexIndex;        // 72..75
+    int ormTexIndex;            // 76..79
+
+    // Padding (automatically handled by std430)
+    int _pad0[4];                   // 80..95
 };
 
 layout(std430, binding = 3) buffer MaterialBuffer {
