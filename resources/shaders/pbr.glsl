@@ -27,6 +27,7 @@ layout(std140, binding = 1) uniform PerView {
 };
 
 uniform int uInstanceOffset; // per-draw, shared across instances in this batch
+uniform mat4 uDirLightViewProj;
 
 out vec3 vFragPos;
 out vec2 vTexCoord;
@@ -35,6 +36,7 @@ out vec3 vTangent;
 out vec3 vBitangent;
 flat out int vEntityId;
 flat out int vMaterialIndex;
+out vec4 vLightSpacePos;
 
 void main()
 {
@@ -52,6 +54,7 @@ void main()
     vNormal = normalize(normalMatrix * aNormal);
     vTangent = normalize(normalMatrix * aTangent);
     vBitangent = normalize(normalMatrix * aBitangent);
+    vLightSpacePos = uDirLightViewProj * worldPos;
 
     gl_Position = uViewProjection * vec4(vFragPos, 1.0);
 }
@@ -124,6 +127,7 @@ in vec3 vTangent;
 in vec3 vBitangent;
 flat in int vEntityId;
 flat in int vMaterialIndex;
+in vec4 vLightSpacePos;
 
 uniform sampler2D uTexture[32];
 
@@ -132,6 +136,8 @@ layout(std140, binding = 1) uniform PerView {
     vec3 uCamPos;
     float _pad0;   // padding to satisfy std140 (vec3 takes 16 bytes)
 };
+
+uniform int  uDirShadowTexIndex; // index into uTexture[] used for the shadow map
 
 struct Material {
     vec4 albedoColor;           // 0..15
@@ -341,6 +347,48 @@ vec3 CalcSpotLightPBR(Material material, SpotLight light, vec3 N, vec3 V, vec3 f
     return (kD * albedo / PI + specular) * radiance * NdotL;
 }
 
+float CalcShadowFactor(vec4 lightSpacePos, vec3 normal, vec3 lightDir)
+{
+    // From clip space to NDC
+    vec3 projCoords = lightSpacePos.xyz / lightSpacePos.w;
+
+    // NDC [-1,1] -> [0,1]
+    projCoords = projCoords * 0.5 + 0.5;
+
+    // Outside light frustum → fully lit
+    if (projCoords.z > 1.0 ||
+        projCoords.x < 0.0 || projCoords.x > 1.0 ||
+        projCoords.y < 0.0 || projCoords.y > 1.0)
+    {
+        return 1.0;
+    }
+
+    float currentDepth = projCoords.z;
+
+    // Depth bias to reduce acne
+    float cosTheta = max(dot(normalize(normal), normalize(-lightDir)), 0.0);
+    float bias = max(0.0015 * (1.0 - cosTheta), 0.0005);
+
+    // 5x5 PCF kernel for softer shadows
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(uTexture[uDirShadowTexIndex], 0);
+
+    for (int x = -2; x <= 2; ++x) {
+        for (int y = -2; y <= 2; ++y) {
+            vec2 offset = vec2(float(x), float(y)) * texelSize;
+            float closestDepth = texture(uTexture[uDirShadowTexIndex],
+                                         projCoords.xy + offset).r;
+            shadow += (currentDepth - bias > closestDepth ? 1.0 : 0.0);
+        }
+    }
+
+    shadow /= 25.0;
+
+    // 1 = fully lit, 0 = fully shadowed
+    return 1.0 - shadow;
+}
+
+
 void main()
 {
     Material material = uMaterials[vMaterialIndex];
@@ -398,7 +446,10 @@ void main()
     vec3 Lo = vec3(0.0);
 
     // Directional light
-    Lo += CalcDirLightPBR(material, uDirLight, N, V, albedo, metallic, roughness, ao);
+    vec3 Ldir = normalize(-uDirLight.direction);
+    float dirShadow = CalcShadowFactor(vLightSpacePos, N, Ldir);
+    vec3 dirContribution = CalcDirLightPBR(material, uDirLight, N, V, albedo, metallic, roughness, ao);
+    Lo += dirContribution * dirShadow;
 
     // Point lights
     for (int i = 0; i < uNumPointLights; i++) {
