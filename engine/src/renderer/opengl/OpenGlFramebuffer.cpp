@@ -148,25 +148,37 @@ namespace nexo::renderer {
      * - Sets texture parameters for filtering and wrapping.
      * - Attaches the texture to the framebuffer using `glFramebufferTexture2D`.
      */
-    static void attachDepthTexture(const unsigned int id, const unsigned int samples, const GLenum format,
-                                   const GLenum attachmentType, const unsigned int width, const unsigned int height)
-    {
-        const bool multisample = samples > 1;
-        if (multisample)
-            glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, static_cast<int>(samples), format,
-                                    static_cast<int>(width), static_cast<int>(height), GL_TRUE);
-        else {
-            glTexStorage2D(GL_TEXTURE_2D, 1, format, static_cast<int>(width), static_cast<int>(height));
+     static void attachDepthTexture(const unsigned int id, const unsigned int samples, const GLenum format,
+                                    const GLenum attachmentType, const unsigned int width, const unsigned int height,
+                                    const bool shadowSampler)
+     {
+         const bool multisample = samples > 1;
+         if (multisample) {
+             glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, static_cast<int>(samples), format,
+                                     static_cast<int>(width), static_cast<int>(height), GL_TRUE);
+         } else {
+             glTexStorage2D(GL_TEXTURE_2D, 1, format, static_cast<int>(width), static_cast<int>(height));
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        }
+             if (shadowSampler) {
+                 // Shadow-map friendly settings
+                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+                 float borderColor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+                 glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+             } else {
+                 // Default behavior for "normal" depth buffers
+                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+             }
+         }
 
-        glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, textureTarget(multisample), id, 0);
-    }
+         glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, textureTarget(multisample), id, 0);
+     }
+
 
     /**
      * @brief Checks if a texture format is a depth format.
@@ -249,8 +261,17 @@ namespace nexo::renderer {
             bindTexture(multisample, m_depthAttachment);
             int glDepthFormat = framebufferTextureFormatToOpenGlInternalFormat(m_depthAttachmentSpec.textureFormat);
             if (glDepthFormat == -1) THROW_EXCEPTION(NxFramebufferUnsupportedDepthFormat, "OPENGL");
-            attachDepthTexture(m_depthAttachment, m_specs.samples, glDepthFormat, GL_DEPTH_STENCIL_ATTACHMENT,
-                               m_specs.width, m_specs.height);
+
+            // Heuristic: depth-only FBO = likely shadow map
+            const bool isShadowMap = m_colorAttachmentsSpecs.empty();
+
+            attachDepthTexture(m_depthAttachment,
+                               m_specs.samples,
+                               glDepthFormat,
+                               GL_DEPTH_STENCIL_ATTACHMENT,
+                               m_specs.width,
+                               m_specs.height,
+                               isShadowMap);
         }
 
         if (m_colorAttachments.size() > 1) {
