@@ -34,12 +34,17 @@ namespace nexo::renderer {
         NxRenderCommand::setClearColor(pipeline.getCameraClearColor());
         NxRenderCommand::clear();
         renderTarget->clearAttachment<int>(1, -1);
-
-        NxRenderer3D::get().bindTextures();
+        auto &renderer3D = NxRenderer3D::get();
 
         std::vector<DrawCommand> &drawCommands = pipeline.getDrawCommands();
+        int currentBatch = -1;
+
         for (auto &cmd : drawCommands) {
             if (cmd.filterMask & F_FORWARD_PASS) {
+                if (static_cast<int>(cmd.textureBatchIndex) != currentBatch) {
+                    renderer3D.bindTextureBatch(cmd.textureBatchIndex);
+                    currentBatch = static_cast<int>(cmd.textureBatchIndex);
+                }
                 for (const auto &[name, value] : globalUniforms) {
                     cmd.uniforms[name] = value;
                 }
