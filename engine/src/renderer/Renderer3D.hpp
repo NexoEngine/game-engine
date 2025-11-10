@@ -31,73 +31,6 @@ namespace nexo::renderer {
         int entityID;
     };
 
-    struct NxIndexedMaterial {
-        glm::vec4 albedoColor   = glm::vec4(1.0f);
-        int albedoTexIndex      = 0; // Default: 0 (white texture)
-        glm::vec4 specularColor = glm::vec4(1.0f);
-        int specularTexIndex    = 0; // Default: 0 (white texture)
-        glm::vec3 emissiveColor = glm::vec3(0.0f);
-        int emissiveTexIndex    = 0; // Default: 0 (white texture)
-        float roughness         = 0.5f;
-        int roughnessTexIndex   = 0; // Default: 0 (white texture)
-        float metallic          = 0.0f;
-        int metallicTexIndex    = 0; // Default: 0 (white texture)
-        float opacity           = 1.0f;
-        int opacityTexIndex     = 0; // Default: 0 (white texture)
-    };
-
-    struct NxMaterial {
-        glm::vec4 albedoColor   = glm::vec4(1.0f);
-        glm::vec4 specularColor = glm::vec4(1.0f);
-        glm::vec3 emissiveColor = glm::vec3(0.0f);
-
-        float roughness = 0.0f; // 0 = smooth, 1 = rough
-        float metallic  = 0.0f; // 0 = non-metal, 1 = fully metallic
-        float opacity   = 1.0f; // 1 = opaque, 0 = fully transparent
-
-        std::shared_ptr<NxTexture2D> albedoTexture = nullptr;
-        std::shared_ptr<NxTexture2D> normalMap     = nullptr;
-        std::shared_ptr<NxTexture2D> metallicMap   = nullptr;
-        std::shared_ptr<NxTexture2D> roughnessMap  = nullptr;
-        std::shared_ptr<NxTexture2D> emissiveMap   = nullptr;
-
-        std::string shader;
-    };
-
-    // TODO: Add stats for the meshes
-    struct NxRenderer3DStats {
-        unsigned int drawCalls = 0;
-        unsigned int cubeCount = 0;
-
-        /**
-         * @brief Calculates the total number of vertices used in the current rendering session.
-         *
-         * This method computes the total vertex count based on the number of cubes rendered.
-         * Each cube consists of 8 vertices, so the total vertex count is derived by multiplying
-         * the cube count by 8.
-         *
-         * @return The total number of vertices used in the current rendering session.
-         */
-        [[nodiscard]] unsigned int getTotalVertexCount() const
-        {
-            return cubeCount * 8;
-        }
-
-        /**
-         * @brief Calculates the total number of indices used in the current rendering session.
-         *
-         * This method computes the total index count based on the number of cubes rendered.
-         * Each cube consists of 36 indices (6 faces, 2 triangles per face, 3 indices per triangle),
-         * so the total index count is derived by multiplying the cube count by 36.
-         *
-         * @return The total number of indices used in the current rendering session.
-         */
-        [[nodiscard]] unsigned int getTotalIndexCount() const
-        {
-            return cubeCount * 36;
-        }
-    };
-
     /**
      * @struct NxRenderer3DStorage
      * @brief Holds internal data and resources used by NxRenderer3D.
@@ -113,30 +46,13 @@ namespace nexo::renderer {
      * - `stats`: Rendering statistics.
      */
     struct NxRenderer3DStorage {
-        const unsigned int maxCubes                   = 10000;
-        const unsigned int maxVertices                = maxCubes * 8;
-        const unsigned int maxIndices                 = maxCubes * 36;
         static constexpr unsigned int maxTextureSlots = 32;
-        static constexpr unsigned int maxTransforms   = 1024;
-
-        glm::vec3 cameraPosition;
-
-        std::shared_ptr<NxShader> currentSceneShader = nullptr;
-        std::shared_ptr<NxVertexArray> vertexArray;
-        std::shared_ptr<NxVertexBuffer> vertexBuffer;
-        std::shared_ptr<NxIndexBuffer> indexBuffer;
         std::shared_ptr<NxTexture2D> whiteTexture;
 
-        unsigned int indexCount = 0;
-        std::array<NxVertex, 80000> vertexBufferBase;
-        std::array<unsigned int, 360000> indexBufferBase;
-        NxVertex* vertexBufferPtr    = nullptr;
-        unsigned int* indexBufferPtr = nullptr;
-
-        std::array<std::shared_ptr<NxTexture2D>, maxTextureSlots> textureSlots;
-        unsigned int textureSlotIndex = 1;
-
-        NxRenderer3DStats stats;
+        std::vector<std::array<std::shared_ptr<NxTexture2D>, maxTextureSlots>> textureSlotsBatch;
+        std::vector<unsigned int> nbTexturesInBatch;
+        unsigned int currentTextureBatchIndex = 0;
+        unsigned int currentTextureBindedIndex = 0;
     };
 
     /**
@@ -212,6 +128,8 @@ namespace nexo::renderer {
          * - NxRendererNotInitialized if the renderer is not initialized.
          */
         void bindTextures() const;
+        void bindTextureBatch(unsigned int batchIndex) const;
+        void bindNextTextureBatch() const;
 
         /**
          * @brief Unbinds all currently bound textures and resets the texture slot index.
@@ -224,33 +142,6 @@ namespace nexo::renderer {
          * - NxRendererNotInitialized if the renderer is not initialized.
          */
         void unbindTextures() const;
-
-        /**
-         * @brief Begins a new 3D rendering scene.
-         *
-         * Sets up the view-projection matrix and camera position for rendering.
-         * Resets internal storage pointers for batching vertices and indices.
-         *
-         * @param viewProjection The combined view and projection matrix.
-         * @param cameraPos The position of the camera in the scene.
-         *
-         * Throws:
-         * - NxRendererNotInitialized if the renderer is not initialized.
-         * - NxRendererSceneLifeCycleFailure if called without proper initialization.
-         */
-        void beginScene(const glm::mat4& viewProjection, const glm::vec3& cameraPos, const std::string& shader = "");
-
-        /**
-         * @brief Ends the current 3D rendering scene.
-         *
-         * Uploads vertex and index data to the GPU, flushes the rendering pipeline,
-         * and resets buffers for the next frame.
-         *
-         * Throws:
-         * - NxRendererNotInitialized if the renderer is not initialized.
-         * - NxRendererSceneLifeCycleFailure if no scene was started with `beginScene()`.
-         */
-        void endScene() const;
 
         /**
          * @brief Returns a shared Vertex Array Object (VAO) for rendering a cube.
@@ -301,43 +192,6 @@ namespace nexo::renderer {
          * @return Shared pointer to a pre-configured sphere VAO.
          */
         static std::shared_ptr<NxVertexArray> getSphereVAO(unsigned int nbSubdivision);
-        /**
-         * @brief Resets rendering statistics.
-         *
-         * Clears the draw call and cube counters in `NxRenderer3DStats`.
-         *
-         * Throws:
-         * - NxRendererNotInitialized if the renderer is not initialized.
-         */
-        void resetStats() const;
-
-        /**
-         * @brief Retrieves the current rendering statistics.
-         *
-         * @return A `NxRenderer3DStats` struct containing the number of draw calls and
-         *         cubes rendered.
-         *
-         * Throws:
-         * - NxRendererNotInitialized if the renderer is not initialized.
-         */
-        [[nodiscard]] NxRenderer3DStats getStats() const;
-
-        /**
-         * @brief Provides access to the current shader used for rendering.
-         *
-         * This method returns a shared pointer to the `NxShader` instance currently
-         * bound for rendering operations. It allows users to modify shader uniforms
-         * or inspect shader properties as needed.
-         *
-         * @return A shared pointer to the current `NxShader`.
-         *
-         * Throws:
-         * - NxRendererNotInitialized if the renderer is not initialized.
-         */
-        [[nodiscard]] std::shared_ptr<NxShader>& getShader() const
-        {
-            return m_storage->currentSceneShader;
-        }
 
         /**
          * @brief Provides access to the internal storage of the renderer.
@@ -365,31 +219,10 @@ namespace nexo::renderer {
          */
         [[nodiscard]] int getTextureIndex(const std::shared_ptr<NxTexture2D>& texture) const;
 
+        void switchToNextTextureBatch();
+
        private:
         std::shared_ptr<NxRenderer3DStorage> m_storage;
         bool m_renderingScene = false;
-
-        /**
-         * @brief Flushes the current batched data to the GPU and issues the draw call.
-         *
-         * Binds all active textures, draws indexed geometry, updates statistics, and unbinds resources.
-         */
-        void flush() const;
-
-        /**
-         * @brief Flushes the current batch and resets batching pointers.
-         */
-        void flushAndReset() const;
-
-        /**
-         * @brief Sets material-related uniforms in the texture shader.
-         *
-         * Updates uniforms for albedo, specular, emissive, roughness, metallic, and opacity properties.
-         *
-         * @param material The material whose properties are to be set.
-         *
-         * @throws NxRendererNotInitialized if the renderer is not initialized.
-         */
-        void setMaterialUniforms(const NxIndexedMaterial& material) const;
     };
 } // namespace nexo::renderer
