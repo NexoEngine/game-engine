@@ -41,6 +41,7 @@ namespace nexo::system {
         uint32_t instanceIndex;
 
         glm::mat4 modelMatrix;
+        unsigned int textureBatchIndex;
     };
 
     struct RenderBatch {
@@ -51,6 +52,7 @@ namespace nexo::system {
 
         uint32_t instanceOffset;
         uint32_t instanceCount;
+        unsigned int textureBatchIndex;
     };
 
     /**
