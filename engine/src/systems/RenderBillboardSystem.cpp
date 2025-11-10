@@ -271,11 +271,6 @@ namespace nexo::system {
                 cmd.instanceCount  = batch.instanceCount;
                 cmd.instanced      = (batch.instanceCount > 1);
 
-                if (cmd.instanced) {
-                    LOG(NEXO_INFO, "Billboard instanced batch detected (instances = {})",
-                        batch.instanceCount);
-                }
-
                 cmd.setUniform("uInstanceOffset", static_cast<int>(batch.instanceOffset));
                 drawCommands.push_back(cmd);
             }
