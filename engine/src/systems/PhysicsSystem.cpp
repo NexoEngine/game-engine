@@ -14,6 +14,12 @@
 
 #include "PhysicsSystem.hpp"
 #include "SystemProfiler.hpp"
+#include "Application.hpp"
+#include "components/PhysicsBodyComponent.hpp"
+#include "components/Transform.hpp"
+#include <Jolt/Core/Core.h>
+#include <Jolt/Physics/Body/BodyID.h>
+#include <Jolt/Physics/Body/BodyType.h>
 #include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
 
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
@@ -22,6 +28,9 @@
 #include <Jolt/Physics/Collision/Shape/RotatedTranslatedShape.h>
 
 #include <Jolt/Physics/Collision/Shape/CylinderShape.h>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/norm.hpp>
+
 #include <Jolt/RegisterTypes.h>
 #include <math/Bounds.hpp>
 
@@ -122,8 +131,8 @@ namespace nexo::system {
                             objectLayerPairFilter);
         physicsSystem->SetGravity(JPH::Vec3(0, -9.81f, 0));
 
-        bodyInterface     = &physicsSystem->GetBodyInterface();
-        bodyLockInterface = &physicsSystem->GetBodyLockInterface();
+        bodyInterface = &physicsSystem->GetBodyInterfaceNoLock();
+        bodyLockInterface = &physicsSystem->GetBodyLockInterfaceNoLock();
     }
 
     void PhysicsSystem::update()
@@ -138,18 +147,44 @@ namespace nexo::system {
 
         m_lastPhysicsTime = currentTime;
 
-        constexpr int collisionSteps = 5;
+        constexpr int collisionSteps = 2;
         physicsSystem->Update(fixedTimestep, collisionSteps, tempAllocator, jobSystem);
 
-        for (const ecs::Entity entity : entities) {
-            auto& transform         = getComponent<components::TransformComponent>(entity);
-            const auto& physicsBody = getComponent<components::PhysicsBodyComponent>(entity);
+        const unsigned int numActiveDynamic = physicsSystem->GetNumActiveBodies(JPH::EBodyType::RigidBody);
+        if (numActiveDynamic == 0)
+            return;
 
-            const JPH::Vec3 pos = bodyInterface->GetPosition(physicsBody.bodyID);
-            transform.pos       = glm::vec3(pos.GetX(), pos.GetY(), pos.GetZ());
+        JPH::BodyIDVector activeBodies;
+        activeBodies.reserve(numActiveDynamic);
+        physicsSystem->GetActiveBodies(JPH::EBodyType::RigidBody, activeBodies);
 
-            const JPH::Quat rot = bodyInterface->GetRotation(physicsBody.bodyID);
-            transform.quat      = glm::quat(rot.GetW(), rot.GetX(), rot.GetY(), rot.GetZ());
+        auto &app = Application::getInstance();
+
+        for (JPH::BodyID id : activeBodies) {
+            ecs::Entity e = static_cast<ecs::Entity>(bodyInterface->GetUserData(id));
+
+            auto &physicsBody = getComponent<components::PhysicsBodyComponent>(e);
+            JPH::Vec3 pos;
+            JPH::Quat rot;
+            bodyInterface->GetPositionAndRotation(id, pos, rot);
+
+            glm::vec3 newPos(pos.GetX(), pos.GetY(), pos.GetZ());
+            glm::quat newRot(rot.GetW(), rot.GetX(), rot.GetY(), rot.GetZ());
+
+            // 4) Epsilon check
+            constexpr float posEps = 1e-4f;
+            constexpr float rotEps = 1e-4f;
+            bool movedPos = glm::length2(newPos - physicsBody.lastPos) > posEps * posEps;
+            bool movedRot = 1.0f - std::abs(glm::dot(newRot, physicsBody.lastRot)) > rotEps;
+            if (!movedPos && !movedRot) continue;
+
+            auto &transform = getComponent<components::TransformComponent>(e);
+            transform.pos  = newPos;
+            transform.quat = newRot;
+            transform.dirty = true;
+            physicsBody.lastPos = newPos;
+            physicsBody.lastRot = newRot;
+            app.markHierarchyDirty(e);
         }
     }
 
@@ -226,9 +261,11 @@ namespace nexo::system {
         const JPH::Vec3 position(transform.pos.x, transform.pos.y, transform.pos.z);
         const JPH::Quat rotation(transform.quat.x, transform.quat.y, transform.quat.z, transform.quat.w);
 
-        const JPH::BodyCreationSettings bodySettings(
+        JPH::BodyCreationSettings bodySettings(
             shape, position, rotation, motionType,
             motionType == JPH::EMotionType::Dynamic ? Layers::MOVING : Layers::NON_MOVING);
+
+        bodySettings.mUserData = static_cast<JPH::uint64>(entity);
 
         const JPH::Body* body = bodyInterface->CreateBody(bodySettings);
         if (!body) {
