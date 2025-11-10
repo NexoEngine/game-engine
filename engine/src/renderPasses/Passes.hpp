@@ -17,5 +17,5 @@
 #include "RenderPass.hpp"
 
 namespace nexo::renderer {
-    enum Passes : PassId { FORWARD, GRID, MASK, OUTLINE, SHADOW, NB_PASSES };
+    enum Passes : PassId { FORWARD, GRID, MASK, OUTLINE, SHADOW, POINT_SHADOW, NB_PASSES };
 }
