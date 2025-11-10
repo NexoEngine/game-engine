@@ -80,14 +80,6 @@ namespace nexo::assets {
         LOG(NEXO_INFO, "  - {} embedded textures", scene->mNumTextures);
         LOG(NEXO_INFO, "  - {} meshes", scene->mNumMeshes);
 
-        if (scene->mNumTextures == 0) {
-            if (std::holds_alternative<ImporterFileInput>(ctx.input)) {
-                const auto& fileInput = std::get<ImporterFileInput>(ctx.input);
-                LOG(NEXO_WARN, "No embedded textures in file: {}", fileInput.filePath.string());
-                LOG(NEXO_WARN, "File extension: {}", fileInput.filePath.extension().string());
-            }
-        }
-
         loadSceneEmbeddedTextures(ctx, scene);
         loadSceneMaterials(ctx, scene);
 
@@ -106,9 +98,6 @@ namespace nexo::assets {
         // Load embedded textures
         for (unsigned int i = 0; i < scene->mNumTextures; ++i) {
             aiTexture* texture = scene->mTextures[i];
-            LOG(NEXO_INFO, "Embedded texture {}: filename='{}', {}x{}, hint='{}'",
-                i, texture->mFilename.C_Str(), texture->mWidth, texture->mHeight,
-                texture->achFormatHint);
 
             auto loadedTexture = loadEmbeddedTexture(ctx, texture);
             if (loadedTexture) {
@@ -340,22 +329,18 @@ namespace nexo::assets {
 
             // Enhanced PBR Material Property Loading
             aiColor4D color;
-            bool hasBaseColor = false;
 
             // Priority 1: glTF base color first (modern PBR)
             if (material->Get("$mat.gltf.pbrMetallicRoughness.baseColorFactor", 0, 0, color) == AI_SUCCESS) {
                 materialComponent->albedoColor = {color.r, color.g, color.b, color.a};
-                hasBaseColor = true;
             }
             // Priority 2: Standard base color
             else if (material->Get(AI_MATKEY_BASE_COLOR, color) == AI_SUCCESS) {
                 materialComponent->albedoColor = {color.r, color.g, color.b, color.a};
-                hasBaseColor = true;
             }
             // Priority 3: Fallback to diffuse for legacy materials
             else if (material->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) {
                 materialComponent->albedoColor = {color.r, color.g, color.b, color.a};
-                hasBaseColor = true;
             }
 
             // Enhanced Metallic Factor Loading
@@ -464,7 +449,6 @@ namespace nexo::assets {
 
                     // Check for embedded textures first (GLB files)
                     if (cStr[0] == '*') {
-                        LOG(NEXO_DEBUG, "Loading embedded texture by index: {}", cStr);
                         // Extract index from "*0", "*1", etc.
                         int embeddedIndex = std::atoi(cStr + 1);
                         if (embeddedIndex >= 0 && embeddedIndex < static_cast<int>(scene->mNumTextures)) {
@@ -479,7 +463,6 @@ namespace nexo::assets {
                             }
                         }
                     } else if (scene->GetEmbeddedTexture(cStr)) {
-                        LOG(NEXO_DEBUG, "Loading embedded texture by name: {}", cStr);
                         if (const auto it = m_textures.find(cStr); it != m_textures.end()) {
                             return it->second;
                         }
@@ -497,8 +480,6 @@ namespace nexo::assets {
                         // External file (GLTF workflow) - your existing code
                         const std::filesystem::path texturePath = (modelDirectory / cStr).lexically_normal();
                         const auto texturePathStr = texturePath.string();
-
-                        LOG(NEXO_DEBUG, "Loading external texture: {}", texturePathStr);
 
                         AssetImporter assetImporter;
                         AssetImporterContext textureCtx;
