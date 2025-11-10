@@ -76,12 +76,19 @@ struct DirectionalLight {
 
 struct PointLight {
     vec3 position;
-    float _pad1;  // pad
+    float _pad1;      // padding
+
     vec4 color;
+
     float constant;
     float linear;
     float quadratic;
-    float _pad2;  // pad to 16-byte multiple
+    float farPlane;   // NEW: used for shadow depth normalization
+
+    int  hasShadow;      // NEW: 0/1
+    int  shadowMapIndex; // NEW: index into uPointShadowMaps[]
+    int  _pad2;          // padding to 16-byte multiple
+    int  _pad3;          // padding
 };
 
 struct SpotLight {
@@ -130,6 +137,7 @@ flat in int vMaterialIndex;
 in vec4 vLightSpacePos;
 
 uniform sampler2D uTexture[32];
+uniform samplerCube uPointShadowMaps[MAX_POINT_LIGHTS];
 
 layout(std140, binding = 1) uniform PerView {
     mat4 uViewProjection;
@@ -388,6 +396,32 @@ float CalcShadowFactor(vec4 lightSpacePos, vec3 normal, vec3 lightDir)
     return 1.0 - shadow;
 }
 
+float CalcPointShadow(PointLight light, vec3 fragPos)
+{
+    if (light.hasShadow == 0) {
+        return 1.0; // no shadowing for this light
+    }
+
+    vec3  lightToFrag = fragPos - light.position;
+    float currentDist = length(lightToFrag);
+
+    // normalize direction for cube sampling
+    vec3 dir = lightToFrag / currentDist;
+
+    // sample depth (0..1) from cube, then rescale to world units
+    float closestDist = texture(uPointShadowMaps[light.shadowMapIndex], dir).r;
+    closestDist *= light.farPlane;
+
+    // bias to reduce acne (tweak as needed)
+    float bias = 0.05;
+
+    float shadow = currentDist - bias > closestDist ? 1.0 : 0.0;
+
+    // 1 = lit, 0 = fully shadowed
+    return 1.0 - shadow;
+}
+
+
 
 void main()
 {
@@ -453,7 +487,9 @@ void main()
 
     // Point lights
     for (int i = 0; i < uNumPointLights; i++) {
-        Lo += CalcPointLightPBR(material, uPointLights[i], N, V, vFragPos, albedo, metallic, roughness, ao);
+        float shadow = CalcPointShadow(uPointLights[i], vFragPos);
+        vec3 contrib = CalcPointLightPBR(material, uPointLights[i], N, V, vFragPos, albedo, metallic, roughness, ao);
+        Lo += contrib * shadow;
     }
 
     // Spot lights

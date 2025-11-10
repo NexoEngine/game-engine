@@ -45,11 +45,18 @@ namespace nexo::renderer {
     struct GpuPointLight {
         glm::vec3 position;
         float _pad1;
+
         glm::vec4 color;
+
         float constant;
         float linear;
         float quadratic;
-        float _pad2;         // pad to multiple of 16 bytes
+        float farPlane;
+
+        int hasShadow;
+        int shadowMapIndex;
+        int _pad2;
+        int _pad3;
     };
 
     struct GpuSpotLight {
@@ -128,6 +135,7 @@ namespace nexo::renderer {
         // Explicit padding to match std430
         int _pad0[4];                   // 80..95
     };
+
 
     #define NB_RESERVED "NB_RESERVED"
 
