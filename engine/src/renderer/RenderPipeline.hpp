@@ -15,6 +15,7 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include <array>
 #include "DrawCommand.hpp"
 #include "Framebuffer.hpp"
 #include "RenderPass.hpp"
@@ -22,6 +23,13 @@
 #include "ShaderUniformBuffer.hpp"
 
 namespace nexo::renderer {
+
+    struct GpuPointShadowMap {
+        unsigned int depthCube = 0;
+        unsigned int fbo       = 0;
+        float        farPlane  = 25.0f;
+        bool         inUse     = false;
+    };
 
     class RenderPipeline {
        public:
@@ -351,6 +359,17 @@ namespace nexo::renderer {
         void appendStorageBufferData(const std::string &name, void *data, unsigned int size);
         unsigned int getStorageBufferSize(const std::string &name);
 
+        struct RendererPointLight {
+            glm::vec3 position;
+            float farPlane;
+        };
+        void setupShadowMaps();
+        GpuPointShadowMap &getShadowMap(unsigned int index);
+        void addPointLight(const glm::vec3 &pos, float farPlane);
+        void resetPointLigths();
+        unsigned int getNbPointLights() const;
+        const RendererPointLight &getPointLight(unsigned int index) const;
+
        private:
         std::vector<DrawCommand> m_drawCommands;
         glm::vec4 m_cameraClearColor{};
@@ -364,6 +383,12 @@ namespace nexo::renderer {
         std::unordered_map<std::string, std::shared_ptr<renderer::NxShaderUniformBuffer>> m_ubos;
         std::unordered_map<std::string, std::shared_ptr<renderer::NxShaderStorageBuffer>> m_ssbos;
         std::unordered_map<std::string, unsigned int> m_bufferBindingLocations;
+
+        static constexpr unsigned int POINT_SHADOW_SIZE = 1024;
+        std::array<GpuPointShadowMap, 10> pointShadowMaps;
+        std::array<RendererPointLight, 10> pointLights;
+        unsigned int nbPointLights = 0;
+
 
         // For generating unique IDs
         PassId nextPassId = 0;

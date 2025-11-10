@@ -15,7 +15,9 @@
 #include "CameraFactory.hpp"
 
 #include <utility>
+#include <array>
 #include "Application.hpp"
+#include "RenderPipeline.hpp"
 #include "ShaderStorageBuffer.hpp"
 #include "ShaderUniformBuffer.hpp"
 #include "components/Camera.hpp"
@@ -59,6 +61,7 @@ namespace nexo {
         camera.pipeline.addUniformBuffer(LIGHT_UBO, renderer::RESERVED_BINDING_POINTS.at(LIGHT_UBO), lightUBO);
         auto materialSSBO = renderer::NxShaderStorageBuffer::create(sizeof(renderer::GpuMaterial) * 1000);
         camera.pipeline.addStorageBuffer(MATERIAL_BUFFER, renderer::RESERVED_BINDING_POINTS.at(MATERIAL_BUFFER), materialSSBO);
+        camera.pipeline.setupShadowMaps();
 
         ecs::Entity newCamera = Application::m_coordinator->createEntity();
         Application::m_coordinator->addComponent<components::TransformComponent>(newCamera, transform);
