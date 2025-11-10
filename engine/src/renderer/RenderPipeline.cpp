@@ -315,4 +315,60 @@ namespace nexo::renderer {
         if (m_ssbos.find(name) == m_ssbos.end()) return 0;
         return m_ssbos[name]->getSize();
     }
+
+    void RenderPipeline::setupShadowMaps()
+    {
+        for (int i = 0; i < 10; ++i) {
+            auto& sm = pointShadowMaps[i];
+            glGenTextures(1, &sm.depthCube);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, sm.depthCube);
+
+            for (int face = 0; face < 6; ++face) {
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face,
+                             0,
+                             GL_DEPTH_COMPONENT24,
+                             renderer::RenderPipeline::POINT_SHADOW_SIZE,
+                             renderer::RenderPipeline::POINT_SHADOW_SIZE,
+                             0,
+                             GL_DEPTH_COMPONENT,
+                             GL_FLOAT,
+                             nullptr);
+            }
+
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+            float borderColor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+            glTexParameterfv(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+            glGenFramebuffers(1, &sm.fbo);
+        }
+    }
+
+    GpuPointShadowMap &RenderPipeline::getShadowMap(unsigned int index)
+    {
+        return pointShadowMaps[index];
+    }
+
+    void RenderPipeline::addPointLight(const glm::vec3 &pos, float farPlane)
+    {
+        pointLights[nbPointLights++] = {pos, farPlane};
+    }
+
+    void RenderPipeline::resetPointLigths()
+    {
+        nbPointLights = 0;
+    }
+
+    unsigned int RenderPipeline::getNbPointLights() const
+    {
+        return nbPointLights;
+    }
+
+    const RenderPipeline::RendererPointLight &RenderPipeline::getPointLight(unsigned int index) const
+    {
+        return pointLights[index];
+    }
 } // namespace nexo::renderer
