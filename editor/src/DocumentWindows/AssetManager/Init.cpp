@@ -43,43 +43,43 @@ namespace nexo::editor {
             importer.importAsset<assets::Texture>(assets::AssetLocation("logo_nexo_bg@Random"), fileInput);
         }
         // Models
-        {
-            assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Avocado/Avocado.gltf");
-            assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Avocado@Models"), fileInput);
-        }
-        {
-            assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/corvette/scene.gltf");
-            assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::corvette@Models"), fileInput);
-        }
-        {
-            assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/diablo/scene.gltf");
-            assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::diablo@Models"), fileInput);
-        }
-        {
-            assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/study_room/scene.gltf");
-            assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::study_room@Models"), fileInput);
-        }
-        {
-            assets::AssetImporter importer;
-            std::filesystem::path path =
-                Path::resolvePathRelativeToExe("../resources/models/SmilingFace/SmilingFace.gltf");
-            assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::SmilingFace@Models"), fileInput);
-        }
-        {
-            assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Sword/scene.gltf");
-            assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Sword@Models"), fileInput);
-        }
+        // {
+        //     assets::AssetImporter importer;
+        //     std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Avocado/Avocado.gltf");
+        //     assets::ImporterFileInput fileInput{path};
+        //     importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Avocado@Models"), fileInput);
+        // }
+        // {
+        //     assets::AssetImporter importer;
+        //     std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/corvette/scene.gltf");
+        //     assets::ImporterFileInput fileInput{path};
+        //     importer.importAsset<assets::Model>(assets::AssetLocation("my_package::corvette@Models"), fileInput);
+        // }
+        // {
+        //     assets::AssetImporter importer;
+        //     std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/diablo/scene.gltf");
+        //     assets::ImporterFileInput fileInput{path};
+        //     importer.importAsset<assets::Model>(assets::AssetLocation("my_package::diablo@Models"), fileInput);
+        // }
+        // {
+        //     assets::AssetImporter importer;
+        //     std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/study_room/scene.gltf");
+        //     assets::ImporterFileInput fileInput{path};
+        //     importer.importAsset<assets::Model>(assets::AssetLocation("my_package::study_room@Models"), fileInput);
+        // }
+        // {
+        //     assets::AssetImporter importer;
+        //     std::filesystem::path path =
+        //         Path::resolvePathRelativeToExe("../resources/models/SmilingFace/SmilingFace.gltf");
+        //     assets::ImporterFileInput fileInput{path};
+        //     importer.importAsset<assets::Model>(assets::AssetLocation("my_package::SmilingFace@Models"), fileInput);
+        // }
+        // {
+        //     assets::AssetImporter importer;
+        //     std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Sword/scene.gltf");
+        //     assets::ImporterFileInput fileInput{path};
+        //     importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Sword@Models"), fileInput);
+        // }
         // Demo Models
         {
             assets::AssetImporter importer;
