@@ -20,6 +20,26 @@
 #include "renderPasses/GPUResources.hpp"
 
 namespace nexo::system {
+    static glm::mat4 buildLightViewProjectionMatrix(const components::DirectionalLightComponent &dirLight)
+    {
+        const glm::vec3 sceneCenter(0.0f);
+        const float sceneRadius = 20.0f;
+
+        const glm::vec3 lightDir = glm::normalize(dirLight.direction);
+        const glm::vec3 lightPos = sceneCenter - lightDir * sceneRadius * 2.0f;
+
+        glm::mat4 lightView = glm::lookAt(lightPos,
+                                          sceneCenter,
+                                          glm::vec3(0.0f, 1.0f, 0.0f));
+
+        float orthoSize = sceneRadius * 0.75f;
+        glm::mat4 lightProj = glm::ortho(-orthoSize, orthoSize,
+                                         -orthoSize, orthoSize,
+                                         0.1f, sceneRadius * 4.0f);
+
+        return lightProj * lightView;
+    }
+
     renderer::GpuDirectionalLight DirectionalLightsSystem::update()
     {
         auto &renderContext = getSingleton<components::RenderContext>();
@@ -54,6 +74,12 @@ namespace nexo::system {
         renderer::GpuDirectionalLight gpuDirLight{};
         gpuDirLight.color = glm::vec4(dirLight.color, 1.0f);
         gpuDirLight.direction = dirLight.direction;
+
+        const auto lightVp = buildLightViewProjectionMatrix(dirLight);
+        for (auto &camera : renderContext.cameras) {
+            camera.pipeline.setGlobalUniform("uDirLightViewProj", lightVp);
+            camera.pipeline.setGlobalUniform("uDirShadowTexIndex", 31);
+        }
         return gpuDirLight;
     }
 } // namespace nexo::system
