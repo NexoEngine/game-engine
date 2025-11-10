@@ -31,20 +31,6 @@ namespace nexo::renderer {
     {
         m_storage = std::make_shared<NxRenderer3DStorage>();
 
-        m_storage->vertexArray  = createVertexArray();
-        m_storage->vertexBuffer = createVertexBuffer(m_storage->maxVertices * sizeof(NxVertex));
-
-        // Layout
-        const NxBufferLayout cubeVertexBufferLayout = {
-            {NxShaderDataType::FLOAT3, "aPos"},       {NxShaderDataType::FLOAT2, "aTexCoord"},
-            {NxShaderDataType::FLOAT3, "aNormal"},    {NxShaderDataType::FLOAT3, "aTangent"},
-            {NxShaderDataType::FLOAT3, "aBiTangent"}, {NxShaderDataType::INT, "aEntityID"}};
-        m_storage->vertexBuffer->setLayout(cubeVertexBufferLayout);
-        m_storage->vertexArray->addVertexBuffer(m_storage->vertexBuffer);
-
-        m_storage->indexBuffer = createIndexBuffer();
-        m_storage->vertexArray->setIndexBuffer(m_storage->indexBuffer);
-
         // Texture
         m_storage->whiteTexture       = NxTexture2D::create(1, 1);
         unsigned int whiteTextureData = 0xffffffff;
@@ -70,14 +56,21 @@ namespace nexo::renderer {
                                                       NxRenderer3DStorage::maxTextureSlots);
         albedoUnshadedTransparent->unbind();
 
-        const auto pbr = ShaderLibrary::getInstance().get("PBR"); // or whatever its name is
+        const auto pbr = ShaderLibrary::getInstance().get("PBR");
         pbr->bind();
         pbr->setUniformIntArray("uTexture", samplers.data(),
                                 NxRenderer3DStorage::maxTextureSlots);
-        // or use NxShaderUniforms::TEXTURE_SAMPLER if that maps to "uTexture[0]"
         pbr->unbind();
 
-        m_storage->textureSlots[0] = m_storage->whiteTexture;
+        m_storage->textureSlotsBatch.clear();
+        m_storage->textureSlotsBatch.resize(1);
+        m_storage->textureSlotsBatch[0][0] = m_storage->whiteTexture;
+
+        m_storage->nbTexturesInBatch.clear();
+        m_storage->nbTexturesInBatch.push_back(1);
+
+        m_storage->currentTextureBatchIndex  = 0;
+        m_storage->currentTextureBindedIndex = 0;
 
         LOG(NEXO_DEV, "NxRenderer3D initialized");
     }
@@ -88,135 +81,99 @@ namespace nexo::renderer {
         m_storage.reset();
     }
 
+    void NxRenderer3D::bindTextureBatch(unsigned int batchIndex) const
+    {
+        if (batchIndex >= m_storage->textureSlotsBatch.size()) {
+            LOG(NEXO_ERROR, "Trying to bind invalid texture batch {}", batchIndex);
+            return;
+        }
+
+        m_storage->currentTextureBindedIndex = batchIndex;
+        unsigned int maxTextureSlot = m_storage->nbTexturesInBatch[batchIndex];
+        for (unsigned int i = 0; i < maxTextureSlot; ++i) {
+            if (m_storage->textureSlotsBatch[batchIndex][i])
+                m_storage->textureSlotsBatch[batchIndex][i]->bind(i);
+        }
+    }
+
     void NxRenderer3D::bindTextures() const
     {
-        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i) {
-            m_storage->textureSlots[i]->bind(i);
-        }
+        bindTextureBatch(0);
+    }
+
+    void NxRenderer3D::bindNextTextureBatch() const
+    {
+        m_storage->currentTextureBindedIndex++;
+        bindTextureBatch(m_storage->currentTextureBindedIndex);
     }
 
     void NxRenderer3D::unbindTextures() const
     {
-        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i) {
-            m_storage->textureSlots[i]->unbind(i);
+        for (unsigned int batch = 0; batch < m_storage->textureSlotsBatch.size(); ++batch) {
+            unsigned int maxTextureSlot = m_storage->nbTexturesInBatch[batch];
+            for (unsigned int i = 0; i < maxTextureSlot; ++i) {
+                if (m_storage->textureSlotsBatch[batch][i])
+                    m_storage->textureSlotsBatch[batch][i]->unbind(i);
+            }
         }
-        m_storage->textureSlotIndex = 1;
-    }
 
-    void NxRenderer3D::beginScene(const glm::mat4 &viewProjection, const glm::vec3 &cameraPos,
-                                  const std::string &shader)
-    {
-        if (!m_storage) THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_3D);
-        if (shader.empty())
-            m_storage->currentSceneShader = ShaderLibrary::getInstance().get("Phong");
-        else
-            m_storage->currentSceneShader = ShaderLibrary::getInstance().get(shader);
-        m_storage->currentSceneShader->bind();
-        m_storage->vertexArray->bind();
-        m_storage->vertexBuffer->bind();
-        m_storage->currentSceneShader->setUniformMatrix("uViewProjection", viewProjection);
-        m_storage->cameraPosition = cameraPos;
-        m_storage->currentSceneShader->setUniformFloat3("uCamPos", cameraPos);
-        m_storage->indexCount       = 0;
-        m_storage->vertexBufferPtr  = m_storage->vertexBufferBase.data();
-        m_storage->indexBufferPtr   = m_storage->indexBufferBase.data();
-        m_storage->textureSlotIndex = 1;
-        m_renderingScene            = true;
-    }
+        m_storage->textureSlotsBatch.clear();
+        m_storage->textureSlotsBatch.resize(1);
+        m_storage->textureSlotsBatch[0][0] = m_storage->whiteTexture;
 
-    void NxRenderer3D::endScene() const
-    {
-        if (!m_storage) THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_3D);
-        if (!m_renderingScene)
-            THROW_EXCEPTION(NxRendererSceneLifeCycleFailure, NxRendererType::RENDERER_3D,
-                            "Renderer not rendering a scene, make sure to call beginScene first");
-        const auto vertexDataSize =
-            static_cast<unsigned int>(reinterpret_cast<std::byte *>(m_storage->vertexBufferPtr) -
-                                      reinterpret_cast<std::byte *>(m_storage->vertexBufferBase.data()));
+        m_storage->nbTexturesInBatch.clear();
+        m_storage->nbTexturesInBatch.push_back(1);
 
-        m_storage->vertexBuffer->setData(m_storage->vertexBufferBase.data(), vertexDataSize);
-
-        m_storage->indexBuffer->setData(m_storage->indexBufferBase.data(), m_storage->indexCount);
-
-        flushAndReset();
-    }
-
-    void NxRenderer3D::flush() const
-    {
-        m_storage->currentSceneShader->bind();
-        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i) {
-            m_storage->textureSlots[i]->bind(i);
-        }
-        NxRenderCommand::drawIndexed(m_storage->vertexArray, m_storage->indexCount);
-        m_storage->stats.drawCalls++;
-        m_storage->vertexArray->unbind();
-        m_storage->vertexBuffer->unbind();
-        m_storage->currentSceneShader->unbind();
-        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i) {
-            m_storage->textureSlots[i]->unbind(i);
-        }
-    }
-
-    void NxRenderer3D::flushAndReset() const
-    {
-        flush();
-        m_storage->indexCount       = 0;
-        m_storage->vertexBufferPtr  = m_storage->vertexBufferBase.data();
-        m_storage->indexBufferPtr   = m_storage->indexBufferBase.data();
-        m_storage->textureSlotIndex = 1;
+        m_storage->currentTextureBatchIndex  = 0;
+        m_storage->currentTextureBindedIndex = 0;
     }
 
     int NxRenderer3D::getTextureIndex(const std::shared_ptr<NxTexture2D> &texture) const
     {
         int textureIndex = 0;
-
         if (!texture) return textureIndex;
 
-        for (unsigned int i = 0; i < m_storage->textureSlotIndex; ++i) {
-            if (*m_storage->textureSlots[i] == *texture) {
-                textureIndex = static_cast<int>(i);
-                break;
+        unsigned int batch = m_storage->currentTextureBatchIndex;
+        if (batch >= m_storage->textureSlotsBatch.size()) {
+            LOG(NEXO_ERROR, "Invalid texture batch index {}", batch);
+            return 0;
+        }
+
+        unsigned int currentMax = m_storage->nbTexturesInBatch[batch];
+
+        for (unsigned int i = 0; i < currentMax; ++i) {
+            if (m_storage->textureSlotsBatch[batch][i] &&
+                *m_storage->textureSlotsBatch[batch][i] == *texture) {
+                return static_cast<int>(i);
             }
         }
 
-        if (textureIndex == 0) {
-            textureIndex                                         = static_cast<int>(m_storage->textureSlotIndex);
-            m_storage->textureSlots[m_storage->textureSlotIndex] = texture;
-            m_storage->textureSlotIndex++;
+        if (currentMax >= NxRenderer3DStorage::maxTextureSlots) {
+            LOG(NEXO_ERROR, "Too many textures in batch {} (>{}), cannot add more",
+                batch, NxRenderer3DStorage::maxTextureSlots);
+            return 0;
         }
+
+        textureIndex = static_cast<int>(currentMax);
+        m_storage->textureSlotsBatch[batch][currentMax] = texture;
+        m_storage->nbTexturesInBatch[batch]++;
 
         return textureIndex;
     }
 
-    void NxRenderer3D::setMaterialUniforms(const NxIndexedMaterial &material) const
+    void NxRenderer3D::switchToNextTextureBatch()
     {
-        if (!m_storage) THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_3D);
+        m_storage->currentTextureBatchIndex++;
 
-        m_storage->currentSceneShader->setUniformFloat4("uMaterial.albedoColor", material.albedoColor);
-        m_storage->currentSceneShader->setUniformInt("uMaterial.albedoTexIndex", material.albedoTexIndex);
-        m_storage->currentSceneShader->setUniformFloat4("uMaterial.specularColor", material.specularColor);
-        m_storage->currentSceneShader->setUniformInt("uMaterial.specularTexIndex", material.specularTexIndex);
-        m_storage->currentSceneShader->setUniformFloat3("uMaterial.emissiveColor", material.emissiveColor);
-        m_storage->currentSceneShader->setUniformInt("uMaterial.emissiveTexIndex", material.emissiveTexIndex);
-        m_storage->currentSceneShader->setUniformFloat("uMaterial.roughness", material.roughness);
-        m_storage->currentSceneShader->setUniformInt("uMaterial.roughnessTexIndex", material.roughnessTexIndex);
-        m_storage->currentSceneShader->setUniformFloat("uMaterial.metallic", material.metallic);
-        m_storage->currentSceneShader->setUniformInt("uMaterial.metallicTexIndex", material.metallicTexIndex);
-        m_storage->currentSceneShader->setUniformFloat("uMaterial.opacity", material.opacity);
-        m_storage->currentSceneShader->setUniformInt("uMaterial.opacityTexIndex", material.opacityTexIndex);
-    }
+        const auto newIndex = m_storage->currentTextureBatchIndex;
 
-    void NxRenderer3D::resetStats() const
-    {
-        if (!m_storage) THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_3D);
-        m_storage->stats.drawCalls = 0;
-        m_storage->stats.cubeCount = 0;
-    }
+        if (newIndex >= m_storage->textureSlotsBatch.size()) {
+            m_storage->textureSlotsBatch.resize(newIndex + 1);
+            m_storage->nbTexturesInBatch.resize(newIndex + 1, 0);
+        }
 
-    NxRenderer3DStats NxRenderer3D::getStats() const
-    {
-        if (!m_storage) THROW_EXCEPTION(NxRendererNotInitialized, NxRendererType::RENDERER_3D);
-        return m_storage->stats;
+        m_storage->textureSlotsBatch[newIndex][0] = m_storage->whiteTexture;
+        m_storage->nbTexturesInBatch[newIndex]    = 1;
     }
 
 } // namespace nexo::renderer
