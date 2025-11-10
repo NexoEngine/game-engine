@@ -50,6 +50,7 @@ namespace nexo::system {
         if (partition->count > MAX_POINT_LIGHTS)
             THROW_EXCEPTION(core::TooManyPointLightsException, sceneRendered, partition->count);
 
+        int shadowMapIndex = 0;
 
         PointLightContext out{};
         for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
@@ -64,7 +65,22 @@ namespace nexo::system {
             gpuPointLight.linear = pointLightComponent.linear;
             gpuPointLight.quadratic = pointLightComponent.quadratic;
 
+            // Choose a far plane for this light's shadow volume (tune as needed / make per-light later)
+            gpuPointLight.farPlane = 25.0f; // or pointLightComponent.shadowFar; etc
+
+            // Enable shadows for all point lights for now
+            gpuPointLight.hasShadow      = 1;
+            gpuPointLight.shadowMapIndex = shadowMapIndex++;
+
             out.pointLights[out.nbPointLights++] = gpuPointLight;
+
+            // Safety: don't exceed MAX_POINT_LIGHTS for shadow maps either
+            if (shadowMapIndex >= MAX_POINT_LIGHTS) break;
+        }
+        for (auto &camera : renderContext.cameras) {
+            for (unsigned int i = 0; i < out.nbPointLights; ++i) {
+                camera.pipeline.addPointLight(out.pointLights[i].position, out.pointLights[i].farPlane);
+            }
         }
         return out;
     }
