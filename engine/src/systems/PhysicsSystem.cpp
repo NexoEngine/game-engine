@@ -65,14 +65,34 @@ namespace nexo::system {
         const double currentTime = std::chrono::duration_cast<std::chrono::duration<double>>(
             std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 
-        const double delta = currentTime - m_lastPhysicsTime;
-        if (delta < fixedTimestep)
-            return;
+        if (m_lastPhysicsTime == 0.0) {
+            m_lastPhysicsTime = currentTime;
+            return; // skip first frame
+        }
 
+        double frameDelta = currentTime - m_lastPhysicsTime;
         m_lastPhysicsTime = currentTime;
 
-        constexpr int collisionSteps = 2;
-        physicsSystem->Update(fixedTimestep, collisionSteps, tempAllocator, jobSystem);
+        // Cap large pauses
+        if (frameDelta > 0.25)
+            frameDelta = 0.25;
+
+        static double accumulator = 0.0;
+        accumulator += frameDelta;
+
+        constexpr double fixedTimestep = 1.0 / 60.0; // 60 Hz
+
+        int stepCount = 0;
+        constexpr int MAX_STEPS_PER_FRAME = 4; // prevent spiral of death
+
+        while (accumulator >= fixedTimestep && stepCount < MAX_STEPS_PER_FRAME) {
+            physicsSystem->Update(fixedTimestep, 2, tempAllocator, jobSystem);
+            accumulator -= fixedTimestep;
+            ++stepCount;
+        }
+
+        if (stepCount == MAX_STEPS_PER_FRAME)
+            accumulator = 0.0; // drop excess time if simulation lagged
 
         const unsigned int numActiveDynamic = physicsSystem->GetNumActiveBodies(JPH::EBodyType::RigidBody);
         if (numActiveDynamic == 0)
