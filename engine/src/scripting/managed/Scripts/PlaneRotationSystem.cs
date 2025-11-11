@@ -32,8 +32,8 @@ public class PlaneRotationSystem : SystemBase
     // Flight parameters
     private Single _angle = 0.0f;
     private const Single FlightSpeed = 0.5f;
-    private const Single FlightRadius = 2.5f;
-    private readonly Vector3 _centerPosition = new Vector3(4.5f, 7.0f, -3.0f);
+    private const Single FlightRadius = 2.0f;
+    private readonly Vector3 _centerPosition = new Vector3(7.0f, 6.5f, -3.0f);
 
     private const Single BankAngle = 0.3f;
 
