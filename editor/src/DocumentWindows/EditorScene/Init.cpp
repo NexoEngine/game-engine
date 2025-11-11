@@ -202,28 +202,65 @@ namespace nexo::editor {
     {
         auto& app           = getApp();
         scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
-        const auto& catalog = nexo::assets::AssetCatalog::getInstance();
 
-        const assets::AssetLocation fullRoomModel("my_package::full_room@Demo");
-        const auto fullRoomAssetRef = catalog.getAsset(fullRoomModel).as<assets::Model>();
-        const auto fullRoom         = EntityFactory3D::createModel(
-            fullRoomAssetRef, {0.0 + offset.x, 0.0 + offset.y, 0.0 + offset.z}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
-        scene.addEntity(fullRoom);
+        const auto backWall =
+            EntityFactory3D::createCube({10.0f + offset.x, 7.0f + offset.y, 0.0f + offset.z}, {0.5f, 14.0f, 20.0f},
+                                        {0.0f, 0.0f, 0.0f}, {0.5f, 0.5f, 0.5f, 1.0f});
+        scene.addEntity(backWall);
+        const auto leftWall =
+            EntityFactory3D::createCube({0.0f + offset.x, 7.0f + offset.y, 10.0f + offset.z}, {20.0f, 14.0f, 0.5f},
+                                        {0.0f, 0.0f, 0.0f}, {0.4f, 0.4f, 0.4f, 1.0f});
+        scene.addEntity(leftWall);
+        const auto rightWall =
+            EntityFactory3D::createCube({0.0f + offset.x, 7.0f + offset.y, -10.0f + offset.z}, {20.0f, 14.0f, 0.5f},
+                                        {0.0f, 0.0f, 0.0f}, {0.4f, 0.4f, 0.4f, 1.0f});
+        scene.addEntity(rightWall);
+        const auto floor =
+            EntityFactory3D::createCube({0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z}, {20.0f, 0.5f, 20.0f},
+                                        {0.0f, 0.0f, 0.0f}, {0.2f, 0.2f, 0.2f, 1.0f});
+        scene.addEntity(floor);
+    }
 
+    void EditorScene::fullScene(const glm::vec3& offset) const
+    {
+        auto& app           = getApp();
+        scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
+
+        //// Walls of the room
         const auto backWall =
             EntityFactory3D::createCube({10.0f + offset.x, 7.0f + offset.y, 0.0f + offset.z}, {0.5f, 14.0f, 20.0f},
                                         {0.0f, 0.0f, 0.0f}, {0.29f, 0.41f, 0.45f, 1.0f});
         scene.addEntity(backWall);
-
         const auto leftWall =
             EntityFactory3D::createCube({0.0f + offset.x, 7.0f + offset.y, 10.0f + offset.z}, {20.0f, 14.0f, 0.5f},
                                         {0.0f, 0.0f, 0.0f}, {0.15f, 0.21f, 0.25f, 1.0f});
         scene.addEntity(leftWall);
-
         const auto rightWall =
             EntityFactory3D::createCube({0.0f + offset.x, 7.0f + offset.y, -10.0f + offset.z}, {20.0f, 14.0f, 0.5f},
                                         {0.0f, 0.0f, 0.0f}, {0.15f, 0.21f, 0.25f, 1.0f});
         scene.addEntity(rightWall);
+
+        //// Light demo
+        constexpr glm::vec3 lightsOffset = {0.0f, 0.0f, 0.0f};
+        lightsScene(offset + lightsOffset);
+
+        //// Import and add to scene models
+        addModelToScene("my_package::full_room@Demo", {0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z});
+        addModelToScene("my_package::cork_board@Demo", {9.63f + offset.x, 5.69f + offset.y, 0.0f + offset.z});
+        addModelToScene("my_package::frame@Demo", {9.7f + offset.x, 5.69f + offset.y, 3.96f + offset.z});
+        addModelToScene("my_package::duck@Demo", {7.09f + offset.x, 3.88f + offset.y, -1.07f + offset.z});
+        addModelToScene("my_package::laptop@Demo", {7.05f + offset.x, 4.0f + offset.y, 0.0f + offset.z});
+        addModelToScene("my_package::bretzel@Demo", {7.4f + offset.x, 4.04f + offset.y, -2.98f + offset.z});
+
+        //// physic demo
+        constexpr glm::vec3 dominoOffset = {7.5f, 4.07f, -0.5f};
+        dominoScene(offset + dominoOffset);
+    }
+
+    void EditorScene::lightsScene(const glm::vec3& offset) const
+    {
+        auto& app           = getApp();
+        scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
 
         const auto [linear, quad] = math::computeAttenuationFromDistance(70.0f);
         const auto pointLightTop  = LightFactory::createPointLight({0.0f + offset.x, 14.0f + offset.y, 0.0f + offset.z},
@@ -251,6 +288,7 @@ namespace nexo::editor {
         utils::addPropsTo(standSpotLightBottom, utils::PropsType::SPOT_LIGHT);
         scene.addEntity(standSpotLightBottom);
 
+        // multicolored points lights (garland)
         const auto [linear4, quad4] = math::computeAttenuationFromDistance(50.0f);
         const auto garlandPos       = std::vector<glm::vec3>{{9.16f + offset.x, 5.35f + offset.y, -1.68f + offset.z},
                                                              {9.16f + offset.x, 5.10f + offset.y, -1.16f + offset.z},
@@ -269,40 +307,170 @@ namespace nexo::editor {
             scene.addEntity(garlandSpotLight);
         }
 
-        const assets::AssetLocation corkBoardModel("my_package::cork_board@Demo");
-        const auto corkBoardAssetRef = catalog.getAsset(corkBoardModel).as<assets::Model>();
-        const auto corkBoard =
-            EntityFactory3D::createModel(corkBoardAssetRef, {9.63f + offset.x, 5.69f + offset.y, 0.0f + offset.z},
-                                         {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
-        scene.addEntity(corkBoard);
+        // Subjects
+        const auto subject1 =
+            EntityFactory3D::createSphere({7.0f + offset.x, 3.0f + offset.y, -4.0f + offset.z}, {1.0f, 1.0f, 1.0f},
+                                          {0.0f, 0.0f, 0.0f}, {0.75f, 0.75f, 0.75f, 1.0f}, 4);
+        scene.addEntity(subject1);
+        const auto subject2 =
+            EntityFactory3D::createCylinder({7.0f + offset.x, 3.0f + offset.y, 0.0f + offset.z}, {1.0f, 1.0f, 1.0f},
+                                            {33.0f, 0.0f, 33.0f}, {0.75f, 0.75f, 0.75f, 1.0f}, 32);
+        scene.addEntity(subject2);
+        const auto subject3 =
+            EntityFactory3D::createPyramid({7.0f + offset.x, 3.0f + offset.y, 4.0f + offset.z}, {1.0f, 1.0f, 1.0f},
+                                           {0.0f, 45.0f, 0.0f}, {0.75f, 0.75f, 0.75f, 1.0f});
+        scene.addEntity(subject3);
+    }
 
-        const assets::AssetLocation frameModel("my_package::frame@Demo");
-        const auto frameAssetRef = catalog.getAsset(frameModel).as<assets::Model>();
-        const auto frame =
-            EntityFactory3D::createModel(frameAssetRef, {9.7f + offset.x, 5.69f + offset.y, 3.96f + offset.z},
-                                         {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
-        scene.addEntity(frame);
+    void EditorScene::scriptedLightsOnModelsScene(const glm::vec3& offset) const
+    {
+        auto& app           = getApp();
+        scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
 
-        const assets::AssetLocation duckModel("my_package::duck@Demo");
-        const auto duckAssetRef = catalog.getAsset(duckModel).as<assets::Model>();
-        const auto duck =
-            EntityFactory3D::createModel(duckAssetRef, {7.09f + offset.x, 3.88f + offset.y, -1.07f + offset.z},
-                                         {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
-        scene.addEntity(duck);
+        // Lights
+        constexpr int numLights             = 5;
+        constexpr glm::vec3 center          = {0.0f, 5.0f, 0.0f};
+        const std::vector<glm::vec4> colors = {
+            {0.0f, 0.0f, 1.0f, 1.0f}, // Blue
+            {1.0f, 0.0f, 1.0f, 1.0f}, // Magenta
+            {1.0f, 0.5f, 0.0f, 1.0f}, // Orange
+            {0.0f, 1.0f, 0.0f, 1.0f}, // Green
+            {1.0f, 1.0f, 0.0f, 1.0f}  // Yellow
+        };
 
-        const assets::AssetLocation laptopModel("my_package::laptop@Demo");
-        const auto laptopAssetRef = catalog.getAsset(laptopModel).as<assets::Model>();
-        const auto laptop =
-            EntityFactory3D::createModel(laptopAssetRef, {7.05f + offset.x, 4.0f + offset.y, 0.0f + offset.z},
-                                         {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
-        scene.addEntity(laptop);
+        for (int i = 0; i < numLights; ++i) {
+            constexpr float radius   = 10.0f;
+            const float angle        = glm::radians(360.0f / numLights * static_cast<float>(i));
+            const glm::vec3 position = center + glm::vec3(radius * cos(angle), 5.0f, radius * sin(angle));
+            const auto light =
+                LightFactory::createPointLight(position + offset, colors[i % colors.size()], 0.01f, 0.0010f);
+            utils::addPropsTo(light, utils::PropsType::POINT_LIGHT);
+            scene.addEntity(light);
+        }
 
-        const assets::AssetLocation bretzelModel("my_package::bretzel@Demo");
-        const auto bretzelAssetRef = catalog.getAsset(bretzelModel).as<assets::Model>();
-        const auto bretzel =
-            EntityFactory3D::createModel(bretzelAssetRef, {7.4f + offset.x, 4.04f + offset.y, -2.98f + offset.z},
-                                         {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
-        scene.addEntity(bretzel);
+        const auto base =
+            EntityFactory3D::createCube({0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z}, {25.0f, 0.7f, 25.0f},
+                                        {0.0f, 0.0f, 0.0f}, {0.15f, 0.15f, 0.15f, 1.0f});
+        scene.addEntity(base);
+
+        const auto& catalog = nexo::assets::AssetCatalog::getInstance();
+
+        const assets::AssetLocation rubixCubeModel("my_package::RubixCube@Models");
+        const auto rubixCubeAssetRef = catalog.getAsset(rubixCubeModel).as<assets::Model>();
+        auto rubixCube =
+            EntityFactory3D::createModel(rubixCubeAssetRef, {4.1f + offset.x, 2.8f + offset.y, -4.7f + offset.z},
+                                         {10.0f, 10.0f, 10.0f}, {180.0f, 0.0f, 0.0f});
+        scene.addEntity(rubixCube);
+
+        const assets::AssetLocation planeModel("my_package::Plane@Models");
+        const auto planeAssetRef = catalog.getAsset(planeModel).as<assets::Model>();
+        auto plane = EntityFactory3D::createModel(planeAssetRef, {-5.0f + offset.x, 0.5f + offset.y, -5.0f + offset.z},
+                                                  {1.0f, 1.0f, 1.0f}, {0.0f, 45.0f, 0.0f});
+        scene.addEntity(plane);
+
+        const assets::AssetLocation cupModel("my_package::Cup@Models");
+        const auto cupAssetRef = catalog.getAsset(cupModel).as<assets::Model>();
+        auto cup = EntityFactory3D::createModel(cupAssetRef, {7.0f + offset.x, 0.3f + offset.y, 1.6f + offset.z},
+                                                {14.0f, 14.0f, 14.0f}, {0.0f, -105.0f, 0.0f});
+        scene.addEntity(cup);
+
+        const assets::AssetLocation earthModel("my_package::Earth@Models");
+        const auto earthAssetRef = catalog.getAsset(earthModel).as<assets::Model>();
+        auto earth = EntityFactory3D::createModel(earthAssetRef, {-0.4f + offset.x, 2.1f + offset.y, 7.0f + offset.z},
+                                                  {0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 0.0f});
+        scene.addEntity(earth);
+
+        const assets::AssetLocation plantModel("my_package::Plant@Models");
+        const auto plantAssetRef = catalog.getAsset(plantModel).as<assets::Model>();
+        auto plant = EntityFactory3D::createModel(plantAssetRef, {-4.9f + offset.x, 0.38f + offset.y, 3.8f + offset.z},
+                                                  {5.0f, 5.0f, 5.0f}, {0.0f, 0.0f, 0.0f});
+        scene.addEntity(plant);
+
+        const assets::AssetLocation swordModel("my_package::Sword@Models");
+        const auto swordAssetRef = catalog.getAsset(swordModel).as<assets::Model>();
+        auto sword = EntityFactory3D::createModel(swordAssetRef, {-0.0f + offset.x, 0.48f + offset.y, 0.0f + offset.z},
+                                                  {2.77f, 2.77f, 2.77f}, {0.0f, 0.0f, 0.0f});
+        scene.addEntity(sword);
+    }
+
+    void EditorScene::fakirGameScene(const glm::vec3& offset) const
+    {
+        // Background
+        createEntityWithPhysic({0.0f + offset.x, 40.0f + offset.y, -2.5f + offset.z}, {44.0f, 80.0f, 0.5f}, {0, 0, 0},
+                               {0.91f, 0.91f, 0.91f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
+
+        // Funnel left and right
+        createEntityWithPhysic({-6.0f + offset.x, 70.0f + offset.y, 0.0f + offset.z}, {10.0f, 0.5f, 4.0f},
+                               {0, 0, -45.0f}, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box,
+                               JPH::EMotionType::Static);
+        createEntityWithPhysic({6.0f + offset.x, 70.0f + offset.y, 0.0f + offset.z}, {10.0f, 0.5f, 4.0f}, {0, 0, 45.0f},
+                               {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
+
+        // Stairs right
+        std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec4>> stairs = {
+            {{3.0f, 61.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0, 0, -15.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
+            {{11.0f, 58.5f, 0.0f}, {8.0f, 0.5f, 4.0f}, {0.0f, 0.0f, 20.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
+            {{3.0f, 55.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0.0f, 0.0f, -15.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
+            {{10.0f, 52.5f, 0.0f}, {12.0f, 0.5f, 4.0f}, {0.0f, 0.0f, 20.0f}, {0.0f, 0.28f, 0.47f, 1.0f}}};
+        for (const auto& [pos, size, rotation, color] : stairs) {
+            createEntityWithPhysic(pos + offset, size, rotation, color, system::ShapeType::Box,
+                                   JPH::EMotionType::Static);
+        }
+
+        // Tunnel left
+        std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3>> tunnels = {
+            {{-6.0f, 59.0f, 0.0f}, {3.0f, 11.0f, 4.0f}, {0, 0, 0}},
+            {{-1.0f, 58.5f, 0.0f}, {3.0f, 8.0f, 4.0f}, {0, 0, 0}},
+            {{-5.0f, 51.0f, 0.0f}, {9.0f, 0.5f, 4.0f}, {0, 0, -25.0f}}};
+        for (const auto& [pos, size, rotation] : tunnels) {
+            createEntityWithPhysic(pos + offset, size, rotation, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box,
+                                   JPH::EMotionType::Static);
+        }
+        // Dominos left and right
+        createEntityWithPhysic({-9.0f + offset.x, 44.0f + offset.y, 0.0f + offset.z}, {20.9f, 0.5f, 4.0f}, {0, 0, 0.0f},
+                               {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
+        createEntityWithPhysic({11.15f + offset.x, 44.0f + offset.y, 0.0f + offset.z}, {15.5f, 0.5f, 4.0f},
+                               {0, 0, 0.0f}, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box,
+                               JPH::EMotionType::Static);
+
+        for (int i = 0; i < 24; ++i) {
+            if (i == 13) continue;
+            const float x              = -18.4f + static_cast<float>(i) * 1.6f;
+            glm::vec3 pos              = {x, 45.5f, 0.0f};
+            const float gradientFactor = static_cast<float>(i) / 24.0f;
+            glm::vec4 color =
+                mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
+            createEntityWithPhysic(pos + offset, {0.25f, 3.0f, 3.0f}, {0, 0, 0}, color, system::ShapeType::Box,
+                                   JPH::EMotionType::Dynamic);
+        }
+
+        // Fakir
+        constexpr int totalRows = 20;
+        constexpr float startX  = -14.0f;
+
+        for (int row = 0; row < totalRows; ++row) {
+            constexpr int cols = 10;
+            for (int col = 0; col < cols; ++col) {
+                constexpr float startY     = 14.0f;
+                constexpr float spacing    = 3.0f;
+                const float offsetX        = (row % 2 == 0) ? 0.0f : spacing / 2.0f;
+                glm::vec3 pos              = {static_cast<float>(col) * spacing + startX + offsetX,
+                                              startY + static_cast<float>(row) * 1.2f, 0.0f};
+                constexpr auto maxFactor   = static_cast<float>(totalRows * cols);
+                const float gradientFactor = static_cast<float>((row + 1) * (col + 1)) / maxFactor;
+                glm::vec4 color =
+                    mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
+                createEntityWithPhysic(pos + offset, {0.4f, 6.0f, 0.4f}, {90.0f, 0, 0}, color,
+                                       system::ShapeType::Cylinder, JPH::EMotionType::Static);
+            }
+        }
+    }
+
+    void EditorScene::dominoScene(const glm::vec3& offset) const
+    {
+        auto& app           = getApp();
+        scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
+        const auto& catalog = nexo::assets::AssetCatalog::getInstance();
 
         // Get dominos pos
         std::vector<glm::vec3> dominosPositions = {
@@ -387,11 +555,10 @@ namespace nexo::editor {
         std::ranges::reverse(dominosRotation);
 
         std::vector<std::pair<int, int>> verticalRange = {{0, 1}, {18, 29}, {47, 71}, {89, 101}, {112, 124}};
-        glm::vec3 dominoOffset = {7.5f, 4.07f, -0.5f};
         for (int i = 0; i < dominosPositions.size(); ++i) {
             glm::vec3 pos       = dominosPositions[i];
             const glm::vec3 rot = {0.0f, -dominosRotation[i].y, 0.0f};
-            pos += offset + dominoOffset;
+            pos += offset;
             const assets::AssetLocation dominoVModel("my_package::dominoV@Demo");
             const assets::AssetLocation dominoHModel("my_package::dominoH@Demo");
             assets::AssetRef<assets::Model> dominoAssetRef;
@@ -410,150 +577,6 @@ namespace nexo::editor {
                 THROW_EXCEPTION(InvalidBodyId, domino);
             }
             scene.addEntity(domino);
-        }
-    }
-
-    void EditorScene::lightsScene(const glm::vec3& offset) const
-    {
-        auto& app           = getApp();
-        scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
-
-        // Lights
-        constexpr int numLights             = 5;
-        constexpr glm::vec3 center          = {0.0f, 5.0f, 0.0f};
-        const std::vector<glm::vec4> colors = {
-            {0.0f, 0.0f, 1.0f, 1.0f}, // Blue
-            {1.0f, 0.0f, 1.0f, 1.0f}, // Magenta
-            {1.0f, 0.5f, 0.0f, 1.0f}, // Orange
-            {0.0f, 1.0f, 0.0f, 1.0f}, // Green
-            {1.0f, 1.0f, 0.0f, 1.0f}  // Yellow
-        };
-
-        for (int i = 0; i < numLights; ++i) {
-            constexpr float radius   = 10.0f;
-            const float angle        = glm::radians(360.0f / numLights * static_cast<float>(i));
-            const glm::vec3 position = center + glm::vec3(radius * cos(angle), 5.0f, radius * sin(angle));
-            const auto light =
-                LightFactory::createPointLight(position + offset, colors[i % colors.size()], 0.01f, 0.0010f);
-            utils::addPropsTo(light, utils::PropsType::POINT_LIGHT);
-            scene.addEntity(light);
-        }
-
-        const auto base =
-            EntityFactory3D::createCube({0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z}, {25.0f, 0.7f, 25.0f},
-                                        {0.0f, 0.0f, 0.0f}, {0.15f, 0.15f, 0.15f, 1.0f});
-        scene.addEntity(base);
-
-        const auto& catalog = nexo::assets::AssetCatalog::getInstance();
-
-        const assets::AssetLocation rubixCubeModel("my_package::RubixCube@Models");
-        const auto rubixCubeAssetRef = catalog.getAsset(rubixCubeModel).as<assets::Model>();
-        auto rubixCube =
-            EntityFactory3D::createModel(rubixCubeAssetRef, {4.1f + offset.x, 2.8f + offset.y, -4.7f + offset.z},
-                                         {10.0f, 10.0f, 10.0f}, {180.0f, 0.0f, 0.0f});
-        scene.addEntity(rubixCube);
-
-        const assets::AssetLocation planeModel("my_package::Plane@Models");
-        const auto planeAssetRef = catalog.getAsset(planeModel).as<assets::Model>();
-        auto plane = EntityFactory3D::createModel(planeAssetRef, {-5.0f + offset.x, 0.5f + offset.y, -5.0f + offset.z},
-                                                  {1.0f, 1.0f, 1.0f}, {0.0f, 45.0f, 0.0f});
-        scene.addEntity(plane);
-
-        const assets::AssetLocation cupModel("my_package::Cup@Models");
-        const auto cupAssetRef = catalog.getAsset(cupModel).as<assets::Model>();
-        auto cup = EntityFactory3D::createModel(cupAssetRef, {7.0f + offset.x, 0.3f + offset.y, 1.6f + offset.z},
-                                                {14.0f, 14.0f, 14.0f}, {0.0f, -105.0f, 0.0f});
-        scene.addEntity(cup);
-
-        const assets::AssetLocation earthModel("my_package::Earth@Models");
-        const auto earthAssetRef = catalog.getAsset(earthModel).as<assets::Model>();
-        auto earth = EntityFactory3D::createModel(earthAssetRef, {-0.4f + offset.x, 2.1f + offset.y, 7.0f + offset.z},
-                                                  {0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 0.0f});
-        scene.addEntity(earth);
-
-        const assets::AssetLocation plantModel("my_package::Plant@Models");
-        const auto plantAssetRef = catalog.getAsset(plantModel).as<assets::Model>();
-        auto plant = EntityFactory3D::createModel(plantAssetRef, {-4.9f + offset.x, 0.38f + offset.y, 3.8f + offset.z},
-                                                  {5.0f, 5.0f, 5.0f}, {0.0f, 0.0f, 0.0f});
-        scene.addEntity(plant);
-
-        const assets::AssetLocation swordModel("my_package::Sword@Models");
-        const auto swordAssetRef = catalog.getAsset(swordModel).as<assets::Model>();
-        auto sword = EntityFactory3D::createModel(swordAssetRef, {-0.0f + offset.x, 0.48f + offset.y, 0.0f + offset.z},
-                                                  {2.77f, 2.77f, 2.77f}, {0.0f, 0.0f, 0.0f});
-        scene.addEntity(sword);
-    }
-
-    void EditorScene::physicScene(const glm::vec3& offset) const
-    {
-        // Background
-        createEntityWithPhysic({0.0f + offset.x, 40.0f + offset.y, -2.5f + offset.z}, {44.0f, 80.0f, 0.5f}, {0, 0, 0},
-                               {0.91f, 0.91f, 0.91f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
-
-        // Funnel left and right
-        createEntityWithPhysic({-6.0f + offset.x, 70.0f + offset.y, 0.0f + offset.z}, {10.0f, 0.5f, 4.0f},
-                               {0, 0, -45.0f}, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box,
-                               JPH::EMotionType::Static);
-        createEntityWithPhysic({6.0f + offset.x, 70.0f + offset.y, 0.0f + offset.z}, {10.0f, 0.5f, 4.0f}, {0, 0, 45.0f},
-                               {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
-
-        // Stairs right
-        std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3, glm::vec4>> stairs = {
-            {{3.0f, 61.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0, 0, -15.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
-            {{11.0f, 58.5f, 0.0f}, {8.0f, 0.5f, 4.0f}, {0.0f, 0.0f, 20.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
-            {{3.0f, 55.5f, 0.0f}, {5.0f, 0.5f, 4.0f}, {0.0f, 0.0f, -15.0f}, {0.0f, 0.28f, 0.47f, 1.0f}},
-            {{10.0f, 52.5f, 0.0f}, {12.0f, 0.5f, 4.0f}, {0.0f, 0.0f, 20.0f}, {0.0f, 0.28f, 0.47f, 1.0f}}};
-        for (const auto& [pos, size, rotation, color] : stairs) {
-            createEntityWithPhysic(pos + offset, size, rotation, color, system::ShapeType::Box,
-                                   JPH::EMotionType::Static);
-        }
-
-        // Tunnel left
-        std::vector<std::tuple<glm::vec3, glm::vec3, glm::vec3>> tunnels = {
-            {{-6.0f, 59.0f, 0.0f}, {3.0f, 11.0f, 4.0f}, {0, 0, 0}},
-            {{-1.0f, 58.5f, 0.0f}, {3.0f, 8.0f, 4.0f}, {0, 0, 0}},
-            {{-5.0f, 51.0f, 0.0f}, {9.0f, 0.5f, 4.0f}, {0, 0, -25.0f}}};
-        for (const auto& [pos, size, rotation] : tunnels) {
-            createEntityWithPhysic(pos + offset, size, rotation, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box,
-                                   JPH::EMotionType::Static);
-        }
-        // Dominos left and right
-        createEntityWithPhysic({-9.0f + offset.x, 44.0f + offset.y, 0.0f + offset.z}, {20.9f, 0.5f, 4.0f}, {0, 0, 0.0f},
-                               {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box, JPH::EMotionType::Static);
-        createEntityWithPhysic({11.15f + offset.x, 44.0f + offset.y, 0.0f + offset.z}, {15.5f, 0.5f, 4.0f},
-                               {0, 0, 0.0f}, {0.0f, 0.28f, 0.47f, 1.0f}, system::ShapeType::Box,
-                               JPH::EMotionType::Static);
-
-        for (int i = 0; i < 24; ++i) {
-            if (i == 13) continue;
-            const float x              = -18.4f + static_cast<float>(i) * 1.6f;
-            glm::vec3 pos              = {x, 45.5f, 0.0f};
-            const float gradientFactor = static_cast<float>(i) / 24.0f;
-            glm::vec4 color =
-                mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
-            createEntityWithPhysic(pos + offset, {0.25f, 3.0f, 3.0f}, {0, 0, 0}, color, system::ShapeType::Box,
-                                   JPH::EMotionType::Dynamic);
-        }
-
-        // Fakir
-        constexpr int totalRows = 20;
-        constexpr float startX  = -14.0f;
-
-        for (int row = 0; row < totalRows; ++row) {
-            constexpr int cols = 10;
-            for (int col = 0; col < cols; ++col) {
-                constexpr float startY     = 14.0f;
-                constexpr float spacing    = 3.0f;
-                const float offsetX        = (row % 2 == 0) ? 0.0f : spacing / 2.0f;
-                glm::vec3 pos              = {static_cast<float>(col) * spacing + startX + offsetX,
-                                              startY + static_cast<float>(row) * 1.2f, 0.0f};
-                constexpr auto maxFactor   = static_cast<float>(totalRows * cols);
-                const float gradientFactor = static_cast<float>((row + 1) * (col + 1)) / maxFactor;
-                glm::vec4 color =
-                    mix(glm::vec4(0.0f, 0.77f, 0.95f, 1.0f), glm::vec4(0.83f, 0.14f, 0.67f, 1.0f), gradientFactor);
-                createEntityWithPhysic(pos + offset, {0.4f, 6.0f, 0.4f}, {90.0f, 0, 0}, color,
-                                       system::ShapeType::Cylinder, JPH::EMotionType::Static);
-            }
         }
     }
 

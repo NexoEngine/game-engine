@@ -662,6 +662,13 @@ namespace nexo::editor {
          */
         void createOrFocusGameWindow();
 
+        /**
+         * @brief Populates a scene with representing all features (lights, scripting, physic, model, textures).
+         *
+         * @param offset A glm::vec3 representing the positional offset to apply to demo scene.
+         */
+        void fullScene(const glm::vec3& offset) const;
+
         /** @brief Spawns a scene with multiple balls for physics testing.
          *
          * Creates a grid of sphere entities with physics properties, arranged in
@@ -683,14 +690,31 @@ namespace nexo::editor {
         void lightsScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
 
         /**
-         * @brief Creates a scene with physics entities.
+         * @brief Creates a scene spawning different point lights sources turning around models.
          *
-         * Adds objects with physical properties (rigid, dynamic) to the scene,
-         * positioned according to the given offset. Useful for testing physics interactions.
+         * @param offset Position offset to apply to the scene.
+         */
+        void scriptedLightsOnModelsScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
+
+        /**
+         * @brief Creates a scene of a fakir game. (physic demo)
+         *
+         * Adds cylinder with physical properties (rigid, dynamic) to the scene,
+         * positioned according to create a fakir game.
          *
          * @param offset Position offset to apply to all physics entities.
          */
-        void physicScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
+        void fakirGameScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
+
+        /**
+         * @brief Creates a domino scene in the current scene. (physic demo)
+         *
+         * This method generates a series of domino entities arranged along a Bézier curve,
+         * each with physics properties, at the specified offset position.
+         *
+         * @param offset A glm::vec3 representing the positional offset to apply to all dominoes.
+         */
+        void dominoScene(const glm::vec3& offset) const;
 
         /**
          * @brief Creates a scene containing video textures.

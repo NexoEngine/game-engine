@@ -1729,7 +1729,8 @@
 						"NORMAL":8,
 						"TEXCOORD_0":9
 					},
-					"indices":10
+					"indices":10,
+					"material":1
 				}
 			]
 		},
