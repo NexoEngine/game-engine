@@ -114,7 +114,7 @@ namespace nexo::editor {
             fullScene();
             dominoScene({7.5f, 4.07f, -0.5f});
             lightsScene(glm::vec3{0.0f, 0.0f, 0.0f});
-            chambouleScene(glm::vec3{0.0f, 0.0f, 0.0f});
+            // chambouleScene(glm::vec3{0.0f, 0.0f, 0.0f});
             // physicScene(glm::vec3{-60.0f, 0.0f, 0.0f});
             // videoScene(glm::vec3{-15.0f, 0.0f, 0.0f});
             // forestScene({100.0f, 1.0f, 0.0f});
