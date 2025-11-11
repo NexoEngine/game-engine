@@ -114,6 +114,8 @@ namespace nexo::editor {
             fullScene();
             dominoScene({7.5f, 4.07f, -0.5f});
             lightsScene(glm::vec3{0.0f, 0.0f, 0.0f});
+            chambouleScene(glm::vec3{0.0f, 0.0f, 0.0f});
+            // physicScene(glm::vec3{-60.0f, 0.0f, 0.0f});
             // videoScene(glm::vec3{-15.0f, 0.0f, 0.0f});
             // forestScene({100.0f, 1.0f, 0.0f});
         }
@@ -665,6 +667,66 @@ namespace nexo::editor {
 
         addModelToScene("my_package::Log@Models", {-5.0f + offset.x, 0.5f + offset.y, 5.0f + offset.z},
                         {2.3f, 2.3f, 2.3f});
+    }
+
+    void EditorScene::chambouleScene(const glm::vec3& offset) const
+    {
+        auto& app           = getApp();
+        scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
+
+        createEntityWithPhysic({0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z}, {30.0f, 0.5f, 30.0f},
+                               {0.0f, 0.0f, 0.0f}, {0.3f, 0.3f, 0.3f, 1.0f}, system::ShapeType::Box,
+                               JPH::EMotionType::Static);
+
+        createEntityWithPhysic({2.0f + offset.x, 6.0f + offset.y, 0.0f + offset.z}, {8.0f, 0.5f, 6.0f},
+                               {0.0f, 0.0f, 25.0f}, {0.8f, 0.3f, 0.2f, 1.0f}, system::ShapeType::Box,
+                               JPH::EMotionType::Static);
+
+        createEntityWithPhysic({2.0f + offset.x, 15.0f + offset.y, 0.0f + offset.z}, {1.0f, 1.0f, 1.0f},
+                               {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 1.0f}, system::ShapeType::Sphere,
+                               JPH::EMotionType::Dynamic);
+
+        const glm::vec3 pyramidBase = {-8.0f + offset.x, 0.5f + offset.y, 0.0f + offset.z};
+        constexpr float cubeSize    = 1.0f;
+        constexpr float spacing     = 0.05f;
+
+        const std::vector<glm::vec4> levelColors = {
+            {0.2f, 0.6f, 0.9f, 1.0f},
+            {0.3f, 0.7f, 0.4f, 1.0f},
+            {0.9f, 0.7f, 0.2f, 1.0f},
+            {0.9f, 0.3f, 0.3f, 1.0f}
+        };
+
+        for (int i = 0; i < 4; ++i) {
+            const float zPos = pyramidBase.z + (static_cast<float>(i) - 1.5f) * (cubeSize + spacing);
+            createEntityWithPhysic({pyramidBase.x, pyramidBase.y, zPos}, {cubeSize, cubeSize, cubeSize},
+                                   {0.0f, 0.0f, 0.0f}, levelColors[0], system::ShapeType::Box,
+                                   JPH::EMotionType::Dynamic);
+        }
+
+        for (int i = 0; i < 3; ++i) {
+            const float zPos = pyramidBase.z + (static_cast<float>(i) - 1.0f) * (cubeSize + spacing);
+            const float yPos = pyramidBase.y + (cubeSize + spacing);
+            createEntityWithPhysic({pyramidBase.x, yPos, zPos}, {cubeSize, cubeSize, cubeSize}, {0.0f, 0.0f, 0.0f},
+                                   levelColors[1], system::ShapeType::Box, JPH::EMotionType::Dynamic);
+        }
+
+        for (int i = 0; i < 2; ++i) {
+            const float zPos = pyramidBase.z + (static_cast<float>(i) - 0.5f) * (cubeSize + spacing);
+            const float yPos = pyramidBase.y + 2.0f * (cubeSize + spacing);
+            createEntityWithPhysic({pyramidBase.x, yPos, zPos}, {cubeSize, cubeSize, cubeSize}, {0.0f, 0.0f, 0.0f},
+                                   levelColors[2], system::ShapeType::Box, JPH::EMotionType::Dynamic);
+        }
+
+        const float topYPos = pyramidBase.y + 3.0f * (cubeSize + spacing);
+        createEntityWithPhysic({pyramidBase.x, topYPos, pyramidBase.z}, {cubeSize, cubeSize, cubeSize},
+                               {0.0f, 0.0f, 0.0f}, levelColors[3], system::ShapeType::Box,
+                               JPH::EMotionType::Dynamic);
+
+        const auto [linear, quad] = math::computeAttenuationFromDistance(50.0f);
+        const auto pointLight     = LightFactory::createPointLight({0.0f + offset.x, 10.0f + offset.y, 5.0f + offset.z},
+                                                                {1.0f, 1.0f, 1.0f}, linear, quad);
+        scene.addEntity(pointLight);
     }
 
 } // namespace nexo::editor
