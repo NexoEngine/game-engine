@@ -182,6 +182,10 @@ namespace nexo::renderer {
          */
         [[nodiscard]] virtual void *window() const = 0;
 
+        virtual void setFullscreen(bool fullscreen) = 0;
+        [[nodiscard]] virtual bool isFullscreen() const = 0;
+        virtual void toggleFullscreen() = 0;
+
         /**
          * @brief Factory function to create a platform-specific window.
          *
