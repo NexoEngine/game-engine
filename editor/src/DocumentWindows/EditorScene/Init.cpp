@@ -14,6 +14,10 @@
 
 #include <components/Name.hpp>
 #include <components/Video.hpp>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+
 #include <math/Light.hpp>
 #include <random>
 #include <sstream>
@@ -94,10 +98,11 @@ namespace nexo::editor {
 
         m_sceneUuid = app.getSceneManager().getScene(m_sceneId).getUuid();
         if (m_defaultScene) {
-            loadDefaultEntities();
-            // physicScene(glm::vec3{-60.0f, 0.0f, 0.0f});
+            // loadDefaultEntities();
+            fullScene();
+            dominoScene({7.5f, 4.07f, -0.5f});
+            lightsScene(glm::vec3{0.0f, 0.0f, 0.0f});
             // videoScene(glm::vec3{-15.0f, 0.0f, 0.0f});
-            // lightsScene(glm::vec3{50.0f, 0.0f, 0.0f});
             // forestScene({100.0f, 1.0f, 0.0f});
         }
     }
@@ -194,67 +199,53 @@ namespace nexo::editor {
             }
         }
 
-        LOG(NEXO_WARN, "NxFindEntityByName: Entity with name '{}' not found", name);
+        LOG(NEXO_WARN, "FindEntityByName: Entity with name '{}' not found", name);
         return static_cast<ecs::Entity>(-1);
     }
 
     void EditorScene::loadDefaultEntities(const glm::vec3& offset) const
     {
-        auto& app           = getApp();
-        scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
-
-        const auto backWall =
-            EntityFactory3D::createCube({10.0f + offset.x, 7.0f + offset.y, 0.0f + offset.z}, {0.5f, 14.0f, 20.0f},
-                                        {0.0f, 0.0f, 0.0f}, {0.5f, 0.5f, 0.5f, 1.0f});
-        scene.addEntity(backWall);
-        const auto leftWall =
-            EntityFactory3D::createCube({0.0f + offset.x, 7.0f + offset.y, 10.0f + offset.z}, {20.0f, 14.0f, 0.5f},
-                                        {0.0f, 0.0f, 0.0f}, {0.4f, 0.4f, 0.4f, 1.0f});
-        scene.addEntity(leftWall);
-        const auto rightWall =
-            EntityFactory3D::createCube({0.0f + offset.x, 7.0f + offset.y, -10.0f + offset.z}, {20.0f, 14.0f, 0.5f},
-                                        {0.0f, 0.0f, 0.0f}, {0.4f, 0.4f, 0.4f, 1.0f});
-        scene.addEntity(rightWall);
-        const auto floor =
-            EntityFactory3D::createCube({0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z}, {20.0f, 0.5f, 20.0f},
-                                        {0.0f, 0.0f, 0.0f}, {0.2f, 0.2f, 0.2f, 1.0f});
-        scene.addEntity(floor);
     }
 
     void EditorScene::fullScene(const glm::vec3& offset) const
     {
         auto& app           = getApp();
-        scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
-
-        //// Walls of the room
-        const auto backWall =
-            EntityFactory3D::createCube({10.0f + offset.x, 7.0f + offset.y, 0.0f + offset.z}, {0.5f, 14.0f, 20.0f},
-                                        {0.0f, 0.0f, 0.0f}, {0.29f, 0.41f, 0.45f, 1.0f});
-        scene.addEntity(backWall);
-        const auto leftWall =
-            EntityFactory3D::createCube({0.0f + offset.x, 7.0f + offset.y, 10.0f + offset.z}, {20.0f, 14.0f, 0.5f},
-                                        {0.0f, 0.0f, 0.0f}, {0.15f, 0.21f, 0.25f, 1.0f});
-        scene.addEntity(leftWall);
-        const auto rightWall =
-            EntityFactory3D::createCube({0.0f + offset.x, 7.0f + offset.y, -10.0f + offset.z}, {20.0f, 14.0f, 0.5f},
-                                        {0.0f, 0.0f, 0.0f}, {0.15f, 0.21f, 0.25f, 1.0f});
-        scene.addEntity(rightWall);
-
-        //// Light demo
-        constexpr glm::vec3 lightsOffset = {0.0f, 0.0f, 0.0f};
-        lightsScene(offset + lightsOffset);
 
         //// Import and add to scene models
         addModelToScene("my_package::full_room@Demo", {0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z});
-        addModelToScene("my_package::cork_board@Demo", {9.63f + offset.x, 5.69f + offset.y, 0.0f + offset.z});
-        addModelToScene("my_package::frame@Demo", {9.7f + offset.x, 5.69f + offset.y, 3.96f + offset.z});
-        addModelToScene("my_package::duck@Demo", {7.09f + offset.x, 3.88f + offset.y, -1.07f + offset.z});
-        addModelToScene("my_package::laptop@Demo", {7.05f + offset.x, 4.0f + offset.y, 0.0f + offset.z});
-        addModelToScene("my_package::bretzel@Demo", {7.4f + offset.x, 4.04f + offset.y, -2.98f + offset.z});
+        addModelToScene("my_package::desk@Demo", {7.44f + offset.x, 1.93f + offset.y, 0.0f + offset.z});
+        addModelToScene("my_package::shelf@Demo", {8.86f + offset.x, 5.60f + offset.y, 0.0f + offset.z});
 
-        //// physic demo
-        constexpr glm::vec3 dominoOffset = {7.5f, 4.07f, -0.5f};
-        dominoScene(offset + dominoOffset);
+        //// add physics body to some models
+        ecs::Entity desk = FindEntityByName("desk");
+        if (Application::m_coordinator->entityHasComponent<components::ParentComponent>(desk)) {
+            desk = Application::m_coordinator->getComponent<components::ParentComponent>(desk).parent;
+        }
+        auto rootCompDesk = Application::m_coordinator->getComponent<components::RootComponent>(desk);
+        auto modelDesk = rootCompDesk.modelRef.lock();
+        auto boundingBoxDesk         = modelDesk->rootBounds;
+        auto transformCompDesk =
+            Application::m_coordinator->getComponent<components::TransformComponent>(desk);
+        const JPH::BodyID bodyIdDesk = app.getPhysicsSystem()->createBodyFromBounds(desk, transformCompDesk, boundingBoxDesk,
+                                                                                JPH::EMotionType::Static);
+        if (bodyIdDesk.IsInvalid()) {
+            THROW_EXCEPTION(InvalidBodyId, desk);
+        }
+
+        ecs::Entity shelf = FindEntityByName("shelf");
+        if (Application::m_coordinator->entityHasComponent<components::ParentComponent>(shelf)) {
+            shelf = Application::m_coordinator->getComponent<components::ParentComponent>(shelf).parent;
+        }
+        auto rootCompShelf = Application::m_coordinator->getComponent<components::RootComponent>(shelf);
+        auto modelShelf = rootCompShelf.modelRef.lock();
+        auto boundingBoxShelf         = modelShelf->rootBounds;
+        auto transformCompShelf =
+            Application::m_coordinator->getComponent<components::TransformComponent>(shelf);
+        const JPH::BodyID bodyIdShelf = app.getPhysicsSystem()->createBodyFromBounds(shelf, transformCompShelf, boundingBoxShelf,
+                                                                                JPH::EMotionType::Static);
+        if (bodyIdShelf.IsInvalid()) {
+            THROW_EXCEPTION(InvalidBodyId, shelf);
+        }
     }
 
     void EditorScene::lightsScene(const glm::vec3& offset) const
@@ -308,18 +299,18 @@ namespace nexo::editor {
         }
 
         // Subjects
-        const auto subject1 =
-            EntityFactory3D::createSphere({7.0f + offset.x, 3.0f + offset.y, -4.0f + offset.z}, {1.0f, 1.0f, 1.0f},
-                                          {0.0f, 0.0f, 0.0f}, {0.75f, 0.75f, 0.75f, 1.0f}, 4);
-        scene.addEntity(subject1);
-        const auto subject2 =
-            EntityFactory3D::createCylinder({7.0f + offset.x, 3.0f + offset.y, 0.0f + offset.z}, {1.0f, 1.0f, 1.0f},
-                                            {33.0f, 0.0f, 33.0f}, {0.75f, 0.75f, 0.75f, 1.0f}, 32);
-        scene.addEntity(subject2);
-        const auto subject3 =
-            EntityFactory3D::createPyramid({7.0f + offset.x, 3.0f + offset.y, 4.0f + offset.z}, {1.0f, 1.0f, 1.0f},
-                                           {0.0f, 45.0f, 0.0f}, {0.75f, 0.75f, 0.75f, 1.0f});
-        scene.addEntity(subject3);
+        // const auto subject1 =
+        //     EntityFactory3D::createSphere({7.0f + offset.x, 3.0f + offset.y, -4.0f + offset.z}, {1.0f, 1.0f, 1.0f},
+        //                                   {0.0f, 0.0f, 0.0f}, {0.75f, 0.75f, 0.75f, 1.0f}, 4);
+        // scene.addEntity(subject1);
+        // const auto subject2 =
+        //     EntityFactory3D::createCylinder({7.0f + offset.x, 3.0f + offset.y, 0.0f + offset.z}, {1.0f, 1.0f, 1.0f},
+        //                                     {33.0f, 0.0f, 33.0f}, {0.75f, 0.75f, 0.75f, 1.0f}, 32);
+        // scene.addEntity(subject2);
+        // const auto subject3 =
+        //     EntityFactory3D::createPyramid({7.0f + offset.x, 3.0f + offset.y, 4.0f + offset.z}, {1.0f, 1.0f, 1.0f},
+        //                                    {0.0f, 45.0f, 0.0f}, {0.75f, 0.75f, 0.75f, 1.0f});
+        // scene.addEntity(subject3);
     }
 
     void EditorScene::scriptedLightsOnModelsScene(const glm::vec3& offset) const
@@ -472,7 +463,12 @@ namespace nexo::editor {
         scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
         const auto& catalog = nexo::assets::AssetCatalog::getInstance();
 
-        // Get dominos pos
+        createEntityWithPhysic({9.25f, 5.78f, 1.56f}, {0.25f, 0.14f, 0.25f}, {0, 0, 0},
+                       {0.8f, 0.5f, 0.1f, 1.0f}, system::ShapeType::Pyramid, JPH::EMotionType::Static);
+        createEntityWithPhysic({9.06f, 5.85f, 1.6f}, {0.08f, 0.08f, 0.08f}, {0, 0, 0},
+                               {0.80f, 0.8f, 0.8f, 1.0f}, system::ShapeType::Sphere, JPH::EMotionType::Dynamic);
+
+        //// Get dominos pos
         std::vector<glm::vec3> dominosPositions = {
             {0.89f, 0.00f, -3.25f},  {0.87f, 0.00f, -3.13f},  {0.81f, 0.00f, -3.03f},  {0.70f, 0.00f, -2.98f},
             {0.59f, 0.00f, -2.96f},  {0.47f, 0.00f, -2.96f},  {0.35f, 0.00f, -2.98f},  {0.23f, 0.00f, -3.00f},
@@ -569,10 +565,14 @@ namespace nexo::editor {
             } else {
                 dominoAssetRef = catalog.getAsset(dominoHModel).as<assets::Model>();
             }
-            const auto domino        = EntityFactory3D::createModel(dominoAssetRef, pos, {1.0f, 1.0f, 1.0f}, rot);
-            const JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromShape(
-                domino, Application::m_coordinator->getComponent<components::TransformComponent>(domino),
-                system::ShapeType::Box, JPH::EMotionType::Dynamic);
+            const auto domino        = EntityFactory3D::createModel(dominoAssetRef, pos, {0.01f, 0.01f, 0.01f}, rot);
+            auto rootComp = Application::m_coordinator->getComponent<components::RootComponent>(domino);
+            auto model = rootComp.modelRef.lock();
+            auto boundingBox         = model->rootBounds;
+            auto transformComp =
+                Application::m_coordinator->getComponent<components::TransformComponent>(domino);
+            const JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromBounds(domino, transformComp, boundingBox,
+                                                                                    JPH::EMotionType::Dynamic);
             if (bodyId.IsInvalid()) {
                 THROW_EXCEPTION(InvalidBodyId, domino);
             }

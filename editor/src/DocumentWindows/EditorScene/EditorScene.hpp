@@ -667,7 +667,7 @@ namespace nexo::editor {
          *
          * @param offset A glm::vec3 representing the positional offset to apply to demo scene.
          */
-        void fullScene(const glm::vec3& offset) const;
+        void fullScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
 
         /** @brief Spawns a scene with multiple balls for physics testing.
          *
@@ -714,7 +714,7 @@ namespace nexo::editor {
          *
          * @param offset A glm::vec3 representing the positional offset to apply to all dominoes.
          */
-        void dominoScene(const glm::vec3& offset) const;
+        void dominoScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
 
         /**
          * @brief Creates a scene containing video textures.

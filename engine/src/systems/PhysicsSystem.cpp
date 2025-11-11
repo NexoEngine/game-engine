@@ -14,19 +14,21 @@
 
 #include "PhysicsSystem.hpp"
 #include <Jolt/Physics/Collision/Shape/ConvexHullShape.h>
+
 #include <Jolt/Physics/Collision/Shape/BoxShape.h>
 #include <Jolt/Physics/Collision/Shape/SphereShape.h>
+
 #include <Jolt/Physics/Collision/Shape/RotatedTranslatedShape.h>
+
 #include <Jolt/Physics/Collision/Shape/CylinderShape.h>
-
-
-
 #include <Jolt/RegisterTypes.h>
+#include <math/Bounds.hpp>
 
 namespace nexo::system {
     PhysicsSystem::PhysicsSystem() = default;
 
-    PhysicsSystem::~PhysicsSystem() {
+    PhysicsSystem::~PhysicsSystem()
+    {
         delete physicsSystem;
         delete jobSystem;
         delete tempAllocator;
@@ -34,32 +36,103 @@ namespace nexo::system {
         JPH::Factory::sInstance = nullptr;
     }
 
-    void PhysicsSystem::init() {
+    static constexpr float kMinPhysicsSize = 0.01f; // avoid degenerate tiny boxes
+
+    static JPH::BodyID createBodyFromAABBImpl(JPH::BodyInterface& bodyInterface, ecs::Entity entity,
+                                              const components::TransformComponent& transform, const math::AABB& localAabb,
+                                              JPH::EMotionType motionType, JPH::ObjectLayer layer)
+    {
+        if (localAabb.empty()) {
+            LOG(NEXO_WARN, "createBodyFromAABBImpl: empty AABB for entity {}", (int)entity);
+            return JPH::BodyID();
+        }
+
+        const glm::vec3 localMin = localAabb.min;
+        const glm::vec3 localMax = localAabb.max;
+
+        // --- Local-space box info relative to model origin ---
+        const glm::vec3 localCenter  = 0.5f * (localMin + localMax);
+        const glm::vec3 localHalfExt = 0.5f * (localMax - localMin);
+
+        const glm::vec3 safeHalfExt = glm::max(localHalfExt * transform.size, glm::vec3(0.01f));
+
+        // Jolt half extents
+        const JPH::Vec3 jHalf(safeHalfExt.x, safeHalfExt.y, safeHalfExt.z);
+
+        // Create the shape centered at localCenter (so model origin = visual origin)
+        // → use RotatedTranslatedShape to apply local offset
+        JPH::BoxShapeSettings baseShape(jHalf);
+        baseShape.mConvexRadius = 0.0f;
+        JPH::ShapeRefC boxShape = baseShape.Create().Get();
+
+        const JPH::Vec3 localOffset(localCenter.x, localCenter.y, localCenter.z);
+        JPH::RotatedTranslatedShapeSettings offsetShape(localOffset, JPH::Quat::sIdentity(), boxShape);
+        JPH::ShapeRefC finalShape = offsetShape.Create().Get();
+
+        // World transform (object origin position + rotation)
+        const JPH::Vec3 jPos(transform.pos.x, transform.pos.y, transform.pos.z);
+        const JPH::Quat jRot(transform.quat.x, transform.quat.y, transform.quat.z, transform.quat.w);
+
+        JPH::BodyCreationSettings bodySettings(finalShape, jPos, jRot, motionType, layer);
+        bodySettings.mUserData = static_cast<JPH::uint64>(entity);
+
+        const JPH::Body* body = bodyInterface.CreateBody(bodySettings);
+        if (!body) {
+            LOG(NEXO_ERROR, "Body creation failed for entity {}", (int)entity);
+            return JPH::BodyID();
+        }
+
+        bodyInterface.AddBody(body->GetID(), motionType == JPH::EMotionType::Dynamic ? JPH::EActivation::Activate :
+                                                                                       JPH::EActivation::DontActivate);
+
+        return body->GetID();
+    }
+
+    JPH::BodyID PhysicsSystem::createBodyFromBounds(ecs::Entity entity, const components::TransformComponent& transform,
+                                                    const math::AABB& localAabb, JPH::EMotionType motionType) const
+    {
+        const JPH::ObjectLayer layer = motionType == JPH::EMotionType::Dynamic ? Layers::MOVING : Layers::NON_MOVING;
+
+        JPH::BodyID id = createBodyFromAABBImpl(*bodyInterface, entity, transform, localAabb, motionType, layer);
+
+        if (!id.IsInvalid()) {
+            const auto type = motionType == JPH::EMotionType::Dynamic ?
+                                  components::PhysicsBodyComponent::Type::Dynamic :
+                                  components::PhysicsBodyComponent::Type::Static;
+
+            coord->addComponent(entity, components::PhysicsBodyComponent{id, type});
+        }
+
+        return id;
+    }
+
+    void PhysicsSystem::init()
+    {
         JPH::RegisterDefaultAllocator();
         JPH::Factory::sInstance = new JPH::Factory();
         JPH::RegisterTypes();
 
         tempAllocator = new JPH::TempAllocatorImpl(10 * 1024 * 1024);
-        jobSystem = new JPH::JobSystemThreadPool(
-            JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers, static_cast<int>(std::thread::hardware_concurrency()) - 1
-        );
+        jobSystem     = new JPH::JobSystemThreadPool(JPH::cMaxPhysicsJobs, JPH::cMaxPhysicsBarriers,
+                                                     static_cast<int>(std::thread::hardware_concurrency()) - 1);
 
         physicsSystem = new JPH::PhysicsSystem();
-        physicsSystem->Init(1024, 0, 1024, 1024, broadPhaseLayerInterface, objectVsBroadPhaseLayerFilter, objectLayerPairFilter);
+        physicsSystem->Init(1024, 0, 1024, 1024, broadPhaseLayerInterface, objectVsBroadPhaseLayerFilter,
+                            objectLayerPairFilter);
         physicsSystem->SetGravity(JPH::Vec3(0, -9.81f, 0));
 
-        bodyInterface = &physicsSystem->GetBodyInterface();
+        bodyInterface     = &physicsSystem->GetBodyInterface();
         bodyLockInterface = &physicsSystem->GetBodyLockInterface();
     }
 
     void PhysicsSystem::update()
     {
         const double currentTime = std::chrono::duration_cast<std::chrono::duration<double>>(
-            std::chrono::high_resolution_clock::now().time_since_epoch()).count();
+                                       std::chrono::high_resolution_clock::now().time_since_epoch())
+                                       .count();
 
         const double delta = currentTime - m_lastPhysicsTime;
-        if (delta < fixedTimestep)
-            return;
+        if (delta < fixedTimestep) return;
 
         m_lastPhysicsTime = currentTime;
 
@@ -67,33 +140,27 @@ namespace nexo::system {
         physicsSystem->Update(fixedTimestep, collisionSteps, tempAllocator, jobSystem);
 
         for (const ecs::Entity entity : entities) {
-            auto& transform = getComponent<components::TransformComponent>(entity);
+            auto& transform         = getComponent<components::TransformComponent>(entity);
             const auto& physicsBody = getComponent<components::PhysicsBodyComponent>(entity);
 
             const JPH::Vec3 pos = bodyInterface->GetPosition(physicsBody.bodyID);
-            transform.pos = glm::vec3(pos.GetX(), pos.GetY(), pos.GetZ());
+            transform.pos       = glm::vec3(pos.GetX(), pos.GetY(), pos.GetZ());
 
             const JPH::Quat rot = bodyInterface->GetRotation(physicsBody.bodyID);
-            transform.quat = glm::quat(rot.GetW(), rot.GetX(), rot.GetY(), rot.GetZ());
+            transform.quat      = glm::quat(rot.GetW(), rot.GetX(), rot.GetY(), rot.GetZ());
         }
     }
 
-
-    JPH::BodyID PhysicsSystem::createBodyFromShape(
-        const ecs::Entity entity,
-        const components::TransformComponent& transform,
-        const ShapeType shapeType,
-        const JPH::EMotionType motionType
-    ) const
+    JPH::BodyID PhysicsSystem::createBodyFromShape(const ecs::Entity entity,
+                                                   const components::TransformComponent& transform,
+                                                   const ShapeType shapeType, const JPH::EMotionType motionType) const
     {
         const JPH::ShapeSettings* shapeSettings = nullptr;
 
         switch (shapeType) {
             case ShapeType::Box:
-                shapeSettings = new JPH::BoxShapeSettings(JPH::Vec3(
-                    transform.size.x * 0.5f,
-                    transform.size.y * 0.5f,
-                    transform.size.z * 0.5f));
+                shapeSettings = new JPH::BoxShapeSettings(
+                    JPH::Vec3(transform.size.x * 0.5f, transform.size.y * 0.5f, transform.size.z * 0.5f));
                 break;
 
             case ShapeType::Sphere:
@@ -102,20 +169,16 @@ namespace nexo::system {
 
             case ShapeType::Cylinder: {
                 const float halfHeight = transform.size.y;
-                const float radius = transform.size.x;
-                shapeSettings = new JPH::CylinderShapeSettings(halfHeight, radius);
+                const float radius     = transform.size.x;
+                shapeSettings          = new JPH::CylinderShapeSettings(halfHeight, radius);
                 break;
             }
 
             case ShapeType::Tetrahedron: {
                 const auto size = transform.size.x;
                 // Define the vertices of the tetrahedron relative to its center
-                const JPH::Vec3 vertices[] = {
-                    JPH::Vec3(-size, -size, -size),
-                    JPH::Vec3(size, -size, size),
-                    JPH::Vec3(-size, size, size),
-                    JPH::Vec3(size, size, -size)
-                };
+                const JPH::Vec3 vertices[] = {JPH::Vec3(-size, -size, -size), JPH::Vec3(size, -size, size),
+                                              JPH::Vec3(-size, size, size), JPH::Vec3(size, size, -size)};
 
                 // Create a convex hull shape using the vertices
                 shapeSettings = new JPH::ConvexHullShapeSettings(vertices, std::size(vertices));
@@ -125,7 +188,7 @@ namespace nexo::system {
             case ShapeType::Pyramid: {
                 // Define the vertices of the pyramid relative to its center
                 const JPH::Vec3 vertices[] = {
-                    JPH::Vec3(0.0f, 1.0f, 0.0f) * transform.size.y, // Apex
+                    JPH::Vec3(0.0f, 1.0f, 0.0f) * transform.size.y,    // Apex
                     JPH::Vec3(-1.0f, -1.0f, -1.0f) * transform.size.x, // Base vertex 1
                     JPH::Vec3(1.0f, -1.0f, -1.0f) * transform.size.x,  // Base vertex 2
                     JPH::Vec3(1.0f, -1.0f, 1.0f) * transform.size.x,   // Base vertex 3
@@ -163,8 +226,7 @@ namespace nexo::system {
 
         const JPH::BodyCreationSettings bodySettings(
             shape, position, rotation, motionType,
-            motionType == JPH::EMotionType::Dynamic ? Layers::MOVING : Layers::NON_MOVING
-        );
+            motionType == JPH::EMotionType::Dynamic ? Layers::MOVING : Layers::NON_MOVING);
 
         const JPH::Body* body = bodyInterface->CreateBody(bodySettings);
         if (!body) {
@@ -172,32 +234,28 @@ namespace nexo::system {
             return {};
         }
 
-        bodyInterface->AddBody(body->GetID(),
-            motionType == JPH::EMotionType::Dynamic ? JPH::EActivation::Activate : JPH::EActivation::DontActivate
-        );
+        bodyInterface->AddBody(body->GetID(), motionType == JPH::EMotionType::Dynamic ? JPH::EActivation::Activate :
+                                                                                        JPH::EActivation::DontActivate);
 
-        const auto type = motionType == JPH::EMotionType::Dynamic
-            ? components::PhysicsBodyComponent::Type::Dynamic
-            : components::PhysicsBodyComponent::Type::Static;
+        const auto type = motionType == JPH::EMotionType::Dynamic ? components::PhysicsBodyComponent::Type::Dynamic :
+                                                                    components::PhysicsBodyComponent::Type::Static;
 
-        coord->addComponent(entity, components::PhysicsBodyComponent{ body->GetID(), type });
+        coord->addComponent(entity, components::PhysicsBodyComponent{body->GetID(), type});
 
         return body->GetID();
     }
 
-    JPH::BodyID PhysicsSystem::createDynamicBody(const ecs::Entity entity, const components::TransformComponent& transform) const
+    JPH::BodyID PhysicsSystem::createDynamicBody(const ecs::Entity entity,
+                                                 const components::TransformComponent& transform) const
     {
         const JPH::Vec3 halfExtent(transform.size.x * 0.5f, transform.size.y * 0.5f, transform.size.z * 0.5f);
         const JPH::BoxShapeSettings shapeSettings(halfExtent);
         const JPH::ShapeRefC shape = shapeSettings.Create().Get();
 
         const JPH::BodyCreationSettings bodySettings(
-            shape,
-            JPH::Vec3(transform.pos.x, transform.pos.y, transform.pos.z),
+            shape, JPH::Vec3(transform.pos.x, transform.pos.y, transform.pos.z),
             JPH::Quat(transform.quat.x, transform.quat.y, transform.quat.z, transform.quat.w),
-            JPH::EMotionType::Dynamic,
-            Layers::MOVING
-        );
+            JPH::EMotionType::Dynamic, Layers::MOVING);
 
         const JPH::Body* body = bodyInterface->CreateBody(bodySettings);
 
@@ -208,40 +266,37 @@ namespace nexo::system {
 
         bodyInterface->AddBody(body->GetID(), JPH::EActivation::Activate);
 
-        coord->addComponent(entity, components::PhysicsBodyComponent{ body->GetID(), components::PhysicsBodyComponent::Type::Dynamic });
+        coord->addComponent(
+            entity, components::PhysicsBodyComponent{body->GetID(), components::PhysicsBodyComponent::Type::Dynamic});
         return body->GetID();
     }
 
-    JPH::BodyID PhysicsSystem::createStaticBody(ecs::Entity entity, const components::TransformComponent& transform) const
+    JPH::BodyID PhysicsSystem::createStaticBody(ecs::Entity entity,
+                                                const components::TransformComponent& transform) const
     {
         JPH::BoxShapeSettings baseShapeSettings(
-            JPH::Vec3(transform.size.x * 0.5f, transform.size.y * 0.5f, transform.size.z * 0.5f)
-        );
+            JPH::Vec3(transform.size.x * 0.5f, transform.size.y * 0.5f, transform.size.z * 0.5f));
         JPH::ShapeRefC baseShape = baseShapeSettings.Create().Get();
 
         JPH::RotatedTranslatedShapeSettings compoundSettings(
-            JPH::Vec3::sZero(),
-            JPH::Quat(transform.quat.x, transform.quat.y, transform.quat.z, transform.quat.w),
-            baseShape
-        );
+            JPH::Vec3::sZero(), JPH::Quat(transform.quat.x, transform.quat.y, transform.quat.z, transform.quat.w),
+            baseShape);
         JPH::ShapeRefC rotatedShape = compoundSettings.Create().Get();
 
-        JPH::BodyCreationSettings bodySettings(
-            rotatedShape,
-            JPH::Vec3(transform.pos.x, transform.pos.y, transform.pos.z),
-            JPH::Quat::sIdentity(),
-            JPH::EMotionType::Static,
-            Layers::NON_MOVING
-        );
+        JPH::BodyCreationSettings bodySettings(rotatedShape,
+                                               JPH::Vec3(transform.pos.x, transform.pos.y, transform.pos.z),
+                                               JPH::Quat::sIdentity(), JPH::EMotionType::Static, Layers::NON_MOVING);
 
         JPH::Body* body = bodyInterface->CreateBody(bodySettings);
         bodyInterface->AddBody(body->GetID(), JPH::EActivation::DontActivate);
 
-        coord->addComponent(entity, components::PhysicsBodyComponent{ body->GetID(), components::PhysicsBodyComponent::Type::Static });
+        coord->addComponent(
+            entity, components::PhysicsBodyComponent{body->GetID(), components::PhysicsBodyComponent::Type::Static});
         return body->GetID();
     }
 
-    JPH::BodyID PhysicsSystem::createBody(const components::TransformComponent& transform, JPH::EMotionType motionType) const
+    JPH::BodyID PhysicsSystem::createBody(const components::TransformComponent& transform,
+                                          JPH::EMotionType motionType) const
     {
         JPH::Vec3 halfExtent(transform.size.x * 0.5f, transform.size.y * 0.5f, transform.size.z * 0.5f);
         JPH::BoxShapeSettings shapeSettings(halfExtent);
@@ -259,7 +314,6 @@ namespace nexo::system {
         return body->GetID();
     }
 
-
     void PhysicsSystem::syncTransformsToBodies(ecs::Coordinator& coordinator) const
     {
         for (const auto& entity : entities) {
@@ -268,10 +322,10 @@ namespace nexo::system {
                 continue;
 
             auto& transform = coordinator.getComponent<components::TransformComponent>(entity);
-            auto& bodyComp = coordinator.getComponent<components::PhysicsBodyComponent>(entity);
+            auto& bodyComp  = coordinator.getComponent<components::PhysicsBodyComponent>(entity);
 
             const JPH::Vec3 position = physicsSystem->GetBodyInterface().GetPosition(bodyComp.bodyID);
-            transform.pos = glm::vec3(position.GetX(), position.GetY(), position.GetZ());
+            transform.pos            = glm::vec3(position.GetX(), position.GetY(), position.GetZ());
 
             JPH::Quat rot = physicsSystem->GetBodyInterface().GetRotation(bodyComp.bodyID);
 
@@ -299,4 +353,4 @@ namespace nexo::system {
         bodyInterface->DeactivateBody(bodyID);
     }
 
-}
+} // namespace nexo::system
