@@ -260,6 +260,47 @@ namespace nexo::editor {
         if (bodyIdShelf.IsInvalid()) {
             THROW_EXCEPTION(InvalidBodyId, shelf);
         }
+
+        auto &catalog = assets::AssetCatalog::getInstance();
+
+        std::array<assets::AssetRef<assets::Texture>, 10> polaTextures = {
+            nullptr,
+            catalog.getAsset(assets::AssetLocation("my_package::mehdy@Textures/Picture")).as<assets::Texture>(),
+            catalog.getAsset(assets::AssetLocation("my_package::baz@Textures/Picture")).as<assets::Texture>(),
+            catalog.getAsset(assets::AssetLocation("my_package::fdlm@Textures/Picture")).as<assets::Texture>(),
+            catalog.getAsset(assets::AssetLocation("my_package::guillaume@Textures/Picture")).as<assets::Texture>(),
+            catalog.getAsset(assets::AssetLocation("my_package::guizmo@Textures/Picture")).as<assets::Texture>(),
+            catalog.getAsset(assets::AssetLocation("my_package::jean@Textures/Picture")).as<assets::Texture>(),
+            catalog.getAsset(assets::AssetLocation("my_package::kevin@Textures/Picture")).as<assets::Texture>(),
+            catalog.getAsset(assets::AssetLocation("my_package::kaben@Textures/Picture")).as<assets::Texture>(),
+            catalog.getAsset(assets::AssetLocation("my_package::leo@Textures/Picture")).as<assets::Texture>(),
+        };
+
+        //// add pictures in frames
+        for (unsigned int i = 1; i <= 9; ++i) {
+            std::string frameName = std::format("pola{}-1", i);
+            ecs::Entity frameEntity = FindEntityByName(frameName.c_str());
+            auto &materialComponent = Application::m_coordinator->getComponent<components::MaterialComponent>(frameEntity);
+            auto matRef = materialComponent.material.lock();
+            auto &material = matRef->getData();
+            material->albedoTexture = polaTextures[i];
+        }
+
+        std::string frameName = "frame_pic-1";
+        ecs::Entity frameEntity = FindEntityByName(frameName.c_str());
+        auto &materialComponentFrame = Application::m_coordinator->getComponent<components::MaterialComponent>(frameEntity);
+        auto matRefFrame = materialComponentFrame.material.lock();
+        auto &materialFrame = matRefFrame->getData();
+        auto cathedralAssetRef = catalog.getAsset(assets::AssetLocation("my_package::cathedral@Textures/Picture")).as<assets::Texture>();
+        materialFrame->albedoTexture = cathedralAssetRef;
+
+        std::string deskFrame = "desk_frame_pic-1";
+        ecs::Entity deskFrameEntity = FindEntityByName(deskFrame.c_str());
+        auto &materialComponentDeskFrame = Application::m_coordinator->getComponent<components::MaterialComponent>(deskFrameEntity);
+        auto matRefDeskFrame = materialComponentDeskFrame.material.lock();
+        auto &materialDeskFrame = matRefDeskFrame->getData();
+        auto thomasGuigzAssetRef = catalog.getAsset(assets::AssetLocation("my_package::Thomas_Guigs@Textures/Picture")).as<assets::Texture>();
+        materialDeskFrame->albedoTexture = thomasGuigzAssetRef;
     }
 
     void EditorScene::lightsScene(const glm::vec3& offset) const
@@ -311,20 +352,6 @@ namespace nexo::editor {
             utils::addPropsTo(garlandSpotLight, utils::PropsType::SPOT_LIGHT);
             scene.addEntity(garlandSpotLight);
         }
-
-        // Subjects
-        // const auto subject1 =
-        //     EntityFactory3D::createSphere({7.0f + offset.x, 3.0f + offset.y, -4.0f + offset.z}, {1.0f, 1.0f, 1.0f},
-        //                                   {0.0f, 0.0f, 0.0f}, {0.75f, 0.75f, 0.75f, 1.0f}, 4);
-        // scene.addEntity(subject1);
-        // const auto subject2 =
-        //     EntityFactory3D::createCylinder({7.0f + offset.x, 3.0f + offset.y, 0.0f + offset.z}, {1.0f, 1.0f, 1.0f},
-        //                                     {33.0f, 0.0f, 33.0f}, {0.75f, 0.75f, 0.75f, 1.0f}, 32);
-        // scene.addEntity(subject2);
-        // const auto subject3 =
-        //     EntityFactory3D::createPyramid({7.0f + offset.x, 3.0f + offset.y, 4.0f + offset.z}, {1.0f, 1.0f, 1.0f},
-        //                                    {0.0f, 45.0f, 0.0f}, {0.75f, 0.75f, 0.75f, 1.0f});
-        // scene.addEntity(subject3);
     }
 
     void EditorScene::scriptedLightsOnModelsScene(const glm::vec3& offset) const

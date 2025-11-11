@@ -547,7 +547,7 @@
 		},
 		{
 			"mesh":24,
-			"name":"desk_picture_frame",
+			"name":"desk_frame",
 			"rotation":[
 				-0.23315121233463287,
 				0.6675631403923035,
@@ -2447,7 +2447,7 @@
 			]
 		},
 		{
-			"name":"Object_0.004",
+			"name":"desk_frame_pic",
 			"primitives":[
 				{
 					"attributes":{
@@ -2868,7 +2868,7 @@
 			]
 		},
 		{
-			"name":"Cube.018",
+			"name":"frame_pic",
 			"primitives":[
 				{
 					"attributes":{

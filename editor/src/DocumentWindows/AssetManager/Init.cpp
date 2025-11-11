@@ -336,6 +336,12 @@ namespace nexo::editor {
         }
         {
             assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/kevin.jpg");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::kevin@Textures/Picture"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
             std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/baz.jpg");
             assets::ImporterFileInput fileInput{path};
             importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::baz@Textures/Picture"), fileInput);
