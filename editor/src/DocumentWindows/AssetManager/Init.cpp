@@ -83,9 +83,15 @@ namespace nexo::editor {
         }
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/domino/domino.gltf");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/domino/domino_vertical.gltf");
             assets::ImporterFileInput fileInput{path};
-            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::domino@Demo"), fileInput);
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::dominoV@Demo"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/domino/domino_horizontal.gltf");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::dominoH@Demo"), fileInput);
         }
         {
             assets::AssetImporter importer;

@@ -423,6 +423,43 @@ namespace nexo {
         return rootEntity;
     }
 
+    ecs::Entity EntityFactory3D::createModel(const assets::AssetRef<assets::Model>& model, glm::vec3 pos, glm::vec3 size,
+                                         glm::quat rotation)
+    {
+        auto modelAsset = model.lock();
+        if (!modelAsset || !modelAsset->getData()) return ecs::INVALID_ENTITY;
+
+        ecs::Entity rootEntity = Application::m_coordinator->createEntity();
+
+        components::TransformComponent rootTransform;
+        rootTransform.pos  = pos;
+        rootTransform.size = size;
+        rootTransform.quat = rotation;
+
+        // Create RootComponent to identify this as the root of a hierarchy
+        components::RootComponent rootComp;
+        rootComp.modelRef = model;
+
+        const std::string rawPath = modelAsset->getMetadata().location.getName().data();
+        std::filesystem::path fsPath{rawPath};
+        rootComp.name = fsPath.stem().string();
+
+        Application::m_coordinator->addComponent(rootEntity, rootTransform);
+        Application::m_coordinator->addComponent(rootEntity, rootComp);
+
+        // Process model nodes to create entity hierarchy
+        const assets::MeshNode& rootNode = *modelAsset->getData();
+        int childCount                   = processModelNode(rootEntity, rootNode);
+
+        // Update child count in root component
+        auto& storedRoot      = Application::m_coordinator->getComponent<components::RootComponent>(rootEntity);
+        storedRoot.childCount = childCount;
+        components::UuidComponent uuid;
+        Application::m_coordinator->addComponent(rootEntity, uuid);
+
+        return rootEntity;
+    }
+
     int EntityFactory3D::processModelNode(ecs::Entity parentEntity, const assets::MeshNode& node)
     {
         int totalChildrenCreated = 0;
