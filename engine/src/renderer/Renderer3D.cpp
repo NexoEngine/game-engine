@@ -57,15 +57,17 @@ namespace nexo::renderer {
         albedoUnshadedTransparent->unbind();
 
         const auto pbr = ShaderLibrary::getInstance().get("PBR");
-        pbr->bind();
-        pbr->setUniformIntArray("uTexture", samplers.data(),
-                                NxRenderer3DStorage::maxTextureSlots);
-        int cubeSamplers[10];
-        for (int i = 0; i < 10; ++i) {
-            cubeSamplers[i] = 32 + i; // texture units 32..(32+10-1)
+        if (pbr) {
+            pbr->bind();
+            pbr->setUniformIntArray("uTexture", samplers.data(),
+                                    NxRenderer3DStorage::maxTextureSlots);
+            int cubeSamplers[10];
+            for (int i = 0; i < 10; ++i) {
+                cubeSamplers[i] = 32 + i; // texture units 32..(32+10-1)
+            }
+            pbr->setUniformIntArray("uPointShadowMaps", cubeSamplers, 10);
+            pbr->unbind();
         }
-        pbr->setUniformIntArray("uPointShadowMaps", cubeSamplers, 10);
-        pbr->unbind();
 
         m_storage->textureSlotsBatch.clear();
         m_storage->textureSlotsBatch.resize(1);

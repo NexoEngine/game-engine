@@ -299,6 +299,16 @@ namespace nexo::editor {
          */
         void render() const;
 
+        /**
+         * @brief Retrieves a const reference to the windows map.
+         *
+         * @return const std::unordered_map<std::type_index, std::vector<std::shared_ptr<IDocumentWindow>>>& Reference to the windows map.
+         */
+        [[nodiscard]] const std::unordered_map<std::type_index, std::vector<std::shared_ptr<IDocumentWindow>>>& getAllWindows() const
+        {
+            return m_windows;
+        }
+
        private:
         std::unordered_map<std::type_index, std::vector<std::shared_ptr<IDocumentWindow>>> m_windows;
 

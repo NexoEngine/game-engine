@@ -17,6 +17,9 @@
 #include "IDocumentWindow.hpp"
 #define L_DEBUG 1
 #include <memory>
+#include <unordered_map>
+#include <string>
+#include <utility>
 
 #include "WindowRegistry.hpp"
 #include "inputs/InputManager.hpp"
@@ -229,8 +232,17 @@ namespace nexo::editor {
          */
         [[nodiscard]] std::vector<CommandInfo> handleFocusedWindowCommands() const;
 
+        void captureWindowStates();
+        void restoreWindowStates();
+        void hideGui();
+        void showGui();
+        void toggleGuiVisibility();
+
         bool m_quit           = false;
         bool m_showDemoWindow = false;
+        bool m_guiHidden = false;
+        std::unordered_map<std::string, std::pair<bool, bool>> m_windowStates;
+        std::string m_focusedWindowName;
         WindowRegistry m_windowRegistry;
         InputManager m_inputManager;
     };
