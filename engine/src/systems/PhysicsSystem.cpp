@@ -288,6 +288,8 @@ namespace nexo::system {
 
         bodySettings.mUserData = static_cast<JPH::uint64>(entity);
 
+        bodySettings.mUserData = static_cast<JPH::uint64>(entity);
+
         const JPH::Body* body = bodyInterface->CreateBody(bodySettings);
         if (!body) {
             LOG(NEXO_ERROR, "Body creation failed.");
