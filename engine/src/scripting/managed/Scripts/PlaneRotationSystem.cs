@@ -25,45 +25,38 @@ namespace Nexo.Scripts;
 /// </summary>
 public class PlaneRotationSystem : SystemBase
 {
-    private readonly List<UInt32> _planeEntities = new();
+    private UInt32 _planeId;
     private Boolean _planeFound = false;
+    private UInt32 _propellerId;
 
     // Flight parameters
     private Single _angle = 0.0f;
     private const Single FlightSpeed = 0.5f;
-    private const Single FlightRadius = 15.0f;
-    private readonly Vector3 _centerPosition = new Vector3(0.0f, 0.0f, 20.0f);
+    private const Single FlightRadius = 2.5f;
+    private readonly Vector3 _centerPosition = new Vector3(4.5f, 7.0f, -3.0f);
 
     private const Single BankAngle = 0.3f;
+
+    private const Single PropellerSpinSpeed = 25.0f;
 
     protected override void OnInitialize(WorldState worldState)
     {
         Logger.Log(LogLevel.Info, $"Initializing {Name} system");
+        var planeName = "Low Poly Biplane Body";
+        var planeId = NativeInterop.FindEntityByName(planeName);
+        var propellerName = "Low Poly Biplane Propeller";
+        var propellerId = NativeInterop.FindEntityByName(propellerName);
 
-        for (int i = 0; i < 4; i++)
-        {
-            var planeName = $"Low Poly Biplane Propeller-{i}";
-            var planeId = NativeInterop.FindEntityByName(planeName);
-
-            if (planeId != UInt32.MaxValue)
-            {
-                _planeEntities.Add(planeId);
-                Logger.Log(LogLevel.Info, $"Found plane mesh '{planeName}' with ID: {planeId}");
-            }
-            else
-            {
-                Logger.Log(LogLevel.Warn, $"Could not find plane mesh '{planeName}'");
-            }
-        }
-
-        if (_planeEntities.Count > 0)
+        if (planeId != UInt32.MaxValue && propellerId != UInt32.MaxValue)
         {
             _planeFound = true;
-            Logger.Log(LogLevel.Info, $"Successfully found {_planeEntities.Count} plane mesh(es)");
+            _planeId = planeId;
+            _propellerId = propellerId;
+            Logger.Log(LogLevel.Info, $"Successfully found plane model with id {planeId}");
         }
         else
         {
-            Logger.Log(LogLevel.Error, "No plane meshes found! Make sure the entities exist in the scene.");
+            Logger.Log(LogLevel.Error, "No plane model found! Make sure the entities exist in the scene.");
             _planeFound = false;
         }
     }
@@ -83,7 +76,7 @@ public class PlaneRotationSystem : SystemBase
 
         Vector3 newPosition = _centerPosition + new Vector3(
             MathF.Cos(_angle) * FlightRadius,
-            0.0f, // Keep constant height
+            0.0f,
             MathF.Sin(_angle) * FlightRadius
         );
         Vector3 forwardDirection = new Vector3(
@@ -97,33 +90,47 @@ public class PlaneRotationSystem : SystemBase
 
         Quaternion yawRotation = Quaternion.CreateFromAxisAngle(Vector3.UnitY, yawAngle);
 
-        Quaternion bankRotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, -BankAngle);
+        Quaternion bankRotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, BankAngle);
 
         Quaternion finalRotation = yawRotation * bankRotation;
 
-        foreach (var planeId in _planeEntities)
+        try
         {
-            try
-            {
-                ref Transform transform = ref NativeInterop.GetComponent<Transform>(planeId);
+            ref Transform transform = ref NativeInterop.GetComponent<Transform>(_planeId);
 
-                transform.pos = newPosition;
+            transform.pos = newPosition;
 
-                transform.quat = finalRotation;
-                transform.dirty = true;
-                NativeInterop.MarkHierarchyDirty(planeId);
-            }
-            catch (Exception ex)
-            {
-                Logger.Log(LogLevel.Error, $"Error updating plane mesh {planeId}: {ex.Message}");
-            }
+            transform.quat = finalRotation;
+            transform.dirty = true;
+            NativeInterop.MarkHierarchyDirty(_planeId);
+        }
+        catch (Exception ex)
+        {
+            Logger.Log(LogLevel.Error, $"Error updating plane mesh {_planeId}: {ex.Message}");
+        }
+
+        try
+        {
+            ref Transform propTransform = ref NativeInterop.GetComponent<Transform>(_propellerId);
+
+            float spinDelta = PropellerSpinSpeed * deltaTime;
+
+            Quaternion spin = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, spinDelta);
+
+            propTransform.quat = Quaternion.Normalize(propTransform.quat * spin);
+
+            propTransform.dirty = true;
+            NativeInterop.MarkHierarchyDirty(_propellerId);
+        }
+        catch (Exception ex)
+        {
+            Logger.Log(LogLevel.Error, $"Error spinning propeller {_propellerId}: {ex.Message}");
         }
     }
 
     protected override void OnShutdown(WorldState worldState)
     {
         Logger.Log(LogLevel.Info, $"Shutting down {Name} system");
-        _planeEntities.Clear();
         _planeFound = false;
     }
 }
