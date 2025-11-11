@@ -16,19 +16,26 @@
 #define PHYSICS_SYSTEM_HPP
 
 #include <Coordinator.hpp>
-#include <iostream>
 #include <Jolt/Jolt.h>
+#include <iostream>
+
 #include <Jolt/Core/TempAllocator.h>
+
 #include <Jolt/Core/JobSystemThreadPool.h>
+
 #include <Jolt/Physics/PhysicsSystem.h>
+
 #include <Jolt/Physics/Collision/BroadPhase/BroadPhaseLayer.h>
+
 #include <Jolt/Physics/Body/BodyCreationSettings.h>
 #include <Jolt/Physics/Body/BodyInterface.h>
+
 #include <Entity.hpp>
 #include <GroupSystem.hpp>
 #include <QuerySystem.hpp>
 #include <components/PhysicsBodyComponent.hpp>
 #include <components/Transform.hpp>
+#include <math/Bounds.hpp>
 #include <vector>
 
 namespace nexo::system {
@@ -163,6 +170,9 @@ namespace nexo::system {
 
         void init();
         void update();
+
+        JPH::BodyID createBodyFromBounds(ecs::Entity entity, const components::TransformComponent& transform,
+                                                const math::AABB& localAabb, JPH::EMotionType motionType) const;
 
         [[nodiscard]] JPH::BodyID createDynamicBody(ecs::Entity entity,
                                                     const components::TransformComponent& transform) const;

@@ -79,6 +79,18 @@ namespace nexo {
                                        glm::vec3 rotation);
 
         /**
+         * @brief Creates a model entity from a given model asset.
+         * Constructs a model entity at the specified position, with the given size and rotation.
+         * @param model The asset reference to the model to be used.
+         * @param pos The position of the model in 3D space.
+         * @param size The dimensions (width, height, depth) of the model.
+         * @param rotation The rotation of the model (as a quaternion).
+         * @return ecs::Entity The newly created model entity.
+         */
+        static ecs::Entity createModel(const assets::AssetRef<assets::Model>& model, glm::vec3 pos, glm::vec3 size,
+                                       glm::quat rotation);
+
+        /**
          * @brief Recursively processes a model node and its children to create entities.
          *
          * This function creates an entity for the given model node, sets up its transform and parent components,

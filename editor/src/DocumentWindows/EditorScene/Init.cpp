@@ -12,9 +12,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include <components/Name.hpp>
 #include <components/Video.hpp>
+
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+
 #include <math/Light.hpp>
 #include <random>
+#include <sstream>
 
 #include "CameraFactory.hpp"
 #include "EditorScene.hpp"
@@ -104,11 +110,13 @@ namespace nexo::editor {
 
         m_sceneUuid = app.getSceneManager().getScene(m_sceneId).getUuid();
         if (m_defaultScene) {
-            chambouleScene(glm::vec3{0.0f, 0.0f, 0.0f});
             // loadDefaultEntities();
+            fullScene();
+            dominoScene({7.5f, 4.07f, -0.5f});
+            lightsScene(glm::vec3{0.0f, 0.0f, 0.0f});
+            // chambouleScene(glm::vec3{0.0f, 0.0f, 0.0f});
             // physicScene(glm::vec3{-60.0f, 0.0f, 0.0f});
             // videoScene(glm::vec3{-15.0f, 0.0f, 0.0f});
-            // lightsScene(glm::vec3{50.0f, 0.0f, 0.0f});
             // forestScene({100.0f, 1.0f, 0.0f});
         }
     }
@@ -184,32 +192,80 @@ namespace nexo::editor {
                                   static_cast<unsigned int>(m_contentSize.y));
     }
 
+    ecs::Entity FindEntityByName(const char* name)
+    {
+        if (!name) {
+            LOG(NEXO_ERROR, "NxFindEntityByName: name is null");
+            return static_cast<ecs::Entity>(-1);
+        }
+
+        auto& app            = Application::getInstance();
+        auto& coordinator    = *Application::m_coordinator;
+        const auto& scene    = app.getSceneManager().getScene(0);
+        const auto& entities = scene.getEntities();
+
+        for (const auto entity : entities) {
+            if (coordinator.entityHasComponent<components::NameComponent>(entity)) {
+                const auto& nameComponent = coordinator.getComponent<components::NameComponent>(entity);
+                if (nameComponent.name == name) {
+                    return entity;
+                }
+            }
+        }
+
+        LOG(NEXO_WARN, "FindEntityByName: Entity with name '{}' not found", name);
+        return static_cast<ecs::Entity>(-1);
+    }
+
     void EditorScene::loadDefaultEntities(const glm::vec3& offset) const
+    {
+    }
+
+    void EditorScene::fullScene(const glm::vec3& offset) const
+    {
+        auto& app           = getApp();
+
+        //// Import and add to scene models
+        addModelToScene("my_package::full_room@Demo", {0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z});
+        addModelToScene("my_package::desk@Demo", {7.44f + offset.x, 1.93f + offset.y, 0.0f + offset.z});
+        addModelToScene("my_package::shelf@Demo", {8.86f + offset.x, 5.60f + offset.y, 0.0f + offset.z});
+
+        //// add physics body to some models
+        ecs::Entity desk = FindEntityByName("desk");
+        if (Application::m_coordinator->entityHasComponent<components::ParentComponent>(desk)) {
+            desk = Application::m_coordinator->getComponent<components::ParentComponent>(desk).parent;
+        }
+        auto rootCompDesk = Application::m_coordinator->getComponent<components::RootComponent>(desk);
+        auto modelDesk = rootCompDesk.modelRef.lock();
+        auto boundingBoxDesk         = modelDesk->rootBounds;
+        auto transformCompDesk =
+            Application::m_coordinator->getComponent<components::TransformComponent>(desk);
+        const JPH::BodyID bodyIdDesk = app.getPhysicsSystem()->createBodyFromBounds(desk, transformCompDesk, boundingBoxDesk,
+                                                                                JPH::EMotionType::Static);
+        if (bodyIdDesk.IsInvalid()) {
+            THROW_EXCEPTION(InvalidBodyId, desk);
+        }
+
+        ecs::Entity shelf = FindEntityByName("shelf");
+        if (Application::m_coordinator->entityHasComponent<components::ParentComponent>(shelf)) {
+            shelf = Application::m_coordinator->getComponent<components::ParentComponent>(shelf).parent;
+        }
+        auto rootCompShelf = Application::m_coordinator->getComponent<components::RootComponent>(shelf);
+        auto modelShelf = rootCompShelf.modelRef.lock();
+        auto boundingBoxShelf         = modelShelf->rootBounds;
+        auto transformCompShelf =
+            Application::m_coordinator->getComponent<components::TransformComponent>(shelf);
+        const JPH::BodyID bodyIdShelf = app.getPhysicsSystem()->createBodyFromBounds(shelf, transformCompShelf, boundingBoxShelf,
+                                                                                JPH::EMotionType::Static);
+        if (bodyIdShelf.IsInvalid()) {
+            THROW_EXCEPTION(InvalidBodyId, shelf);
+        }
+    }
+
+    void EditorScene::lightsScene(const glm::vec3& offset) const
     {
         auto& app           = getApp();
         scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
-        const auto& catalog = nexo::assets::AssetCatalog::getInstance();
-
-        const assets::AssetLocation fullRoomModel("my_package::full_room@Demo");
-        const auto fullRoomAssetRef = catalog.getAsset(fullRoomModel).as<assets::Model>();
-        const auto fullRoom         = EntityFactory3D::createModel(
-            fullRoomAssetRef, {0.0 + offset.x, 0.0 + offset.y, 0.0 + offset.z}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
-        scene.addEntity(fullRoom);
-
-        const auto backWall =
-            EntityFactory3D::createCube({10.0f + offset.x, 7.0f + offset.y, 0.0f + offset.z}, {0.5f, 14.0f, 20.0f},
-                                        {0.0f, 0.0f, 0.0f}, {0.29f, 0.41f, 0.45f, 1.0f});
-        scene.addEntity(backWall);
-
-        const auto leftWall =
-            EntityFactory3D::createCube({0.0f + offset.x, 7.0f + offset.y, 10.0f + offset.z}, {20.0f, 14.0f, 0.5f},
-                                        {0.0f, 0.0f, 0.0f}, {0.15f, 0.21f, 0.25f, 1.0f});
-        scene.addEntity(leftWall);
-
-        const auto rightWall =
-            EntityFactory3D::createCube({0.0f + offset.x, 7.0f + offset.y, -10.0f + offset.z}, {20.0f, 14.0f, 0.5f},
-                                        {0.0f, 0.0f, 0.0f}, {0.15f, 0.21f, 0.25f, 1.0f});
-        scene.addEntity(rightWall);
 
         const auto [linear, quad] = math::computeAttenuationFromDistance(70.0f);
         const auto pointLightTop  = LightFactory::createPointLight({0.0f + offset.x, 14.0f + offset.y, 0.0f + offset.z},
@@ -237,6 +293,7 @@ namespace nexo::editor {
         utils::addPropsTo(standSpotLightBottom, utils::PropsType::SPOT_LIGHT);
         scene.addEntity(standSpotLightBottom);
 
+        // multicolored points lights (garland)
         const auto [linear4, quad4] = math::computeAttenuationFromDistance(50.0f);
         const auto garlandPos       = std::vector<glm::vec3>{{9.16f + offset.x, 5.35f + offset.y, -1.68f + offset.z},
                                                              {9.16f + offset.x, 5.10f + offset.y, -1.16f + offset.z},
@@ -255,43 +312,22 @@ namespace nexo::editor {
             scene.addEntity(garlandSpotLight);
         }
 
-        const assets::AssetLocation corkBoardModel("my_package::cork_board@Demo");
-        const auto corkBoardAssetRef = catalog.getAsset(corkBoardModel).as<assets::Model>();
-        const auto corkBoard =
-            EntityFactory3D::createModel(corkBoardAssetRef, {9.63f + offset.x, 5.59f + offset.y, 0.0f + offset.z},
-                                         {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
-        scene.addEntity(corkBoard);
-
-        const assets::AssetLocation frameModel("my_package::frame@Demo");
-        const auto frameAssetRef = catalog.getAsset(frameModel).as<assets::Model>();
-        const auto frame =
-            EntityFactory3D::createModel(frameAssetRef, {9.7f + offset.x, 5.69f + offset.y, 3.96f + offset.z},
-                                         {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
-        scene.addEntity(frame);
-
-        const assets::AssetLocation duckModel("my_package::duck@Demo");
-        const auto duckAssetRef = catalog.getAsset(duckModel).as<assets::Model>();
-        const auto duck =
-            EntityFactory3D::createModel(duckAssetRef, {7.09f + offset.x, 3.88f + offset.y, -1.07f + offset.z},
-                                         {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
-        scene.addEntity(duck);
-
-        const assets::AssetLocation laptopModel("my_package::laptop@Demo");
-        const auto laptopAssetRef = catalog.getAsset(laptopModel).as<assets::Model>();
-        const auto laptop =
-            EntityFactory3D::createModel(laptopAssetRef, {7.05f + offset.x, 4.0f + offset.y, 0.0f + offset.z},
-                                         {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
-        scene.addEntity(laptop);
-
-        const assets::AssetLocation bretzelModel("my_package::bretzel@Demo");
-        const auto bretzelAssetRef = catalog.getAsset(bretzelModel).as<assets::Model>();
-        const auto bretzel =
-            EntityFactory3D::createModel(bretzelAssetRef, {7.4f + offset.x, 4.04f + offset.y, -2.98f + offset.z},
-                                         {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f, 0.0f});
-        scene.addEntity(bretzel);
+        // Subjects
+        // const auto subject1 =
+        //     EntityFactory3D::createSphere({7.0f + offset.x, 3.0f + offset.y, -4.0f + offset.z}, {1.0f, 1.0f, 1.0f},
+        //                                   {0.0f, 0.0f, 0.0f}, {0.75f, 0.75f, 0.75f, 1.0f}, 4);
+        // scene.addEntity(subject1);
+        // const auto subject2 =
+        //     EntityFactory3D::createCylinder({7.0f + offset.x, 3.0f + offset.y, 0.0f + offset.z}, {1.0f, 1.0f, 1.0f},
+        //                                     {33.0f, 0.0f, 33.0f}, {0.75f, 0.75f, 0.75f, 1.0f}, 32);
+        // scene.addEntity(subject2);
+        // const auto subject3 =
+        //     EntityFactory3D::createPyramid({7.0f + offset.x, 3.0f + offset.y, 4.0f + offset.z}, {1.0f, 1.0f, 1.0f},
+        //                                    {0.0f, 45.0f, 0.0f}, {0.75f, 0.75f, 0.75f, 1.0f});
+        // scene.addEntity(subject3);
     }
 
-    void EditorScene::lightsScene(const glm::vec3& offset) const
+    void EditorScene::scriptedLightsOnModelsScene(const glm::vec3& offset) const
     {
         auto& app           = getApp();
         scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
@@ -362,7 +398,7 @@ namespace nexo::editor {
         scene.addEntity(sword);
     }
 
-    void EditorScene::physicScene(const glm::vec3& offset) const
+    void EditorScene::fakirGameScene(const glm::vec3& offset) const
     {
         // Background
         createEntityWithPhysic({0.0f + offset.x, 40.0f + offset.y, -2.5f + offset.z}, {44.0f, 80.0f, 0.5f}, {0, 0, 0},
@@ -432,6 +468,129 @@ namespace nexo::editor {
                 createEntityWithPhysic(pos + offset, {0.4f, 6.0f, 0.4f}, {90.0f, 0, 0}, color,
                                        system::ShapeType::Cylinder, JPH::EMotionType::Static);
             }
+        }
+    }
+
+    void EditorScene::dominoScene(const glm::vec3& offset) const
+    {
+        auto& app           = getApp();
+        scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
+        const auto& catalog = nexo::assets::AssetCatalog::getInstance();
+
+        createEntityWithPhysic({9.25f, 5.78f, 1.56f}, {0.25f, 0.14f, 0.25f}, {0, 0, 0},
+                       {0.8f, 0.5f, 0.1f, 1.0f}, system::ShapeType::Pyramid, JPH::EMotionType::Static);
+        createEntityWithPhysic({9.06f, 5.85f, 1.6f}, {0.08f, 0.08f, 0.08f}, {0, 0, 0},
+                               {0.80f, 0.8f, 0.8f, 1.0f}, system::ShapeType::Sphere, JPH::EMotionType::Dynamic);
+
+        //// Get dominos pos
+        std::vector<glm::vec3> dominosPositions = {
+            {0.89f, 0.00f, -3.25f},  {0.87f, 0.00f, -3.13f},  {0.81f, 0.00f, -3.03f},  {0.70f, 0.00f, -2.98f},
+            {0.59f, 0.00f, -2.96f},  {0.47f, 0.00f, -2.96f},  {0.35f, 0.00f, -2.98f},  {0.23f, 0.00f, -3.00f},
+            {0.12f, 0.00f, -3.03f},  {0.00f, 0.00f, -3.07f},  {-0.11f, 0.00f, -3.11f}, {-0.22f, 0.00f, -3.15f},
+            {-0.34f, 0.00f, -3.19f}, {-0.45f, 0.00f, -3.22f}, {-0.57f, 0.00f, -3.23f}, {-0.69f, 0.00f, -3.22f},
+            {-0.80f, 0.00f, -3.19f}, {-0.91f, 0.00f, -3.14f}, {-1.01f, 0.00f, -3.08f}, {-1.10f, 0.00f, -3.00f},
+            {-1.18f, 0.00f, -2.91f}, {-1.25f, 0.00f, -2.81f}, {-1.30f, 0.00f, -2.70f}, {-1.33f, 0.00f, -2.59f},
+            {-1.35f, 0.00f, -2.47f}, {-1.35f, 0.00f, -2.35f}, {-1.34f, 0.00f, -2.23f}, {-1.30f, 0.00f, -2.12f},
+            {-1.26f, 0.00f, -2.01f}, {-1.19f, 0.00f, -1.91f}, {-1.12f, 0.00f, -1.81f}, {-1.03f, 0.00f, -1.73f},
+            {-0.93f, 0.00f, -1.67f}, {-0.83f, 0.00f, -1.61f}, {-0.72f, 0.00f, -1.56f}, {-0.61f, 0.00f, -1.51f},
+            {-0.50f, 0.00f, -1.48f}, {-0.38f, 0.00f, -1.44f}, {-0.27f, 0.00f, -1.41f}, {-0.15f, 0.00f, -1.38f},
+            {-0.03f, 0.00f, -1.35f}, {0.08f, 0.00f, -1.32f},  {0.20f, 0.00f, -1.29f},  {0.31f, 0.00f, -1.25f},
+            {0.42f, 0.00f, -1.21f},  {0.53f, 0.00f, -1.16f},  {0.63f, 0.00f, -1.10f},  {0.73f, 0.00f, -1.03f},
+            {0.81f, 0.00f, -0.94f},  {0.88f, 0.00f, -0.85f},  {0.94f, 0.00f, -0.74f},  {0.99f, 0.00f, -0.64f},
+            {1.04f, 0.00f, -0.52f},  {1.07f, 0.00f, -0.41f},  {1.11f, 0.00f, -0.30f},  {1.13f, 0.00f, -0.18f},
+            {1.16f, 0.00f, -0.06f},  {1.18f, 0.00f, 0.06f},   {1.19f, 0.00f, 0.17f},   {1.20f, 0.00f, 0.29f},
+            {1.20f, 0.00f, 0.41f},   {1.21f, 0.00f, 0.53f},   {1.20f, 0.00f, 0.65f},   {1.19f, 0.00f, 0.77f},
+            {1.18f, 0.00f, 0.89f},   {1.16f, 0.00f, 1.01f},   {1.13f, 0.00f, 1.12f},   {1.10f, 0.00f, 1.24f},
+            {1.05f, 0.00f, 1.35f},   {1.00f, 0.00f, 1.46f},   {0.94f, 0.00f, 1.55f},   {0.86f, 0.00f, 1.65f},
+            {0.77f, 0.00f, 1.72f},   {0.66f, 0.00f, 1.78f},   {0.56f, 0.00f, 1.83f},   {0.44f, 0.00f, 1.87f},
+            {0.33f, 0.00f, 1.89f},   {0.21f, 0.00f, 1.91f},   {0.09f, 0.00f, 1.92f},   {-0.03f, 0.00f, 1.93f},
+            {-0.15f, 0.00f, 1.93f},  {-0.27f, 0.00f, 1.94f},  {-0.39f, 0.00f, 1.94f},  {-0.51f, 0.00f, 1.95f},
+            {-0.63f, 0.00f, 1.96f},  {-0.75f, 0.00f, 1.98f},  {-0.86f, 0.00f, 2.01f},  {-0.98f, 0.00f, 2.04f},
+            {-1.09f, 0.00f, 2.09f},  {-1.19f, 0.00f, 2.15f},  {-1.28f, 0.00f, 2.22f},  {-1.36f, 0.00f, 2.31f},
+            {-1.43f, 0.00f, 2.40f},  {-1.49f, 0.00f, 2.51f},  {-1.52f, 0.00f, 2.62f},  {-1.54f, 0.00f, 2.74f},
+            {-1.54f, 0.00f, 2.86f},  {-1.53f, 0.00f, 2.98f},  {-1.50f, 0.00f, 3.09f},  {-1.46f, 0.00f, 3.21f},
+            {-1.41f, 0.00f, 3.31f},  {-1.34f, 0.00f, 3.41f},  {-1.26f, 0.00f, 3.50f},  {-1.17f, 0.00f, 3.58f},
+            {-1.07f, 0.00f, 3.63f},  {-0.96f, 0.00f, 3.68f},  {-0.84f, 0.00f, 3.70f},  {-0.72f, 0.00f, 3.72f},
+            {-0.61f, 0.00f, 3.70f},  {-0.49f, 0.00f, 3.69f},  {-0.38f, 0.00f, 3.64f},  {-0.27f, 0.00f, 3.60f},
+            {-0.17f, 0.00f, 3.53f},  {-0.08f, 0.00f, 3.45f},  {-0.01f, 0.00f, 3.36f},  {0.03f, 0.00f, 3.25f},
+            {0.07f, 0.00f, 3.13f},   {0.10f, 0.00f, 3.02f},   {0.11f, 0.00f, 2.90f},   {0.13f, 0.00f, 2.78f},
+            {0.15f, 0.00f, 2.66f},   {0.17f, 0.00f, 2.54f},   {0.20f, 0.00f, 2.43f},   {0.24f, 0.00f, 2.32f},
+            {0.30f, 0.00f, 2.21f},   {0.38f, 0.00f, 2.13f},   {0.49f, 0.00f, 2.08f},   {0.60f, 0.00f, 2.05f}};
+
+        std::vector<glm::vec3> dominosRotation = {
+            {0.0727f, 0.0332f, 0.8405f},     {0.0000f, -9.4016f, 0.0000f},   {0.0291f, -21.6951f, 0.8302f},
+            {0.1246f, -38.1306f, 0.7617f},   {1.0381f, 36.4383f, 0.6043f},   {0.9172f, 23.9981f, 0.3586f},
+            {0.8743f, 15.8196f, 0.2182f},    {0.8566f, 10.8646f, 0.1194f},   {0.8493f, 7.9136f, 0.1003f},
+            {0.8483f, 7.4345f, 0.0828f},     {0.8495f, 8.1157f, 0.0969f},    {0.8505f, 9.8723f, 0.1262f},
+            {0.8674f, 14.1957f, 0.1645f},    {0.8964f, 20.3253f, 0.2958f},   {0.9510f, 28.5394f, 0.4157f},
+            {1.0577f, 37.2697f, 0.5775f},    {0.0267f, -38.1087f, 0.8241f},  {-0.0091f, -30.2687f, 0.8402f},
+            {0.0309f, -21.9459f, 0.8294f},   {-0.0106f, -17.7086f, 0.8359f}, {0.0240f, -8.2565f, 0.8374f},
+            {0.0907f, -3.0771f, 0.8324f},    {0.0290f, 7.8809f, 0.8448f},    {-0.0116f, 14.2850f, 0.8312f},
+            {0.0611f, 25.6295f, 0.8671f},    {-0.0125f, 32.2510f, 0.8319f},  {0.0731f, 40.7691f, 0.8896f},
+            {-1.0810f, -38.9626f, 0.6900f},  {-0.9779f, -31.2953f, 0.5343f}, {-0.9215f, -24.1329f, 0.4209f},
+            {-0.8884f, -19.1666f, 0.2829f},  {-0.8588f, -11.4828f, 0.2262f}, {-0.8414f, -2.6407f, 0.0491f},
+            {-0.8373f, 4.8189f, -0.0479f},   {-0.8627f, 12.9370f, -0.1459f}, {-0.8859f, 18.9356f, -0.2985f},
+            {-0.9526f, 27.9024f, -0.3906f},  {-1.0761f, 38.7212f, -0.6829f}, {-1.1869f, 44.8683f, -0.7643f},
+            {-0.0282f, -34.8947f, -0.8247f}, {0.0092f, -29.5323f, -0.8431f}, {-0.0594f, -21.4475f, -0.8192f},
+            {-0.0082f, -15.8607f, -0.8384f}, {0.0042f, -12.9955f, -0.8405f}, {-0.0268f, -8.2092f, -0.8372f},
+            {-0.0032f, -5.8879f, -0.8402f},  {-0.0282f, -4.1591f, -0.8390f}, {-0.0103f, -3.6382f, -0.8401f},
+            {-0.0158f, -3.5443f, -0.8400f},  {-0.0039f, -4.3453f, -0.8403f}, {-0.0141f, -6.0198f, -0.8395f},
+            {-0.0156f, -8.2250f, -0.8389f},  {0.0051f, -12.0413f, -0.8414f}, {-0.0345f, -16.7032f, -0.8314f},
+            {-0.0072f, -22.7727f, -0.8344f}, {0.0100f, -29.7364f, -0.8452f}, {-0.0688f, -37.6155f, -0.7991f},
+            {-1.1602f, 43.9598f, -0.7955f},  {-1.0401f, 36.0274f, -0.5959f}, {-0.9547f, 28.3296f, -0.3771f},
+            {-0.9118f, 22.8067f, -0.3561f},  {-0.8832f, 17.7559f, -0.2159f}, {-0.8644f, 13.6084f, -0.2098f},
+            {-0.8543f, 10.0485f, -0.1066f},  {-0.8467f, 6.9596f, -0.1047f},  {-0.8434f, 4.1787f, -0.0216f},
+            {-0.8411f, 1.6994f, -0.0209f},   {-0.8412f, -0.6668f, 0.0509f},  {-0.8419f, -2.8334f, 0.0514f},
+            {-0.8443f, -4.9849f, 0.1182f},   {-0.8474f, -7.0598f, 0.1190f},  {-0.8505f, -9.1331f, 0.1191f},
+            {-0.8578f, -11.3211f, 0.1873f},  {0.0000f, -0.0000f, 0.0000f},   {-0.8750f, -16.0017f, 0.2629f},
+            {-0.8858f, -18.5562f, 0.2658f},  {-0.9053f, -21.6954f, 0.3558f}, {-0.9314f, -25.7155f, 0.4079f},
+            {-0.9668f, -29.5624f, 0.4872f},  {-1.0211f, -34.6167f, 0.5862f}, {-1.1328f, -42.2359f, 0.7703f},
+            {0.0630f, 39.9460f, 0.8817f},    {0.0135f, 31.7931f, 0.8460f},   {0.0146f, 26.0571f, 0.8475f},
+            {0.0546f, 21.3585f, 0.8610f},    {0.0046f, 18.1617f, 0.8422f},   {0.0335f, 16.0524f, 0.8505f},
+            {0.0109f, 14.5519f, 0.8436f},    {0.0260f, 13.9992f, 0.8474f},   {0.0218f, 13.7308f, 0.8462f},
+            {0.0233f, 14.3669f, 0.8468f},    {0.0000f, 15.1841f, 0.0000f},   {0.0244f, 17.0475f, 0.8482f},
+            {0.0558f, 19.0501f, 0.8591f},    {0.0319f, 22.5121f, 0.8533f},   {0.0296f, 26.2563f, 0.8515f},
+            {0.0561f, 31.7312f, 0.8704f},    {-0.0116f, 35.7215f, 0.8322f},  {0.0762f, 43.7010f, 0.8943f},
+            {-1.0390f, -36.0589f, 0.6071f},  {-0.9672f, -29.6538f, 0.5620f}, {-0.8922f, -19.6375f, 0.3026f},
+            {-0.8566f, -12.9521f, 0.2009f},  {-0.8431f, -4.1944f, 0.1081f},  {-0.8423f, 3.6343f, -0.0398f},
+            {-0.8502f, 9.2160f, -0.1464f},   {-0.8889f, 19.7654f, -0.2787f}, {-0.9454f, 27.1491f, -0.3763f},
+            {-1.0463f, 36.5278f, -0.5755f},  {-1.1866f, 44.8713f, -0.8098f}, {-0.0168f, -36.7760f, -0.8306f},
+            {0.0000f, -28.3306f, -0.8402f},  {0.0133f, -19.6426f, -0.8439f}, {0.0121f, -13.0521f, -0.8415f},
+            {-0.0342f, -0.8927f, -0.8366f},  {-0.0001f, 7.9104f, -0.8355f},  {-0.0496f, 16.8690f, -0.8552f},
+            {0.0037f, 18.4928f, -0.8391f},   {-0.0178f, 18.1408f, -0.8466f}, {-0.0265f, 16.5291f, -0.8487f},
+            {0.0031f, 14.5694f, -0.8396f},   {0.0009f, 11.8922f, -0.8403f},  {-0.0002f, 8.2837f, -0.8406f},
+            {0.0029f, 3.0904f, -0.8403f},    {-0.0110f, -4.9085f, -0.8386f}, {-0.0192f, -17.8808f, -0.8279f},
+            {-0.0799f, -42.4392f, -0.7868f}, {-0.8735f, 17.1091f, -0.2649f}};
+
+        std::ranges::reverse(dominosRotation);
+
+        std::vector<std::pair<int, int>> verticalRange = {{0, 1}, {18, 29}, {47, 71}, {89, 101}, {112, 124}};
+        for (int i = 0; i < dominosPositions.size(); ++i) {
+            glm::vec3 pos       = dominosPositions[i];
+            const glm::vec3 rot = {0.0f, -dominosRotation[i].y, 0.0f};
+            pos += offset;
+            const assets::AssetLocation dominoVModel("my_package::dominoV@Demo");
+            const assets::AssetLocation dominoHModel("my_package::dominoH@Demo");
+            assets::AssetRef<assets::Model> dominoAssetRef;
+            if (std::ranges::any_of(verticalRange, [i](const std::pair<int, int>& range) {
+                    return i >= range.first && i < range.second;
+                })) {
+                dominoAssetRef = catalog.getAsset(dominoVModel).as<assets::Model>();
+            } else {
+                dominoAssetRef = catalog.getAsset(dominoHModel).as<assets::Model>();
+            }
+            const auto domino        = EntityFactory3D::createModel(dominoAssetRef, pos, {0.01f, 0.01f, 0.01f}, rot);
+            auto rootComp = Application::m_coordinator->getComponent<components::RootComponent>(domino);
+            auto model = rootComp.modelRef.lock();
+            auto boundingBox         = model->rootBounds;
+            auto transformComp =
+                Application::m_coordinator->getComponent<components::TransformComponent>(domino);
+            const JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromBounds(domino, transformComp, boundingBox,
+                                                                                    JPH::EMotionType::Dynamic);
+            if (bodyId.IsInvalid()) {
+                THROW_EXCEPTION(InvalidBodyId, domino);
+            }
+            scene.addEntity(domino);
         }
     }
 
