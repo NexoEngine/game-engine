@@ -252,6 +252,10 @@ namespace nexo::renderer {
             _props.fileDropCallback = std::move(callback);
         }
 
+        void setFullscreen(bool fullscreen) override;
+        [[nodiscard]] bool isFullscreen() const override;
+        void toggleFullscreen() override;
+
         // Linux specific method
 #ifdef __linux__
         void setWaylandAppId(const char* appId) override;
@@ -265,6 +269,11 @@ namespace nexo::renderer {
        private:
         GLFWwindow* _openGlWindow{};
         NxWindowProperty _props;
+
+        int _windowedXPos = 0;
+        int _windowedYPos = 0;
+        int _windowedWidth = 1920;
+        int _windowedHeight = 1080;
 
         void setupCallback() const;
     };

@@ -138,78 +138,132 @@ namespace nexo::editor {
 
     void EditorScene::show()
     {
-        // Handle deferred dock split before rendering
-        if (m_shouldSplitDock && !m_gameWindowNameToSplit.empty()) {
-            const std::string currentWindowName   = m_windowName;
-            const ImGuiWindow* currentImGuiWindow = ImGui::FindWindowByName(
-                std::format("{}{}{}", currentWindowName, NEXO_WND_USTRID_DEFAULT_SCENE, m_sceneId).c_str());
+        showFullscreen(false);
+    }
 
-            if (currentImGuiWindow && currentImGuiWindow->DockId) {
-                const ImGuiID editorDockId = currentImGuiWindow->DockId;
-                ImGuiID rightNode = 0;
-                ImGuiID leftNode = 0;
+    void EditorScene::showFullscreen(bool fullscreen)
+    {
+        if (fullscreen) {
+            const ImGuiViewport* viewport = ImGui::GetMainViewport();
+            ImGui::SetNextWindowPos(viewport->Pos);
+            ImGui::SetNextWindowSize(viewport->Size);
+            ImGui::SetNextWindowViewport(viewport->ID);
 
-                if (ImGui::DockBuilderSplitNode(editorDockId, ImGuiDir_Right, 0.5f, &rightNode, &leftNode)) {
-                    // Dock the windows
-                    ImGui::DockBuilderDockWindow(
-                        std::format("{}{}{}", currentWindowName, NEXO_WND_USTRID_DEFAULT_SCENE, m_sceneId).c_str(),
-                        leftNode);
-                    ImGui::DockBuilderDockWindow(m_gameWindowNameToSplit.c_str(), rightNode);
-                    ImGui::DockBuilderFinish(editorDockId);
+            ImGuiWindowFlags fullscreenFlags =
+                ImGuiWindowFlags_NoDecoration |
+                ImGuiWindowFlags_NoMove |
+                ImGuiWindowFlags_NoResize |
+                ImGuiWindowFlags_NoBringToFrontOnFocus |
+                ImGuiWindowFlags_NoScrollbar |
+                ImGuiWindowFlags_NoScrollWithMouse;
 
-                    // Update registry
-                    m_windowRegistry.setDockId(
-                        std::format("{}{}{}", currentWindowName, NEXO_WND_USTRID_DEFAULT_SCENE, m_sceneId), leftNode);
-                    m_windowRegistry.setDockId(m_gameWindowNameToSplit, rightNode);
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+
+            auto& selector = Selector::get();
+            m_windowName = selector.getUiHandle(m_sceneUuid, std::string(ICON_FA_GLOBE) + "   " + m_windowName);
+            const std::string& sceneWindowName = std::format("{}{}{}", m_windowName, NEXO_WND_USTRID_DEFAULT_SCENE, m_sceneId);
+
+            if (ImGui::Begin(sceneWindowName.c_str(), &m_opened, fullscreenFlags)) {
+                const std::string renderName = std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, m_sceneId);
+                beginRender(renderName);
+                auto& app = getApp();
+
+                app.getSceneManager().getScene(m_sceneId).setActiveStatus(m_focused);
+
+                if (m_activeCamera == -1) {
+                    renderNoActiveCamera();
+                } else {
+                    renderView();
+                    renderGizmo();
+                }
+
+                if (m_popupManager.showPopup("Add new entity popup")) {
+                    renderNewEntityPopup();
+                }
+                if (m_popupManager.showPopup("Sphere creation popup")) {
+                    ImNexo::PrimitiveCustomizationMenu(m_sceneId, SPHERE);
+                }
+                if (m_popupManager.showPopup("Cylinder creation popup")) {
+                    ImNexo::PrimitiveCustomizationMenu(m_sceneId, CYLINDER);
                 }
             }
+            ImGui::End();
+            ImGui::PopStyleVar();
 
-            m_shouldSplitDock = false;
-            m_gameWindowNameToSplit.clear();
+        } else {
+            // Handle deferred dock split before rendering
+            if (m_shouldSplitDock && !m_gameWindowNameToSplit.empty()) {
+                const std::string currentWindowName   = m_windowName;
+                const ImGuiWindow* currentImGuiWindow = ImGui::FindWindowByName(
+                    std::format("{}{}{}", currentWindowName, NEXO_WND_USTRID_DEFAULT_SCENE, m_sceneId).c_str());
+
+                if (currentImGuiWindow && currentImGuiWindow->DockId) {
+                    const ImGuiID editorDockId = currentImGuiWindow->DockId;
+                    ImGuiID rightNode = 0;
+                    ImGuiID leftNode = 0;
+
+                    if (ImGui::DockBuilderSplitNode(editorDockId, ImGuiDir_Right, 0.5f, &rightNode, &leftNode)) {
+                        // Dock the windows
+                        ImGui::DockBuilderDockWindow(
+                            std::format("{}{}{}", currentWindowName, NEXO_WND_USTRID_DEFAULT_SCENE, m_sceneId).c_str(),
+                            leftNode);
+                        ImGui::DockBuilderDockWindow(m_gameWindowNameToSplit.c_str(), rightNode);
+                        ImGui::DockBuilderFinish(editorDockId);
+
+                        // Update registry
+                        m_windowRegistry.setDockId(
+                            std::format("{}{}{}", currentWindowName, NEXO_WND_USTRID_DEFAULT_SCENE, m_sceneId), leftNode);
+                        m_windowRegistry.setDockId(m_gameWindowNameToSplit, rightNode);
+                    }
+                }
+
+                m_shouldSplitDock = false;
+                m_gameWindowNameToSplit.clear();
+            }
+
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+            ImGui::SetNextWindowSizeConstraints(ImVec2(480, 270), ImVec2(1920, 1080));
+            auto& selector = Selector::get();
+            m_windowName   = selector.getUiHandle(m_sceneUuid, std::string(ICON_FA_GLOBE) + "   " + m_windowName);
+            const std::string& sceneWindowName =
+                std::format("{}{}{}", m_windowName, NEXO_WND_USTRID_DEFAULT_SCENE, m_sceneId);
+            m_wasVisibleLastFrame = m_isVisibleInDock;
+            m_isVisibleInDock     = false;
+            if (ImGui::Begin(sceneWindowName.c_str(), &m_opened,
+                             ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse |
+                                 ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar)) {
+                if (ImGui::IsKeyPressed(ImGuiKey_P)) showToolbar = !showToolbar;
+                const std::string renderName = std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, m_sceneId);
+                beginRender(renderName);
+                auto& app = getApp();
+
+                app.getSceneManager().getScene(m_sceneId).setActiveStatus(m_focused);
+
+                if (m_focused && selector.getSelectedScene() != m_sceneId) {
+                    selector.setSelectedScene(m_sceneId);
+                    selector.clearSelection();
+                }
+
+                if (m_activeCamera == -1) {
+                    renderNoActiveCamera();
+                } else {
+                    renderView();
+                    renderGizmo();
+                    if (showToolbar) renderToolbar();
+                }
+
+                if (m_popupManager.showPopup("Add new entity popup")) {
+                    renderNewEntityPopup();
+                }
+                if (m_popupManager.showPopup("Sphere creation popup")) {
+                    ImNexo::PrimitiveCustomizationMenu(m_sceneId, SPHERE);
+                }
+                if (m_popupManager.showPopup("Cylinder creation popup")) {
+                    ImNexo::PrimitiveCustomizationMenu(m_sceneId, CYLINDER);
+                }
+            }
+            ImGui::End();
+            ImGui::PopStyleVar();
         }
-
-        ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
-        ImGui::SetNextWindowSizeConstraints(ImVec2(480, 270), ImVec2(1920, 1080));
-        auto& selector = Selector::get();
-        m_windowName   = selector.getUiHandle(m_sceneUuid, std::string(ICON_FA_GLOBE) + "   " + m_windowName);
-        const std::string& sceneWindowName =
-            std::format("{}{}{}", m_windowName, NEXO_WND_USTRID_DEFAULT_SCENE, m_sceneId);
-        m_wasVisibleLastFrame = m_isVisibleInDock;
-        m_isVisibleInDock     = false;
-        if (ImGui::Begin(sceneWindowName.c_str(), &m_opened,
-                         ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoCollapse |
-                             ImGuiWindowFlags_NoScrollWithMouse | ImGuiWindowFlags_NoTitleBar)) {
-            if (ImGui::IsKeyPressed(ImGuiKey_P)) showToolbar = !showToolbar;
-            const std::string renderName = std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, m_sceneId);
-            beginRender(renderName);
-            auto& app = getApp();
-
-            app.getSceneManager().getScene(m_sceneId).setActiveStatus(m_focused);
-
-            if (m_focused && selector.getSelectedScene() != m_sceneId) {
-                selector.setSelectedScene(m_sceneId);
-                selector.clearSelection();
-            }
-
-            if (m_activeCamera == -1) {
-                renderNoActiveCamera();
-            } else {
-                renderView();
-                renderGizmo();
-                if (showToolbar) renderToolbar();
-            }
-
-            if (m_popupManager.showPopup("Add new entity popup")) {
-                renderNewEntityPopup();
-            }
-            if (m_popupManager.showPopup("Sphere creation popup")) {
-                ImNexo::PrimitiveCustomizationMenu(m_sceneId, SPHERE);
-            }
-            if (m_popupManager.showPopup("Cylinder creation popup")) {
-                ImNexo::PrimitiveCustomizationMenu(m_sceneId, CYLINDER);
-            }
-        }
-        ImGui::End();
-        ImGui::PopStyleVar();
     }
 } // namespace nexo::editor

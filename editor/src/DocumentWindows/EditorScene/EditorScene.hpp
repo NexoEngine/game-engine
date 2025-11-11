@@ -56,6 +56,7 @@ namespace nexo::editor {
          * Finally, it renders both the scene view and transformation gizmos within the window.
          */
         void show() override;
+        void showFullscreen(bool fullscreen);
 
         bool showToolbar      = true;
         bool isPhysicsRunning = false;

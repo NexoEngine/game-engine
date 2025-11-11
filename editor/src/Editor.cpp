@@ -540,14 +540,20 @@ namespace nexo::editor {
             return;
         }
 
+        auto window = getApp().getWindow();
+
         if (m_guiHidden && !m_windowStates.empty()) {
             showGui();
+            window->setFullscreen(false);
         } else if (!m_guiHidden && m_windowStates.empty()) {
             hideGui();
+            window->setFullscreen(true);
         } else if (!m_guiHidden) {
             hideGui();
+            window->setFullscreen(true);
         } else {
             showGui();
+            window->setFullscreen(false);
         }
     }
 
@@ -567,7 +573,7 @@ namespace nexo::editor {
         } else {
             for (const auto& editorScene : m_windowRegistry.getWindows<EditorScene>()) {
                 if (editorScene->isOpened()) {
-                    editorScene->show();
+                    editorScene->showFullscreen(true);
                 }
             }
         }
@@ -575,7 +581,9 @@ namespace nexo::editor {
         handleGlobalCommands();
 
         const std::vector<CommandInfo> possibleCommands = handleFocusedWindowCommands();
-        drawShortcutBar(possibleCommands);
+        if (!m_guiHidden) {
+            drawShortcutBar(possibleCommands);
+        }
         drawBackground();
 
         ImGui::Render();
