@@ -245,14 +245,14 @@ namespace nexo::editor {
         }
     }
 
-    void Editor::buildDockspace()
+    void Editor::buildDockspace(bool forceRebuild)
     {
         const ImGuiViewport *viewport     = ImGui::GetMainViewport();
         const ImGuiID dockspaceID         = viewport->ID;
         static bool dockingRegistryFilled = false;
 
         // If the dockspace node doesn't exist yet, create it
-        if (!ImGui::DockBuilderGetNode(dockspaceID)) {
+        if (!ImGui::DockBuilderGetNode(dockspaceID) ||forceRebuild) {
             ImGui::DockBuilderRemoveNode(dockspaceID);
             ImGui::DockSpaceOverViewport(viewport->ID);
             ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_None);
@@ -545,6 +545,7 @@ namespace nexo::editor {
         if (m_guiHidden && !m_windowStates.empty()) {
             showGui();
             window->setFullscreen(false);
+            buildDockspace(true);
         } else if (!m_guiHidden && m_windowStates.empty()) {
             hideGui();
             window->setFullscreen(true);
@@ -554,6 +555,7 @@ namespace nexo::editor {
         } else {
             showGui();
             window->setFullscreen(false);
+            buildDockspace(true);
         }
     }
 
@@ -565,9 +567,9 @@ namespace nexo::editor {
 
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
         ImGuizmo::BeginFrame();
-        buildDockspace();
 
         if (!m_guiHidden) {
+            buildDockspace();
             drawMenuBar();
             m_windowRegistry.render();
         } else {

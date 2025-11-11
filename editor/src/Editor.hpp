@@ -187,7 +187,7 @@ namespace nexo::editor {
          * window registry to maintain a consistent layout. If a dockspace already exists but the registry
          * is not yet populated, the dock IDs are retrieved from the configuration.
          */
-        void buildDockspace();
+        void buildDockspace(bool forceRebuild = false);
 
         /**
          * @brief Draws the main menu bar for the editor.
