@@ -335,9 +335,12 @@ namespace nexo::editor {
         scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
 
         const auto [linear, quad] = math::computeAttenuationFromDistance(70.0f);
-        const auto pointLightTop  = LightFactory::createPointLight({0.0f + offset.x, 14.0f + offset.y, 0.0f + offset.z},
+        const auto pointLightTop  = LightFactory::createPointLight({0.0f + offset.x, 14.0f + offset.y, 11.98f + offset.z},
                                                                    {1, 1, 1}, linear, quad);
         utils::addPropsTo(pointLightTop, utils::PropsType::POINT_LIGHT);
+        components::NameComponent nameComp;
+        nameComp.name = "Demo_point_light";
+        app.m_coordinator->addComponent(pointLightTop, nameComp);
         scene.addEntity(pointLightTop);
 
         const auto [linear2, quad2] = math::computeAttenuationFromDistance(13.0f);
