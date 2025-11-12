@@ -356,7 +356,7 @@ namespace nexo::editor {
             }
         }
 
-        if (ImGui::IsKeyPressed(ImGuiKey_Tab)) {
+        if (ImGui::IsKeyPressed(ImGuiKey_B)) {
             toggleGuiVisibility();
         }
     }

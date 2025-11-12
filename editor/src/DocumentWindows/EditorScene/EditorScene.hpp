@@ -168,6 +168,8 @@ namespace nexo::editor {
          */
         void setupWindow();
 
+        void setupDemoCamera();
+
         /**
          * @brief Creates and initializes a scene with basic components.
          *
