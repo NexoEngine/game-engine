@@ -44,6 +44,37 @@ namespace nexo::editor {
         setupShortcuts();
     }
 
+    void EditorScene::setupDemoCamera()
+    {
+        auto& app = getApp();
+
+        renderer::NxFramebufferSpecs framebufferSpecs;
+        framebufferSpecs.attachments = {renderer::NxFrameBufferTextureFormats::RGBA8,
+                                        renderer::NxFrameBufferTextureFormats::RED_INTEGER,
+                                        renderer::NxFrameBufferTextureFormats::Depth};
+        framebufferSpecs.width       = static_cast<unsigned int>(m_contentSize.x);
+        framebufferSpecs.height      = static_cast<unsigned int>(m_contentSize.y);
+        const auto renderTarget      = renderer::NxFramebuffer::create(framebufferSpecs);
+        ecs::Entity demoCamera =
+            CameraFactory::createPerspectiveCamera({6.47f, 4.97f, -0.04f}, static_cast<unsigned int>(m_contentSize.x),
+                                                                 static_cast<unsigned int>(m_contentSize.y), renderTarget);
+        auto& cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(demoCamera);
+        auto& transformComponent =
+            Application::m_coordinator->getComponent<components::TransformComponent>(demoCamera);
+        transformComponent.quat = glm::quat(glm::radians(glm::vec3{150.10f, -88.40f, -180.0f}));
+        cameraComponent.render  = true;
+
+        // Add editor camera to the scene
+        app.getSceneManager().getScene(m_sceneId).addEntity(demoCamera);
+        const components::PerspectiveCameraController controller;
+        Application::m_coordinator->addComponent<components::PerspectiveCameraController>(
+            demoCamera, controller);
+        utils::addPropsTo(demoCamera, utils::PropsType::CAMERA);
+        components::NameComponent nameComp;
+        nameComp.name = "Demo_camera";
+        Application::m_coordinator->addComponent<components::NameComponent>(demoCamera, nameComp);
+    }
+
     void EditorScene::setupScene()
     {
         auto& app = getApp();
@@ -75,22 +106,16 @@ namespace nexo::editor {
         const renderer::PassId maskId    = cameraComponent.pipeline.addRenderPass(std::move(maskPass));
         const renderer::PassId outlineId = cameraComponent.pipeline.addRenderPass(std::move(outlinePass));
         const renderer::PassId gridId    = cameraComponent.pipeline.addRenderPass(std::move(gridPass));
-        const renderer::PassId shadowId    = cameraComponent.pipeline.addRenderPass(std::move(shadowPass));
-        const renderer::PassId pointShadowId  = cameraComponent.pipeline.addRenderPass(std::move(pointShadowPass)); // NEW
 
         // Set up prerequisites
         cameraComponent.pipeline.addPrerequisite(outlineId, maskId);
         cameraComponent.pipeline.addPrerequisite(outlineId, forwardId);
         cameraComponent.pipeline.addPrerequisite(gridId, outlineId);
-        cameraComponent.pipeline.addPrerequisite(forwardId, shadowId);
-        cameraComponent.pipeline.addPrerequisite(forwardId, pointShadowId); // point   (NEW)
 
         // Set up effects
         cameraComponent.pipeline.addEffect(forwardId, outlineId);
         cameraComponent.pipeline.addEffect(maskId, outlineId);
         cameraComponent.pipeline.addEffect(outlineId, gridId);
-        cameraComponent.pipeline.addEffect(shadowId, forwardId);
-        cameraComponent.pipeline.addEffect(pointShadowId, forwardId); // NEW
 
 
         // Set the final output pass explicitly
@@ -107,6 +132,7 @@ namespace nexo::editor {
 
         scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
         scene.addEntity(LightFactory::createAmbientLight({0.02f, 0.02f, 0.02f}));
+        setupDemoCamera();
 
         m_sceneUuid = app.getSceneManager().getScene(m_sceneId).getUuid();
         if (m_defaultScene) {
@@ -116,7 +142,7 @@ namespace nexo::editor {
             lightsScene(glm::vec3{0.0f, 0.0f, 0.0f});
             // chambouleScene(glm::vec3{0.0f, 0.0f, 0.0f});
             // physicScene(glm::vec3{-60.0f, 0.0f, 0.0f});
-            // videoScene(glm::vec3{-15.0f, 0.0f, 0.0f});
+            videoScene(glm::vec3{0.0f, 0.0f, 0.0f});
             // forestScene({100.0f, 1.0f, 0.0f});
         }
     }
@@ -627,9 +653,11 @@ namespace nexo::editor {
         scene::Scene& scene = app.getSceneManager().getScene(m_sceneId);
 
         const auto videoBillboard = EntityFactory3D::createBillboard(
-            {0.0f + offset.x, 5.0f + offset.y, 1.0f + offset.z}, {5.3f, 3.0f, 1.0f}, {1.0f, 1.0f, 1.0f, 1.0f});
+            {7.39f + offset.x, 4.44f + offset.y, -0.02f + offset.z}, {1.48f, 0.88f, 13.11f}, {1.0f, 1.0f, 1.0f, 1.0f});
+        auto &transform = Application::m_coordinator->getComponent<components::TransformComponent>(videoBillboard);
+        transform.quat = glm::quat(glm::radians(glm::vec3(-151.69f, -38.03f, 138.55f)));
         components::VideoComponent videoComponent;
-        videoComponent.path      = nexo::Path::resolvePathRelativeToExe("../resources/videos/_Warmup.mp4").string();
+        videoComponent.path      = nexo::Path::resolvePathRelativeToExe("../resources/videos/test.mp4").string();
         videoComponent.keyframes = {
             {0.0f, 0.1f, components::KeyframeType::NORMAL},
             {0.01f, 1.25f, components::KeyframeType::TRANSITION},

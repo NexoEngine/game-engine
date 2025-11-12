@@ -25,6 +25,8 @@
 #include "components/Uuid.hpp"
 #include "renderPasses/ForwardPass.hpp"
 #include "renderPasses/GPUResources.hpp"
+#include "renderPasses/PointShadowPass.hpp"
+#include "renderPasseS/ShadowPass.hpp"
 
 namespace nexo {
     ecs::Entity CameraFactory::createPerspectiveCamera(glm::vec3 pos, unsigned int width, unsigned int height,
@@ -44,7 +46,16 @@ namespace nexo {
         camera.type      = components::CameraType::PERSPECTIVE;
 
         auto forwardPass               = std::make_shared<renderer::ForwardPass>();
-        renderer::PassId forwardPassId = camera.pipeline.addRenderPass(forwardPass);
+        auto shadowPass         = std::make_shared<renderer::ShadowPass>(2048);
+        auto pointShadowPass = std::make_shared<renderer::PointShadowPass>();
+        const renderer::PassId forwardPassId = camera.pipeline.addRenderPass(forwardPass);
+        const renderer::PassId shadowId    = camera.pipeline.addRenderPass(std::move(shadowPass));
+        const renderer::PassId pointShadowId  = camera.pipeline.addRenderPass(std::move(pointShadowPass));
+
+        camera.pipeline.addPrerequisite(forwardPassId, shadowId);
+        camera.pipeline.addPrerequisite(forwardPassId, pointShadowId);
+        camera.pipeline.addEffect(shadowId, forwardPassId);
+        camera.pipeline.addEffect(pointShadowId, forwardPassId);
         camera.pipeline.setFinalOutputPass(forwardPassId);
         camera.pipeline.setCameraClearColor(clearColor);
         if (renderTarget) {
