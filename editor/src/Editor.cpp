@@ -245,14 +245,14 @@ namespace nexo::editor {
         }
     }
 
-    void Editor::buildDockspace()
+    void Editor::buildDockspace(bool forceRebuild)
     {
         const ImGuiViewport *viewport     = ImGui::GetMainViewport();
         const ImGuiID dockspaceID         = viewport->ID;
         static bool dockingRegistryFilled = false;
 
         // If the dockspace node doesn't exist yet, create it
-        if (!ImGui::DockBuilderGetNode(dockspaceID)) {
+        if (!ImGui::DockBuilderGetNode(dockspaceID) ||forceRebuild) {
             ImGui::DockBuilderRemoveNode(dockspaceID);
             ImGui::DockSpaceOverViewport(viewport->ID);
             ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_None);
@@ -336,13 +336,17 @@ namespace nexo::editor {
                 getWindow<TestWindow>(NEXO_WND_USTRID_TEST).lock()->setup();
             }
         }
+
+        if (ImGui::IsKeyPressed(ImGuiKey_Tab)) {
+            toggleGuiVisibility();
+        }
     }
 
     std::vector<CommandInfo> Editor::handleFocusedWindowCommands() const
     {
         std::vector<CommandInfo> possibleCommands;
-        static std::vector<CommandInfo> lastValidCommands; // Store the last valid set of commands
-        static float commandDisplayTimer = 0.0f;           // Track how long to show last commands
+        static std::vector<CommandInfo> lastValidCommands;
+        static float commandDisplayTimer = 0.0f;
 
         auto focusedWindow = m_windowRegistry.getFocusedWindow();
         if (focusedWindow) {
@@ -350,22 +354,17 @@ namespace nexo::editor {
             nexo::editor::InputManager::processInputs(currentState);
             possibleCommands = nexo::editor::InputManager::getPossibleCommands(currentState);
 
-            // Update the last valid commands if we have any
             if (!possibleCommands.empty()) {
                 constexpr float commandPersistTime = 2.0f;
                 lastValidCommands                  = possibleCommands;
-                commandDisplayTimer                = commandPersistTime; // Reset timer
+                commandDisplayTimer                = commandPersistTime;
             } else if (commandDisplayTimer > 0.0f) {
-                // Use the last valid commands if timer is still active
                 possibleCommands = lastValidCommands;
                 commandDisplayTimer -= ImGui::GetIO().DeltaTime;
             } else if (lastValidCommands.empty()) {
-                // Fallback: If we've never had commands, grab all possible commands from the window
-                // This is a more complex operation but ensures we always have something to show
                 possibleCommands  = nexo::editor::InputManager::getAllPossibleCommands(currentState);
                 lastValidCommands = possibleCommands;
             } else {
-                // Use the last valid set of commands
                 possibleCommands = lastValidCommands;
             }
         }
@@ -375,7 +374,7 @@ namespace nexo::editor {
     void Editor::drawShortcutBar(const std::vector<CommandInfo> &possibleCommands)
     {
         constexpr float bottomBarHeight = 38.0f;
-        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.05f, 0.06f, 0.12f, 0.85f)); // Matches your dark blue theme
+        ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.05f, 0.06f, 0.12f, 0.85f));
         ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.75f, 0.75f, 0.75f, 1.0f));
         const auto viewport = ImGui::GetMainViewport();
 
@@ -389,72 +388,55 @@ namespace nexo::editor {
             ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoInputs | ImGuiWindowFlags_NoBackground;
 
         if (ImGui::Begin(NEXO_WND_USTRID_BOTTOM_BAR, nullptr, bottomBarFlags)) {
-            constexpr float textScaleFactor = 0.90f; // 15% larger text
+            constexpr float textScaleFactor = 0.90f;
             ImGui::SetWindowFontScale(textScaleFactor);
-            // Vertically center the content
             const float windowHeight = ImGui::GetWindowHeight();
             const float textHeight   = ImGui::GetTextLineHeight();
             const float paddingY     = (windowHeight - textHeight) * 0.5f;
 
-            // Apply the vertical padding
             ImGui::SetCursorPosY(paddingY);
-
-            // Start with a small horizontal padding
             ImGui::SetCursorPosX(10.0f);
 
             if (!possibleCommands.empty()) {
                 ImDrawList *drawList = ImGui::GetWindowDrawList();
 
-                // Use horizontal layout for commands, left-aligned
                 for (const auto &cmd : possibleCommands) {
-                    // Calculate text sizes for proper positioning and border sizing
                     ImVec2 keySize   = ImGui::CalcTextSize(cmd.key.c_str());
                     ImVec2 colonSize = ImGui::CalcTextSize(":");
                     ImVec2 descSize  = ImGui::CalcTextSize(cmd.description.c_str());
 
-                    // Position of the start of this command
                     const ImVec2 commandStart = ImGui::GetCursorScreenPos();
 
-                    // Total size of command group with padding
                     const float commandWidth  = keySize.x + colonSize.x + 5.0f + descSize.x;
                     const float commandHeight = std::max(keySize.y, std::max(colonSize.y, descSize.y));
 
-                    // Add padding around the entire command
                     constexpr float borderPadding      = 6.0f;
                     constexpr float borderCornerRadius = 3.0f;
 
-                    // Draw the gradient border rectangle
                     const auto rectMin = ImVec2(commandStart.x - borderPadding, commandStart.y - borderPadding);
                     const auto rectMax = ImVec2(commandStart.x + commandWidth + borderPadding,
                                                 commandStart.y + commandHeight + borderPadding);
 
-                    // Draw gradient border rectangle
-                    drawList->AddRect(rectMin, rectMax, IM_COL32(58, 124, 161, 200), // Gradient start color
-                                      borderCornerRadius, 0,
-                                      1.5f // Border thickness
-                    );
+                    drawList->AddRect(rectMin, rectMax, IM_COL32(58, 124, 161, 200),
+                                      borderCornerRadius, 0, 1.5f);
 
-                    // Dark inner background
                     drawList->AddRectFilled(ImVec2(rectMin.x + 1, rectMin.y + 1), ImVec2(rectMax.x - 1, rectMax.y - 1),
-                                            IM_COL32(10, 11, 25, 200), // Dark inner background
+                                            IM_COL32(10, 11, 25, 200),
                                             borderCornerRadius - 0.5f);
 
-                    // Draw the command components
                     const std::string &key = cmd.key + ":";
                     ImGui::TextColored(ImVec4(1.0f, 1.0f, 1.0f, 1.0f), "%s", key.c_str());
                     ImGui::SameLine(0.0f, 5.0f);
                     ImGui::Text("%s", cmd.description.c_str());
 
-                    // Add space between commands
                     ImGui::SameLine(0.0f, 20.0f);
 
-                    // Update cursor position to account for the border we added
                     ImGui::SetCursorScreenPos(ImVec2(ImGui::GetCursorScreenPos().x, commandStart.y));
                 }
             }
         }
         ImGui::End();
-        ImGui::PopStyleColor(2); // Pop both text and bg colors
+        ImGui::PopStyleColor(2);
     }
 
     void Editor::drawBackground()
@@ -485,6 +467,98 @@ namespace nexo::editor {
         ImGui::End();
     }
 
+    void Editor::captureWindowStates()
+    {
+        m_windowStates.clear();
+
+        const auto& allWindows = m_windowRegistry.getAllWindows();
+        for (const auto &[_, windows] : allWindows) {
+            for (const auto &window : windows) {
+                const std::string windowName = window->getWindowName();
+                const bool isOpened = window->isOpened();
+                const bool isFocused = window->isFocused();
+                m_windowStates[windowName] = {isOpened, isFocused};
+            }
+        }
+
+        auto focusedWindow = m_windowRegistry.getFocusedWindow();
+        if (focusedWindow) {
+            m_focusedWindowName = focusedWindow->getWindowName();
+        } else {
+            m_focusedWindowName.clear();
+        }
+    }
+
+    void Editor::restoreWindowStates()
+    {
+        const auto& allWindows = m_windowRegistry.getAllWindows();
+        for (const auto &[windowName, state] : m_windowStates) {
+            for (const auto &[_, windows] : allWindows) {
+                for (const auto &window : windows) {
+                    if (window->getWindowName() == windowName) {
+                        window->setOpened(state.first);
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!m_focusedWindowName.empty()) {
+            ImGui::SetWindowFocus(m_focusedWindowName.c_str());
+        }
+
+        m_windowStates.clear();
+        m_focusedWindowName.clear();
+    }
+
+    void Editor::hideGui()
+    {
+        m_windowStates.clear();
+        captureWindowStates();
+
+        const auto& allWindows = m_windowRegistry.getAllWindows();
+        for (const auto &[type, windows] : allWindows) {
+            for (const auto &window : windows) {
+                if (type != typeid(EditorScene)) {
+                    window->setOpened(false);
+                }
+            }
+        }
+
+        m_guiHidden = true;
+    }
+
+    void Editor::showGui()
+    {
+        restoreWindowStates();
+        m_guiHidden = false;
+    }
+
+    void Editor::toggleGuiVisibility()
+    {
+        if (ImGui::GetTopMostPopupModal() != nullptr) {
+            return;
+        }
+
+        auto window = getApp().getWindow();
+
+        if (m_guiHidden && !m_windowStates.empty()) {
+            showGui();
+            window->setFullscreen(false);
+            buildDockspace(true);
+        } else if (!m_guiHidden && m_windowStates.empty()) {
+            hideGui();
+            window->setFullscreen(true);
+        } else if (!m_guiHidden) {
+            hideGui();
+            window->setFullscreen(true);
+        } else {
+            showGui();
+            window->setFullscreen(false);
+            buildDockspace(true);
+        }
+    }
+
     void Editor::render()
     {
         getApp().beginFrame();
@@ -493,16 +567,25 @@ namespace nexo::editor {
 
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
         ImGuizmo::BeginFrame();
-        buildDockspace();
 
-        drawMenuBar();
-        m_windowRegistry.render();
+        if (!m_guiHidden) {
+            buildDockspace();
+            drawMenuBar();
+            m_windowRegistry.render();
+        } else {
+            for (const auto& editorScene : m_windowRegistry.getWindows<EditorScene>()) {
+                if (editorScene->isOpened()) {
+                    editorScene->showFullscreen(true);
+                }
+            }
+        }
 
         handleGlobalCommands();
 
-        // Get the commands to display in the bottom bar
         const std::vector<CommandInfo> possibleCommands = handleFocusedWindowCommands();
-        drawShortcutBar(possibleCommands);
+        if (!m_guiHidden) {
+            drawShortcutBar(possibleCommands);
+        }
         drawBackground();
 
         ImGui::Render();

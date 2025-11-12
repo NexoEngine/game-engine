@@ -242,4 +242,36 @@ namespace nexo::renderer {
         LOG(NEXO_DEV, "X11 class name set to '{}' and instance name set to '{}'", className, instanceName);
     }
 #endif
+
+    void NxOpenGlWindow::setFullscreen(const bool fullscreen)
+    {
+        const bool currentlyFullscreen = isFullscreen();
+
+        if (fullscreen && !currentlyFullscreen) {
+            glfwGetWindowPos(_openGlWindow, &_windowedXPos, &_windowedYPos);
+            glfwGetWindowSize(_openGlWindow, &_windowedWidth, &_windowedHeight);
+
+            GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+            const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+
+            glfwSetWindowMonitor(_openGlWindow, monitor, 0, 0,
+                               mode->width, mode->height, mode->refreshRate);
+            LOG(NEXO_DEV, "Window set to fullscreen mode");
+        } else if (!fullscreen && currentlyFullscreen) {
+            glfwSetWindowMonitor(_openGlWindow, nullptr,
+                               _windowedXPos, _windowedYPos,
+                               _windowedWidth, _windowedHeight, 0);
+            LOG(NEXO_DEV, "Window set to windowed mode");
+        }
+    }
+
+    bool NxOpenGlWindow::isFullscreen() const
+    {
+        return glfwGetWindowMonitor(_openGlWindow) != nullptr;
+    }
+
+    void NxOpenGlWindow::toggleFullscreen()
+    {
+        setFullscreen(!isFullscreen());
+    }
 } // namespace nexo::renderer
