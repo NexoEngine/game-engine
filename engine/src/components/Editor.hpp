@@ -15,4 +15,6 @@
 
 namespace nexo::components {
     struct SelectedTag {};
+
+    struct EditorTag {};
 } // namespace nexo::components

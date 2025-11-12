@@ -19,6 +19,7 @@
 #include "assets/AssetCatalog.hpp"
 #include "components/BillboardMesh.hpp"
 #include "components/Render3D.hpp"
+#include "components/Editor.hpp"
 
 namespace nexo::editor::utils {
 
@@ -56,6 +57,8 @@ namespace nexo::editor::utils {
 
         Application::m_coordinator->addComponent(entity, billboardMesh);
         Application::m_coordinator->addComponent(entity, matComponent);
+        components::EditorTag tag;
+        Application::m_coordinator->addComponent(entity, tag);
     }
 
     /**
@@ -92,6 +95,8 @@ namespace nexo::editor::utils {
 
         Application::m_coordinator->addComponent(entity, billboardMesh);
         Application::m_coordinator->addComponent(entity, matComponent);
+        components::EditorTag tag;
+        Application::m_coordinator->addComponent(entity, tag);
     }
 
     /**
@@ -128,6 +133,8 @@ namespace nexo::editor::utils {
 
         Application::m_coordinator->addComponent(entity, billboardMesh);
         Application::m_coordinator->addComponent(entity, matComponent);
+        components::EditorTag tag;
+        Application::m_coordinator->addComponent(entity, tag);
     }
 
     void addPropsTo(const ecs::Entity entity, const PropsType type)

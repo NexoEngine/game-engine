@@ -338,6 +338,8 @@ namespace nexo::editor {
         const auto pointLightTop  = LightFactory::createPointLight({0.0f + offset.x, 14.0f + offset.y, 11.98f + offset.z},
                                                                    {1, 1, 1}, linear, quad);
         utils::addPropsTo(pointLightTop, utils::PropsType::POINT_LIGHT);
+        auto &transformCompPoint = Application::m_coordinator->getComponent<components::TransformComponent>(pointLightTop);
+        transformCompPoint.size = glm::vec3{0.01f};
         components::NameComponent nameComp;
         nameComp.name = "Demo_point_light";
         app.m_coordinator->addComponent(pointLightTop, nameComp);
@@ -348,6 +350,8 @@ namespace nexo::editor {
                                                                  {-0.30f, -0.30f, -0.30f}, {1.0f, 0.90f, 0.46f},
                                                                  linear2, quad2, 33.50f, 43.0f);
         utils::addPropsTo(deskSpotLight, utils::PropsType::SPOT_LIGHT);
+        auto &transformCompDesk = Application::m_coordinator->getComponent<components::TransformComponent>(deskSpotLight);
+        transformCompDesk.size = glm::vec3{0.01f};
         scene.addEntity(deskSpotLight);
 
         const auto [linear3, quad3] = math::computeAttenuationFromDistance(100.0f);
@@ -355,12 +359,16 @@ namespace nexo::editor {
             LightFactory::createSpotLight({8.48f + offset.x, 7.10f + offset.y, -8.06f + offset.z}, {0.0f, 1.0f, 0.0f},
                                           {1.0f, 1.0f, 0.64f}, linear3, quad3, 55.50f, 75.5f);
         utils::addPropsTo(standSpotLightTop, utils::PropsType::SPOT_LIGHT);
+        auto &transformCompStandTop = Application::m_coordinator->getComponent<components::TransformComponent>(standSpotLightTop);
+        transformCompStandTop.size = glm::vec3{0.01f};
         scene.addEntity(standSpotLightTop);
 
         const auto standSpotLightBottom =
             LightFactory::createSpotLight({8.48f + offset.x, 6.5f + offset.y, -8.06f + offset.z}, {0.0f, -1.0f, 0.0f},
                                           {1.0f, 1.0f, 0.64f}, linear3, quad3, 16.50f, 43.5f);
         utils::addPropsTo(standSpotLightBottom, utils::PropsType::SPOT_LIGHT);
+        auto &transformCompStandBottom = Application::m_coordinator->getComponent<components::TransformComponent>(standSpotLightBottom);
+        transformCompStandBottom.size = glm::vec3{0.01f};
         scene.addEntity(standSpotLightBottom);
 
         // multicolored points lights (garland)
@@ -379,6 +387,8 @@ namespace nexo::editor {
             const auto garlandSpotLight = LightFactory::createSpotLight(garlandPos[i], {1.0f, -0.6f, 0.0f},
                                                                         garlandColors[i], linear4, quad4, 20.0f, 30.0f);
             utils::addPropsTo(garlandSpotLight, utils::PropsType::SPOT_LIGHT);
+            auto &transformCompGarland = Application::m_coordinator->getComponent<components::TransformComponent>(garlandSpotLight);
+            transformCompGarland.size = glm::vec3{0.01f};
             scene.addEntity(garlandSpotLight);
         }
     }
