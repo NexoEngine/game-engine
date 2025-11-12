@@ -340,6 +340,11 @@ namespace nexo::editor {
         if (ImGui::IsKeyPressed(ImGuiKey_B)) {
             toggleGuiVisibility();
         }
+        static bool isPlaying = false;
+        if (ImGui::IsKeyPressed(ImGuiKey_J)) {
+            Application::getInstance().setGameState(isPlaying ? nexo::GameState::EDITOR_MODE : nexo::GameState::PLAY_MODE);
+            isPlaying = !isPlaying;
+        }
     }
 
     std::vector<CommandInfo> Editor::handleFocusedWindowCommands() const

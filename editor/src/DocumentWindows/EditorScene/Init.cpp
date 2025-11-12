@@ -61,7 +61,7 @@ namespace nexo::editor {
         auto& cameraComponent = Application::m_coordinator->getComponent<components::CameraComponent>(demoCamera);
         auto& transformComponent =
             Application::m_coordinator->getComponent<components::TransformComponent>(demoCamera);
-        transformComponent.quat = glm::quat(glm::radians(glm::vec3{150.10f, -88.40f, -180.0f}));
+        transformComponent.quat = glm::quat(glm::radians(glm::vec3{151.70f, -89.40f, -180.0f}));
         cameraComponent.render  = true;
 
         // Add editor camera to the scene
@@ -142,7 +142,7 @@ namespace nexo::editor {
             lightsScene(glm::vec3{0.0f, 0.0f, 0.0f});
             // chambouleScene(glm::vec3{0.0f, 0.0f, 0.0f});
             // physicScene(glm::vec3{-60.0f, 0.0f, 0.0f});
-            videoScene(glm::vec3{0.0f, 0.0f, 0.0f});
+            //videoScene(glm::vec3{0.0f, 0.0f, 0.0f});
             // forestScene({100.0f, 1.0f, 0.0f});
         }
     }
