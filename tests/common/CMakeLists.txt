@@ -41,6 +41,7 @@ add_executable(common_tests
     ${BASEDIR}/save/SerializationContext.test.cpp
     ${BASEDIR}/save/SerializationFocused.test.cpp
     ${BASEDIR}/save/SerializationIntegration.test.cpp
+    ${BASEDIR}/save/VersionedJson.test.cpp
 )
 
 # Find glm and add its include directories
