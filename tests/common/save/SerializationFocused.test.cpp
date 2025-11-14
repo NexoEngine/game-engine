@@ -57,7 +57,7 @@ namespace nexo::save {
         static void serialize(nexo::json& j, const VersionedTestType& v, const SerializationContext& /*ctx*/ = {}) {
             j = json::object();
             j["a"] = v.value;
-            j["version"] = 0;
+            j["_version"] = 0;
         }
         static void deserialize(const json& j, VersionedTestType& v, const SerializationContext& /*ctx*/ = {}) {
             v.value = j.at("a");
@@ -73,7 +73,7 @@ namespace nexo::save {
         static void serialize(nexo::json& j, const VersionedTestType& v, const SerializationContext& /*ctx*/ = {}) {
             j = json::object();
             j["b"] = v.value;
-            j["version"] = 1;
+            j["_version"] = 1;
         }
         static void deserialize(const json& j, VersionedTestType& v, const SerializationContext& /*ctx*/ = {}) {
             v.value = j.at("b");
@@ -95,7 +95,7 @@ TEST(SerializationFocused, Versioning_Migration) {
     // Create JSON that represents version 0
     json j;
     j["a"] = 42;
-    j["version"] = 0;
+    j["_version"] = 0;
 
     VersionedTestType dest;
     nexo::save::deserialize(j, dest); // should migrate to v1 and then deserialize
@@ -108,7 +108,7 @@ TEST(SerializationFocused, Versioning_FutureVersionThrows) {
 
     json j;
     j["b"] = 7;
-    j["version"] = 9999; // future
+    j["_version"] = 9999; // future
 
     VersionedTestType dest;
     EXPECT_THROW(nexo::save::deserialize(j, dest), std::runtime_error);
@@ -139,7 +139,7 @@ namespace nexo::save {
         static void serialize(nexo::json& j, const SimpleTransform& t, const SerializationContext& /*ctx*/ = {}) {
             j = json::object();
             j["position"] = t.position; // uses adl for glm::vec3
-            j["version"] = 0;
+            j["_version"] = 0;
         }
         static void deserialize(const json& j, SimpleTransform& t, const SerializationContext& /*ctx*/ = {}) {
             nexo::save::deserialize(j.at("position"), t.position);
@@ -163,7 +163,7 @@ namespace nexo::save {
             j["name"] = g.name;
             j["transform"] = g.transform; // ADL: should call Serializer<SimpleTransform,0>
             j["components"] = g.components;
-            j["version"] = 0;
+            j["_version"] = 0;
         }
         static void deserialize(const json& j, GameObject& g, const SerializationContext& /*ctx*/ = {}) {
             g.name = j.at("name").get<std::string>();

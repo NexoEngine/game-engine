@@ -110,17 +110,50 @@ namespace nexo::save {
                 Serializer<T, current>::deserialize(migrated, value, ctx);
             }
         }
+
+        struct VersionedJson {
+            uint32_t version = 0;
+            json     data;
+        };
+
+        inline void to_json(nexo::json& j, const detail::VersionedJson& vj) {
+            if (vj.version == 0) {
+                j = vj.data;
+                return;
+            }
+            j = vj.data.is_object() ? vj.data : json{{"_data", vj.data}};
+            j["_version"] = vj.version;
+        }
+        inline void from_json(const nexo::json& j, detail::VersionedJson& vj)
+        {
+            if (!j.is_object() || !j.contains("_version")) {
+                vj.version = 0;
+                vj.data    = j;
+                return;
+            }
+
+            vj.version = j.at("_version").get<uint32_t>();
+
+            if (j.contains("_data")) {
+                vj.data = j.at("_data");
+            } else {
+                vj.data = j;
+                vj.data.erase("_version");
+            }
+        }
+
     } // namespace detail
 
     // Public API
-    // Public API - the concept names in error messages help guide the user
-    // Original functions with requires clause
     template<typename T>
         requires HasSerializer<T> // Compiler will show "HasSerializer<glm::vec3>" failed
     void serialize(json& j, const T& value, const SerializationContext& ctx = SerializationContext{})
     {
         constexpr uint32_t current = current_version_v<T>;
-        Serializer<T, current>::serialize(j, value, ctx);
+        detail::VersionedJson vj;
+        vj.version = current;
+        Serializer<T, current>::serialize(vj.data, value, ctx);
+        j = vj;
     }
 
     // Diagnostic overload for serialize - triggers when HasSerializer<T> fails
@@ -180,8 +213,8 @@ namespace nexo::save {
         requires HasSerializer<T> // Compiler will show "HasSerializer<glm::vec3>" failed
     void deserialize(const json& j, T& value, const SerializationContext& ctx = SerializationContext{})
     {
-        const uint32_t data_version = j.is_object() ? j.value("version", 0u) : 0u;
-        deserialize<T>(j, value, data_version, ctx);
+        auto [version, data] = j.get<detail::VersionedJson>();
+        deserialize<T>(data, value, version, ctx);
     }
 
     // Diagnostic overload for deserialize (without data_version) - triggers when HasSerializer<T> fails
