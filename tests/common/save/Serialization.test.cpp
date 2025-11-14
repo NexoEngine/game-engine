@@ -16,13 +16,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <gtest/gtest.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <gtest/gtest.h>
 
+#include "Json.hpp"
 #include "save/Serialization.hpp"
 #include "save/glm/glm.hpp"
-#include "Json.hpp"
 
 using json = nlohmann::json;
 

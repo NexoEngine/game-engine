@@ -23,38 +23,18 @@
 #include <string>
 
 #include "Json.hpp"
+#include "Serializer.hpp"
+#include "SerializationConcepts.hpp"
 #include "SerializationContext.hpp"
-#include "SerializationException.hpp"
 
 namespace nexo::save {
-
-    // Version tracking
-    template<typename T>
-    struct CurrentVersion {
-        static constexpr uint32_t value = 0;
-    };
-
-    template<typename T>
-    inline constexpr uint32_t current_version_v = CurrentVersion<T>::value;
-
-    // Version-specific serializer
-    template<typename T, uint32_t Version>
-    struct Serializer {
-        // static_assert(sizeof(T) == 0,
-        //     "Serializer not implemented for this type and version");
-
-        // Only current version needs these
-        static void serialize(json& j, const T& value, const SerializationContext& ctx = SerializationContext{}) = delete;
-        static void deserialize(const json& j, T& value, const SerializationContext& ctx = SerializationContext{}) = delete;
-
-        static void migrate_from_previous(const json& j) = delete;
-    };
 
     namespace detail {
         // Runtime migration dispatcher - uses compile-time recursion up to a limit
         template<typename T, uint32_t Version>
         struct MigrationDispatcher {
-            static void migrate(json& j, uint32_t from_version) {
+            static void migrate(json& j, uint32_t from_version)
+            {
                 if (from_version == Version - 1) {
                     // This is the version we need to migrate from
                     Serializer<T, Version>::migrate_from_previous(j);
@@ -73,7 +53,8 @@ namespace nexo::save {
         // Specialization for version 0 (base case)
         template<typename T>
         struct MigrationDispatcher<T, 0> {
-            static void migrate(json& j, uint32_t from_version) {
+            static void migrate(json& j, uint32_t from_version)
+            {
                 (void)j;
                 (void)from_version;
             }
@@ -82,7 +63,8 @@ namespace nexo::save {
         // Specialization for version 1 (base case)
         template<typename T>
         struct MigrationDispatcher<T, 1> {
-            static void migrate(json& j, uint32_t from_version) {
+            static void migrate(json& j, uint32_t from_version)
+            {
                 if (from_version == 0) {
                     // Migrate from version 0 to version 1
                     Serializer<T, 1>::migrate_from_previous(j);
@@ -93,7 +75,8 @@ namespace nexo::save {
 
         // Main migration function
         template<typename T>
-        void migrate_to_current(json& j, uint32_t from_version) {
+        void migrate_to_current(json& j, uint32_t from_version)
+        {
             constexpr uint32_t current = current_version_v<T>;
 
             if (from_version >= current) {
@@ -105,15 +88,14 @@ namespace nexo::save {
         }
 
         template<typename T>
-        void deserialize_with_migration(const json& j, T& value,
-                                       const uint32_t data_version, const SerializationContext& ctx) {
+        void deserialize_with_migration(const json& j, T& value, const uint32_t data_version,
+                                        const SerializationContext& ctx)
+        {
             constexpr uint32_t current = current_version_v<T>;
 
             if (data_version > current) {
-                throw std::runtime_error(
-                    "Cannot load data from future version " +
-                    std::to_string(data_version) +
-                    " (current version: " + std::to_string(current) + ")");
+                throw std::runtime_error("Cannot load data from future version " + std::to_string(data_version) +
+                                         " (current version: " + std::to_string(current) + ")");
             }
 
             if (data_version == current) {
@@ -128,24 +110,123 @@ namespace nexo::save {
                 Serializer<T, current>::deserialize(migrated, value, ctx);
             }
         }
-    }
+    } // namespace detail
 
     // Public API
+    // Public API - the concept names in error messages help guide the user
+    // Original functions with requires clause
     template<typename T>
-    void serialize(json& j, const T& value, const SerializationContext& ctx = SerializationContext{}) {
+        requires HasSerializer<T> // Compiler will show "HasSerializer<glm::vec3>" failed
+    void serialize(json& j, const T& value, const SerializationContext& ctx = SerializationContext{})
+    {
         constexpr uint32_t current = current_version_v<T>;
         Serializer<T, current>::serialize(j, value, ctx);
     }
 
+    // Diagnostic overload for serialize - triggers when HasSerializer<T> fails
     template<typename T>
-    void deserialize(const json& j, T& value, const uint32_t data_version, const SerializationContext& ctx = SerializationContext{}) {
-        detail::deserialize_with_migration<T>(j, value, data_version, ctx);
+        requires(!HasSerializer<T>)
+    void serialize(json& j, const T& value, const SerializationContext& ctx = SerializationContext{})
+    {
+        static_assert(HasSerializer<T>,
+                      "ERROR: No Serializer defined for this type!\n"
+                      "To fix this, define a specialization:\n"
+                      "  template<> struct nexo::save::Serializer<YourType, VERSION> {\n"
+                      "    static void serialize(json& j, const YourType& value, const SerializationContext& ctx) {\n"
+                      "      // Your serialization code here\n"
+                      "    }\n"
+                      "  };\n"
+                      "Example for glm::vec3:\n"
+                      "  template<> struct nexo::save::Serializer<glm::vec3, 0> {\n"
+                      "    static void serialize(json& j, const glm::vec3& v, const SerializationContext& ctx) {\n"
+                      "      j = {{\"x\", value.x}, {\"y\", value.y}, {\"z\", value.z}};\n"
+                      "    }\n"
+                      "  };");
     }
 
     template<typename T>
-    void deserialize(const json& j, T& value, const SerializationContext& ctx = SerializationContext{}) {
+        requires HasSerializer<T> // Compiler will show "HasSerializer<glm::vec3>" failed
+    void deserialize(const json& j, T& value, const uint32_t data_version,
+                     const SerializationContext& ctx = SerializationContext{})
+    {
+        detail::deserialize_with_migration<T>(j, value, data_version, ctx);
+    }
+
+    // Diagnostic overload for deserialize (with data_version) - triggers when HasSerializer<T> fails
+    template<typename T>
+        requires(!HasSerializer<T>)
+    void deserialize(const json& j, T& value, const uint32_t data_version,
+                     const SerializationContext& ctx = SerializationContext{})
+    {
+        static_assert(HasSerializer<T>,
+                      "ERROR: No Serializer defined for this type!\n"
+                      "To fix this, define a specialization:\n"
+                      "  template<> struct nexo::save::Serializer<YourType, VERSION> {\n"
+                      "    static void deserialize(const json& j, YourType& value, const SerializationContext& ctx) {\n"
+                      "      // Your deserialization code here\n"
+                      "    }\n"
+                      "  };\n"
+                      "Example for glm::vec3:\n"
+                      "  template<> struct nexo::save::Serializer<glm::vec3, 0> {\n"
+                      "    static void deserialize(const json& j, glm::vec3& v, const SerializationContext& ctx) {\n"
+                      "      value.x = j.at(\"x\");\n"
+                      "      value.y = j.at(\"y\");\n"
+                      "      value.z = j.at(\"z\");\n"
+                      "    }\n"
+                      "  };");
+    }
+
+    template<typename T>
+        requires HasSerializer<T> // Compiler will show "HasSerializer<glm::vec3>" failed
+    void deserialize(const json& j, T& value, const SerializationContext& ctx = SerializationContext{})
+    {
         const uint32_t data_version = j.is_object() ? j.value("version", 0u) : 0u;
         deserialize<T>(j, value, data_version, ctx);
     }
 
+    // Diagnostic overload for deserialize (without data_version) - triggers when HasSerializer<T> fails
+    template<typename T>
+        requires(!HasSerializer<T>)
+    void deserialize(const json& j, T& value, const SerializationContext& ctx = SerializationContext{})
+    {
+        static_assert(HasSerializer<T>,
+                      "ERROR: No Serializer defined for this type!\n"
+                      "To fix this, define a specialization:\n"
+                      "  template<> struct nexo::save::Serializer<YourType, VERSION> {\n"
+                      "    static void deserialize(const json& j, YourType& value, const SerializationContext& ctx) {\n"
+                      "      // Your deserialization code here\n"
+                      "    }\n"
+                      "  };\n"
+                      "Example for glm::vec3:\n"
+                      "  template<> struct nexo::save::Serializer<glm::vec3, 0> {\n"
+                      "    static void deserialize(const json& j, glm::vec3& v, const SerializationContext& ctx) {\n"
+                      "      value.x = j.at(\"x\");\n"
+                      "      value.y = j.at(\"y\");\n"
+                      "      value.z = j.at(\"z\");\n"
+                      "    }\n"
+                      "  };");
+    }
+
 } // namespace nexo::save
+
+namespace nlohmann {
+
+    // ADL serializer for types with HasSerializer concept
+    template<typename T>
+    requires nexo::save::HasSerializer<T> && (!nexo::HasJsonFunctions<T>)
+    struct adl_serializer<T> {
+        static void to_json(json& j, const T& value) {
+            // Use default context (runtime)
+            nexo::save::SerializationContext ctx{};
+            nexo::save::serialize(j, value, ctx);
+        }
+
+        static void from_json(const json& j, T& value) {
+            // Use default context (runtime)
+            nexo::save::SerializationContext ctx{};
+            nexo::save::deserialize(j, value, ctx);
+        }
+    };
+
+} // namespace nlohmann
+

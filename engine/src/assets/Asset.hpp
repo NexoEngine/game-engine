@@ -17,7 +17,6 @@
 #include <boost/uuid/basic_random_generator.hpp>
 #include <boost/uuid/nil_generator.hpp>
 #include <boost/uuid/uuid.hpp>
-#include <cstdint>
 #include <filesystem>
 
 #include "Json.hpp"
@@ -69,7 +68,7 @@ namespace nexo::assets {
      * @param j JSON object to receive the serialized asset type.
      * @param type The AssetType enum value to convert.
      */
-    inline void to_json(nlohmann::json& j, AssetType type)
+    inline void to_json(json& j, AssetType type)
     {
         j = getAssetTypeName(type);
     }
@@ -84,7 +83,7 @@ namespace nexo::assets {
      * @param j JSON object containing the asset type as a string.
      * @param type Output parameter to store the resulting AssetType.
      */
-    inline void from_json(const nlohmann::json& j, AssetType& type)
+    inline void from_json(const json& j, AssetType& type)
     {
         for (int i = 0; i < static_cast<int>(AssetType::_COUNT); ++i) {
             if (j == AssetTypeNames[i]) {

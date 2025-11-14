@@ -187,9 +187,14 @@ TEST(SerializationFocused, RealComponent_GameObjectRoundTrip_ADL) {
     EXPECT_EQ(j["name"].get<std::string>(), "Player");
     EXPECT_TRUE(j.contains("transform"));
 
+    nexo::save::serialize(j, go); // alternatively, explicit serialize call
+    EXPECT_TRUE(j.is_object());
+    EXPECT_EQ(j["name"].get<std::string>(), "Player");
+    EXPECT_TRUE(j.contains("transform"));
+
+
     nexo::save::GameObject restored = j.get<nexo::save::GameObject>();
     EXPECT_EQ(restored.name, go.name);
     EXPECT_EQ(restored.components.size(), go.components.size());
     EXPECT_FLOAT_EQ(restored.transform.position.x, go.transform.position.x);
 }
-

@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "Json.hpp"
+#include "save/SerializationConcepts.hpp"
 #include "Asset.hpp"
 #include "AssetCatalog.hpp"
 #include "AssetImporterInput.hpp"
