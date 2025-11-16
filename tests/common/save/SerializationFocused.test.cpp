@@ -20,11 +20,11 @@
 #include <glm/glm.hpp>
 #include <gtest/gtest.h>
 
-#include "Json.hpp"
-#include "save/Serialization.hpp"
-#include "save/glm/glm.hpp"
+import nexo.json;
+import nexo.save.serialization;
+import nexo.save.glm;
 
-using json = nlohmann::json;
+using nexo::json;
 
 // 1) ADL integration test: ensure nlohmann::json uses adl_serializer -> nexo::save::serialize
 TEST(SerializationFocused, ADLIntegration_GLMVec3) {

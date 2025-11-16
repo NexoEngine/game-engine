@@ -1,4 +1,6 @@
-//// Serializer.hpp ///////////////////////////////////////////////////////////
+module;
+
+//// Serializer.cppm //////////////////////////////////////////////////////////
 //
 // ⢀⢀⢀⣤⣤⣤⡀⢀⢀⢀⢀⢀⢀⢠⣤⡄⢀⢀⢀⢀⣠⣤⣤⣤⣤⣤⣤⣤⣤⣤⡀⢀⢀⢀⢠⣤⣄⢀⢀⢀⢀⢀⢀⢀⣤⣤⢀⢀⢀⢀⢀⢀⢀⢀⣀⣄⢀⢀⢠⣄⣀⢀⢀⢀⢀⢀⢀⢀
 // ⢀⢀⢀⣿⣿⣿⣷⡀⢀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⡟⡛⡛⡛⡛⡛⡛⡛⢁⢀⢀⢀⢀⢻⣿⣦⢀⢀⢀⢀⢠⣾⡿⢃⢀⢀⢀⢀⢀⣠⣾⣿⢿⡟⢀⢀⡙⢿⢿⣿⣦⡀⢀⢀⢀⢀
@@ -12,19 +14,23 @@
 //
 //  Author:      Guillaume HEIN
 //  Date:        13/11/2025
-//  Description: Implementation of the serializer
+//  Description: Module implementation of the serializer
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#pragma once
-
 #include <cstdint>
 
-#include "Json.hpp"
-#include "SerializationContext.hpp"
+export module nexo.save.serializer;
 
+import nexo.json;
+
+// Unexported forward declarations
 namespace nexo::save {
+    // Forward declaration needed for concepts
+    struct SerializationContext;
+} // namespace nexo::save
 
+export namespace nexo::save {
     // Version tracking
     template<typename T>
     struct CurrentVersion {

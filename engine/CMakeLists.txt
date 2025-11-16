@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.28)
 
 # Set project name
 project(nexoRenderer VERSION 1.0.0)
@@ -8,12 +8,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Add source files
-set(COMMON_SOURCES
-        common/Exception.cpp
-        common/math/Vector.cpp
-        common/math/Projection.cpp
-        common/Path.cpp
-        common/math/Bounds.cpp
+set(ENGINE_SOURCES
         engine/src/Nexo.cpp
         engine/src/EntityFactory3D.cpp
         engine/src/LightFactory.cpp
@@ -94,7 +89,7 @@ set(COMMON_SOURCES
 
 # Add API-specific sources
 if (NEXO_GRAPHICS_API STREQUAL "OpenGL")
-    list(APPEND COMMON_SOURCES
+    list(APPEND ENGINE_SOURCES
             engine/src/renderer/opengl/OpenGlBuffer.cpp
             engine/src/renderer/opengl/OpenGlWindow.cpp
             engine/src/renderer/opengl/OpenGlVertexArray.cpp
@@ -109,23 +104,16 @@ if (NEXO_GRAPHICS_API STREQUAL "OpenGL")
 endif ()
 
 # Create the library
-add_library(nexoRenderer STATIC ${COMMON_SOURCES})
-
-# Find glm and add its include directories
-find_package(glm CONFIG REQUIRED)
-
-if (glm_FOUND)
-    message(STATUS "GLM found at: ${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-linux/include")
-    target_include_directories(nexoRenderer PUBLIC ${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-linux/include)
-else ()
-    message(FATAL_ERROR "GLM not found!")
-endif ()
+add_library(nexoRenderer STATIC ${ENGINE_SOURCES})
 
 # Add include directories for this target
 target_include_directories(nexoRenderer PUBLIC
         ${CMAKE_SOURCE_DIR}/engine/include
         ${CMAKE_SOURCE_DIR}/engine/src
         ${CMAKE_SOURCE_DIR}/common)
+
+# Link nexoCommon library (provides common utilities and serialization modules)
+target_link_libraries(nexoRenderer PUBLIC nexoCommon)
 
 # loguru
 find_package(loguru CONFIG REQUIRED)

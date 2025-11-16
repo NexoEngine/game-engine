@@ -1,4 +1,4 @@
-//// Serialization.test.cpp ///////////////////////////////////////////////////
+//// Json.cppm /////////////////////////////////////////////////////////////////
 //
 // ⢀⢀⢀⣤⣤⣤⡀⢀⢀⢀⢀⢀⢀⢠⣤⡄⢀⢀⢀⢀⣠⣤⣤⣤⣤⣤⣤⣤⣤⣤⡀⢀⢀⢀⢠⣤⣄⢀⢀⢀⢀⢀⢀⢀⣤⣤⢀⢀⢀⢀⢀⢀⢀⢀⣀⣄⢀⢀⢠⣄⣀⢀⢀⢀⢀⢀⢀⢀
 // ⢀⢀⢀⣿⣿⣿⣷⡀⢀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⡟⡛⡛⡛⡛⡛⡛⡛⢁⢀⢀⢀⢀⢻⣿⣦⢀⢀⢀⢀⢠⣾⡿⢃⢀⢀⢀⢀⢀⣠⣾⣿⢿⡟⢀⢀⡙⢿⢿⣿⣦⡀⢀⢀⢀⢀
@@ -8,53 +8,22 @@
 // ⢀⢀⢀⣿⣿⢀⢀⢀⡈⢿⣿⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⡇⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⣰⣿⡟⡛⣿⣷⡄⢀⢀⢀⢀⢀⢿⣿⣇⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⣿⣿⢀⢀⢀
 // ⢀⢀⢀⣿⣿⢀⢀⢀⢀⡈⢿⢀⢀⢸⣿⡇⢀⢀⢀⢀⡛⡟⢁⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⢀⣼⣿⡟⢀⢀⡈⢿⣿⣄⢀⢀⢀⢀⡘⣿⣿⣄⢀⢀⢀⢀⢀⢀⢀⢀⢀⣼⣿⢏⢀⢀⢀
 // ⢀⢀⢀⣿⣿⢀⢀⢀⢀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⢀⣀⣀⣀⣀⣀⣀⣀⣀⣀⡀⢀⢀⢀⣠⣾⡿⢃⢀⢀⢀⢀⢀⢻⣿⣧⡀⢀⢀⢀⡈⢻⣿⣷⣦⣄⢀⢀⣠⣤⣶⣿⡿⢋⢀⢀⢀⢀
-// ⢀⢀⢀⢿⢿⢀⢀⢀⢀⢀⢀⢀⢀⢸⢿⢃⢀⢀⢀⢀⢻⢿⢿⢿⢿⢿⢿⢿⢿⢿⢃⢀⢀⢀⢿⡟⢁⢀⢀⢀⢀⢀⢀⢀⡙⢿⡗⢀⢀⢀⢀⢀⡈⡉⡛⡛⢀⢀⢹⡛⢋⢀⢀⢀⢀⢀⢀
+// ⢀⢀⢀⢿⢿⢀⢀⢀⢀⢀⢀⢀⢀⢸⢿⢃⢀⢀⢀⢀⢻⢿⢿⢿⢿⢿⢿⢿⢿⢿⢃⢀⢀⢀⢿⡟⢁⢀⢀⢀⢀⢀⢀⢀⡙⢿⡗⢀⢀⢀⢀⢀⡈⡉⡛⡛⢀⢀⢹⡛⢋⢁⢀⢀⢀⢀⢀⢀
 //
 //  Author:      Guillaume HEIN
-//  Date:        06/11/2025
-//  Description: Test file for the serialization utilities
+//  Date:        16/11/2025
+//  Description: JSON module for the engine
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include <gtest/gtest.h>
+module;
 
-import nexo.json;
-import nexo.save.serialization;
-import nexo.save.glm;
+#include <nlohmann/json.hpp>
 
-using nexo::json;
+export module nexo.json;
 
-TEST(SerializationCoreSmoke, Vec3RoundTrip) {
-    const glm::vec3 original(1.0f, 2.0f, 3.0f);
-    json j;
-    nexo::save::serialize(j, original);
+export namespace nexo {
 
-    glm::vec3 restored;
-    nexo::save::deserialize(j, restored);
+    using json = nlohmann::json;
 
-    EXPECT_TRUE(restored == original);
-}
-
-TEST(SerializationCoreSmoke, QuatRoundTrip) {
-    const glm::quat original(1.0f, 0.0f, 0.0f, 0.0f);
-    json j;
-    nexo::save::serialize(j, original);
-
-    glm::quat restored;
-    nexo::save::deserialize(j, restored);
-
-    EXPECT_TRUE(restored == original);
-}
-
-TEST(SerializationCoreSmoke, Mat4RoundTrip) {
-    auto original = glm::mat4(1.0f);
-    json j;
-    nexo::save::serialize(j, original);
-
-    glm::mat4 restored;
-    nexo::save::deserialize(j, restored);
-
-    EXPECT_TRUE(restored == original);
-}
+} // namespace nexo

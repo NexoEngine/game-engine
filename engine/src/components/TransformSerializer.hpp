@@ -15,9 +15,15 @@
 #pragma once
 
 #include "Transform.hpp"
-#include "save/Serialization.hpp"
 
-#include "save/glm/glm.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+
+#include <nlohmann/json.hpp>
+
+import nexo.json;
+import nexo.save.serialization;
+import nexo.save.glm;
 
 namespace nexo::save {
 
@@ -46,7 +52,6 @@ namespace nexo::save {
         }
 
         static void migrate_from_previous(const json& j)
-        {
             (void)j; // No previous version
         }
 

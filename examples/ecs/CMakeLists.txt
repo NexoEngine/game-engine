@@ -9,7 +9,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(SRCS
         examples/ecs/exampleBasic.cpp
-        common/Exception.cpp
         engine/src/ecs/Components.cpp
         engine/src/ecs/Entity.cpp
         engine/src/ecs/Coordinator.cpp
@@ -17,6 +16,9 @@ set(SRCS
 )
 
 add_executable(ecsExample ${SRCS})
+
+# Link common library
+target_link_libraries(ecsExample PRIVATE nexoCommon)
 
 set_target_properties(ecsExample
         PROPERTIES

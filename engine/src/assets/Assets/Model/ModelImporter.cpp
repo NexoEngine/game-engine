@@ -35,6 +35,8 @@
 
 #include "core/exceptions/Exceptions.hpp"
 
+import  nexo.save.concepts;
+
 namespace nexo::assets {
 
     bool ModelImporter::canRead(const ImporterInputVariant& inputVariant)

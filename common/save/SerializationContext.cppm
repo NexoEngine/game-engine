@@ -1,4 +1,6 @@
-//// SerializationException.hpp ///////////////////////////////////////////////
+module;
+
+//// SerializationContext.cppm ////////////////////////////////////////////////
 //
 // ⢀⢀⢀⣤⣤⣤⡀⢀⢀⢀⢀⢀⢀⢠⣤⡄⢀⢀⢀⢀⣠⣤⣤⣤⣤⣤⣤⣤⣤⣤⡀⢀⢀⢀⢠⣤⣄⢀⢀⢀⢀⢀⢀⢀⣤⣤⢀⢀⢀⢀⢀⢀⢀⢀⣀⣄⢀⢀⢠⣄⣀⢀⢀⢀⢀⢀⢀⢀
 // ⢀⢀⢀⣿⣿⣿⣷⡀⢀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⡟⡛⡛⡛⡛⡛⡛⡛⢁⢀⢀⢀⢀⢻⣿⣦⢀⢀⢀⢀⢠⣾⡿⢃⢀⢀⢀⢀⢀⣠⣾⣿⢿⡟⢀⢀⡙⢿⢿⣿⣦⡀⢀⢀⢀⢀
@@ -12,26 +14,57 @@
 //
 //  Author:      Guillaume HEIN
 //  Date:        06/11/2025
-//  Description: Serialization exception class
+//  Description: Module implementation of the serialization context
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#pragma once
+#include <unordered_map>
+#include <string>
 
-#include "Exception.hpp"
+export module nexo.save.context;
 
-namespace nexo::save {
+export namespace nexo::save {
 
     /**
-     * @class SerializationException
-     * @brief Exception class for serialization errors.
+     * @brief Serialization context flags
+     *
+     * Simple bitfield for serialization options.
+     * Extensible without breaking existing code.
      */
-    class SerializationException : public nexo::Exception {
-    public:
-        explicit SerializationException(const std::string &filePath,
-                                       const std::source_location &loc = std::source_location::current())
-            : Exception("Serialization exception: " + filePath, loc)
-        {}
+    struct SerializationContext {
+        // Flags
+        bool includeEditorData = false;     // Editor notes, viewport locks, debug info
+        bool includeDefaults = true;        // Include default values (true = verbose, false = compact)
+        bool resolveAssetRefs = true;       // True = serialize full asset ID, false = serialize weak refs
+
+        // Custom data (for future extensions)
+        std::unordered_map<std::string, std::string> metadata;
+
+        // Factory methods for common contexts
+        static SerializationContext editor() {
+            return SerializationContext{
+                .includeEditorData = true,
+                .includeDefaults = true,
+                .resolveAssetRefs = true
+            };
+        }
+
+        static SerializationContext runtime() {
+            return SerializationContext{
+                .includeEditorData = false,
+                .includeDefaults = false,
+                .resolveAssetRefs = true
+            };
+        }
+
+        static SerializationContext network() {
+            return SerializationContext{
+                .includeEditorData = false,
+                .includeDefaults = false,
+                .resolveAssetRefs = false  // Network sync uses handles, not full IDs
+            };
+        }
     };
 
 } // namespace nexo::save
+

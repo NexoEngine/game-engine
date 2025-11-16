@@ -17,8 +17,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <gtest/gtest.h>
-#include "Json.hpp"
-#include "save/Serialization.hpp"
+
+import nexo.json;
+import nexo.save.serialization;
 
 // ============================================================================
 // Simplified SerializationContext Tests

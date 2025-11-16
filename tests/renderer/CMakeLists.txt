@@ -21,13 +21,6 @@ set(BASEDIR ${CMAKE_CURRENT_LIST_DIR})
 include_directories("./common")
 include_directories("./engine/src/renderer")
 
-# TODO: make common a library and link it to the tests
-set(COMMON_SOURCES
-        common/Exception.cpp
-        common/math/Matrix.cpp
-        common/math/Bounds.cpp
-        common/Path.cpp
-)
 
 set(RENDERER_SOURCES
         engine/src/renderer/Window.cpp
@@ -62,7 +55,6 @@ set(RENDERER_SOURCES
 
 add_executable(renderer_tests
         ${TEST_MAIN_FILES}
-        ${COMMON_SOURCES}
         ${RENDERER_SOURCES}
         ${BASEDIR}/Buffer.test.cpp
         ${BASEDIR}/VertexArray.test.cpp
@@ -78,6 +70,9 @@ add_executable(renderer_tests
 # Find glm and add its include directories
 find_package(glm CONFIG REQUIRED)
 target_include_directories(renderer_tests PUBLIC ${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-linux/include)
+
+# Link common library
+target_link_libraries(renderer_tests PRIVATE nexoCommon)
 
 find_package(Stb REQUIRED)
 target_include_directories(renderer_tests PRIVATE ${Stb_INCLUDE_DIR})

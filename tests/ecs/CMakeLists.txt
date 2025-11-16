@@ -21,11 +21,6 @@ set(BASEDIR ${CMAKE_CURRENT_LIST_DIR})
 include_directories("./common")
 include_directories("./engine/src/ecs")
 
-# TODO: make common a library and link it to the tests
-set(COMMON_SOURCES
-        common/Exception.cpp
-)
-
 # TODO: Make an ecs library
 set(ECS_SOURCES
         engine/src/ecs/Components.cpp
@@ -36,7 +31,6 @@ set(ECS_SOURCES
 
 add_executable(ecs_tests
         ${TEST_MAIN_FILES}
-        ${COMMON_SOURCES}
         ${ECS_SOURCES}
         ${BASEDIR}/Components.test.cpp
         ${BASEDIR}/Entity.test.cpp
@@ -55,6 +49,9 @@ add_executable(ecs_tests
 # Find glm and add its include directories
 find_package(glm CONFIG REQUIRED)
 target_include_directories(ecs_tests PUBLIC ${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-linux/include)
+
+# Link common library
+target_link_libraries(ecs_tests PRIVATE nexoCommon)
 
 # boost-dll
 find_package(Boost CONFIG REQUIRED COMPONENTS dll)

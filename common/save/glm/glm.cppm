@@ -1,4 +1,6 @@
-//// glm.hpp //////////////////////////////////////////////////////////////////
+module;
+
+//// glm.cppm //////////////////////////////////////////////////////////////////
 //
 // ⢀⢀⢀⣤⣤⣤⡀⢀⢀⢀⢀⢀⢀⢠⣤⡄⢀⢀⢀⢀⣠⣤⣤⣤⣤⣤⣤⣤⣤⣤⡀⢀⢀⢀⢠⣤⣄⢀⢀⢀⢀⢀⢀⢀⣤⣤⢀⢀⢀⢀⢀⢀⢀⢀⣀⣄⢀⢀⢠⣄⣀⢀⢀⢀⢀⢀⢀⢀
 // ⢀⢀⢀⣿⣿⣿⣷⡀⢀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⡟⡛⡛⡛⡛⡛⡛⡛⢁⢀⢀⢀⢀⢻⣿⣦⢀⢀⢀⢀⢠⣾⡿⢃⢀⢀⢀⢀⢀⣠⣾⣿⢿⡟⢀⢀⡙⢿⢿⣿⣦⡀⢀⢀⢀⢀
@@ -12,18 +14,23 @@
 //
 //  Author:      Guillaume HEIN
 //  Date:        06/11/2025
-//  Description: GLM serialization helpers
+//  Description: Module implementation of GLM serialization helpers
 //
 ///////////////////////////////////////////////////////////////////////////////
-
-#pragma once
 
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-#include "save/Serialization.hpp"
+#include <nlohmann/json.hpp>
 
-namespace nexo::save {
+export module nexo.save.glm;
+
+import nexo.json;
+import nexo.save.serialization;
+import nexo.save.serializer;
+import nexo.save.context;
+
+export namespace nexo::save {
     // glm::vec2
     template<>
     struct CurrentVersion<glm::vec2> {
@@ -140,3 +147,4 @@ namespace nexo::save {
     };
 
 } // namespace nexo::save
+

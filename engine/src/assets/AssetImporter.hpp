@@ -20,7 +20,8 @@
 #include <typeindex>
 #include <vector>
 
-#include "Json.hpp"
+import nexo.json;
+
 #include "Asset.hpp"
 #include "AssetImporterInput.hpp"
 

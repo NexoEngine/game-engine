@@ -14,7 +14,9 @@
 
 #include "assets/AssetImporterContext.hpp"
 #include <gtest/gtest.h>
-#include "Json.hpp"
+
+import nexo.json;
+
 #include "assets/Asset.hpp"
 #include "assets/AssetCatalog.hpp"
 #include "assets/Assets/Model/Model.hpp"

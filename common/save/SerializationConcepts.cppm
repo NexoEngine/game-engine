@@ -1,4 +1,4 @@
-//// SerializationConcepts.hpp ////////////////////////////////////////////////////////
+//// SerializationConcepts.cppm ///////////////////////////////////////////////
 //
 // ⢀⢀⢀⣤⣤⣤⡀⢀⢀⢀⢀⢀⢀⢠⣤⡄⢀⢀⢀⢀⣠⣤⣤⣤⣤⣤⣤⣤⣤⣤⡀⢀⢀⢀⢠⣤⣄⢀⢀⢀⢀⢀⢀⢀⣤⣤⢀⢀⢀⢀⢀⢀⢀⢀⣀⣄⢀⢀⢠⣄⣀⢀⢀⢀⢀⢀⢀⢀
 // ⢀⢀⢀⣿⣿⣿⣷⡀⢀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⡟⡛⡛⡛⡛⡛⡛⡛⢁⢀⢀⢀⢀⢻⣿⣦⢀⢀⢀⢀⢠⣾⡿⢃⢀⢀⢀⢀⢀⣠⣾⣿⢿⡟⢀⢀⡙⢿⢿⣿⣦⡀⢀⢀⢀⢀
@@ -12,21 +12,21 @@
 //
 //  Author:      Guillaume HEIN
 //  Date:        07/11/2025
-//  Description: Concepts for JSON serialization
+//  Description: Module implementation of concepts for JSON serialization
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#pragma once
+module;
 
 #include <concepts>
 
-#include "save/Serializer.hpp"
+export module nexo.save.concepts;
 
-namespace nexo {
-    using json = nlohmann::json;
-}
+import nexo.json;
+import nexo.save.serializer;
+import nexo.save.context;
 
-namespace nexo::save {
+export namespace nexo::save {
 
     namespace detail {
         // Break down the concept into smaller, named pieces for better diagnostics
@@ -65,7 +65,7 @@ namespace nexo::save {
 
 } // namespace nexo::save
 
-namespace nexo {
+export namespace nexo {
 
     /**
      * @brief Concept to check if a type has to_json/from_json free functions
@@ -91,28 +91,9 @@ namespace nexo {
      * @note When compilation fails, the compiler will show which sub-concept failed:
      *       - If HasSerializer failed, check HasCurrentVersion, HasSerializeMethod, HasDeserializeMethod
      *       - If HasJsonFunctions failed, check to_json and from_json implementations
-     *
-     * Example implementations:
-     * @code{.cpp}
-     * // Option 1: Versioned serializer
-     * template<>
-     * struct nexo::save::CurrentVersion<YourType> {
-     *     static constexpr uint32_t value = 1;
-     * };
-     *
-     * template<>
-     * struct nexo::save::Serializer<YourType, 1> {
-     *     static void serialize(json& j, const YourType& obj, const SerializationContext& ctx);
-     *     static void deserialize(const json& j, YourType& obj, const SerializationContext& ctx);
-     *     static void migrate_from_previous(json& j);
-     * };
-     *
-     * // Option 2: Simple to_json/from_json
-     * void to_json(nexo::json& j, const YourType& obj);
-     * void from_json(const nexo::json& j, YourType& obj);
-     * @endcode
      */
     template<typename T>
-    concept JSONSerializable = save::HasSerializer<T> || HasJsonFunctions<T>;
+    concept JSONSerializable = nexo::save::HasSerializer<T> || HasJsonFunctions<T>;
 
 } // namespace nexo
+

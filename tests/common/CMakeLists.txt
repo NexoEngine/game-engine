@@ -12,7 +12,7 @@
 #
 ###############################################################################
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.28)
 
 project(commonTests)
 
@@ -20,18 +20,8 @@ set(BASEDIR ${CMAKE_CURRENT_LIST_DIR})
 
 include_directories("./common")
 
-# TODO: make common a library and link it to the tests
-set(COMMON_SOURCES
-    common/Exception.cpp
-    common/Path.cpp
-    common/math/Matrix.cpp
-    common/math/Vector.cpp
-    common/math/Light.cpp
-)
-
 add_executable(common_tests
     ${TEST_MAIN_FILES}
-    ${COMMON_SOURCES}
     ${BASEDIR}/Matrix.test.cpp
     ${BASEDIR}/Path.test.cpp
     ${BASEDIR}/Exceptions.test.cpp
@@ -44,8 +34,8 @@ add_executable(common_tests
     ${BASEDIR}/save/VersionedJson.test.cpp
 )
 
-# Find glm and add its include directories
-find_package(glm CONFIG REQUIRED)
+# Link common library (provides utilities and serialization modules)
+target_link_libraries(common_tests PRIVATE nexoCommon)
 
 # boost-dll
 find_package(Boost CONFIG REQUIRED COMPONENTS dll)

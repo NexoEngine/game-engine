@@ -21,6 +21,8 @@
 #include "assets/AssetImporterBase.hpp"
 #include "assets/Assets/Texture/Texture.hpp"
 
+import nexo.save.concepts;
+
 namespace nexo::assets {
 
     bool TextureImporter::canRead(const ImporterInputVariant& inputVariant)

@@ -1,4 +1,6 @@
-//// Serialization.hpp ////////////////////////////////////////////////////////
+module;
+
+//// Serialization.cppm ///////////////////////////////////////////////////////
 //
 // ⢀⢀⢀⣤⣤⣤⡀⢀⢀⢀⢀⢀⢀⢠⣤⡄⢀⢀⢀⢀⣠⣤⣤⣤⣤⣤⣤⣤⣤⣤⡀⢀⢀⢀⢠⣤⣄⢀⢀⢀⢀⢀⢀⢀⣤⣤⢀⢀⢀⢀⢀⢀⢀⢀⣀⣄⢀⢀⢠⣄⣀⢀⢀⢀⢀⢀⢀⢀
 // ⢀⢀⢀⣿⣿⣿⣷⡀⢀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⡟⡛⡛⡛⡛⡛⡛⡛⢁⢀⢀⢀⢀⢻⣿⣦⢀⢀⢀⢀⢠⣾⡿⢃⢀⢀⢀⢀⢀⣠⣾⣿⢿⡟⢀⢀⡙⢿⢿⣿⣦⡀⢀⢀⢀⢀
@@ -12,22 +14,24 @@
 //
 //  Author:      Guillaume HEIN
 //  Date:        05/11/2025
-//  Description: Implementation of the serialization utilities
+//  Description: Module implementation of the serialization utilities
 //
 ///////////////////////////////////////////////////////////////////////////////
-
-#pragma once
 
 #include <cstdint>
 #include <stdexcept>
 #include <string>
 
-#include "Json.hpp"
-#include "Serializer.hpp"
-#include "SerializationConcepts.hpp"
-#include "SerializationContext.hpp"
+#include <nlohmann/json.hpp>
 
-namespace nexo::save {
+export module nexo.save.serialization;
+
+import nexo.json;
+import nexo.save.serializer;
+import nexo.save.context;
+import nexo.save.concepts;
+
+export namespace nexo::save {
 
     namespace detail {
         // Runtime migration dispatcher - uses compile-time recursion up to a limit
@@ -242,7 +246,7 @@ namespace nexo::save {
 
 } // namespace nexo::save
 
-namespace nlohmann {
+export namespace nlohmann {
 
     // ADL serializer for types with HasSerializer concept
     template<typename T>

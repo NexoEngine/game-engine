@@ -17,10 +17,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <gtest/gtest.h>
-#include "Json.hpp"
-#include "save/Serialization.hpp"
 
-using json = nlohmann::json;
+import nexo.json;
+import nexo.save.serialization;
+
+using nexo::json;
 
 // ============================================================================
 // VersionedJson Tests - Basic Functionality

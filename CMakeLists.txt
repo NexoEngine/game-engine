@@ -6,6 +6,7 @@ project(client CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_SCAN_FOR_MODULES ON)
 
 set(NEXO_COVERAGE OFF CACHE BOOL "Enable coverage for binaries")
 set(NEXO_GIT_SUBMODULE OFF CACHE BOOL "Enable git submodules init and update")
@@ -106,6 +107,8 @@ message(STATUS "Running VCPKG...")
 include("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
 message(STATUS "VCPKG done.")
 
+# SETUP COMMON LIBRARY (must be first as others depend on it)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/common")
 # SETUP EDITOR
 include("${CMAKE_CURRENT_SOURCE_DIR}/editor/CMakeLists.txt")
 # SETUP ENGINE
