@@ -26,7 +26,7 @@
 #include "renderPasses/ForwardPass.hpp"
 #include "renderPasses/GPUResources.hpp"
 #include "renderPasses/PointShadowPass.hpp"
-#include "renderPasseS/ShadowPass.hpp"
+#include "renderPasses/ShadowPass.hpp"
 
 namespace nexo {
     ecs::Entity CameraFactory::createPerspectiveCamera(glm::vec3 pos, unsigned int width, unsigned int height,

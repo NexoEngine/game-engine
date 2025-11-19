@@ -28,7 +28,6 @@
 #include "LightFactory.hpp"
 #include "Path.hpp"
 #include "RenderPass.hpp"
-#include "assets/AssetImporter.hpp"
 #include "renderPasses/GridPass.hpp"
 #include "renderPasses/MaskPass.hpp"
 #include "renderPasses/OutlinePass.hpp"
