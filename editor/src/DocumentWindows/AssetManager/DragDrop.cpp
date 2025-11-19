@@ -129,10 +129,10 @@ namespace nexo::editor {
         assets::ImporterFileInput fileInput{path};
         try {
             assets::AssetImporter importer;
-            if (const auto assetRef = importer.importAssetAuto(location, fileInput); !assetRef)
-                LOG(NEXO_ERROR, "Failed to import asset: {}", location.getPath().data());
+            const auto assetRef = importer.importAssetAuto(location, fileInput);
+            if (!assetRef) LOG(NEXO_ERROR, "Failed to import asset: {}", location.getPath().data());
         } catch (const std::exception& e) {
-            THROW_EXCEPTION(AssetImportException, location.getPath(), e.what());
+            LOG(NEXO_ERROR, "Failed to import asset: {}", location.getPath().data());
         }
     }
 } // namespace nexo::editor

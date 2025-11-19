@@ -60,7 +60,7 @@ try {
         editor.render();
         editor.update();
 
-        auto end                                          = std::chrono::high_resolution_clock::now();
+        auto end = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> elapsed = end - start;
 
         std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);

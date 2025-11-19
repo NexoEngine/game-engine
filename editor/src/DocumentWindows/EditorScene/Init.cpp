@@ -327,6 +327,28 @@ namespace nexo::editor {
         }
     }
 
+    void EditorScene::spawnBallsScene(const glm::vec3& offset) const
+    {
+        thread_local std::mt19937 gen = []() {
+            std::random_device rd;
+            const auto time_seed = static_cast<unsigned long>(std::chrono::high_resolution_clock::now().time_since_epoch().count());
+            const auto thread_hash = std::hash<std::thread::id>{}(std::this_thread::get_id());
+            std::seed_seq seq{rd(), static_cast<unsigned>(time_seed), static_cast<unsigned>(thread_hash)};
+            return std::mt19937(seq);
+        }();
+        thread_local std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+
+        // Balls
+        for (int i = 0; i < 50; ++i) {
+            const float x   = -3.0f + static_cast<float>(i % 5) * 1.5f;
+            const float z   = static_cast<float>((i % 2 == 0) ? 1 : -1) * 0.5f;
+            glm::vec3 pos   = {x, 62.0f + static_cast<float>(i), z};
+            glm::vec4 color = {1.0f, dis(gen), dis(gen), 1.0f};
+            createEntityWithPhysic(pos + offset, {0.4f, 0.4f, 0.4f}, {0, 0, 0}, color, system::ShapeType::Sphere,
+                                   JPH::EMotionType::Dynamic);
+        }
+    }
+
     void EditorScene::videoScene(const glm::vec3& offset) const
     {
         auto& app           = getApp();
