@@ -142,7 +142,7 @@ namespace nexo::editor {
             lightsScene(glm::vec3{0.0f, 0.0f, 0.0f});
             // chambouleScene(glm::vec3{0.0f, 0.0f, 0.0f});
             // physicScene(glm::vec3{-60.0f, 0.0f, 0.0f});
-            //videoScene(glm::vec3{0.0f, 0.0f, 0.0f});
+            videoScene(glm::vec3{0.0f, 0.0f, 0.0f});
             // forestScene({100.0f, 1.0f, 0.0f});
         }
     }
@@ -670,36 +670,91 @@ namespace nexo::editor {
         auto &transform = Application::m_coordinator->getComponent<components::TransformComponent>(videoBillboard);
         transform.quat = glm::quat(glm::radians(glm::vec3(-151.69f, -38.03f, 138.55f)));
         components::VideoComponent videoComponent;
-        videoComponent.path      = nexo::Path::resolvePathRelativeToExe("../resources/videos/test.mp4").string();
+        videoComponent.path      = nexo::Path::resolvePathRelativeToExe("../resources/videos/EIP_Trophies.mp4").string();
         videoComponent.keyframes = {
-            {0.0f, 0.1f, components::KeyframeType::NORMAL},
-            {0.01f, 1.25f, components::KeyframeType::TRANSITION},
-            {1.25f, 16.15f, components::KeyframeType::LOOP},
-            {16.15f, 17.00f, components::KeyframeType::TRANSITION},
-            {17.00f, 37.23f, components::KeyframeType::LOOP},
-            {37.23f, 38.07f, components::KeyframeType::TRANSITION},
-            {38.07f, 82.27f, components::KeyframeType::LOOP},
-            {82.27f, 84.25f, components::KeyframeType::TRANSITION},
-            {84.25f, 85.00f, components::KeyframeType::NORMAL},
-            {85.00f, 87.03f, components::KeyframeType::TRANSITION},
-            {87.03f, 95.15f, components::KeyframeType::LOOP},
-            {95.15f, 97.15f, components::KeyframeType::TRANSITION},
-            {97.15f, 109.13f, components::KeyframeType::LOOP},
-            {109.13f, 111.07f, components::KeyframeType::TRANSITION},
-            {111.07f, 140.04f, components::KeyframeType::LOOP},
-            {138.07f, 140.04f, components::KeyframeType::TRANSITION},
-            {142.01f, 149.15f, components::KeyframeType::LOOP},
-            {149.15f, 151.09f, components::KeyframeType::TRANSITION},
-            {151.09f, 161.53f, components::KeyframeType::LOOP},
-            {161.53f, 164.06f, components::KeyframeType::TRANSITION},
-            {164.06f, 195.14f, components::KeyframeType::LOOP},
-            {195.14f, 197.19f, components::KeyframeType::TRANSITION},
-            {197.19f, 214.12f, components::KeyframeType::LOOP},
-            {214.12f, 216.18f, components::KeyframeType::TRANSITION},
-            {216.18f, 243.81f, components::KeyframeType::LOOP},
-            {243.81f, 245.81f, components::KeyframeType::TRANSITION},
-            {245.81f, 262.00f, components::KeyframeType::NORMAL},
+            {0.0f, 0.01f, components::KeyframeType::NORMAL},
 
+            {0.01f, 2.079f, components::KeyframeType::TRANSITION},
+            {2.079f, 16.467f, components::KeyframeType::LOOP},
+            {16.467f, 17.094f, components::KeyframeType::TRANSITION},
+            {17.094f, 37.752f, components::KeyframeType::LOOP},
+            {37.752f, 38.247f, components::KeyframeType::TRANSITION},
+            {38.247f, 82.863f, components::KeyframeType::LOOP},
+            {82.863f, 84.91f, components::KeyframeType::TRANSITION},
+            {84.91f, 85.00f, components::KeyframeType::NORMAL},
+            {85.00f, 87.054f, components::KeyframeType::TRANSITION},
+            {87.054f, 95.502f, components::KeyframeType::LOOP},
+            {95.502f, 97.680f, components::KeyframeType::TRANSITION},
+            {97.680f, 109.362f, components::KeyframeType::LOOP},
+            {109.362f, 111.045f, components::KeyframeType::TRANSITION},
+            {111.045f, 125.532f, components::KeyframeType::LOOP},
+            {125.532f, 128.139f, components::KeyframeType::TRANSITION},
+            {128.139f, 136.950f, components::KeyframeType::LOOP},
+            {136.950f, 139.062f, components::KeyframeType::TRANSITION},
+            {139.062f, 146.355f, components::KeyframeType::LOOP},
+            {146.355f, 148.368f, components::KeyframeType::TRANSITION},
+            {148.368f, 158.565f, components::KeyframeType::LOOP},
+            {158.565f, 160.677f, components::KeyframeType::TRANSITION},
+            {160.677f, 180.100f, components::KeyframeType::LOOP},
+            {180.100f, 190.443f, components::KeyframeType::TRANSITION},
+            {190.443f, 190.674f, components::KeyframeType::NORMAL},
+
+            {190.674f, 192.357f, components::KeyframeType::TRANSITION},
+            {192.357f, 192.423f, components::KeyframeType::NORMAL},
+
+            {192.423f, 193.215f, components::KeyframeType::TRANSITION},
+            {193.215f, 193.281f, components::KeyframeType::NORMAL},
+
+            {193.281f, 193.974f, components::KeyframeType::TRANSITION},
+            {193.974f, 194.040f, components::KeyframeType::NORMAL},
+
+            {194.040f, 196.020, components::KeyframeType::TRANSITION},
+            {196.020, 196.086, components::KeyframeType::NORMAL},
+
+            {196.086, 198.297, components::KeyframeType::TRANSITION},
+            {198.297, 198.300, components::KeyframeType::NORMAL},
+
+            {198.300, 200.277, components::KeyframeType::TRANSITION},
+            {200.277, 200.475, components::KeyframeType::NORMAL},
+
+            {200.475, 202.389, components::KeyframeType::TRANSITION},
+            {202.389, 202.400, components::KeyframeType::NORMAL},
+
+            {202.400, 206.712, components::KeyframeType::TRANSITION},
+            {206.712, 206.800, components::KeyframeType::NORMAL},
+
+            {206.800, 209.781, components::KeyframeType::TRANSITION},
+            {209.781, 209.900, components::KeyframeType::NORMAL},
+
+            {209.900, 213.807, components::KeyframeType::TRANSITION},
+            {213.807, 213.873, components::KeyframeType::NORMAL},
+
+            {213.873, 217.998, components::KeyframeType::TRANSITION},
+            {217.998, 218.130, components::KeyframeType::NORMAL},
+
+            {218.130, 222.255, components::KeyframeType::TRANSITION},
+            {222.255, 222.380, components::KeyframeType::NORMAL},
+
+            {222.380, 224.400, components::KeyframeType::TRANSITION},
+            {224.400, 225.291, components::KeyframeType::NORMAL},
+
+            {225.291, 226.479, components::KeyframeType::TRANSITION},
+            {226.479, 226.500, components::KeyframeType::NORMAL},
+
+            {226.500, 228.550, components::KeyframeType::TRANSITION},
+            {228.550, 228.600, components::KeyframeType::NORMAL},
+
+            {228.600, 230.703, components::KeyframeType::TRANSITION},
+            {230.703, 230.736, components::KeyframeType::NORMAL},
+
+            {230.736, 233.046, components::KeyframeType::TRANSITION},
+            {233.046, 233.100, components::KeyframeType::NORMAL},
+
+            {233.100, 234.762, components::KeyframeType::TRANSITION},
+            {234.762, 234.800, components::KeyframeType::NORMAL},
+
+            {234.800, 237.000, components::KeyframeType::TRANSITION},
+            {237.000, 237.100, components::KeyframeType::NORMAL},
         };
 
         Application::m_coordinator->addComponent(videoBillboard, videoComponent);
