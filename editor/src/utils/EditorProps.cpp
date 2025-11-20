@@ -13,13 +13,16 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "EditorProps.hpp"
+
+#include <components/Name.hpp>
+
 #include "Nexo.hpp"
 #include "Path.hpp"
 #include "Renderer3D.hpp"
 #include "assets/AssetCatalog.hpp"
 #include "components/BillboardMesh.hpp"
-#include "components/Render3D.hpp"
 #include "components/Editor.hpp"
+#include "components/Render3D.hpp"
 
 namespace nexo::editor::utils {
 
@@ -152,6 +155,31 @@ namespace nexo::editor::utils {
             default:
                 break;
         }
+    }
+
+    ecs::Entity FindEntityByName(const char* name)
+    {
+        if (!name) {
+            LOG(NEXO_ERROR, "NxFindEntityByName: name is null");
+            return static_cast<ecs::Entity>(-1);
+        }
+
+        auto& app            = Application::getInstance();
+        auto& coordinator    = *Application::m_coordinator;
+        const auto& scene    = app.getSceneManager().getScene(0);
+        const auto& entities = scene.getEntities();
+
+        for (const auto entity : entities) {
+            if (coordinator.entityHasComponent<components::NameComponent>(entity)) {
+                const auto& nameComponent = coordinator.getComponent<components::NameComponent>(entity);
+                if (nameComponent.name == name) {
+                    return entity;
+                }
+            }
+        }
+
+        LOG(NEXO_WARN, "FindEntityByName: Entity with name '{}' not found", name);
+        return static_cast<ecs::Entity>(-1);
     }
 
 } // namespace nexo::editor::utils

@@ -12,6 +12,7 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include "DemoScenes.hpp"
 #include "EditorScene.hpp"
 #include "components/Uuid.hpp"
 #include "context/ActionManager.hpp"
@@ -175,7 +176,7 @@ namespace nexo::editor {
                                           .description("Spawn balls")
                                           .key("L")
                                           .onPressed([this] {
-                                              this->spawnBallsScene(glm::vec3{-60.0f, 0.0f, 0.0f});
+                                              spawnBallsScene(m_sceneId, glm::vec3{-60.0f, 0.0f, 0.0f});
                                           })
                                           .build());
     }

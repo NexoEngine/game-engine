@@ -26,7 +26,7 @@ namespace nexo::editor::utils {
      */
     enum class PropsType { CAMERA, POINT_LIGHT, SPOT_LIGHT };
 
-  /**
+    /**
      * @brief Adds editor props to a given entity based on the specified PropsType.
      *
      * This function attaches visual and functional components to the provided entity
@@ -38,4 +38,16 @@ namespace nexo::editor::utils {
      * @param type The type of props to add, defined by the PropsType enum.
      */
     void addPropsTo(ecs::Entity entity, PropsType type);
+
+    /**
+     * @brief Finds an entity in the scene by its name.
+     *
+     * This function searches for an entity with a specific name in the current scene.
+     * It returns the first entity that matches the given name or an invalid entity if none is found.
+     *
+     * @param name The name of the entity to search for.
+     * @return ecs::Entity The found entity or an invalid entity if not found.
+     */
+    ecs::Entity FindEntityByName(const char* name);
+
 } // namespace nexo::editor::utils
