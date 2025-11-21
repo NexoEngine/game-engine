@@ -20,6 +20,7 @@
 #include <stb_image.h>
 #include "assets/AssetImporterBase.hpp"
 #include "assets/Assets/Texture/Texture.hpp"
+#include "assets/AssetImporterContext.hpp"
 
 namespace nexo::assets {
 

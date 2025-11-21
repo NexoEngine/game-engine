@@ -24,6 +24,7 @@
 #include "Asset.hpp"
 #include "AssetCatalog.hpp"
 #include "AssetImporterInput.hpp"
+#include "AssetRef.hpp"
 
 namespace nexo::assets {
     struct AssetDependency;

@@ -20,11 +20,14 @@
 #include <typeindex>
 #include <vector>
 
-#include "Json.hpp"
 #include "Asset.hpp"
 #include "AssetImporterInput.hpp"
+#include "Json.hpp"
+#include "Logger.hpp"
 
 namespace nexo::assets {
+
+    class GenericAssetRef;
 
     class AssetImporterBase;
 
@@ -289,7 +292,6 @@ namespace nexo::assets {
         auto importers = getImportersForType<AssetType>();
         if (importers.empty()) {
             LOG(NEXO_ERROR, "No importers registered for asset type {}", typeid(AssetType).name());
-            return GenericAssetRef::null().as<AssetType>();
         }
         return importAssetTryImporters(location, inputVariant, importers).template as<AssetType>();
     }

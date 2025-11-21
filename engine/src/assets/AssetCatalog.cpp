@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AssetCatalog.hpp"
+#include "AssetRef.hpp"
 
 #include <boost/uuid/random_generator.hpp>
 
@@ -81,6 +82,12 @@ namespace nexo::assets {
             assets.emplace_back(asset);
         }
         return assets;
+    }
+
+    auto AssetCatalog::getAssetsView() const
+    {
+        return m_assets | std::views::values |
+               std::views::transform([](const auto& asset) { return GenericAssetRef(asset); });
     }
 
     GenericAssetRef AssetCatalog::registerAsset(const AssetLocation& location, std::unique_ptr<IAsset> asset)

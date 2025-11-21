@@ -144,11 +144,7 @@ namespace nexo::assets {
          *
          * @return A view of the assets with each element represented as a GenericAssetRef.
          */
-        [[nodiscard]] auto getAssetsView() const
-        {
-            return m_assets | std::views::values |
-                   std::views::transform([](const auto& asset) { return GenericAssetRef(asset); });
-        }
+        [[nodiscard]] auto getAssetsView() const;
 
         /**
          * @brief Get all assets of a specific type in the catalog.

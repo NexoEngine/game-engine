@@ -23,6 +23,8 @@
 
 #include <boost/uuid/random_generator.hpp>
 
+#include "AssetImporterContext.hpp"
+
 namespace nexo::assets {
     AssetImporter::AssetImporter()
     {
@@ -89,6 +91,8 @@ namespace nexo::assets {
                                                            const ImporterInputVariant& inputVariant,
                                                            const std::vector<AssetImporterBase*>& importers) const
     {
+        if (importers.empty()) return GenericAssetRef::null();
+
         std::vector<AssetImporterBase*> untriedImporters;
         for (const auto& importer : importers) {
             if (importer->canRead(inputVariant)) {

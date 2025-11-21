@@ -80,13 +80,14 @@ set(COMMON_SOURCES
         engine/src/renderPasses/ShadowPass.cpp
         engine/src/renderPasses/PointShadowPass.cpp
         engine/src/assets/Asset.cpp
-        engine/src/assets/AssetRef.cpp
         engine/src/assets/AssetLocation.cpp
         engine/src/assets/AssetCatalog.cpp
         engine/src/assets/AssetImporter.cpp
+        engine/src/assets/AssetImporterBase.cpp
         engine/src/assets/AssetImporterContext.cpp
         engine/src/assets/Assets/Model/ModelImporter.cpp
         engine/src/assets/Assets/Texture/TextureImporter.cpp
+        engine/src/assets/GenericAssetRef.cpp
         engine/src/scripting/native/Scripting.cpp
         engine/src/scripting/native/HostString.cpp
         engine/src/scripting/native/NativeApi.cpp

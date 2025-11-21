@@ -21,11 +21,14 @@
 
 #include "Json.hpp"
 #include "AssetLocation.hpp"
-#include "AssetRef.hpp"
+#include "AssetID.hpp"
 
 #undef ERROR // Avoid conflict with Windows.h
 
 namespace nexo::assets {
+
+    template<typename TAsset>
+    class AssetRef;
 
     constexpr unsigned short ASSET_MAX_DEPENDENCIES = 10000;
 
