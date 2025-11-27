@@ -87,7 +87,6 @@ set(COMMON_SOURCES
         engine/src/assets/AssetImporterContext.cpp
         engine/src/assets/Assets/Model/ModelImporter.cpp
         engine/src/assets/Assets/Texture/TextureImporter.cpp
-        engine/src/assets/GenericAssetRef.cpp
         engine/src/scripting/native/Scripting.cpp
         engine/src/scripting/native/HostString.cpp
         engine/src/scripting/native/NativeApi.cpp
@@ -151,7 +150,7 @@ target_link_libraries(nexoRenderer PRIVATE Jolt::Jolt)
 
 # OpenCV
 find_package(OpenCV CONFIG REQUIRED)
-target_link_libraries(nexoRenderer PRIVATE opencv_core opencv_imgproc opencv_highgui)
+target_link_libraries(nexoRenderer PRIVATE opencv_core opencv_highgui)
 
 ###########################################
 # Scripting
