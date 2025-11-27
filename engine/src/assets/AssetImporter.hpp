@@ -27,7 +27,12 @@
 
 namespace nexo::assets {
 
-    class GenericAssetRef;
+    class IAsset;
+
+    template<typename TAsset>
+    class AssetRef;
+
+    using GenericAssetRef = AssetRef<IAsset>;
 
     class AssetImporterBase;
 
@@ -58,7 +63,7 @@ namespace nexo::assets {
          *
          * @param location The location of the asset to be imported.
          * @param inputVariant The input data variant providing information for asset import.
-         * @return GenericAssetRef A reference to the imported asset, or GenericAssetRef::null() if import fails.
+         * @return GenericAssetRef A reference to the imported asset, or GenericAssetRef() if import fails.
          */
         GenericAssetRef importAssetAuto(const AssetLocation& location, const ImporterInputVariant& inputVariant);
 

@@ -26,7 +26,7 @@
 #include <loguru.hpp>
 #include <thread>
 
-#include "components/TransformSerializer.hpp"
+#include "components/Transform.serializer.hpp"
 #include "scripting/native/ManagedTypedef.hpp"
 #include "scripting/native/Scripting.hpp"
 

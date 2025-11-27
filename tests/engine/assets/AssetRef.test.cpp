@@ -49,7 +49,7 @@ namespace nexo::assets {
     }
 
     TEST_F(AssetRefTest, NullStaticMethodReturnsNullReference) {
-        auto ref = GenericAssetRef::null();
+        auto ref = GenericAssetRef();
         EXPECT_FALSE(ref.isValid());
         EXPECT_FALSE(ref);
     }
@@ -141,7 +141,7 @@ namespace nexo::assets {
     }
 
     TEST_F(AssetRefTest, TypedNullStaticMethodReturnsNullReference) {
-        auto ref = AssetRef<Texture>::null();
+        auto ref = AssetRef<Texture>();
         EXPECT_FALSE(ref.isValid());
     }
 

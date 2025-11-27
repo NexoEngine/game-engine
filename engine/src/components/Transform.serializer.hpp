@@ -1,4 +1,4 @@
-//// TransformSerializer.hpp //////////////////////////////////////////////////
+//// Transform.serializer.hpp /////////////////////////////////////////////////
 //
 //  zzzzz       zzz  zzzzzzzzzzzzz    zzzz      zzzz       zzzzzz  zzzzz
 //  zzzzzzz     zzz  zzzz                    zzzz       zzzz           zzzz
@@ -15,7 +15,7 @@
 #pragma once
 
 #include "Transform.hpp"
-#include "save/Serialization.hpp"
+#include "save/Serializer.hpp"
 
 #include "save/glm/glm.hpp"
 

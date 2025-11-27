@@ -19,6 +19,7 @@
 #include "ImNexo/Panels.hpp"
 #include "Types.hpp"
 #include "assets/AssetCatalog.hpp"
+#include "assets/AssetRef.hpp"
 #include "components/Camera.hpp"
 #include "components/SceneComponents.hpp"
 #include "context/ThumbnailCache.hpp"

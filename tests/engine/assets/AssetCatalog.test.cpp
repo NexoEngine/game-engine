@@ -13,10 +13,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <gtest/gtest.h>
-#include "assets/AssetCatalog.hpp"
+
 #include "assets/Asset.hpp"
-#include "assets/Assets/Texture/Texture.hpp"
+#include "assets/AssetCatalog.hpp"
 #include "assets/Assets/Model/Model.hpp"
+#include "assets/Assets/Texture/Texture.hpp"
 
 namespace nexo::assets {
 

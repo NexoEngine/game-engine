@@ -62,7 +62,7 @@ namespace nexo::assets {
 
     GenericAssetRef AssetCatalog::getAsset(const AssetID id) const
     {
-        if (!m_assets.contains(id)) return GenericAssetRef::null();
+        if (!m_assets.contains(id)) return GenericAssetRef();
         return GenericAssetRef(m_assets.at(id));
     }
 
@@ -72,7 +72,7 @@ namespace nexo::assets {
         for (const auto& asset : m_assets | std::views::values) {
             if (asset->m_metadata.location == location) return GenericAssetRef(asset);
         }
-        return GenericAssetRef::null();
+        return GenericAssetRef();
     }
 
     std::vector<GenericAssetRef> AssetCatalog::getAssets() const
@@ -84,15 +84,9 @@ namespace nexo::assets {
         return assets;
     }
 
-    auto AssetCatalog::getAssetsView() const
-    {
-        return m_assets | std::views::values |
-               std::views::transform([](const auto& asset) { return GenericAssetRef(asset); });
-    }
-
     GenericAssetRef AssetCatalog::registerAsset(const AssetLocation& location, std::unique_ptr<IAsset> asset)
     {
-        if (!asset) return GenericAssetRef::null();
+        if (!asset) return GenericAssetRef();
         // TODO: implement error handling if already exists (once we have the folder tree)
         const std::shared_ptr<IAsset> shared_ptr = std::move(asset);
         shared_ptr->m_metadata.location          = location;
@@ -100,5 +94,11 @@ namespace nexo::assets {
         m_assets[shared_ptr->m_metadata.id] = shared_ptr;
         return GenericAssetRef(shared_ptr);
     }
+
+    GenericAssetRef AssetCatalog::convertToGenericRef(const std::shared_ptr<IAsset>& asset)
+    {
+        return GenericAssetRef(asset);
+    }
+
 
 } // namespace nexo::assets

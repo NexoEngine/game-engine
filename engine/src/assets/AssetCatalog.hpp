@@ -20,7 +20,6 @@
 #include "Asset.hpp"
 #include "AssetImporter.hpp"
 #include "AssetLocation.hpp"
-#include "assets/AssetRef.hpp"
 
 namespace nexo::assets {
 
@@ -144,7 +143,7 @@ namespace nexo::assets {
          *
          * @return A view of the assets with each element represented as a GenericAssetRef.
          */
-        [[nodiscard]] auto getAssetsView() const;
+        [[nodiscard]] decltype(auto) getAssetsView() const;
 
         /**
          * @brief Get all assets of a specific type in the catalog.
@@ -209,8 +208,16 @@ namespace nexo::assets {
         }
 
        private:
+        static GenericAssetRef convertToGenericRef(const std::shared_ptr<IAsset>& asset);
+
         std::unordered_map<AssetID, std::shared_ptr<IAsset>> m_assets;
     };
+
+    inline decltype(auto) AssetCatalog::getAssetsView() const
+    {
+        return m_assets | std::views::values |
+               std::views::transform(std::function(convertToGenericRef));
+    }
 
     template<IsAsset AssetType>
     std::vector<AssetRef<AssetType>> AssetCatalog::getAssetsOfType() const

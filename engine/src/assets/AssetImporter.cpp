@@ -63,7 +63,7 @@ namespace nexo::assets {
         }
 
         if (const auto asset = importAssetTryImporters(location, inputVariant, allImporters)) return asset;
-        return GenericAssetRef::null();
+        return GenericAssetRef();
     }
 
     GenericAssetRef AssetImporter::importAssetUsingImporter(const AssetLocation& location,
@@ -80,7 +80,7 @@ namespace nexo::assets {
 
         importer->import(*ctx);
         auto asset = ctx->releaseMainAsset();
-        if (!asset) return GenericAssetRef::null();
+        if (!asset) return GenericAssetRef();
         if (asset->getID().is_nil()) asset->m_metadata.id = boost::uuids::random_generator()();
         if (asset->m_metadata.location == AssetLocation("default")) asset->m_metadata.location = location;
 
@@ -91,7 +91,7 @@ namespace nexo::assets {
                                                            const ImporterInputVariant& inputVariant,
                                                            const std::vector<AssetImporterBase*>& importers) const
     {
-        if (importers.empty()) return GenericAssetRef::null();
+        if (importers.empty()) return GenericAssetRef();
 
         std::vector<AssetImporterBase*> untriedImporters;
         for (const auto& importer : importers) {
@@ -107,7 +107,7 @@ namespace nexo::assets {
             auto asset = importAssetUsingImporter(location, inputVariant, importer);
             if (asset) return asset;
         }
-        return GenericAssetRef::null();
+        return GenericAssetRef();
     }
 
     const std::vector<AssetImporterBase*>& AssetImporter::getImportersForType(const std::type_index& typeIdx) const
