@@ -20,7 +20,8 @@
 #include <memory>
 #include <variant>
 
-#include "AssetCatalog.hpp"
+#include "Asset.hpp"
+#include "AssetCatalogDecl.hpp"
 #include "AssetID.hpp"
 #include "AssetLocation.hpp"
 
@@ -200,6 +201,24 @@ namespace nexo::assets {
             return ptr->isLoaded();
         }
         return false;
+    }
+
+    template<typename TAsset>
+    void AssetRef<TAsset>::load() const
+    {
+        if (auto ptr = lock()) {
+            LOG(NEXO_INFO, "Loading asset '{}'", ptr->getMetadata().location.getFullLocation());
+            LOG(NEXO_ERROR, "Asset loading not implemented yet!");
+        }
+    }
+
+    template<typename TAsset>
+    void AssetRef<TAsset>::unload() const
+    {
+        if (auto ptr = lock()) {
+            LOG(NEXO_INFO, "Unloading asset '{}'", ptr->getMetadata().location.getFullLocation());
+            LOG(NEXO_ERROR, "Asset unloading not implemented yet!");
+        }
     }
 
     template<typename TAsset>

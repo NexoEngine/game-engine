@@ -12,10 +12,10 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include <boost/uuid/random_generator.hpp>
+
 #include "AssetCatalog.hpp"
 #include "AssetRef.hpp"
-
-#include <boost/uuid/random_generator.hpp>
 
 namespace nexo::assets {
 
@@ -94,11 +94,5 @@ namespace nexo::assets {
         m_assets[shared_ptr->m_metadata.id] = shared_ptr;
         return GenericAssetRef(shared_ptr);
     }
-
-    GenericAssetRef AssetCatalog::convertToGenericRef(const std::shared_ptr<IAsset>& asset)
-    {
-        return GenericAssetRef(asset);
-    }
-
 
 } // namespace nexo::assets
