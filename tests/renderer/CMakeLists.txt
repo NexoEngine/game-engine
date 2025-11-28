@@ -21,14 +21,7 @@ set(BASEDIR ${CMAKE_CURRENT_LIST_DIR})
 include_directories("./common")
 include_directories("./engine/src/renderer")
 
-# TODO: make common a library and link it to the tests
-set(COMMON_SOURCES
-        common/Exception.cpp
-        common/math/Matrix.cpp
-        common/math/Bounds.cpp
-        common/Path.cpp
-)
-
+# Renderer sources
 set(RENDERER_SOURCES
         engine/src/renderer/Window.cpp
         engine/src/renderer/Buffer.cpp
@@ -62,7 +55,6 @@ set(RENDERER_SOURCES
 
 add_executable(renderer_tests
         ${TEST_MAIN_FILES}
-        ${COMMON_SOURCES}
         ${RENDERER_SOURCES}
         ${BASEDIR}/Buffer.test.cpp
         ${BASEDIR}/VertexArray.test.cpp
@@ -95,4 +87,4 @@ target_link_libraries(renderer_tests PRIVATE Boost::dll)
 #target_link_libraries(renderer_tests PRIVATE OpenGL::GL glfw glad::glad)
 
 # Link gtest and engine (renderer) libraries
-target_link_libraries(renderer_tests PRIVATE GTest::gtest GTest::gmock OpenGL::GL glfw glad::glad)
+target_link_libraries(renderer_tests PRIVATE GTest::gtest GTest::gmock OpenGL::GL glfw glad::glad nexoCommon)

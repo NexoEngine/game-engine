@@ -9,11 +9,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 # Add source files
 set(COMMON_SOURCES
-        common/Exception.cpp
-        common/math/Vector.cpp
-        common/math/Projection.cpp
-        common/Path.cpp
-        common/math/Bounds.cpp
         engine/src/Nexo.cpp
         engine/src/EntityFactory3D.cpp
         engine/src/LightFactory.cpp
@@ -110,6 +105,9 @@ endif ()
 
 # Create the library
 add_library(nexoRenderer STATIC ${COMMON_SOURCES})
+
+# Link common library
+target_link_libraries(nexoRenderer PRIVATE nexoCommon)
 
 # Find glm and add its include directories
 find_package(glm CONFIG REQUIRED)

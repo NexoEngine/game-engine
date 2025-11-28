@@ -21,10 +21,6 @@ set(BASEDIR ${CMAKE_CURRENT_LIST_DIR})
 include_directories("./common")
 include_directories("./engine/src/ecs")
 
-# TODO: make common a library and link it to the tests
-set(COMMON_SOURCES
-        common/Exception.cpp
-)
 
 # TODO: Make an ecs library
 set(ECS_SOURCES
@@ -36,7 +32,6 @@ set(ECS_SOURCES
 
 add_executable(ecs_tests
         ${TEST_MAIN_FILES}
-        ${COMMON_SOURCES}
         ${ECS_SOURCES}
         ${BASEDIR}/Components.test.cpp
         ${BASEDIR}/Entity.test.cpp
@@ -61,4 +56,4 @@ find_package(Boost CONFIG REQUIRED COMPONENTS dll)
 target_link_libraries(ecs_tests PRIVATE Boost::dll)
 
 # Link gtest and engine (renderer) libraries
-target_link_libraries(ecs_tests PRIVATE GTest::gtest GTest::gmock)
+target_link_libraries(ecs_tests PRIVATE GTest::gtest GTest::gmock nexoCommon)

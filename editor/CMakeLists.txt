@@ -8,10 +8,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 set(SRCS
-        common/Exception.cpp
-        common/math/Matrix.cpp
-        common/math/Light.cpp
-        common/Path.cpp
         editor/main.cpp
         editor/src/backends/ImGuiBackend.cpp
         editor/src/backends/opengl/openglImGuiBackend.cpp
@@ -158,6 +154,9 @@ endif()
 # loguru
 find_package(loguru CONFIG REQUIRED)
 target_link_libraries(nexoEditor PRIVATE loguru::loguru)
+
+# Link common library
+target_link_libraries(nexoEditor PRIVATE nexoCommon)
 
 # ImGuizmo
 find_package(imguizmo CONFIG REQUIRED)

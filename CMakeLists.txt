@@ -106,6 +106,8 @@ message(STATUS "Running VCPKG...")
 include("${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/scripts/buildsystems/vcpkg.cmake")
 message(STATUS "VCPKG done.")
 
+# SETUP COMMON LIBRARY
+include("${CMAKE_CURRENT_SOURCE_DIR}/common/CMakeLists.txt")
 # SETUP EDITOR
 include("${CMAKE_CURRENT_SOURCE_DIR}/editor/CMakeLists.txt")
 # SETUP ENGINE
