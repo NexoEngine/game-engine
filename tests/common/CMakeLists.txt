@@ -35,6 +35,18 @@ add_executable(common_tests
     ${BASEDIR}/save/VersionedJson.test.cpp
 )
 
+# Add precompiled header (if available and enabled)
+if (NEXO_USE_PCH)
+    target_precompile_headers(common_tests REUSE_FROM nexoCommon)
+endif()
+
+######################
+# Target compile definitions
+######################
+target_compile_definitions(common_tests PRIVATE NX_TESTS)
+target_compile_definitions(common_tests PRIVATE NX_TESTS_COMMON)
+
+
 # Find glm and add its include directories
 find_package(glm CONFIG REQUIRED)
 

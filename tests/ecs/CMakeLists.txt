@@ -47,6 +47,12 @@ add_executable(ecs_tests
         ${BASEDIR}/QuerySystem.test.cpp
 )
 
+######################
+# Target compile definitions
+######################
+target_compile_definitions(ecs_tests PRIVATE NX_TESTS)
+target_compile_definitions(ecs_tests PRIVATE NX_TESTS_ECS)
+
 # Find glm and add its include directories
 find_package(glm CONFIG REQUIRED)
 target_include_directories(ecs_tests PUBLIC ${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-linux/include)

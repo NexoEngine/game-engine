@@ -122,6 +122,7 @@ endif()
 
 add_executable(nexoEditor ${SRCS})
 set(WAYLAND_APP_ID "app.nexo-engine.editor")
+
 # Add custom DEFINE for the app id
 add_compile_definitions(WAYLAND_APP_ID="${WAYLAND_APP_ID}")
 
@@ -171,19 +172,18 @@ target_link_libraries(nexoEditor PRIVATE nexoRenderer imgui::imgui)
 find_package(tinyfiledialogs CONFIG REQUIRED)
 target_link_libraries(nexoEditor PRIVATE tinyfiledialogs::tinyfiledialogs)
 
-# boost-dll
-find_package(Boost CONFIG REQUIRED COMPONENTS dll)
-target_link_libraries(nexoEditor PRIVATE Boost::dll)
-
-# Boost UUID
-find_package(boost_uuid CONFIG REQUIRED)
-target_link_libraries(nexoEditor PRIVATE Boost::uuid)
-
 include_directories(include)
-
-if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
-    target_compile_definitions(nexoEditor PRIVATE NX_GRAPHICS_API_OPENGL)
-endif()
 
 # Set the output directory for the executable (prevents generator from creating Debug/Release folders)
 set_target_properties(nexoEditor PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/$<0:>)
+target_include_directories(nexoEditor PUBLIC nexoRenderer nexoCommon)
+
+######################
+# Target compile definitions
+######################
+target_compile_definitions(nexoEditor PRIVATE NX_EDITOR)
+
+# Add precompiled header (if available and enabled)
+if (NEXO_USE_PCH)
+    target_precompile_headers(nexoEditor PRIVATE editor/include/pch.hpp common/pch.hpp engine/include/pch.hpp)
+endif()

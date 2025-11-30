@@ -11,7 +11,7 @@
 //  Description: Test file for Buffer classes
 //
 ///////////////////////////////////////////////////////////////////////////////
-#define GLFW_INCLUDE_NONE
+
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 #include <gtest/gtest.h>

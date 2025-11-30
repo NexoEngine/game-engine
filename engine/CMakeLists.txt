@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.26)
 
 # Set project name
 project(nexoRenderer VERSION 1.0.0)
@@ -111,13 +111,7 @@ target_link_libraries(nexoRenderer PRIVATE nexoCommon)
 
 # Find glm and add its include directories
 find_package(glm CONFIG REQUIRED)
-
-if (glm_FOUND)
-    message(STATUS "GLM found at: ${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-linux/include")
-    target_include_directories(nexoRenderer PUBLIC ${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-linux/include)
-else ()
-    message(FATAL_ERROR "GLM not found!")
-endif ()
+target_link_libraries(nexoRenderer PRIVATE glm::glm)
 
 # Add include directories for this target
 target_include_directories(nexoRenderer PUBLIC
@@ -140,7 +134,11 @@ target_link_libraries(nexoRenderer PRIVATE assimp::assimp)
 
 # boost-dll
 find_package(Boost CONFIG REQUIRED COMPONENTS dll)
-target_link_libraries(nexoRenderer PRIVATE Boost::dll)
+target_link_libraries(nexoRenderer PUBLIC Boost::dll)
+
+# Boost UUID
+find_package(boost_uuid CONFIG REQUIRED)
+target_link_libraries(nexoRenderer PUBLIC Boost::uuid)
 
 # jolt-physics
 find_package(Jolt CONFIG REQUIRED)
@@ -148,7 +146,13 @@ target_link_libraries(nexoRenderer PRIVATE Jolt::Jolt)
 
 # OpenCV
 find_package(OpenCV CONFIG REQUIRED)
-target_link_libraries(nexoRenderer PRIVATE opencv_core opencv_highgui)
+target_link_libraries(nexoRenderer PRIVATE opencv_core opencv_highgui opencv_videoio)
+target_include_directories(nexoRenderer PRIVATE ${OpenCV_INCLUDE_DIRS})
+
+# Debugging: Check if CMake actually found the path.
+# If this prints empty in the CMake Output, OpenCV isn't exposing the variable correctly.
+message(STATUS "OpenCV Found: ${OpenCV_FOUND}")
+message(STATUS "OpenCV Include Dirs: ${OpenCV_INCLUDE_DIRS}")
 
 ###########################################
 # Scripting
@@ -159,12 +163,24 @@ find_package(unofficial-nethost CONFIG REQUIRED)
 target_link_libraries(nexoRenderer PRIVATE unofficial::nethost::nethost)
 
 if (NEXO_GRAPHICS_API STREQUAL "OpenGL")
-    target_compile_definitions(nexoRenderer PRIVATE NX_GRAPHICS_API_OPENGL)
+    target_compile_definitions(nexoRenderer PUBLIC NX_GRAPHICS_API_OPENGL)
+    target_compile_definitions(nexoRenderer PUBLIC GLFW_INCLUDE_NONE)
     find_package(OpenGL REQUIRED)
     find_package(glfw3 3.4 REQUIRED)
     find_package(glad CONFIG REQUIRED)
     target_link_libraries(nexoRenderer PRIVATE OpenGL::GL glfw glad::glad)
 endif ()
 
-target_compile_definitions(nexoRenderer PRIVATE NEXO_EXPORT)
+
 set_target_properties(nexoRenderer PROPERTIES ENABLE_EXPORTS ON)
+
+######################
+# Target compile definitions
+######################
+target_compile_definitions(nexoRenderer PRIVATE NX_ENGINE)
+target_compile_definitions(nexoRenderer PRIVATE NEXO_EXPORT)
+
+# Add precompiled header (if available and enabled)
+if (NEXO_USE_PCH)
+    target_precompile_headers(nexoRenderer PRIVATE engine/include/pch.hpp common/pch.hpp)
+endif()

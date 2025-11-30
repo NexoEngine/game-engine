@@ -12,7 +12,7 @@
 #
 ###############################################################################
 
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.26)
 
 # Set project name
 project(nexoCommon VERSION 1.0.0)
@@ -40,12 +40,21 @@ target_include_directories(nexoCommon PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+######################
+# Target compile definitions
+######################
+target_compile_definitions(nexoCommon PRIVATE NX_COMMON)
+
+# Add precompiled header (if available and enabled)
+if (NEXO_USE_PCH)
+    target_precompile_headers(nexoCommon PRIVATE common/pch.hpp)
+endif()
+
 # loguru for common utilities
 find_package(loguru CONFIG REQUIRED)
 target_link_libraries(nexoCommon PUBLIC loguru::loguru)
+target_include_directories(nexoCommon PUBLIC ${loguru_INCLUDE_DIRS})
 
 # glm for math
 find_package(glm CONFIG REQUIRED)
 target_link_libraries(nexoCommon PUBLIC glm::glm)
-
-

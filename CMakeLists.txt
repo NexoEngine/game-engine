@@ -6,7 +6,7 @@ project(client CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CXX_SCAN_FOR_MODULES OFF)
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 set(NEXO_COVERAGE OFF CACHE BOOL "Enable coverage for binaries")
 set(NEXO_GIT_SUBMODULE OFF CACHE BOOL "Enable git submodules init and update")
@@ -14,6 +14,15 @@ set(NEXO_BOOTSTRAP_VCPKG OFF CACHE BOOL "Enable vcpkg bootstrap")
 set(NEXO_BUILD_TESTS ON CACHE BOOL "Enable tests")
 set(NEXO_BUILD_EXAMPLES OFF CACHE BOOL "Enable examples")
 set(NEXO_GRAPHICS_API "OpenGL" CACHE STRING "Graphics API to use")
+
+# Option to enable/disable precompiled headers across the project
+option(NEXO_USE_PCH "Enable precompiled headers for targets" ON)
+
+if (NEXO_GRAPHICS_API STREQUAL "OpenGL")
+    message(STATUS "Using OpenGL as graphics API")
+else()
+    message(FATAL_ERROR "Unsupported graphics API: ${NEXO_GRAPHICS_API}")
+endif()
 
 if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(NEXO_COMPILER_FLAGS_ALL --std=c++${CMAKE_CXX_STANDARD})

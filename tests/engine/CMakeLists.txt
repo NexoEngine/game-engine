@@ -42,5 +42,11 @@ add_executable(engine_tests
         # Add other engine test files here
 )
 
+######################
+# Target compile definitions
+######################
+target_compile_definitions(engine_tests PRIVATE NX_TESTS)
+target_compile_definitions(engine_tests PRIVATE NX_TESTS_ENGINE)
+
 # Link gtest and engine (renderer) libraries
-target_link_libraries(engine_tests PRIVATE GTest::gtest GTest::gmock nexoRenderer)
+target_link_libraries(engine_tests PRIVATE GTest::gtest GTest::gmock nexoRenderer nexoCommon)

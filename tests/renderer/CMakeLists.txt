@@ -23,34 +23,34 @@ include_directories("./engine/src/renderer")
 
 # Renderer sources
 set(RENDERER_SOURCES
-        engine/src/renderer/Window.cpp
-        engine/src/renderer/Buffer.cpp
-        engine/src/renderer/Shader.cpp
-        engine/src/renderer/ShaderLibrary.cpp
-        engine/src/renderer/VertexArray.cpp
-        engine/src/renderer/RendererAPI.cpp
-        engine/src/renderer/Renderer.cpp
-        engine/src/renderer/RenderCommand.cpp
-        engine/src/renderer/Texture.cpp
-        engine/src/renderer/RenderPipeline.cpp
-        engine/src/renderer/SubTexture2D.cpp
-        engine/src/renderer/Renderer3D.cpp
-        engine/src/renderer/UniformCache.cpp
-        engine/src/renderer/Framebuffer.cpp
-        engine/src/renderer/opengl/OpenGlBuffer.cpp
-        engine/src/renderer/opengl/OpenGlWindow.cpp
-        engine/src/renderer/opengl/OpenGlVertexArray.cpp
-        engine/src/renderer/opengl/OpenGlTexture2D.cpp
-        engine/src/renderer/opengl/OpenGlShader.cpp
-        engine/src/renderer/opengl/OpenGlRendererApi.cpp
-        engine/src/renderer/opengl/OpenGlFramebuffer.cpp
-        engine/src/renderer/opengl/OpenGlShaderReflection.cpp
-        engine/src/renderer/primitives/Cube.cpp
-        engine/src/renderer/primitives/Tetrahedron.cpp
-        engine/src/renderer/primitives/Pyramid.cpp
-        engine/src/renderer/primitives/Cylinder.cpp
-        engine/src/renderer/primitives/Sphere.cpp
-        engine/src/renderer/primitives/Box.cpp
+#        engine/src/renderer/Window.cpp
+#        engine/src/renderer/Buffer.cpp
+#        engine/src/renderer/Shader.cpp
+#        engine/src/renderer/ShaderLibrary.cpp
+#        engine/src/renderer/VertexArray.cpp
+#        engine/src/renderer/RendererAPI.cpp
+#        engine/src/renderer/Renderer.cpp
+#        engine/src/renderer/RenderCommand.cpp
+#        engine/src/renderer/Texture.cpp
+#        engine/src/renderer/RenderPipeline.cpp
+#        engine/src/renderer/SubTexture2D.cpp
+#        engine/src/renderer/Renderer3D.cpp
+#        engine/src/renderer/UniformCache.cpp
+#        engine/src/renderer/Framebuffer.cpp
+#        engine/src/renderer/opengl/OpenGlBuffer.cpp
+#        engine/src/renderer/opengl/OpenGlWindow.cpp
+#        engine/src/renderer/opengl/OpenGlVertexArray.cpp
+#        engine/src/renderer/opengl/OpenGlTexture2D.cpp
+#        engine/src/renderer/opengl/OpenGlShader.cpp
+#        engine/src/renderer/opengl/OpenGlRendererApi.cpp
+#        engine/src/renderer/opengl/OpenGlFramebuffer.cpp
+#        engine/src/renderer/opengl/OpenGlShaderReflection.cpp
+#        engine/src/renderer/primitives/Cube.cpp
+#        engine/src/renderer/primitives/Tetrahedron.cpp
+#        engine/src/renderer/primitives/Pyramid.cpp
+#        engine/src/renderer/primitives/Cylinder.cpp
+#        engine/src/renderer/primitives/Sphere.cpp
+#        engine/src/renderer/primitives/Box.cpp
 )
 
 add_executable(renderer_tests
@@ -87,4 +87,4 @@ target_link_libraries(renderer_tests PRIVATE Boost::dll)
 #target_link_libraries(renderer_tests PRIVATE OpenGL::GL glfw glad::glad)
 
 # Link gtest and engine (renderer) libraries
-target_link_libraries(renderer_tests PRIVATE GTest::gtest GTest::gmock OpenGL::GL glfw glad::glad nexoCommon)
+target_link_libraries(renderer_tests PRIVATE GTest::gtest GTest::gmock OpenGL::GL glfw glad::glad nexoCommon nexoRenderer)
