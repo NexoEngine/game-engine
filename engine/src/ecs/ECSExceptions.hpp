@@ -19,6 +19,8 @@
 #include <format>
 #include <source_location>
 
+#include "String.hpp"
+
 namespace nexo::ecs {
 
     class InternalError final : public Exception {
@@ -97,7 +99,17 @@ namespace nexo::ecs {
     };
 
     class ComponentNotRegistered final : public Exception {
-       public:
+    public:
+        /**
+         * @brief Exception thrown when a component type is not registered in the ECS.
+         *
+         * @param componentName The name of the component type (optional).
+         * @param loc The source location where the exception was thrown (default is current location).
+         */
+        explicit ComponentNotRegistered(std::string_view componentName, const std::source_location loc = std::source_location::current())
+            : Exception(std::format("Component '{}' has not been registered before use", componentName), loc)
+        {}
+
         /**
          * @brief Exception thrown when a component type is not registered in the ECS.
          *
@@ -105,6 +117,17 @@ namespace nexo::ecs {
          */
         explicit ComponentNotRegistered(const std::source_location loc = std::source_location::current())
             : Exception("Component has not been registered before use", loc)
+        {}
+
+        /**
+         * @brief Exception thrown when a component type is not registered in the ECS.
+         *
+         * @tparam TComponent The component type.
+         * @param loc The source location where the exception was thrown (default is current location).
+         */
+        template<typename TComponent>
+        explicit ComponentNotRegistered(const std::source_location loc = std::source_location::current())
+            : ComponentNotRegistered(type_name<TComponent>(), loc)
         {}
     };
 

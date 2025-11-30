@@ -6,6 +6,7 @@ project(client CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CXX_SCAN_FOR_MODULES OFF)
 
 set(NEXO_COVERAGE OFF CACHE BOOL "Enable coverage for binaries")
 set(NEXO_GIT_SUBMODULE OFF CACHE BOOL "Enable git submodules init and update")
@@ -25,7 +26,7 @@ if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(NEXO_LINKER_FLAGS_RELEASE "-flto")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     set(NEXO_COMPILER_FLAGS_ALL /nologo /W4 /std:c++${CMAKE_CXX_STANDARD} /Zc:preprocessor /utf-8)
-    set(NEXO_COMPILER_FLAGS_DEBUG /Zi /Od /Zc:preprocessor /MDd /D_DEBUG /D_ITERATOR_DEBUG_LEVEL=2 /D_SECURE_SCL=1)
+    set(NEXO_COMPILER_FLAGS_DEBUG /Zi /Od /Zc:preprocessor /MDd /D_DEBUG /D_ITERATOR_DEBUG_LEVEL=2 /D_SECURE_SCL=1 /bigobj)
     set(NEXO_COMPILER_FLAGS_RELEASE /O2 /Zc:preprocessor /DNDEBUG /MD)
     set(NEXO_COVERAGE_FLAGS "")  # MSVC doesn't support coverage in the same way
 

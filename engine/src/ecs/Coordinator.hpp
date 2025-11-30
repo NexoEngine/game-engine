@@ -19,10 +19,13 @@
 
 #include "Components.hpp"
 #include "Entity.hpp"
+#include "Json.hpp"
 #include "Logger.hpp"
 #include "SingletonComponent.hpp"
+#include "String.hpp"
 #include "System.hpp"
 #include "TypeErasedComponent/ComponentDescription.hpp"
+#include "save/SerializationContext.hpp"
 
 namespace nexo::ecs {
 
@@ -132,7 +135,7 @@ namespace nexo::ecs {
          * @brief Registers a new component type within the ComponentManager.
          */
         template<typename T>
-        void registerComponent(const std::string& displayName = "")
+        void registerComponent(const std::string& displayName = std::string(type_name<T>()))
         {
             m_componentManager->registerComponent<T>();
             addComponentDescription(getComponentType<T>(),
@@ -757,21 +760,6 @@ namespace nexo::ecs {
         [[nodiscard]] std::any getComponentAny(Entity entity, const std::type_index& typeIndex) const;
 
         /**
-         * @brief Retrieves a pointer to a component from an entity using type erasure.
-         *
-         * This method allows retrieving a pointer to a component from an entity when the
-         * component type is only known at runtime. It returns the component pointer wrapped
-         * in a std::any.
-         *
-         * @param entity The ID of the entity from which to retrieve the component pointer.
-         * @param typeIndex The type index of the component to retrieve.
-         * @return std::any containing a void* pointer to the component, or an empty std::any if not found.
-         *
-         * @throws ComponentNotRegistered if the component type is not registered.
-         */
-        [[nodiscard]] std::any getComponentPointer(Entity entity, const std::type_index& typeIndex) const;
-
-        /**
          * @brief Duplicates an entity along with all its components.
          *
          * This method creates a new entity and copies all components from the source entity
@@ -810,6 +798,14 @@ namespace nexo::ecs {
             return result;
         }
 
+        [[nodiscard]] std::vector<ecs::ComponentType> getRegisteredComponentTypes() const
+        {
+            std::vector<ecs::ComponentType> result;
+            result.reserve(m_componentDescriptions.size());
+            for (const auto &p : m_componentDescriptions) result.push_back(p.first);
+            return result;
+        }
+
         /**
          * @brief Updates all system entities based on current entity signatures.
          *
@@ -818,6 +814,13 @@ namespace nexo::ecs {
          * that each system processes only the entities that match its signature criteria.
          */
         void updateSystemEntities() const;
+
+        /**
+         * @brief Serialize a component array at runtime using its std::type_index
+         * @return true if serialization was performed (a serializer existed), false otherwise
+         */
+        [[nodiscard]] bool serializeComponentArray(const std::type_index& typeIndex, nexo::json& out,
+                                                   const nexo::save::SerializationContext& ctx = {}) const;
 
        private:
         /**
@@ -857,6 +860,7 @@ namespace nexo::ecs {
         std::unordered_map<std::type_index, std::function<void(Entity, const std::any&)>> m_addComponentFunctions;
         std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentFunctions;
         std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentPointers;
+        std::unordered_map<std::type_index, std::function<void(nexo::json&, const nexo::save::SerializationContext&)>> m_serializeComponentArrayFunctions;
 
         std::unordered_map<ComponentType, std::shared_ptr<ComponentDescription>> m_componentDescriptions;
     };

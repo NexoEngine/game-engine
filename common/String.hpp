@@ -15,7 +15,10 @@
 #pragma once
 
 #include <string_view>
-#include <ranges>
+#include <boost/core/demangle.hpp>
+
+#include <string>
+#include <utility> // std::index_sequence
 
 namespace nexo {
     /**
@@ -33,5 +36,27 @@ namespace nexo {
             });
     }
 
+    template<typename T>
+    [[nodiscard]] constexpr std::string type_name()
+    {
+        std::string nameString = boost::core::demangle(typeid(T).name());
+        std::string_view name{nameString};
 
+        // Remove any leading compiler-specific prefixes
+        #if defined(_MSC_VER)
+        // MSVC: Remove leading "class " or "struct "
+        if (name.starts_with("class ")) {
+            name.remove_prefix(strlen("class "));
+        } else if (name.starts_with("struct ")) {
+            name.remove_prefix(strlen("struct "));
+        }
+        #endif
+
+        // skip space
+        size_t endPos = name.find_first_of(' ');
+        if (endPos != std::string_view::npos) {
+            name = name.substr(0, endPos);
+        }
+        return std::string{name};
+    }
 } // namespace nexo

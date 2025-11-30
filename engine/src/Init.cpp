@@ -65,9 +65,9 @@ namespace nexo {
         m_coordinator->setRestoreComponent<components::SpotLightComponent>();
         m_coordinator->registerComponent<components::UuidComponent>();
         m_coordinator->setRestoreComponent<components::UuidComponent>();
-        m_coordinator->registerComponent<components::PerspectiveCameraController>();
+        m_coordinator->registerComponent<components::PerspectiveCameraController>("Perspective Camera Controller");
         m_coordinator->setRestoreComponent<components::PerspectiveCameraController>();
-        m_coordinator->registerComponent<components::PerspectiveCameraTarget>();
+        m_coordinator->registerComponent<components::PerspectiveCameraTarget>("Perspective Camera Target");
         m_coordinator->setRestoreComponent<components::PerspectiveCameraTarget>();
         m_coordinator->registerComponent<components::EditorCameraTag>();
         m_coordinator->setRestoreComponent<components::EditorCameraTag>();
@@ -76,12 +76,11 @@ namespace nexo {
         m_coordinator->registerComponent<components::ParentComponent>();
         m_coordinator->registerComponent<components::ModelComponent>();
         m_coordinator->registerComponent<components::BillboardComponent>();
-        m_coordinator->registerComponent<components::VideoComponent>();
-        m_coordinator->registerComponent<components::MaterialComponent>();
+        m_coordinator->registerComponent<components::VideoComponent>("Video");
+        m_coordinator->registerComponent<components::MaterialComponent>("Material");
         m_coordinator->registerComponent<components::NameComponent>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
-        m_coordinator->registerComponent<components::PhysicsBodyComponent>();
-        m_coordinator->registerComponent<components::EditorTag>();
+        m_coordinator->registerComponent<components::PhysicsBodyComponent>("Physic Body");
     }
 
     void Application::registerWindowCallbacks() const

@@ -33,6 +33,7 @@
 #include "Exception.hpp"
 #include "Group.hpp"
 #include "Logger.hpp"
+#include "common/String.hpp"
 
 namespace nexo::ecs {
     /**

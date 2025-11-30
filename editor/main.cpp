@@ -64,6 +64,10 @@ try {
     nexo::save::serialize(transformJson, testTransform);
     LOG(NEXO_INFO, "Serialized TransformComponent: {}", transformJson.dump(4));
 
+    nexo::Application &app = nexo::Application::getInstance();
+
+    app.save("test_save.json");
+
     while (editor.isOpen()) {
         auto start = std::chrono::high_resolution_clock::now();
         editor.render();

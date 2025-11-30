@@ -457,6 +457,12 @@ namespace nexo {
 
         void markHierarchyDirty(ecs::Entity entity);
 
+        //
+        // Save system
+        //
+
+        bool save(const std::filesystem::path &path);
+
         static std::shared_ptr<ecs::Coordinator> m_coordinator;
 
        protected:

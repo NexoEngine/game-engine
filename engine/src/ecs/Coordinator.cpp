@@ -13,6 +13,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Coordinator.hpp"
+#include "save/Serialization.hpp"
 
 std::shared_ptr<nexo::ecs::Coordinator> nexo::ecs::System::coord = nullptr;
 
@@ -134,4 +135,21 @@ namespace nexo::ecs {
         const auto it = m_addComponentFunctions.find(typeIndex);
         if (it != m_addComponentFunctions.end()) it->second(entity, component);
     }
+
+    std::any Coordinator::getComponentAny(Entity entity, const std::type_index& typeIndex) const
+    {
+        const auto it = m_getComponentFunctions.find(typeIndex);
+        if (it == m_getComponentFunctions.end()) return {};
+        return it->second(entity);
+    }
+
+    bool Coordinator::serializeComponentArray(const std::type_index& typeIndex, nexo::json& out,
+                                              const nexo::save::SerializationContext& ctx) const
+    {
+        const auto it = m_serializeComponentArrayFunctions.find(typeIndex);
+        if (it == m_serializeComponentArrayFunctions.end()) return false;
+        it->second(out, ctx);
+        return true;
+    }
+
 } // namespace nexo::ecs
