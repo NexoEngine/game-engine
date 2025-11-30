@@ -71,8 +71,6 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/uuid/uuid.hpp>
 
-#include "Application.hpp"
-
 #if defined(NX_ENGINE)
     #include <assimp/Importer.hpp>
     #include <assimp/postprocess.h>
