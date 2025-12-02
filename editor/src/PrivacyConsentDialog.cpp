@@ -58,7 +58,7 @@ namespace nexo::editor {
         configFile.close();
 
 #ifdef NEXO_SENTRY_ENABLED
-        auto tracker = nexo::core::CrashTracker::getInstance();
+        auto tracker = nexo::crash::CrashTracker::getInstance();
         if (tracker) {
             tracker->setUserConsent(m_crashReportingConsent, m_performanceMonitoringConsent);
             if (m_crashReportingConsent) {

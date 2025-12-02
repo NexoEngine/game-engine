@@ -17,7 +17,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "ActionManager.hpp"
+#ifndef NEXO_TESTING
 #include "context/actions/EntityActions.hpp"
+#endif
 
 namespace nexo::editor {
     void ActionManager::recordAction(std::unique_ptr<Action> action)
@@ -25,6 +27,7 @@ namespace nexo::editor {
         history.addAction(std::move(action));
     }
 
+#ifndef NEXO_TESTING
     void ActionManager::recordEntityCreation(ecs::Entity entityId)
     {
         recordAction(std::make_unique<EntityCreationAction>(entityId));
@@ -39,6 +42,7 @@ namespace nexo::editor {
     {
         return std::make_unique<EntityHierarchyDeletionAction>(root);
     }
+#endif
 
     std::unique_ptr<ActionGroup> ActionManager::createActionGroup()
     {

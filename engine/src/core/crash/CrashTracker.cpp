@@ -12,9 +12,8 @@
 #include <filesystem>
 #include <regex>
 #include <csignal>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
+#include <cstring>
+#include "components/Uuid.hpp"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -360,8 +359,7 @@ namespace nexo::crash {
     }
 
     std::string CrashTracker::generateAnonymousUserId() {
-        boost::uuids::uuid uuid = boost::uuids::random_generator()();
-        return boost::uuids::to_string(uuid);
+        return nexo::components::genUuid();
     }
 
     std::string CrashTracker::loadOrCreateUserId() {

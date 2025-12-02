@@ -39,6 +39,7 @@ add_executable(engine_tests
     ${BASEDIR}/assets/AssetImporter.test.cpp
     ${BASEDIR}/assets/Assets/Model/ModelImporter.test.cpp
 	${BASEDIR}/physics/PhysicsSystem.test.cpp
+    ${BASEDIR}/../crash/CrashTracker.test.cpp
         # Add other engine test files here
 )
 

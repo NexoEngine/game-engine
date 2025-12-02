@@ -63,3 +63,106 @@ TEST_F(PathTestFixture, ResetCache) {
     EXPECT_EQ(exePath, exePath2);
     EXPECT_EQ(resolvedPath, exePath2.parent_path() / "test.txt");
 }
+
+// ============================================================================
+// normalizePathAndRemovePrefixSlash Tests
+// ============================================================================
+
+TEST(NormalizePathTest, EmptyPath) {
+    EXPECT_EQ(nexo::normalizePathAndRemovePrefixSlash(""), "");
+}
+
+TEST(NormalizePathTest, RootPath) {
+    EXPECT_EQ(nexo::normalizePathAndRemovePrefixSlash("/"), "");
+}
+
+TEST(NormalizePathTest, SimpleRelativePath) {
+    EXPECT_EQ(nexo::normalizePathAndRemovePrefixSlash("foo/bar"), "foo/bar");
+}
+
+TEST(NormalizePathTest, LeadingSlash) {
+    EXPECT_EQ(nexo::normalizePathAndRemovePrefixSlash("/foo/bar"), "foo/bar");
+}
+
+TEST(NormalizePathTest, TrailingSlash) {
+    EXPECT_EQ(nexo::normalizePathAndRemovePrefixSlash("foo/bar/"), "foo/bar");
+}
+
+TEST(NormalizePathTest, LeadingAndTrailingSlash) {
+    EXPECT_EQ(nexo::normalizePathAndRemovePrefixSlash("/foo/bar/"), "foo/bar");
+}
+
+TEST(NormalizePathTest, MultipleLeadingSlashes) {
+    EXPECT_EQ(nexo::normalizePathAndRemovePrefixSlash("///foo/bar"), "foo/bar");
+}
+
+TEST(NormalizePathTest, MultipleTrailingSlashes) {
+    EXPECT_EQ(nexo::normalizePathAndRemovePrefixSlash("foo/bar///"), "foo/bar");
+}
+
+TEST(NormalizePathTest, DotDotNormalization) {
+    EXPECT_EQ(nexo::normalizePathAndRemovePrefixSlash("/foo/../bar"), "bar");
+}
+
+TEST(NormalizePathTest, DotNormalization) {
+    EXPECT_EQ(nexo::normalizePathAndRemovePrefixSlash("/foo/./bar"), "foo/bar");
+}
+
+TEST(NormalizePathTest, SingleFileName) {
+    EXPECT_EQ(nexo::normalizePathAndRemovePrefixSlash("file.txt"), "file.txt");
+}
+
+TEST(NormalizePathTest, SingleFileNameWithLeadingSlash) {
+    EXPECT_EQ(nexo::normalizePathAndRemovePrefixSlash("/file.txt"), "file.txt");
+}
+
+// ============================================================================
+// splitPath Tests
+// ============================================================================
+
+TEST(SplitPathTest, EmptyPath) {
+    const auto result = nexo::splitPath("");
+    EXPECT_TRUE(result.empty());
+}
+
+TEST(SplitPathTest, SingleComponent) {
+    const auto result = nexo::splitPath("foo");
+    ASSERT_EQ(result.size(), 1);
+    EXPECT_EQ(result[0], "foo");
+}
+
+TEST(SplitPathTest, TwoComponents) {
+    const auto result = nexo::splitPath("foo/bar");
+    ASSERT_EQ(result.size(), 2);
+    EXPECT_EQ(result[0], "foo");
+    EXPECT_EQ(result[1], "bar");
+}
+
+TEST(SplitPathTest, MultipleComponents) {
+    const auto result = nexo::splitPath("foo/bar/baz/qux");
+    ASSERT_EQ(result.size(), 4);
+    EXPECT_EQ(result[0], "foo");
+    EXPECT_EQ(result[1], "bar");
+    EXPECT_EQ(result[2], "baz");
+    EXPECT_EQ(result[3], "qux");
+}
+
+TEST(SplitPathTest, AbsolutePath) {
+    const auto result = nexo::splitPath("/foo/bar");
+    ASSERT_EQ(result.size(), 2);
+    EXPECT_EQ(result[0], "foo");
+    EXPECT_EQ(result[1], "bar");
+}
+
+TEST(SplitPathTest, PathWithExtension) {
+    const auto result = nexo::splitPath("foo/bar/file.txt");
+    ASSERT_EQ(result.size(), 3);
+    EXPECT_EQ(result[0], "foo");
+    EXPECT_EQ(result[1], "bar");
+    EXPECT_EQ(result[2], "file.txt");
+}
+
+TEST(SplitPathTest, RootPathOnly) {
+    const auto result = nexo::splitPath("/");
+    EXPECT_TRUE(result.empty());
+}

@@ -19,14 +19,22 @@
 
 #include "ActionHistory.hpp"
 #include "ActionGroup.hpp"
+#ifndef NEXO_TESTING
 #include "context/actions/EntityActions.hpp"
+#endif
 #include <memory>
 
 namespace nexo::editor {
 
+#ifdef NEXO_TESTING
+    // Forward declarations for test builds
+    namespace ecs { using Entity = unsigned int; }
+#endif
+
     class ActionManager {
         public:
             void recordAction(std::unique_ptr<Action> action);
+#ifndef NEXO_TESTING
             void recordEntityCreation(ecs::Entity entityId);
             static std::unique_ptr<Action> prepareEntityDeletion(ecs::Entity entityId);
             static std::unique_ptr<Action> prepareEntityHierarchyDeletion(ecs::Entity entityId);
@@ -39,6 +47,7 @@ namespace nexo::editor {
                 auto action = std::make_unique<ComponentChangeAction<MementoComponent>>(entityId, beforeState, afterState);
                 recordAction(std::move(action));
             }
+#endif
 
             static std::unique_ptr<ActionGroup> createActionGroup();
 
