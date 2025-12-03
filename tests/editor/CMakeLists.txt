@@ -14,6 +14,7 @@ set(EDITOR_TEST_FILES
     ${BASEDIR}/context/ActionGroup.test.cpp
     ${BASEDIR}/context/ActionManager.test.cpp
     ${BASEDIR}/context/DockingRegistry.test.cpp
+    ${BASEDIR}/context/WindowRegistry.test.cpp
     ${BASEDIR}/context/Selector.test.cpp
     ${BASEDIR}/inputs/Command.test.cpp
     ${BASEDIR}/inputs/InputManager.test.cpp
@@ -29,6 +30,7 @@ set(EDITOR_TESTABLE_SOURCES
     ${PROJECT_SOURCE_DIR}/editor/src/context/ActionGroup.cpp
     ${PROJECT_SOURCE_DIR}/editor/src/context/ActionManager.cpp
     ${PROJECT_SOURCE_DIR}/editor/src/DockingRegistry.cpp
+    ${PROJECT_SOURCE_DIR}/editor/src/WindowRegistry.cpp
     ${PROJECT_SOURCE_DIR}/editor/src/context/Selector.cpp
     ${PROJECT_SOURCE_DIR}/editor/src/inputs/Command.cpp
     ${PROJECT_SOURCE_DIR}/editor/src/inputs/InputManager.cpp
