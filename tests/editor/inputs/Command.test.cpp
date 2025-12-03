@@ -791,4 +791,272 @@ namespace nexo::editor {
         EXPECT_EQ(cmd2.getSignature(), cmd3.getSignature());
     }
 
+    // ==========================================================================
+    // COMPREHENSIVE KEY COVERAGE TESTS
+    // ==========================================================================
+    // Note: The Command class uses a static unordered_map for key->ImGuiKey mapping.
+    // gcov reports ~45% line coverage because static initializer list entries
+    // are counted as "lines" but not "executed" at runtime.
+    // All actual logic (functions) are at 100% coverage.
+    // These tests ensure every key in the map is exercised at least once.
+    // ==========================================================================
+
+    TEST_F(CommandTest, AllModifierKeysExercised) {
+        // Test all 7 modifier key entries in the map
+        struct ModifierTest {
+            const char* key;
+            bool expectValid;
+        };
+        std::vector<ModifierTest> modifiers = {
+            {"ctrl", true},
+            {"control", true},
+            {"shift", true},
+            {"alt", true},
+            {"super", true},
+            {"cmd", true},
+            {"win", true}
+        };
+
+        for (const auto& mod : modifiers) {
+            Command cmd = createCommand(mod.key);
+            EXPECT_FALSE(cmd.getSignature().none()) << "Modifier should be valid: " << mod.key;
+        }
+    }
+
+    TEST_F(CommandTest, AllSpecialKeysExercised) {
+        // Test all special key entries in the map
+        std::vector<const char*> specialKeys = {
+            "space", "enter", "return", "escape", "esc",
+            "tab", "backspace", "delete", "insert",
+            "home", "end", "pageup", "pagedown",
+            "up", "down", "left", "right",
+            "capslock", "numlock", "printscreen", "pause"
+        };
+
+        for (const char* key : specialKeys) {
+            Command cmd = createCommand(key);
+            EXPECT_FALSE(cmd.getSignature().none()) << "Special key should be valid: " << key;
+        }
+    }
+
+    TEST_F(CommandTest, AllKeypadKeysExercised) {
+        // Test all keypad entries in the map
+        std::vector<const char*> keypadKeys = {
+            "keypad0", "keypad1", "keypad2", "keypad3", "keypad4",
+            "keypad5", "keypad6", "keypad7", "keypad8", "keypad9",
+            "keypad.", "keypad-", "keypad*", "keypad/"
+            // Note: "keypad+" cannot be parsed due to '+' being the delimiter
+        };
+
+        for (const char* key : keypadKeys) {
+            Command cmd = createCommand(key);
+            EXPECT_FALSE(cmd.getSignature().none()) << "Keypad key should be valid: " << key;
+        }
+    }
+
+    // ==========================================================================
+    // ADDITIONAL BRANCH COVERAGE TESTS
+    // ==========================================================================
+
+    TEST_F(CommandTest, TabsAsTrimmedWhitespace) {
+        Command cmd1 = createCommand("ctrl+s");
+        Command cmd2 = createCommand("\tctrl\t+\ts\t");
+        EXPECT_EQ(cmd1.getSignature(), cmd2.getSignature());
+    }
+
+    TEST_F(CommandTest, MixedCaseModifiers) {
+        // Test case insensitivity for all modifier variations
+        Command cmdCtrl1 = createCommand("CTRL");
+        Command cmdCtrl2 = createCommand("Ctrl");
+        Command cmdCtrl3 = createCommand("cTrL");
+        EXPECT_EQ(cmdCtrl1.getSignature(), cmdCtrl2.getSignature());
+        EXPECT_EQ(cmdCtrl2.getSignature(), cmdCtrl3.getSignature());
+
+        Command cmdShift1 = createCommand("SHIFT");
+        Command cmdShift2 = createCommand("Shift");
+        EXPECT_EQ(cmdShift1.getSignature(), cmdShift2.getSignature());
+
+        Command cmdAlt1 = createCommand("ALT");
+        Command cmdAlt2 = createCommand("Alt");
+        EXPECT_EQ(cmdAlt1.getSignature(), cmdAlt2.getSignature());
+    }
+
+    TEST_F(CommandTest, MixedCaseSpecialKeys) {
+        Command space1 = createCommand("SPACE");
+        Command space2 = createCommand("Space");
+        EXPECT_EQ(space1.getSignature(), space2.getSignature());
+
+        Command enter1 = createCommand("ENTER");
+        Command enter2 = createCommand("Enter");
+        EXPECT_EQ(enter1.getSignature(), enter2.getSignature());
+
+        Command escape1 = createCommand("ESCAPE");
+        Command escape2 = createCommand("Escape");
+        EXPECT_EQ(escape1.getSignature(), escape2.getSignature());
+    }
+
+    TEST_F(CommandTest, MixedCaseFunctionKeys) {
+        Command f1Upper = createCommand("F1");
+        Command f1Lower = createCommand("f1");
+        EXPECT_EQ(f1Upper.getSignature(), f1Lower.getSignature());
+
+        Command f12Upper = createCommand("F12");
+        Command f12Lower = createCommand("f12");
+        EXPECT_EQ(f12Upper.getSignature(), f12Lower.getSignature());
+    }
+
+    TEST_F(CommandTest, EmptySegmentsBetweenDelimiters) {
+        // Test behavior with empty segments (consecutive '+' signs)
+        Command cmd1 = createCommand("ctrl++s");  // Empty segment in middle
+        Command cmd2 = createCommand("ctrl+s");
+        // Both should have same signature (empty segment is ignored)
+        EXPECT_EQ(cmd1.getSignature(), cmd2.getSignature());
+    }
+
+    TEST_F(CommandTest, LeadingTrailingDelimiters) {
+        Command cmd1 = createCommand("+ctrl+s");  // Leading +
+        Command cmd2 = createCommand("ctrl+s+");  // Trailing +
+        Command cmd3 = createCommand("ctrl+s");
+        // All should have same signature
+        EXPECT_EQ(cmd1.getSignature(), cmd2.getSignature());
+        EXPECT_EQ(cmd2.getSignature(), cmd3.getSignature());
+    }
+
+    TEST_F(CommandTest, WhitespaceOnlySegments) {
+        Command cmd1 = createCommand("ctrl+   +s");  // Whitespace-only segment
+        Command cmd2 = createCommand("ctrl+s");
+        EXPECT_EQ(cmd1.getSignature(), cmd2.getSignature());
+    }
+
+    TEST_F(CommandTest, SingleCharacterKeys) {
+        // Verify all single letter keys work
+        for (char c = 'a'; c <= 'z'; ++c) {
+            std::string upper(1, static_cast<char>(std::toupper(c)));
+            std::string lower(1, c);
+            Command cmdUpper = createCommand(upper);
+            Command cmdLower = createCommand(lower);
+            EXPECT_EQ(cmdUpper.getSignature(), cmdLower.getSignature())
+                << "Case mismatch for: " << c;
+        }
+    }
+
+    TEST_F(CommandTest, KeypadMixedCase) {
+        Command kp1 = createCommand("KEYPAD1");
+        Command kp2 = createCommand("keypad1");
+        Command kp3 = createCommand("Keypad1");
+        EXPECT_EQ(kp1.getSignature(), kp2.getSignature());
+        EXPECT_EQ(kp2.getSignature(), kp3.getSignature());
+    }
+
+    TEST_F(CommandTest, ComplexWhitespaceHandling) {
+        // Multiple spaces and tabs in various positions
+        Command cmd = createCommand("  \t ctrl  \t + \t  shift  \t + \t  s  \t ");
+        EXPECT_GE(cmd.getSignature().count(), 3u);  // ctrl, shift, s
+    }
+
+    TEST_F(CommandTest, VeryLongKeyString) {
+        // Test with a very long invalid key string
+        std::string longKey(1000, 'x');
+        Command cmd = createCommand(longKey);
+        EXPECT_TRUE(cmd.getSignature().none());
+    }
+
+    TEST_F(CommandTest, RepeatedKeys) {
+        // Same key repeated should have same signature as single key
+        Command cmd1 = createCommand("ctrl+ctrl+ctrl");
+        Command cmd2 = createCommand("ctrl");
+        EXPECT_EQ(cmd1.getSignature(), cmd2.getSignature());
+    }
+
+    TEST_F(CommandTest, AllKeysReturnNonEmptySignatureWhenValid) {
+        // Combined comprehensive test that touches all map entries
+        std::vector<std::string> allValidKeys = {
+            // Modifiers
+            "ctrl", "control", "shift", "alt", "super", "cmd", "win",
+            // Alphabet
+            "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m",
+            "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z",
+            // Numbers
+            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+            // Function keys
+            "f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8", "f9", "f10", "f11", "f12",
+            // Special keys
+            "space", "enter", "return", "escape", "esc", "tab", "backspace",
+            "delete", "insert", "home", "end", "pageup", "pagedown",
+            "up", "down", "left", "right", "capslock", "numlock",
+            "printscreen", "pause",
+            // Keypad
+            "keypad0", "keypad1", "keypad2", "keypad3", "keypad4",
+            "keypad5", "keypad6", "keypad7", "keypad8", "keypad9",
+            "keypad.", "keypad-", "keypad*", "keypad/"
+        };
+
+        for (const auto& key : allValidKeys) {
+            Command cmd = createCommand(key);
+            EXPECT_FALSE(cmd.getSignature().none())
+                << "Key should produce valid signature: " << key;
+        }
+    }
+
+    TEST_F(CommandTest, InvalidKeysReturnEmptySignature) {
+        std::vector<std::string> invalidKeys = {
+            "invalidkey", "notakey", "xyz123", "scrolllock", "menu",
+            "keypadenter", "leftctrl", "rightalt", ";", ",", ".", "/",
+            "\\", "[", "]", "'", "`", "-", "=", "numpad1"
+        };
+
+        for (const auto& key : invalidKeys) {
+            Command cmd = createCommand(key);
+            EXPECT_TRUE(cmd.getSignature().none())
+                << "Invalid key should produce empty signature: " << key;
+        }
+    }
+
+    // Verify signature bit count for combinations
+    TEST_F(CommandTest, SignatureBitCountMatchesKeyCount) {
+        // Single keys should have exactly 1 bit
+        EXPECT_EQ(createCommand("a").getSignature().count(), 1u);
+        EXPECT_EQ(createCommand("ctrl").getSignature().count(), 1u);
+        EXPECT_EQ(createCommand("f1").getSignature().count(), 1u);
+
+        // Two keys should have exactly 2 bits
+        EXPECT_EQ(createCommand("ctrl+s").getSignature().count(), 2u);
+        EXPECT_EQ(createCommand("alt+f4").getSignature().count(), 2u);
+
+        // Three keys should have exactly 3 bits
+        EXPECT_EQ(createCommand("ctrl+shift+s").getSignature().count(), 3u);
+
+        // Four keys should have exactly 4 bits
+        EXPECT_EQ(createCommand("ctrl+alt+shift+delete").getSignature().count(), 4u);
+    }
+
+    // Test aliases have same bit position
+    TEST_F(CommandTest, AliasesMapToSameImGuiKey) {
+        // ctrl and control should set the same bit
+        auto ctrlSig = createCommand("ctrl").getSignature();
+        auto controlSig = createCommand("control").getSignature();
+        EXPECT_EQ(ctrlSig, controlSig);
+        EXPECT_EQ(ctrlSig.count(), 1u);
+
+        // esc and escape should set the same bit
+        auto escSig = createCommand("esc").getSignature();
+        auto escapeSig = createCommand("escape").getSignature();
+        EXPECT_EQ(escSig, escapeSig);
+        EXPECT_EQ(escSig.count(), 1u);
+
+        // enter and return should set the same bit
+        auto enterSig = createCommand("enter").getSignature();
+        auto returnSig = createCommand("return").getSignature();
+        EXPECT_EQ(enterSig, returnSig);
+        EXPECT_EQ(enterSig.count(), 1u);
+
+        // super, cmd, win should set the same bit
+        auto superSig = createCommand("super").getSignature();
+        auto cmdSig = createCommand("cmd").getSignature();
+        auto winSig = createCommand("win").getSignature();
+        EXPECT_EQ(superSig, cmdSig);
+        EXPECT_EQ(cmdSig, winSig);
+        EXPECT_EQ(superSig.count(), 1u);
+    }
+
 }

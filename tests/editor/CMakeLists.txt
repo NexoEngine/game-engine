@@ -16,7 +16,11 @@ set(EDITOR_TEST_FILES
     ${BASEDIR}/context/DockingRegistry.test.cpp
     ${BASEDIR}/context/Selector.test.cpp
     ${BASEDIR}/inputs/Command.test.cpp
+    ${BASEDIR}/inputs/InputManager.test.cpp
     ${BASEDIR}/inputs/WindowState.test.cpp
+    ${BASEDIR}/utils/String.test.cpp
+    ${BASEDIR}/utils/TransparentStringHash.test.cpp
+    ${BASEDIR}/exceptions/Exceptions.test.cpp
 )
 
 # Editor source files to compile (avoids linking full editor with OpenGL dependencies)
@@ -27,7 +31,10 @@ set(EDITOR_TESTABLE_SOURCES
     ${PROJECT_SOURCE_DIR}/editor/src/DockingRegistry.cpp
     ${PROJECT_SOURCE_DIR}/editor/src/context/Selector.cpp
     ${PROJECT_SOURCE_DIR}/editor/src/inputs/Command.cpp
+    ${PROJECT_SOURCE_DIR}/editor/src/inputs/InputManager.cpp
     ${PROJECT_SOURCE_DIR}/editor/src/inputs/WindowState.cpp
+    ${PROJECT_SOURCE_DIR}/editor/src/utils/String.cpp
+    ${PROJECT_SOURCE_DIR}/common/Exception.cpp
 )
 
 # Find imgui for Command tests
@@ -53,5 +60,7 @@ target_include_directories(editor_tests
     PRIVATE
     ${PROJECT_SOURCE_DIR}/editor/src
     ${PROJECT_SOURCE_DIR}/engine/src
+    ${PROJECT_SOURCE_DIR}/common/src
     ${BASEDIR}/mocks
+    ${BASEDIR}/contexts
 )
