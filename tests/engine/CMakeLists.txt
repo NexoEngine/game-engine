@@ -60,6 +60,8 @@ add_executable(engine_tests
     ${BASEDIR}/renderer/RendererAPIEnums.test.cpp
     ${BASEDIR}/ecs/ComponentArray.test.cpp
     ${BASEDIR}/ecs/EntityManager.test.cpp
+    ${BASEDIR}/ecs/SingletonComponent.test.cpp
+    ${BASEDIR}/ecs/Access.test.cpp
 	${BASEDIR}/physics/PhysicsSystem.test.cpp
     ${BASEDIR}/../crash/CrashTracker.test.cpp
         # Add other engine test files here
