@@ -43,6 +43,9 @@ add_executable(common_tests
     ${BASEDIR}/Logger.test.cpp
     ${BASEDIR}/String.test.cpp
     ${BASEDIR}/Error.test.cpp
+    ${BASEDIR}/Timer.test.cpp
+    ${BASEDIR}/OnceRegistry.test.cpp
+    ${BASEDIR}/LightAttenuation.test.cpp
 )
 
 # Find glm and add its include directories

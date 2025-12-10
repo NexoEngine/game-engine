@@ -38,12 +38,15 @@ add_executable(engine_tests
     ${BASEDIR}/components/Parent.test.cpp
     ${BASEDIR}/components/Render.test.cpp
     ${BASEDIR}/components/SceneTag.test.cpp
+    ${BASEDIR}/components/Editor.test.cpp
     ${BASEDIR}/assets/AssetLocation.test.cpp
     ${BASEDIR}/assets/AssetCatalog.test.cpp
     ${BASEDIR}/assets/AssetName.test.cpp
     ${BASEDIR}/assets/AssetRef.test.cpp
     ${BASEDIR}/assets/AssetImporterContext.test.cpp
     ${BASEDIR}/assets/AssetImporter.test.cpp
+    ${BASEDIR}/assets/AssetImporterInput.test.cpp
+    ${BASEDIR}/assets/AssetPackName.test.cpp
     ${BASEDIR}/assets/Assets/Model/ModelImporter.test.cpp
     ${BASEDIR}/assets/FilenameValidator.test.cpp
     ${BASEDIR}/assets/AssetType.test.cpp
@@ -63,6 +66,11 @@ add_executable(engine_tests
     ${BASEDIR}/ecs/SingletonComponent.test.cpp
     ${BASEDIR}/ecs/Access.test.cpp
 	${BASEDIR}/physics/PhysicsSystem.test.cpp
+    ${BASEDIR}/ecs/Definitions.test.cpp
+    ${BASEDIR}/ecs/ECSExceptions.test.cpp
+    ${BASEDIR}/ecs/TypeErasedComponent/TypeErasedComponent.test.cpp
+    ${BASEDIR}/renderPasses/Masks.test.cpp
+    ${BASEDIR}/Types.test.cpp
     ${BASEDIR}/../crash/CrashTracker.test.cpp
         # Add other engine test files here
 )
