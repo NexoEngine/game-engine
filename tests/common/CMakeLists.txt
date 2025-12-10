@@ -27,6 +27,7 @@ set(COMMON_SOURCES
     common/math/Matrix.cpp
     common/math/Vector.cpp
     common/math/Light.cpp
+    common/math/Projection.cpp
 )
 
 add_executable(common_tests
@@ -37,6 +38,11 @@ add_executable(common_tests
     ${BASEDIR}/Exceptions.test.cpp
     ${BASEDIR}/Vector.test.cpp
     ${BASEDIR}/Light.test.cpp
+    ${BASEDIR}/Projection.test.cpp
+    ${BASEDIR}/Timestep.test.cpp
+    ${BASEDIR}/Logger.test.cpp
+    ${BASEDIR}/String.test.cpp
+    ${BASEDIR}/Error.test.cpp
 )
 
 # Find glm and add its include directories

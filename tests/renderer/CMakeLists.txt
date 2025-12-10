@@ -71,6 +71,8 @@ add_executable(renderer_tests
         ${BASEDIR}/Renderer3D.test.cpp
         ${BASEDIR}/Exceptions.test.cpp
         ${BASEDIR}/Pipeline.test.cpp
+        ${BASEDIR}/Attributes.test.cpp
+        ${BASEDIR}/UniformCache.test.cpp
 )
 
 # Find glm and add its include directories
