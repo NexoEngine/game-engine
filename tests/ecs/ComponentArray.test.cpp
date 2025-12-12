@@ -389,4 +389,322 @@ namespace nexo::ecs {
         EXPECT_EQ(componentArray->get(2).value, 20);
         EXPECT_EQ(componentArray->get(4).value, 40);
     }
+
+    // =========================================================
+    // ================== ADDITIONAL COVERAGE ==================
+    // =========================================================
+
+    TEST_F(ComponentArrayTest, VeryLargeEntityIdTriggersCapacityGrowth) {
+        const Entity largeEntity = 50000;
+        componentArray->insert(largeEntity, TestComponent{12345});
+
+        EXPECT_TRUE(componentArray->hasComponent(largeEntity));
+        EXPECT_EQ(componentArray->get(largeEntity).value, 12345);
+        EXPECT_EQ(componentArray->size(), 6); // 5 from setup + 1 new
+    }
+
+    TEST_F(ComponentArrayTest, MultipleLargeEntityIdsWork) {
+        const Entity entity1 = 10000;
+        const Entity entity2 = 20000;
+        const Entity entity3 = 30000;
+
+        componentArray->insert(entity1, TestComponent{100});
+        componentArray->insert(entity2, TestComponent{200});
+        componentArray->insert(entity3, TestComponent{300});
+
+        EXPECT_EQ(componentArray->get(entity1).value, 100);
+        EXPECT_EQ(componentArray->get(entity2).value, 200);
+        EXPECT_EQ(componentArray->get(entity3).value, 300);
+        EXPECT_EQ(componentArray->size(), 8); // 5 + 3
+    }
+
+    TEST_F(ComponentArrayTest, DuplicateComponentCreatesExactCopy) {
+        const Entity sourceEntity = 2;
+        const Entity destEntity = 100;
+
+        // Source entity has component with value 20 (2 * 10 from setup)
+        EXPECT_EQ(componentArray->get(sourceEntity).value, 20);
+
+        componentArray->duplicateComponent(sourceEntity, destEntity);
+
+        EXPECT_TRUE(componentArray->hasComponent(destEntity));
+        EXPECT_EQ(componentArray->get(destEntity).value, 20);
+        EXPECT_EQ(componentArray->size(), 6); // 5 from setup + 1 duplicated
+
+        // Modify the duplicate and ensure source is unaffected
+        componentArray->get(destEntity).value = 999;
+        EXPECT_EQ(componentArray->get(destEntity).value, 999);
+        EXPECT_EQ(componentArray->get(sourceEntity).value, 20);
+    }
+
+    TEST_F(ComponentArrayTest, DuplicateComponentThrowsOnNonExistentSource) {
+        const Entity nonExistentSource = 999;
+        const Entity destEntity = 100;
+
+        EXPECT_THROW(componentArray->duplicateComponent(nonExistentSource, destEntity), ComponentNotFound);
+    }
+
+    TEST_F(ComponentArrayTest, DuplicateComponentOverwritesPreventsDoubleInsert) {
+        const Entity sourceEntity = 1;
+        const Entity destEntity = 3; // Already exists
+
+        const size_t originalSize = componentArray->size();
+
+        componentArray->duplicateComponent(sourceEntity, destEntity);
+
+        // Size should not change since destEntity already existed
+        EXPECT_EQ(componentArray->size(), originalSize);
+        // Destination should still have its original value
+        EXPECT_EQ(componentArray->get(destEntity).value, 30);
+    }
+
+    TEST_F(ComponentArrayTest, GroupRemoveLastMemberLeavesEmptyGroup) {
+        const Entity entity = 2;
+
+        componentArray->addToGroup(entity);
+        EXPECT_EQ(componentArray->groupSize(), 1);
+        EXPECT_EQ(componentArray->getEntityAtIndex(0), entity);
+
+        componentArray->removeFromGroup(entity);
+        EXPECT_EQ(componentArray->groupSize(), 0);
+
+        // Entity should still exist, just not in group
+        EXPECT_TRUE(componentArray->hasComponent(entity));
+        EXPECT_EQ(componentArray->get(entity).value, 20);
+    }
+
+    TEST_F(ComponentArrayTest, AddToEmptyGroupWorks) {
+        EXPECT_EQ(componentArray->groupSize(), 0);
+
+        componentArray->addToGroup(0);
+        EXPECT_EQ(componentArray->groupSize(), 1);
+        EXPECT_EQ(componentArray->getEntityAtIndex(0), 0);
+
+        componentArray->addToGroup(4);
+        EXPECT_EQ(componentArray->groupSize(), 2);
+
+        auto entities = componentArray->entities();
+        EXPECT_TRUE(entities[0] == 0 || entities[1] == 0);
+        EXPECT_TRUE(entities[0] == 4 || entities[1] == 4);
+    }
+
+    TEST_F(ComponentArrayTest, MultipleSequentialGroupAddRemove) {
+        // Add three entities to group
+        componentArray->addToGroup(1);
+        componentArray->addToGroup(2);
+        componentArray->addToGroup(3);
+        EXPECT_EQ(componentArray->groupSize(), 3);
+
+        // Remove middle one
+        componentArray->removeFromGroup(2);
+        EXPECT_EQ(componentArray->groupSize(), 2);
+
+        // Add it back
+        componentArray->addToGroup(2);
+        EXPECT_EQ(componentArray->groupSize(), 3);
+
+        // Remove first one
+        componentArray->removeFromGroup(1);
+        EXPECT_EQ(componentArray->groupSize(), 2);
+
+        // Add a new entity and immediately add to group
+        componentArray->insert(10, TestComponent{100});
+        componentArray->addToGroup(10);
+        EXPECT_EQ(componentArray->groupSize(), 3);
+
+        // Verify all are still accessible with correct values
+        EXPECT_EQ(componentArray->get(2).value, 20);
+        EXPECT_EQ(componentArray->get(3).value, 30);
+        EXPECT_EQ(componentArray->get(10).value, 100);
+    }
+
+    TEST_F(ComponentArrayTest, ComponentDataIntegrityAfterManyInserts) {
+        // Insert many components and verify all values are correct
+        for (Entity i = 100; i < 200; ++i) {
+            componentArray->insert(i, TestComponent{static_cast<int>(i * 5)});
+        }
+
+        // Verify original entities are still correct
+        for (Entity i = 0; i < 5; ++i) {
+            EXPECT_EQ(componentArray->get(i).value, i * 10);
+        }
+
+        // Verify new entities are correct
+        for (Entity i = 100; i < 200; ++i) {
+            EXPECT_EQ(componentArray->get(i).value, i * 5);
+        }
+
+        EXPECT_EQ(componentArray->size(), 105); // 5 + 100
+    }
+
+    TEST_F(ComponentArrayTest, ComponentDataIntegrityAfterManyRemovals) {
+        // First add many components
+        for (Entity i = 10; i < 30; ++i) {
+            componentArray->insert(i, TestComponent{static_cast<int>(i * 10)});
+        }
+
+        // Remove every other entity
+        for (Entity i = 10; i < 30; i += 2) {
+            componentArray->remove(i);
+        }
+
+        // Verify original entities still exist
+        for (Entity i = 0; i < 5; ++i) {
+            EXPECT_TRUE(componentArray->hasComponent(i));
+            EXPECT_EQ(componentArray->get(i).value, i * 10);
+        }
+
+        // Verify odd entities still exist with correct values
+        for (Entity i = 11; i < 30; i += 2) {
+            EXPECT_TRUE(componentArray->hasComponent(i));
+            EXPECT_EQ(componentArray->get(i).value, i * 10);
+        }
+
+        // Verify even entities were removed
+        for (Entity i = 10; i < 30; i += 2) {
+            EXPECT_FALSE(componentArray->hasComponent(i));
+        }
+    }
+
+    TEST_F(ComponentArrayTest, ComponentDataIntegrityAfterGroupOperations) {
+        // Add some entities to group
+        componentArray->addToGroup(0);
+        componentArray->addToGroup(2);
+        componentArray->addToGroup(4);
+
+        // Verify values are still correct after grouping
+        EXPECT_EQ(componentArray->get(0).value, 0);
+        EXPECT_EQ(componentArray->get(2).value, 20);
+        EXPECT_EQ(componentArray->get(4).value, 40);
+
+        // Modify grouped components
+        componentArray->get(0).value = 1000;
+        componentArray->get(2).value = 2000;
+        componentArray->get(4).value = 3000;
+
+        // Remove from group and verify modifications persisted
+        componentArray->removeFromGroup(2);
+        EXPECT_EQ(componentArray->get(2).value, 2000);
+
+        // Verify other grouped entities still have correct values
+        EXPECT_EQ(componentArray->get(0).value, 1000);
+        EXPECT_EQ(componentArray->get(4).value, 3000);
+
+        // Non-grouped entities should be unchanged
+        EXPECT_EQ(componentArray->get(1).value, 10);
+        EXPECT_EQ(componentArray->get(3).value, 30);
+    }
+
+    TEST_F(ComponentArrayTest, ComponentDataIntegrityAfterMixedOperations) {
+        // Complex scenario: inserts, removals, duplications, grouping
+        componentArray->insert(50, TestComponent{500});
+        componentArray->insert(51, TestComponent{510});
+
+        componentArray->duplicateComponent(50, 100);
+        componentArray->addToGroup(50);
+        componentArray->addToGroup(100);
+
+        EXPECT_EQ(componentArray->get(50).value, 500);
+        EXPECT_EQ(componentArray->get(100).value, 500);
+
+        componentArray->get(100).value = 999;
+        componentArray->remove(2); // Remove from original setup
+
+        // Verify integrity
+        EXPECT_EQ(componentArray->get(50).value, 500);
+        EXPECT_EQ(componentArray->get(100).value, 999);
+        EXPECT_FALSE(componentArray->hasComponent(2));
+
+        // Original entities should still be intact
+        EXPECT_EQ(componentArray->get(0).value, 0);
+        EXPECT_EQ(componentArray->get(1).value, 10);
+        EXPECT_EQ(componentArray->get(3).value, 30);
+        EXPECT_EQ(componentArray->get(4).value, 40);
+    }
+
+    TEST_F(ComponentArrayTest, GroupBoundaryWithSingleEntity) {
+        // Test that group operations work correctly with just one entity
+        componentArray->addToGroup(3);
+        EXPECT_EQ(componentArray->groupSize(), 1);
+        EXPECT_EQ(componentArray->getEntityAtIndex(0), 3);
+
+        // Add same entity again (should be ignored)
+        componentArray->addToGroup(3);
+        EXPECT_EQ(componentArray->groupSize(), 1);
+
+        // Remove it
+        componentArray->removeFromGroup(3);
+        EXPECT_EQ(componentArray->groupSize(), 0);
+
+        // Try removing again (should be ignored)
+        componentArray->removeFromGroup(3);
+        EXPECT_EQ(componentArray->groupSize(), 0);
+    }
+
+    TEST_F(ComponentArrayTest, RemoveAllGroupedEntitiesOneByOne) {
+        // Add all entities to group
+        for (Entity i = 0; i < 5; ++i) {
+            componentArray->addToGroup(i);
+        }
+        EXPECT_EQ(componentArray->groupSize(), 5);
+
+        // Remove them one by one from the group
+        componentArray->removeFromGroup(4);
+        EXPECT_EQ(componentArray->groupSize(), 4);
+
+        componentArray->removeFromGroup(3);
+        EXPECT_EQ(componentArray->groupSize(), 3);
+
+        componentArray->removeFromGroup(2);
+        EXPECT_EQ(componentArray->groupSize(), 2);
+
+        componentArray->removeFromGroup(1);
+        EXPECT_EQ(componentArray->groupSize(), 1);
+
+        componentArray->removeFromGroup(0);
+        EXPECT_EQ(componentArray->groupSize(), 0);
+
+        // All entities should still exist
+        for (Entity i = 0; i < 5; ++i) {
+            EXPECT_TRUE(componentArray->hasComponent(i));
+            EXPECT_EQ(componentArray->get(i).value, i * 10);
+        }
+    }
+
+    TEST_F(ComponentArrayTest, DuplicateIntoGroupedEntity) {
+        const Entity sourceEntity = 1;
+        const Entity destEntity = 200;
+
+        // Add source to group
+        componentArray->addToGroup(sourceEntity);
+        EXPECT_EQ(componentArray->groupSize(), 1);
+
+        // Duplicate to new entity
+        componentArray->duplicateComponent(sourceEntity, destEntity);
+
+        EXPECT_TRUE(componentArray->hasComponent(destEntity));
+        EXPECT_EQ(componentArray->get(destEntity).value, 10);
+
+        // Destination should not be in group
+        EXPECT_EQ(componentArray->groupSize(), 1);
+
+        // But we can add it to the group
+        componentArray->addToGroup(destEntity);
+        EXPECT_EQ(componentArray->groupSize(), 2);
+    }
+
+    TEST_F(ComponentArrayTest, LargeEntityIdWithGroupOperations) {
+        const Entity largeEntity = 65000;
+
+        componentArray->insert(largeEntity, TestComponent{65000});
+        componentArray->addToGroup(largeEntity);
+
+        EXPECT_EQ(componentArray->groupSize(), 1);
+        EXPECT_EQ(componentArray->getEntityAtIndex(0), largeEntity);
+        EXPECT_EQ(componentArray->get(largeEntity).value, 65000);
+
+        componentArray->removeFromGroup(largeEntity);
+        EXPECT_EQ(componentArray->groupSize(), 0);
+        EXPECT_TRUE(componentArray->hasComponent(largeEntity));
+    }
 }

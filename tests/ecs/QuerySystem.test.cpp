@@ -302,4 +302,5 @@ namespace nexo::ecs {
         // Creating system with unregistered component should fail
         EXPECT_THROW(coordinator->registerQuerySystem<SystemWithUnregisteredComponent>(), ComponentNotRegistered);
     }
+
 }

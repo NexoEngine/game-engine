@@ -467,4 +467,189 @@ TEST_F(TransformMatrixSystemTest, TransformOrderTRS) {
     EXPECT_NEAR(transformed.z, 0.0f, 0.0001f);
 }
 
+// =============================================================================
+// Integration Tests for update() method
+// =============================================================================
+
+// Include ECS infrastructure for integration tests
+#include "ecs/Coordinator.hpp"
+
+class TransformMatrixSystemIntegrationTest : public ::testing::Test {
+protected:
+    std::shared_ptr<nexo::ecs::Coordinator> coordinator;
+    std::shared_ptr<TransformMatrixSystem> system;
+    std::vector<nexo::ecs::Entity> entities;
+
+    void SetUp() override {
+        coordinator = std::make_shared<nexo::ecs::Coordinator>();
+        coordinator->init();
+        nexo::ecs::System::coord = coordinator;
+
+        // Register components
+        coordinator->registerComponent<components::TransformComponent>();
+        coordinator->registerComponent<components::SceneTag>();
+
+        // Register singleton component
+        coordinator->registerSingletonComponent<components::RenderContext>();
+
+        // Register system
+        system = coordinator->registerQuerySystem<TransformMatrixSystem>();
+    }
+
+    void TearDown() override {
+        for (auto entity : entities) {
+            coordinator->destroyEntity(entity);
+        }
+        nexo::ecs::System::coord = nullptr;
+    }
+
+    // Helper to create an entity with transform and scene tag
+    nexo::ecs::Entity createEntityInScene(unsigned int sceneId, const glm::vec3& pos, const glm::vec3& scale) {
+        nexo::ecs::Entity entity = coordinator->createEntity();
+        entities.push_back(entity);
+
+        components::TransformComponent transform;
+        transform.pos = pos;
+        transform.quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+        transform.size = scale;
+        transform.localMatrix = glm::mat4(0.0f);  // Initialize to zero to detect changes
+        transform.worldMatrix = glm::mat4(0.0f);
+        coordinator->addComponent(entity, transform);
+
+        components::SceneTag sceneTag;
+        sceneTag.id = sceneId;
+        coordinator->addComponent(entity, sceneTag);
+
+        return entity;
+    }
+};
+
+TEST_F(TransformMatrixSystemIntegrationTest, UpdateWithNoSceneRendered) {
+    // Create entities in scene 0
+    auto entity1 = createEntityInScene(0, glm::vec3(1.0f, 2.0f, 3.0f), glm::vec3(1.0f));
+    auto entity2 = createEntityInScene(0, glm::vec3(4.0f, 5.0f, 6.0f), glm::vec3(2.0f));
+
+    // Set sceneRendered to -1 (no scene)
+    auto& renderContext = coordinator->getSingletonComponent<components::RenderContext>();
+    renderContext.sceneRendered = -1;
+
+    // Call update
+    system->update();
+
+    // Matrices should NOT be updated (still zero matrix)
+    auto& t1 = coordinator->getComponent<components::TransformComponent>(entity1);
+    auto& t2 = coordinator->getComponent<components::TransformComponent>(entity2);
+
+    EXPECT_EQ(t1.localMatrix, glm::mat4(0.0f));
+    EXPECT_EQ(t2.localMatrix, glm::mat4(0.0f));
+}
+
+TEST_F(TransformMatrixSystemIntegrationTest, UpdateOnlyAffectsCurrentScene) {
+    // Create entities in different scenes
+    auto scene0Entity = createEntityInScene(0, glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+    auto scene1Entity = createEntityInScene(1, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+    auto scene2Entity = createEntityInScene(2, glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+
+    // Set sceneRendered to 0
+    auto& renderContext = coordinator->getSingletonComponent<components::RenderContext>();
+    renderContext.sceneRendered = 0;
+
+    // Call update
+    system->update();
+
+    // Only scene 0 entity should be updated
+    auto& t0 = coordinator->getComponent<components::TransformComponent>(scene0Entity);
+    auto& t1 = coordinator->getComponent<components::TransformComponent>(scene1Entity);
+    auto& t2 = coordinator->getComponent<components::TransformComponent>(scene2Entity);
+
+    // Scene 0: should be updated (not zero matrix)
+    EXPECT_NE(t0.localMatrix, glm::mat4(0.0f));
+    EXPECT_EQ(t0.localMatrix[3][0], 1.0f);  // Translation x
+
+    // Scene 1 and 2: should NOT be updated (still zero matrix)
+    EXPECT_EQ(t1.localMatrix, glm::mat4(0.0f));
+    EXPECT_EQ(t2.localMatrix, glm::mat4(0.0f));
+}
+
+TEST_F(TransformMatrixSystemIntegrationTest, UpdateSetsLocalMatrixCorrectly) {
+    auto entity = createEntityInScene(0, glm::vec3(10.0f, 20.0f, 30.0f), glm::vec3(2.0f, 3.0f, 4.0f));
+
+    auto& renderContext = coordinator->getSingletonComponent<components::RenderContext>();
+    renderContext.sceneRendered = 0;
+
+    system->update();
+
+    auto& transform = coordinator->getComponent<components::TransformComponent>(entity);
+
+    // Verify translation is correct
+    EXPECT_FLOAT_EQ(transform.localMatrix[3][0], 10.0f);
+    EXPECT_FLOAT_EQ(transform.localMatrix[3][1], 20.0f);
+    EXPECT_FLOAT_EQ(transform.localMatrix[3][2], 30.0f);
+
+    // Verify scale by checking diagonal elements (assuming identity rotation)
+    EXPECT_FLOAT_EQ(transform.localMatrix[0][0], 2.0f);
+    EXPECT_FLOAT_EQ(transform.localMatrix[1][1], 3.0f);
+    EXPECT_FLOAT_EQ(transform.localMatrix[2][2], 4.0f);
+}
+
+TEST_F(TransformMatrixSystemIntegrationTest, UpdateSetsWorldMatrixEqualToLocalMatrix) {
+    auto entity = createEntityInScene(0, glm::vec3(5.0f, 5.0f, 5.0f), glm::vec3(1.0f));
+
+    auto& renderContext = coordinator->getSingletonComponent<components::RenderContext>();
+    renderContext.sceneRendered = 0;
+
+    system->update();
+
+    auto& transform = coordinator->getComponent<components::TransformComponent>(entity);
+
+    // worldMatrix should equal localMatrix (no hierarchy in current implementation)
+    EXPECT_EQ(transform.worldMatrix, transform.localMatrix);
+}
+
+TEST_F(TransformMatrixSystemIntegrationTest, UpdateMultipleEntitiesInSameScene) {
+    auto entity1 = createEntityInScene(0, glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+    auto entity2 = createEntityInScene(0, glm::vec3(2.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+    auto entity3 = createEntityInScene(0, glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+
+    auto& renderContext = coordinator->getSingletonComponent<components::RenderContext>();
+    renderContext.sceneRendered = 0;
+
+    system->update();
+
+    auto& t1 = coordinator->getComponent<components::TransformComponent>(entity1);
+    auto& t2 = coordinator->getComponent<components::TransformComponent>(entity2);
+    auto& t3 = coordinator->getComponent<components::TransformComponent>(entity3);
+
+    // All should be updated with correct translations
+    EXPECT_FLOAT_EQ(t1.localMatrix[3][0], 1.0f);
+    EXPECT_FLOAT_EQ(t2.localMatrix[3][0], 2.0f);
+    EXPECT_FLOAT_EQ(t3.localMatrix[3][0], 3.0f);
+}
+
+TEST_F(TransformMatrixSystemIntegrationTest, SwitchingSceneAffectsDifferentEntities) {
+    auto scene0Entity = createEntityInScene(0, glm::vec3(100.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+    auto scene1Entity = createEntityInScene(1, glm::vec3(200.0f, 0.0f, 0.0f), glm::vec3(1.0f));
+
+    auto& renderContext = coordinator->getSingletonComponent<components::RenderContext>();
+
+    // First update scene 0
+    renderContext.sceneRendered = 0;
+    system->update();
+
+    auto& t0 = coordinator->getComponent<components::TransformComponent>(scene0Entity);
+    auto& t1 = coordinator->getComponent<components::TransformComponent>(scene1Entity);
+
+    EXPECT_NE(t0.localMatrix, glm::mat4(0.0f));
+    EXPECT_EQ(t1.localMatrix, glm::mat4(0.0f));
+
+    // Now switch to scene 1
+    renderContext.sceneRendered = 1;
+    system->update();
+
+    // Re-fetch components (references may be invalidated)
+    auto& t1Updated = coordinator->getComponent<components::TransformComponent>(scene1Entity);
+    EXPECT_NE(t1Updated.localMatrix, glm::mat4(0.0f));
+    EXPECT_FLOAT_EQ(t1Updated.localMatrix[3][0], 200.0f);
+}
+
 }  // namespace nexo::system

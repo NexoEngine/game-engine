@@ -618,4 +618,281 @@ namespace nexo::ecs {
 		it = group->end();
 		ASSERT_THROW(*it, OutOfRange); // Dereferencing end iterator should throw
 	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// Sorting Edge Cases Tests
+	//////////////////////////////////////////////////////////////////////////
+
+	TEST_F(GroupTest, SortSingleEntity) {
+		auto group = createGroup<PositionComponent, HealthComponent>(std::make_tuple(tagArray));
+
+		// Add only one entity
+		group->addToGroup(entities[0]);
+
+		// Sort by health - should not crash
+		group->sortBy<HealthComponent, int>([](const HealthComponent& h) { return h.health; });
+
+		// Verify entity is still there
+		EXPECT_EQ(group->size(), 1);
+		auto healthComponents = group->get<HealthComponent>();
+		EXPECT_EQ(healthComponents[0].health, 100);
+	}
+
+	TEST_F(GroupTest, SortTwoEntities) {
+		auto group = createGroup<PositionComponent, HealthComponent>(std::make_tuple(tagArray));
+
+		// Add two entities in reverse order
+		group->addToGroup(entities[3]); // health = 70
+		group->addToGroup(entities[1]); // health = 90
+
+		// Sort ascending
+		group->sortBy<HealthComponent, int>([](const HealthComponent& h) { return h.health; });
+
+		auto healthComponents = group->get<HealthComponent>();
+		EXPECT_EQ(healthComponents.size(), 2);
+		EXPECT_EQ(healthComponents[0].health, 70);
+		EXPECT_EQ(healthComponents[1].health, 90);
+
+		// Sort descending
+		group->sortBy<HealthComponent, int>(
+			[](const HealthComponent& h) { return h.health; },
+			false
+		);
+
+		healthComponents = group->get<HealthComponent>();
+		EXPECT_EQ(healthComponents[0].health, 90);
+		EXPECT_EQ(healthComponents[1].health, 70);
+	}
+
+	TEST_F(GroupTest, SortIdenticalValues) {
+		auto group = createGroup<PositionComponent, HealthComponent>(std::make_tuple(tagArray));
+
+		// Create entities with identical health values
+		Entity e1 = 10, e2 = 11, e3 = 12;
+		positionArray->insert(e1, PositionComponent(1.0f, 1.0f, 1.0f));
+		positionArray->insert(e2, PositionComponent(2.0f, 2.0f, 2.0f));
+		positionArray->insert(e3, PositionComponent(3.0f, 3.0f, 3.0f));
+		healthArray->insert(e1, HealthComponent(50, 100));
+		healthArray->insert(e2, HealthComponent(50, 100));
+		healthArray->insert(e3, HealthComponent(50, 100));
+		tagArray->insert(e1, TagComponent("E1", 0));
+		tagArray->insert(e2, TagComponent("E2", 1));
+		tagArray->insert(e3, TagComponent("E3", 2));
+
+		// Add in specific order
+		group->addToGroup(e1);
+		group->addToGroup(e2);
+		group->addToGroup(e3);
+
+		// Get the original order
+		auto entitiesBefore = group->entities();
+		std::vector<Entity> beforeVec(entitiesBefore.begin(), entitiesBefore.end());
+
+		// Sort by health (all values are identical)
+		group->sortBy<HealthComponent, int>([](const HealthComponent& h) { return h.health; });
+
+		// Verify all entities still present
+		EXPECT_EQ(group->size(), 3);
+
+		// All health values should still be 50
+		auto healthComponents = group->get<HealthComponent>();
+		for (size_t i = 0; i < 3; ++i) {
+			EXPECT_EQ(healthComponents[i].health, 50);
+		}
+
+		// Verify stability - order should be preserved for equal elements
+		auto entitiesAfter = group->entities();
+		std::vector<Entity> afterVec(entitiesAfter.begin(), entitiesAfter.end());
+		EXPECT_EQ(beforeVec, afterVec);
+	}
+
+	TEST_F(GroupTest, SortAlreadySorted) {
+		auto group = createGroup<PositionComponent, HealthComponent>(std::make_tuple(tagArray));
+
+		// Add entities already in sorted order (ascending by health)
+		group->addToGroup(entities[4]); // health = 60
+		group->addToGroup(entities[3]); // health = 70
+		group->addToGroup(entities[2]); // health = 80
+		group->addToGroup(entities[1]); // health = 90
+		group->addToGroup(entities[0]); // health = 100
+
+		// Sort ascending (already in this order)
+		group->sortBy<HealthComponent, int>([](const HealthComponent& h) { return h.health; });
+
+		auto healthComponents = group->get<HealthComponent>();
+		EXPECT_EQ(healthComponents.size(), 5);
+
+		// Verify order is correct
+		EXPECT_EQ(healthComponents[0].health, 60);
+		EXPECT_EQ(healthComponents[1].health, 70);
+		EXPECT_EQ(healthComponents[2].health, 80);
+		EXPECT_EQ(healthComponents[3].health, 90);
+		EXPECT_EQ(healthComponents[4].health, 100);
+	}
+
+	TEST_F(GroupTest, SortReverseSorted) {
+		auto group = createGroup<PositionComponent, HealthComponent>(std::make_tuple(tagArray));
+
+		// Add entities in reverse sorted order (descending by health)
+		group->addToGroup(entities[0]); // health = 100
+		group->addToGroup(entities[1]); // health = 90
+		group->addToGroup(entities[2]); // health = 80
+		group->addToGroup(entities[3]); // health = 70
+		group->addToGroup(entities[4]); // health = 60
+
+		// Sort ascending (complete reversal needed)
+		group->sortBy<HealthComponent, int>([](const HealthComponent& h) { return h.health; });
+
+		auto healthComponents = group->get<HealthComponent>();
+		EXPECT_EQ(healthComponents.size(), 5);
+
+		// Verify order is correct after reversal
+		EXPECT_EQ(healthComponents[0].health, 60);
+		EXPECT_EQ(healthComponents[1].health, 70);
+		EXPECT_EQ(healthComponents[2].health, 80);
+		EXPECT_EQ(healthComponents[3].health, 90);
+		EXPECT_EQ(healthComponents[4].health, 100);
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// Component Data Integrity After Sorting Tests
+	//////////////////////////////////////////////////////////////////////////
+
+	TEST_F(GroupTest, EntityComponentRelationshipsPreservedAfterSort) {
+		auto group = createGroup<PositionComponent, HealthComponent>(std::make_tuple(tagArray));
+
+		// Add entities with distinct component values
+		group->addToGroup(entities[0]); // pos=(0,0,0), health=100
+		group->addToGroup(entities[1]); // pos=(1,2,3), health=90
+		group->addToGroup(entities[2]); // pos=(2,4,6), health=80
+		group->addToGroup(entities[3]); // pos=(3,6,9), health=70
+		group->addToGroup(entities[4]); // pos=(4,8,12), health=60
+
+		// Sort by health ascending
+		group->sortBy<HealthComponent, int>([](const HealthComponent& h) { return h.health; });
+
+		// Verify each entity still has its correct components
+		auto groupEntities = group->entities();
+		auto positions = group->get<PositionComponent>();
+		auto healths = group->get<HealthComponent>();
+
+		for (size_t i = 0; i < groupEntities.size(); ++i) {
+			Entity e = groupEntities[i];
+
+			// Position should match entity ID
+			EXPECT_FLOAT_EQ(positions[i].x, e * 1.0f);
+			EXPECT_FLOAT_EQ(positions[i].y, e * 2.0f);
+			EXPECT_FLOAT_EQ(positions[i].z, e * 3.0f);
+
+			// Health should match entity ID
+			EXPECT_EQ(healths[i].health, 100 - e * 10);
+		}
+	}
+
+	TEST_F(GroupTest, ComponentDataMatchesOriginalEntitiesAfterSort) {
+		auto group = createGroup<PositionComponent, VelocityComponent, HealthComponent>(std::make_tuple(tagArray));
+
+		// Add entities in random order
+		group->addToGroup(entities[2]);
+		group->addToGroup(entities[0]);
+		group->addToGroup(entities[4]);
+		group->addToGroup(entities[1]);
+		group->addToGroup(entities[3]);
+
+		// Store original component values for each entity
+		std::map<Entity, PositionComponent> originalPositions;
+		std::map<Entity, VelocityComponent> originalVelocities;
+		std::map<Entity, HealthComponent> originalHealths;
+
+		for (auto e : entities) {
+			originalPositions[e] = positionArray->get(e);
+			originalVelocities[e] = velocityArray->get(e);
+			originalHealths[e] = healthArray->get(e);
+		}
+
+		// Sort by position.x
+		group->sortBy<PositionComponent, float>([](const PositionComponent& p) { return p.x; });
+
+		// Verify each entity's components match their original values
+		auto groupEntities = group->entities();
+		auto positions = group->get<PositionComponent>();
+		auto velocities = group->get<VelocityComponent>();
+		auto healths = group->get<HealthComponent>();
+
+		for (size_t i = 0; i < groupEntities.size(); ++i) {
+			Entity e = groupEntities[i];
+
+			EXPECT_EQ(positions[i], originalPositions[e]);
+			EXPECT_EQ(velocities[i], originalVelocities[e]);
+			EXPECT_EQ(healths[i], originalHealths[e]);
+		}
+	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// Empty Group Operations Tests
+	//////////////////////////////////////////////////////////////////////////
+
+	TEST_F(GroupTest, EmptyGroupSortDoesNotCrash) {
+		auto group = createGroup<PositionComponent, HealthComponent>(std::make_tuple(tagArray));
+
+		// Sort empty group - should not crash
+		group->sortBy<HealthComponent, int>([](const HealthComponent& h) { return h.health; });
+
+		// Group should still be empty
+		EXPECT_EQ(group->size(), 0);
+	}
+
+	TEST_F(GroupTest, EmptyGroupIteratorBehavior) {
+		auto group = createGroup<PositionComponent, VelocityComponent>(std::make_tuple());
+
+		// Begin and end should be equal for empty group
+		EXPECT_EQ(group->begin(), group->end());
+
+		// Range-based for loop should not execute
+		int count = 0;
+		for (auto [entity, pos, vel] : *group) {
+			(void)entity;
+			(void)pos;
+			(void)vel;
+			count++;
+		}
+		EXPECT_EQ(count, 0);
+
+		// Standard iterator loop should not execute
+		count = 0;
+		for (auto it = group->begin(); it != group->end(); ++it) {
+			count++;
+		}
+		EXPECT_EQ(count, 0);
+	}
+
+	TEST_F(GroupTest, EmptyGroupGetOperations) {
+		auto group = createGroup<PositionComponent, VelocityComponent>(std::make_tuple());
+
+		// Get should return empty spans/arrays
+		auto positions = group->get<PositionComponent>();
+		EXPECT_EQ(positions.size(), 0);
+
+		// Accessing entities should return empty vector
+		auto groupEntities = group->entities();
+		EXPECT_EQ(groupEntities.size(), 0);
+	}
+
+	TEST_F(GroupTest, EmptyGroupEachOperations) {
+		auto group = createGroup<PositionComponent, VelocityComponent>(std::make_tuple());
+
+		// each() should not execute callback on empty group
+		int callCount = 0;
+		group->each([&callCount](Entity, PositionComponent&, VelocityComponent&) {
+			callCount++;
+		});
+		EXPECT_EQ(callCount, 0);
+
+		// eachInRange() should not execute callback on empty group
+		callCount = 0;
+		group->eachInRange(0, 10, [&callCount](Entity, PositionComponent&, VelocityComponent&) {
+			callCount++;
+		});
+		EXPECT_EQ(callCount, 0);
+	}
 }
