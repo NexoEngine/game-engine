@@ -20,9 +20,12 @@ protected:
     ParentComponent component;
 };
 
-TEST_F(ParentComponentTest, DefaultParentIsZero) {
-    // Default Entity value
+TEST_F(ParentComponentTest, AssignParentValue) {
+    // Test that parent can be assigned values
+    component.parent = 0;
     EXPECT_EQ(component.parent, 0u);
+    component.parent = 42;
+    EXPECT_EQ(component.parent, 42u);
 }
 
 TEST_F(ParentComponentTest, SaveCapturesParent) {

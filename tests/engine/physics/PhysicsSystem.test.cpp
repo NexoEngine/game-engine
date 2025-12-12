@@ -220,3 +220,87 @@ TEST_F(PhysicsFilterIntegrationTest, BroadPhaseLayerMapping_IsCorrect) {
     EXPECT_EQ(bpLayerInterface.GetBroadPhaseLayer(system::Layers::MOVING),
               system::BroadPhaseLayers::MOVING);
 }
+
+// ============================================================================
+// ShapeType Enum Tests
+// ============================================================================
+
+class ShapeTypeTest : public ::testing::Test {
+protected:
+    std::string shapeTypeToString(system::ShapeType type) {
+        switch (type) {
+            case system::ShapeType::Box: return "Box";
+            case system::ShapeType::Sphere: return "Sphere";
+            case system::ShapeType::Cylinder: return "Cylinder";
+            case system::ShapeType::Tetrahedron: return "Tetrahedron";
+            case system::ShapeType::Pyramid: return "Pyramid";
+            default: return "Unknown";
+        }
+    }
+};
+
+TEST_F(ShapeTypeTest, UnderlyingValues_AreSequential) {
+    EXPECT_EQ(static_cast<int>(system::ShapeType::Box), 0);
+    EXPECT_EQ(static_cast<int>(system::ShapeType::Sphere), 1);
+    EXPECT_EQ(static_cast<int>(system::ShapeType::Cylinder), 2);
+    EXPECT_EQ(static_cast<int>(system::ShapeType::Tetrahedron), 3);
+    EXPECT_EQ(static_cast<int>(system::ShapeType::Pyramid), 4);
+}
+
+TEST_F(ShapeTypeTest, EnumValues_AreDistinct) {
+    std::vector<system::ShapeType> shapes = {
+        system::ShapeType::Box,
+        system::ShapeType::Sphere,
+        system::ShapeType::Cylinder,
+        system::ShapeType::Tetrahedron,
+        system::ShapeType::Pyramid
+    };
+
+    for (size_t i = 0; i < shapes.size(); ++i) {
+        for (size_t j = i + 1; j < shapes.size(); ++j) {
+            EXPECT_NE(shapes[i], shapes[j]);
+        }
+    }
+}
+
+TEST_F(ShapeTypeTest, SwitchStatement_HandlesAllValues) {
+    std::vector<system::ShapeType> allShapes = {
+        system::ShapeType::Box,
+        system::ShapeType::Sphere,
+        system::ShapeType::Cylinder,
+        system::ShapeType::Tetrahedron,
+        system::ShapeType::Pyramid
+    };
+
+    for (const auto& shape : allShapes) {
+        std::string result = shapeTypeToString(shape);
+        EXPECT_NE(result, "Unknown");
+    }
+}
+
+TEST_F(ShapeTypeTest, SwitchStatement_ReturnsCorrectStrings) {
+    EXPECT_EQ(shapeTypeToString(system::ShapeType::Box), "Box");
+    EXPECT_EQ(shapeTypeToString(system::ShapeType::Sphere), "Sphere");
+    EXPECT_EQ(shapeTypeToString(system::ShapeType::Cylinder), "Cylinder");
+    EXPECT_EQ(shapeTypeToString(system::ShapeType::Tetrahedron), "Tetrahedron");
+    EXPECT_EQ(shapeTypeToString(system::ShapeType::Pyramid), "Pyramid");
+}
+
+TEST_F(ShapeTypeTest, EnumComparison_WorksCorrectly) {
+    EXPECT_TRUE(system::ShapeType::Box == system::ShapeType::Box);
+    EXPECT_FALSE(system::ShapeType::Box == system::ShapeType::Sphere);
+    EXPECT_TRUE(system::ShapeType::Box != system::ShapeType::Pyramid);
+    EXPECT_FALSE(system::ShapeType::Cylinder != system::ShapeType::Cylinder);
+}
+
+TEST_F(ShapeTypeTest, EnumAssignment_WorksCorrectly) {
+    system::ShapeType shape1 = system::ShapeType::Box;
+    system::ShapeType shape2 = system::ShapeType::Sphere;
+
+    EXPECT_EQ(shape1, system::ShapeType::Box);
+    EXPECT_EQ(shape2, system::ShapeType::Sphere);
+
+    shape1 = system::ShapeType::Pyramid;
+    EXPECT_EQ(shape1, system::ShapeType::Pyramid);
+    EXPECT_NE(shape1, system::ShapeType::Box);
+}
