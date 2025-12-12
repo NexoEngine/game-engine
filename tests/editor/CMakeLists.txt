@@ -13,6 +13,7 @@ set(EDITOR_TEST_FILES
     ${BASEDIR}/context/ActionHistory.test.cpp
     ${BASEDIR}/context/ActionGroup.test.cpp
     ${BASEDIR}/context/ActionManager.test.cpp
+    ${BASEDIR}/context/StateAction.test.cpp
     ${BASEDIR}/context/DockingRegistry.test.cpp
     ${BASEDIR}/context/WindowRegistry.test.cpp
     ${BASEDIR}/context/Selector.test.cpp

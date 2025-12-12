@@ -66,6 +66,7 @@ add_executable(renderer_tests
         ${BASEDIR}/VertexArray.test.cpp
         ${BASEDIR}/Framebuffer.test.cpp
         ${BASEDIR}/Shader.test.cpp
+        ${BASEDIR}/ShaderLibrary.test.cpp
         ${BASEDIR}/RendererAPI.test.cpp
         ${BASEDIR}/Texture.test.cpp
         ${BASEDIR}/Renderer3D.test.cpp
@@ -75,6 +76,8 @@ add_executable(renderer_tests
         ${BASEDIR}/Attributes.test.cpp
         ${BASEDIR}/UniformCache.test.cpp
         ${BASEDIR}/SubTexture2D.test.cpp
+        ${BASEDIR}/Primitives.test.cpp
+        ${BASEDIR}/WindowProperty.test.cpp
 )
 
 # Find glm and add its include directories

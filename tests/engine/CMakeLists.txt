@@ -62,6 +62,7 @@ add_executable(engine_tests
     ${BASEDIR}/renderer/DrawCommand.test.cpp
     ${BASEDIR}/renderer/RendererExceptions.test.cpp
     ${BASEDIR}/renderer/RendererAPIEnums.test.cpp
+    ${BASEDIR}/renderer/TransparentStringHasher.test.cpp
     ${BASEDIR}/ecs/ComponentArray.test.cpp
     ${BASEDIR}/ecs/EntityManager.test.cpp
     ${BASEDIR}/ecs/SingletonComponent.test.cpp
@@ -80,6 +81,7 @@ add_executable(engine_tests
     ${BASEDIR}/scripting/FieldType.test.cpp
     ${BASEDIR}/scripting/Field.test.cpp
     ${BASEDIR}/scripting/ManagedTypedef.test.cpp
+    ${BASEDIR}/scripting/HostString.test.cpp
     ${BASEDIR}/components/Material.test.cpp
     ${BASEDIR}/components/RenderContext.test.cpp
     ${BASEDIR}/components/StaticMesh.test.cpp
@@ -89,6 +91,7 @@ add_executable(engine_tests
     ${BASEDIR}/core/Signals.test.cpp
     ${BASEDIR}/core/KeyCodes.test.cpp
     ${BASEDIR}/systems/TransformMatrixSystem.test.cpp
+    ${BASEDIR}/renderer/PixelConversion.test.cpp
         # Add other engine test files here
 )
 
