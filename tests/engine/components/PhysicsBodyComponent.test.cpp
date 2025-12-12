@@ -273,4 +273,397 @@ TEST_F(PhysicsBodyComponentTest, MementoIsCopyAssignable) {
     EXPECT_TRUE(std::is_copy_assignable_v<PhysicsBodyComponent::Memento>);
 }
 
+TEST_F(PhysicsBodyComponentTest, MementoIsMoveConstructible) {
+    EXPECT_TRUE(std::is_move_constructible_v<PhysicsBodyComponent::Memento>);
+}
+
+TEST_F(PhysicsBodyComponentTest, MementoIsMoveAssignable) {
+    EXPECT_TRUE(std::is_move_assignable_v<PhysicsBodyComponent::Memento>);
+}
+
+// =============================================================================
+// BodyID Handling Tests
+// =============================================================================
+
+TEST_F(PhysicsBodyComponentTest, BodyIDCanBeSet) {
+    PhysicsBodyComponent comp;
+    JPH::BodyID testID(500);
+    comp.bodyID = testID;
+
+    EXPECT_EQ(comp.bodyID.GetIndex(), 500u);
+}
+
+TEST_F(PhysicsBodyComponentTest, BodyIDCanBeModified) {
+    PhysicsBodyComponent comp;
+    comp.bodyID = JPH::BodyID(100);
+    EXPECT_EQ(comp.bodyID.GetIndex(), 100u);
+
+    comp.bodyID = JPH::BodyID(200);
+    EXPECT_EQ(comp.bodyID.GetIndex(), 200u);
+}
+
+TEST_F(PhysicsBodyComponentTest, BodyIDInvalidByDefault) {
+    PhysicsBodyComponent comp;
+    EXPECT_TRUE(comp.bodyID.IsInvalid());
+}
+
+TEST_F(PhysicsBodyComponentTest, BodyIDValidAfterSet) {
+    PhysicsBodyComponent comp;
+    comp.bodyID = JPH::BodyID(1);
+    EXPECT_FALSE(comp.bodyID.IsInvalid());
+}
+
+TEST_F(PhysicsBodyComponentTest, BodyIDWithMaxIndex) {
+    PhysicsBodyComponent comp;
+    JPH::BodyID maxID(0x7FFFFFFF);  // Maximum valid index
+    comp.bodyID = maxID;
+
+    EXPECT_EQ(comp.bodyID.GetIndex(), maxID.GetIndex());
+}
+
+TEST_F(PhysicsBodyComponentTest, BodyIDWithZeroIndex) {
+    PhysicsBodyComponent comp;
+    JPH::BodyID zeroID(0);
+    comp.bodyID = zeroID;
+
+    EXPECT_EQ(comp.bodyID.GetIndex(), 0u);
+}
+
+// =============================================================================
+// Body Type Tests
+// =============================================================================
+
+TEST_F(PhysicsBodyComponentTest, TypeCanBeSetToStatic) {
+    PhysicsBodyComponent comp;
+    comp.type = PhysicsBodyComponent::Type::Static;
+    EXPECT_EQ(comp.type, PhysicsBodyComponent::Type::Static);
+}
+
+TEST_F(PhysicsBodyComponentTest, TypeCanBeSetToDynamic) {
+    PhysicsBodyComponent comp;
+    comp.type = PhysicsBodyComponent::Type::Dynamic;
+    EXPECT_EQ(comp.type, PhysicsBodyComponent::Type::Dynamic);
+}
+
+TEST_F(PhysicsBodyComponentTest, TypeCanBeChangedFromStaticToDynamic) {
+    PhysicsBodyComponent comp;
+    comp.type = PhysicsBodyComponent::Type::Static;
+    comp.type = PhysicsBodyComponent::Type::Dynamic;
+    EXPECT_EQ(comp.type, PhysicsBodyComponent::Type::Dynamic);
+}
+
+TEST_F(PhysicsBodyComponentTest, TypeCanBeChangedFromDynamicToStatic) {
+    PhysicsBodyComponent comp;
+    comp.type = PhysicsBodyComponent::Type::Dynamic;
+    comp.type = PhysicsBodyComponent::Type::Static;
+    EXPECT_EQ(comp.type, PhysicsBodyComponent::Type::Static);
+}
+
+// =============================================================================
+// Copy Semantics Tests
+// =============================================================================
+
+TEST_F(PhysicsBodyComponentTest, CopyConstruction) {
+    PhysicsBodyComponent original;
+    original.bodyID = JPH::BodyID(123);
+    original.type = PhysicsBodyComponent::Type::Dynamic;
+
+    PhysicsBodyComponent copy = original;
+
+    EXPECT_EQ(copy.bodyID.GetIndex(), 123u);
+    EXPECT_EQ(copy.type, PhysicsBodyComponent::Type::Dynamic);
+}
+
+TEST_F(PhysicsBodyComponentTest, CopyAssignment) {
+    PhysicsBodyComponent original;
+    original.bodyID = JPH::BodyID(456);
+    original.type = PhysicsBodyComponent::Type::Static;
+
+    PhysicsBodyComponent copy;
+    copy = original;
+
+    EXPECT_EQ(copy.bodyID.GetIndex(), 456u);
+    EXPECT_EQ(copy.type, PhysicsBodyComponent::Type::Static);
+}
+
+TEST_F(PhysicsBodyComponentTest, CopyConstructionPreservesOriginal) {
+    PhysicsBodyComponent original;
+    original.bodyID = JPH::BodyID(789);
+    original.type = PhysicsBodyComponent::Type::Dynamic;
+
+    PhysicsBodyComponent copy = original;
+
+    // Original should be unchanged
+    EXPECT_EQ(original.bodyID.GetIndex(), 789u);
+    EXPECT_EQ(original.type, PhysicsBodyComponent::Type::Dynamic);
+}
+
+TEST_F(PhysicsBodyComponentTest, CopyAssignmentPreservesOriginal) {
+    PhysicsBodyComponent original;
+    original.bodyID = JPH::BodyID(321);
+    original.type = PhysicsBodyComponent::Type::Static;
+
+    PhysicsBodyComponent copy;
+    copy = original;
+
+    // Original should be unchanged
+    EXPECT_EQ(original.bodyID.GetIndex(), 321u);
+    EXPECT_EQ(original.type, PhysicsBodyComponent::Type::Static);
+}
+
+TEST_F(PhysicsBodyComponentTest, CopyIsIndependent) {
+    PhysicsBodyComponent original;
+    original.bodyID = JPH::BodyID(111);
+    original.type = PhysicsBodyComponent::Type::Dynamic;
+
+    PhysicsBodyComponent copy = original;
+
+    // Modify copy
+    copy.bodyID = JPH::BodyID(222);
+    copy.type = PhysicsBodyComponent::Type::Static;
+
+    // Original should be unchanged
+    EXPECT_EQ(original.bodyID.GetIndex(), 111u);
+    EXPECT_EQ(original.type, PhysicsBodyComponent::Type::Dynamic);
+}
+
+// =============================================================================
+// Move Semantics Tests
+// =============================================================================
+
+TEST_F(PhysicsBodyComponentTest, MoveConstruction) {
+    PhysicsBodyComponent original;
+    original.bodyID = JPH::BodyID(999);
+    original.type = PhysicsBodyComponent::Type::Dynamic;
+
+    PhysicsBodyComponent moved = std::move(original);
+
+    EXPECT_EQ(moved.bodyID.GetIndex(), 999u);
+    EXPECT_EQ(moved.type, PhysicsBodyComponent::Type::Dynamic);
+}
+
+TEST_F(PhysicsBodyComponentTest, MoveAssignment) {
+    PhysicsBodyComponent original;
+    original.bodyID = JPH::BodyID(888);
+    original.type = PhysicsBodyComponent::Type::Static;
+
+    PhysicsBodyComponent moved;
+    moved = std::move(original);
+
+    EXPECT_EQ(moved.bodyID.GetIndex(), 888u);
+    EXPECT_EQ(moved.type, PhysicsBodyComponent::Type::Static);
+}
+
+// =============================================================================
+// Memento Copy Semantics Tests
+// =============================================================================
+
+TEST_F(PhysicsBodyComponentTest, MementoCopyConstruction) {
+    PhysicsBodyComponent::Memento original;
+    original.bodyID = JPH::BodyID(555);
+    original.type = PhysicsBodyComponent::Type::Dynamic;
+
+    PhysicsBodyComponent::Memento copy = original;
+
+    EXPECT_EQ(copy.bodyID.GetIndex(), 555u);
+    EXPECT_EQ(copy.type, PhysicsBodyComponent::Type::Dynamic);
+}
+
+TEST_F(PhysicsBodyComponentTest, MementoCopyAssignment) {
+    PhysicsBodyComponent::Memento original;
+    original.bodyID = JPH::BodyID(666);
+    original.type = PhysicsBodyComponent::Type::Static;
+
+    PhysicsBodyComponent::Memento copy;
+    copy = original;
+
+    EXPECT_EQ(copy.bodyID.GetIndex(), 666u);
+    EXPECT_EQ(copy.type, PhysicsBodyComponent::Type::Static);
+}
+
+TEST_F(PhysicsBodyComponentTest, MementoCopyIsIndependent) {
+    PhysicsBodyComponent::Memento original;
+    original.bodyID = JPH::BodyID(333);
+    original.type = PhysicsBodyComponent::Type::Dynamic;
+
+    PhysicsBodyComponent::Memento copy = original;
+
+    // Modify copy
+    copy.bodyID = JPH::BodyID(444);
+    copy.type = PhysicsBodyComponent::Type::Static;
+
+    // Original should be unchanged
+    EXPECT_EQ(original.bodyID.GetIndex(), 333u);
+    EXPECT_EQ(original.type, PhysicsBodyComponent::Type::Dynamic);
+}
+
+// =============================================================================
+// Edge Cases Tests
+// =============================================================================
+
+TEST_F(PhysicsBodyComponentTest, SaveWithInvalidBodyID) {
+    PhysicsBodyComponent comp;
+    comp.bodyID = JPH::BodyID();  // Invalid
+    comp.type = PhysicsBodyComponent::Type::Static;
+
+    auto memento = comp.save();
+
+    EXPECT_TRUE(memento.bodyID.IsInvalid());
+    EXPECT_EQ(memento.type, PhysicsBodyComponent::Type::Static);
+}
+
+TEST_F(PhysicsBodyComponentTest, RestoreWithInvalidBodyID) {
+    PhysicsBodyComponent::Memento memento;
+    memento.bodyID = JPH::BodyID();  // Invalid
+    memento.type = PhysicsBodyComponent::Type::Dynamic;
+
+    PhysicsBodyComponent comp;
+    comp.restore(memento);
+
+    EXPECT_TRUE(comp.bodyID.IsInvalid());
+    EXPECT_EQ(comp.type, PhysicsBodyComponent::Type::Dynamic);
+}
+
+TEST_F(PhysicsBodyComponentTest, MultipleRestoresOverwriteState) {
+    PhysicsBodyComponent comp;
+
+    // First restore
+    PhysicsBodyComponent::Memento memento1;
+    memento1.bodyID = JPH::BodyID(100);
+    memento1.type = PhysicsBodyComponent::Type::Static;
+    comp.restore(memento1);
+
+    EXPECT_EQ(comp.bodyID.GetIndex(), 100u);
+    EXPECT_EQ(comp.type, PhysicsBodyComponent::Type::Static);
+
+    // Second restore overwrites
+    PhysicsBodyComponent::Memento memento2;
+    memento2.bodyID = JPH::BodyID(200);
+    memento2.type = PhysicsBodyComponent::Type::Dynamic;
+    comp.restore(memento2);
+
+    EXPECT_EQ(comp.bodyID.GetIndex(), 200u);
+    EXPECT_EQ(comp.type, PhysicsBodyComponent::Type::Dynamic);
+}
+
+TEST_F(PhysicsBodyComponentTest, SaveDoesNotModifyComponent) {
+    PhysicsBodyComponent comp;
+    comp.bodyID = JPH::BodyID(777);
+    comp.type = PhysicsBodyComponent::Type::Dynamic;
+
+    auto memento = comp.save();
+
+    // Component should be unchanged
+    EXPECT_EQ(comp.bodyID.GetIndex(), 777u);
+    EXPECT_EQ(comp.type, PhysicsBodyComponent::Type::Dynamic);
+}
+
+TEST_F(PhysicsBodyComponentTest, SaveMultipleTimesCreatesIndependentMementos) {
+    PhysicsBodyComponent comp;
+    comp.bodyID = JPH::BodyID(100);
+    comp.type = PhysicsBodyComponent::Type::Static;
+
+    auto memento1 = comp.save();
+
+    comp.bodyID = JPH::BodyID(200);
+    comp.type = PhysicsBodyComponent::Type::Dynamic;
+
+    auto memento2 = comp.save();
+
+    // First memento should still have original values
+    EXPECT_EQ(memento1.bodyID.GetIndex(), 100u);
+    EXPECT_EQ(memento1.type, PhysicsBodyComponent::Type::Static);
+
+    // Second memento should have new values
+    EXPECT_EQ(memento2.bodyID.GetIndex(), 200u);
+    EXPECT_EQ(memento2.type, PhysicsBodyComponent::Type::Dynamic);
+}
+
+TEST_F(PhysicsBodyComponentTest, RestoreSameStateMultipleTimes) {
+    PhysicsBodyComponent::Memento memento;
+    memento.bodyID = JPH::BodyID(500);
+    memento.type = PhysicsBodyComponent::Type::Static;
+
+    PhysicsBodyComponent comp;
+
+    // Restore multiple times
+    comp.restore(memento);
+    comp.restore(memento);
+    comp.restore(memento);
+
+    EXPECT_EQ(comp.bodyID.GetIndex(), 500u);
+    EXPECT_EQ(comp.type, PhysicsBodyComponent::Type::Static);
+}
+
+TEST_F(PhysicsBodyComponentTest, SelfAssignment) {
+    PhysicsBodyComponent comp;
+    comp.bodyID = JPH::BodyID(123);
+    comp.type = PhysicsBodyComponent::Type::Dynamic;
+
+    comp = comp;  // Self-assignment
+
+    EXPECT_EQ(comp.bodyID.GetIndex(), 123u);
+    EXPECT_EQ(comp.type, PhysicsBodyComponent::Type::Dynamic);
+}
+
+TEST_F(PhysicsBodyComponentTest, ComponentWithBothFieldsModified) {
+    PhysicsBodyComponent comp;
+
+    // Set both fields
+    comp.bodyID = JPH::BodyID(999);
+    comp.type = PhysicsBodyComponent::Type::Dynamic;
+
+    // Verify both are set correctly
+    EXPECT_EQ(comp.bodyID.GetIndex(), 999u);
+    EXPECT_EQ(comp.type, PhysicsBodyComponent::Type::Dynamic);
+
+    // Save and verify memento
+    auto memento = comp.save();
+    EXPECT_EQ(memento.bodyID.GetIndex(), 999u);
+    EXPECT_EQ(memento.type, PhysicsBodyComponent::Type::Dynamic);
+}
+
+TEST_F(PhysicsBodyComponentTest, DefaultConstructedMemento) {
+    PhysicsBodyComponent::Memento memento;
+
+    // Default constructed memento should have invalid bodyID and default type
+    EXPECT_TRUE(memento.bodyID.IsInvalid());
+    // Type will be value-initialized (first enum value)
+}
+
+// =============================================================================
+// Combined State Tests
+// =============================================================================
+
+TEST_F(PhysicsBodyComponentTest, StaticBodyWithValidID) {
+    PhysicsBodyComponent comp;
+    comp.bodyID = JPH::BodyID(100);
+    comp.type = PhysicsBodyComponent::Type::Static;
+
+    EXPECT_FALSE(comp.bodyID.IsInvalid());
+    EXPECT_EQ(comp.type, PhysicsBodyComponent::Type::Static);
+}
+
+TEST_F(PhysicsBodyComponentTest, DynamicBodyWithValidID) {
+    PhysicsBodyComponent comp;
+    comp.bodyID = JPH::BodyID(200);
+    comp.type = PhysicsBodyComponent::Type::Dynamic;
+
+    EXPECT_FALSE(comp.bodyID.IsInvalid());
+    EXPECT_EQ(comp.type, PhysicsBodyComponent::Type::Dynamic);
+}
+
+TEST_F(PhysicsBodyComponentTest, ChangeBothFieldsSimultaneously) {
+    PhysicsBodyComponent comp;
+    comp.bodyID = JPH::BodyID(100);
+    comp.type = PhysicsBodyComponent::Type::Static;
+
+    // Change both fields
+    comp.bodyID = JPH::BodyID(200);
+    comp.type = PhysicsBodyComponent::Type::Dynamic;
+
+    EXPECT_EQ(comp.bodyID.GetIndex(), 200u);
+    EXPECT_EQ(comp.type, PhysicsBodyComponent::Type::Dynamic);
+}
+
 }  // namespace nexo::components

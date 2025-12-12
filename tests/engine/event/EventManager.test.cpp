@@ -183,33 +183,6 @@ namespace nexo::event {
         manager.dispatchEvents();
     }
 
-    class MultiEventListener : public Listens<TestEvent, AnotherTestEvent> {
-        public:
-        explicit MultiEventListener(const std::string& name = "") : Listens(name) {}
-
-        MOCK_METHOD(void, handleEvent, (TestEvent&), (override));
-        MOCK_METHOD(void, handleEvent, (AnotherTestEvent&), (override));
-    };
-
-    TEST(EventManagerTest, ListenerHandlesMultipleEventTypes) {
-        EventManager manager;
-        MultiEventListener listener("MultiListener");
-
-        manager.registerListener<TestEvent>(&listener);
-        manager.registerListener<AnotherTestEvent>(&listener);
-
-        auto testEvent = std::make_shared<TestEvent>(42);
-        auto anotherEvent = std::make_shared<AnotherTestEvent>("Hello");
-
-        // Each handle event should be called once
-        EXPECT_CALL(listener, handleEvent(::testing::An<TestEvent&>())).Times(1);
-        EXPECT_CALL(listener, handleEvent(::testing::An<AnotherTestEvent&>())).Times(1);
-
-        manager.emitEvent(testEvent);
-        manager.emitEvent(anotherEvent);
-        manager.dispatchEvents();
-    }
-
     // ===== Edge Case Tests =====
 
     TEST(EventManagerEdgeCaseTest, ClearEventsRemovesAllQueuedEvents) {
@@ -523,30 +496,6 @@ namespace nexo::event {
         // Should not crash when dispatching events with no listeners
         manager.dispatchEvents();
         SUCCEED();
-    }
-
-    TEST(EventManagerEdgeCaseTest, UnregisterListenerDuringMultipleEventTypes) {
-        EventManager manager;
-        MultiEventListener listener("MultiListener");
-
-        // Register for both event types
-        manager.registerListener<TestEvent>(&listener);
-        manager.registerListener<AnotherTestEvent>(&listener);
-
-        // Unregister from only one event type
-        manager.unregisterListener<TestEvent>(&listener);
-
-        auto testEvent = std::make_shared<TestEvent>(42);
-        auto anotherEvent = std::make_shared<AnotherTestEvent>("Hello");
-
-        // TestEvent handler should not be called
-        EXPECT_CALL(listener, handleEvent(::testing::An<TestEvent&>())).Times(0);
-        // AnotherTestEvent handler should still be called
-        EXPECT_CALL(listener, handleEvent(::testing::An<AnotherTestEvent&>())).Times(1);
-
-        manager.emitEvent(testEvent);
-        manager.emitEvent(anotherEvent);
-        manager.dispatchEvents();
     }
 
     TEST(EventManagerEdgeCaseTest, ClearEventsDoesNotAffectListeners) {

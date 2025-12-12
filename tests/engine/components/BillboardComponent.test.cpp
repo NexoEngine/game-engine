@@ -327,4 +327,439 @@ TEST_F(BillboardComponentAdditionalTest, AxisXUp) {
     EXPECT_FLOAT_EQ(billboard.axis.x, 1.0f);
 }
 
+// =============================================================================
+// Field Assignment Tests
+// =============================================================================
+
+class BillboardComponentFieldAssignmentTest : public ::testing::Test {};
+
+TEST_F(BillboardComponentFieldAssignmentTest, AssignTypeMultipleTimes) {
+    BillboardComponent billboard;
+
+    billboard.type = BillboardType::FULL;
+    EXPECT_EQ(billboard.type, BillboardType::FULL);
+
+    billboard.type = BillboardType::AXIS_Y;
+    EXPECT_EQ(billboard.type, BillboardType::AXIS_Y);
+
+    billboard.type = BillboardType::AXIS_CUSTOM;
+    EXPECT_EQ(billboard.type, BillboardType::AXIS_CUSTOM);
+
+    billboard.type = BillboardType::FULL;
+    EXPECT_EQ(billboard.type, BillboardType::FULL);
+}
+
+TEST_F(BillboardComponentFieldAssignmentTest, AssignAxisVectorComponents) {
+    BillboardComponent billboard;
+
+    billboard.axis.x = 0.5f;
+    EXPECT_FLOAT_EQ(billboard.axis.x, 0.5f);
+
+    billboard.axis.y = 0.3f;
+    EXPECT_FLOAT_EQ(billboard.axis.y, 0.3f);
+
+    billboard.axis.z = 0.8f;
+    EXPECT_FLOAT_EQ(billboard.axis.z, 0.8f);
+}
+
+TEST_F(BillboardComponentFieldAssignmentTest, AssignAxisUsingConstructor) {
+    BillboardComponent billboard;
+    billboard.axis = glm::vec3(0.2f, 0.4f, 0.6f);
+
+    EXPECT_FLOAT_EQ(billboard.axis.x, 0.2f);
+    EXPECT_FLOAT_EQ(billboard.axis.y, 0.4f);
+    EXPECT_FLOAT_EQ(billboard.axis.z, 0.6f);
+}
+
+TEST_F(BillboardComponentFieldAssignmentTest, AssignVaoToNullptr) {
+    BillboardComponent billboard;
+    billboard.vao = nullptr;
+    EXPECT_EQ(billboard.vao, nullptr);
+}
+
+TEST_F(BillboardComponentFieldAssignmentTest, ReassignVaoToNullptr) {
+    BillboardComponent billboard;
+    billboard.vao = nullptr;
+    EXPECT_EQ(billboard.vao, nullptr);
+
+    billboard.vao = nullptr;
+    EXPECT_EQ(billboard.vao, nullptr);
+}
+
+TEST_F(BillboardComponentFieldAssignmentTest, AssignAllFieldsSimultaneously) {
+    BillboardComponent billboard;
+    billboard.type = BillboardType::AXIS_CUSTOM;
+    billboard.axis = glm::vec3(0.577f, 0.577f, 0.577f);
+    billboard.vao = nullptr;
+
+    EXPECT_EQ(billboard.type, BillboardType::AXIS_CUSTOM);
+    EXPECT_FLOAT_EQ(billboard.axis.x, 0.577f);
+    EXPECT_FLOAT_EQ(billboard.axis.y, 0.577f);
+    EXPECT_FLOAT_EQ(billboard.axis.z, 0.577f);
+    EXPECT_EQ(billboard.vao, nullptr);
+}
+
+TEST_F(BillboardComponentFieldAssignmentTest, AxisAssignmentDoesNotAffectType) {
+    BillboardComponent billboard;
+    billboard.type = BillboardType::FULL;
+
+    billboard.axis = glm::vec3(1.0f, 0.0f, 0.0f);
+
+    EXPECT_EQ(billboard.type, BillboardType::FULL);
+}
+
+TEST_F(BillboardComponentFieldAssignmentTest, TypeAssignmentDoesNotAffectAxis) {
+    BillboardComponent billboard;
+    billboard.axis = glm::vec3(0.5f, 0.5f, 0.0f);
+
+    billboard.type = BillboardType::AXIS_CUSTOM;
+
+    EXPECT_FLOAT_EQ(billboard.axis.x, 0.5f);
+    EXPECT_FLOAT_EQ(billboard.axis.y, 0.5f);
+    EXPECT_FLOAT_EQ(billboard.axis.z, 0.0f);
+}
+
+// =============================================================================
+// Edge Cases and Boundary Tests
+// =============================================================================
+
+class BillboardComponentEdgeCasesTest : public ::testing::Test {};
+
+TEST_F(BillboardComponentEdgeCasesTest, ZeroAxisVector) {
+    BillboardComponent billboard;
+    billboard.axis = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    EXPECT_FLOAT_EQ(billboard.axis.x, 0.0f);
+    EXPECT_FLOAT_EQ(billboard.axis.y, 0.0f);
+    EXPECT_FLOAT_EQ(billboard.axis.z, 0.0f);
+}
+
+TEST_F(BillboardComponentEdgeCasesTest, VerySmallAxisValues) {
+    BillboardComponent billboard;
+    billboard.axis = glm::vec3(0.0001f, 0.0002f, 0.0003f);
+
+    EXPECT_FLOAT_EQ(billboard.axis.x, 0.0001f);
+    EXPECT_FLOAT_EQ(billboard.axis.y, 0.0002f);
+    EXPECT_FLOAT_EQ(billboard.axis.z, 0.0003f);
+}
+
+TEST_F(BillboardComponentEdgeCasesTest, VeryLargeAxisValues) {
+    BillboardComponent billboard;
+    billboard.axis = glm::vec3(1000.0f, 2000.0f, 3000.0f);
+
+    EXPECT_FLOAT_EQ(billboard.axis.x, 1000.0f);
+    EXPECT_FLOAT_EQ(billboard.axis.y, 2000.0f);
+    EXPECT_FLOAT_EQ(billboard.axis.z, 3000.0f);
+}
+
+TEST_F(BillboardComponentEdgeCasesTest, AllNegativeAxisValues) {
+    BillboardComponent billboard;
+    billboard.axis = glm::vec3(-1.0f, -2.0f, -3.0f);
+
+    EXPECT_FLOAT_EQ(billboard.axis.x, -1.0f);
+    EXPECT_FLOAT_EQ(billboard.axis.y, -2.0f);
+    EXPECT_FLOAT_EQ(billboard.axis.z, -3.0f);
+}
+
+TEST_F(BillboardComponentEdgeCasesTest, MixedSignAxisValues) {
+    BillboardComponent billboard;
+    billboard.axis = glm::vec3(-1.0f, 2.0f, -3.0f);
+
+    EXPECT_FLOAT_EQ(billboard.axis.x, -1.0f);
+    EXPECT_FLOAT_EQ(billboard.axis.y, 2.0f);
+    EXPECT_FLOAT_EQ(billboard.axis.z, -3.0f);
+}
+
+TEST_F(BillboardComponentEdgeCasesTest, FloatingPointPrecisionAxis) {
+    BillboardComponent billboard;
+    billboard.axis = glm::vec3(0.123456789f, 0.987654321f, 0.555555555f);
+
+    EXPECT_NEAR(billboard.axis.x, 0.123456789f, 0.000001f);
+    EXPECT_NEAR(billboard.axis.y, 0.987654321f, 0.000001f);
+    EXPECT_NEAR(billboard.axis.z, 0.555555555f, 0.000001f);
+}
+
+TEST_F(BillboardComponentEdgeCasesTest, AxisNearZero) {
+    BillboardComponent billboard;
+    billboard.axis = glm::vec3(1e-10f, 1e-10f, 1e-10f);
+
+    EXPECT_FLOAT_EQ(billboard.axis.x, 1e-10f);
+    EXPECT_FLOAT_EQ(billboard.axis.y, 1e-10f);
+    EXPECT_FLOAT_EQ(billboard.axis.z, 1e-10f);
+}
+
+TEST_F(BillboardComponentEdgeCasesTest, NormalizedUnitAxisX) {
+    BillboardComponent billboard;
+    billboard.axis = glm::normalize(glm::vec3(1.0f, 0.0f, 0.0f));
+
+    float length = glm::length(billboard.axis);
+    EXPECT_NEAR(length, 1.0f, 0.0001f);
+    EXPECT_NEAR(billboard.axis.x, 1.0f, 0.0001f);
+}
+
+TEST_F(BillboardComponentEdgeCasesTest, NormalizedUnitAxisY) {
+    BillboardComponent billboard;
+    billboard.axis = glm::normalize(glm::vec3(0.0f, 1.0f, 0.0f));
+
+    float length = glm::length(billboard.axis);
+    EXPECT_NEAR(length, 1.0f, 0.0001f);
+    EXPECT_NEAR(billboard.axis.y, 1.0f, 0.0001f);
+}
+
+TEST_F(BillboardComponentEdgeCasesTest, NormalizedUnitAxisZ) {
+    BillboardComponent billboard;
+    billboard.axis = glm::normalize(glm::vec3(0.0f, 0.0f, 1.0f));
+
+    float length = glm::length(billboard.axis);
+    EXPECT_NEAR(length, 1.0f, 0.0001f);
+    EXPECT_NEAR(billboard.axis.z, 1.0f, 0.0001f);
+}
+
+TEST_F(BillboardComponentEdgeCasesTest, NormalizedArbitraryAxis) {
+    BillboardComponent billboard;
+    glm::vec3 arbitrary(3.0f, 4.0f, 12.0f);
+    billboard.axis = glm::normalize(arbitrary);
+
+    float length = glm::length(billboard.axis);
+    EXPECT_NEAR(length, 1.0f, 0.0001f);
+}
+
+TEST_F(BillboardComponentEdgeCasesTest, UnnormalizedLongVector) {
+    BillboardComponent billboard;
+    billboard.axis = glm::vec3(100.0f, 200.0f, 300.0f);
+
+    EXPECT_FLOAT_EQ(billboard.axis.x, 100.0f);
+    EXPECT_FLOAT_EQ(billboard.axis.y, 200.0f);
+    EXPECT_FLOAT_EQ(billboard.axis.z, 300.0f);
+}
+
+// =============================================================================
+// Move Semantics Tests
+// =============================================================================
+
+class BillboardComponentMoveTest : public ::testing::Test {};
+
+TEST_F(BillboardComponentMoveTest, MoveConstructorTransfersType) {
+    BillboardComponent original;
+    original.type = BillboardType::AXIS_CUSTOM;
+
+    BillboardComponent moved(std::move(original));
+    EXPECT_EQ(moved.type, BillboardType::AXIS_CUSTOM);
+}
+
+TEST_F(BillboardComponentMoveTest, MoveConstructorTransfersAxis) {
+    BillboardComponent original;
+    original.axis = glm::vec3(0.7f, 0.8f, 0.9f);
+
+    BillboardComponent moved(std::move(original));
+    EXPECT_FLOAT_EQ(moved.axis.x, 0.7f);
+    EXPECT_FLOAT_EQ(moved.axis.y, 0.8f);
+    EXPECT_FLOAT_EQ(moved.axis.z, 0.9f);
+}
+
+TEST_F(BillboardComponentMoveTest, MoveConstructorTransfersVao) {
+    BillboardComponent original;
+    original.vao = nullptr;
+
+    BillboardComponent moved(std::move(original));
+    EXPECT_EQ(moved.vao, nullptr);
+}
+
+TEST_F(BillboardComponentMoveTest, MoveAssignmentOperatorTransfersType) {
+    BillboardComponent original;
+    original.type = BillboardType::AXIS_Y;
+
+    BillboardComponent other;
+    other = std::move(original);
+    EXPECT_EQ(other.type, BillboardType::AXIS_Y);
+}
+
+TEST_F(BillboardComponentMoveTest, MoveAssignmentOperatorTransfersAxis) {
+    BillboardComponent original;
+    original.axis = glm::vec3(0.1f, 0.2f, 0.3f);
+
+    BillboardComponent other;
+    other = std::move(original);
+    EXPECT_FLOAT_EQ(other.axis.x, 0.1f);
+    EXPECT_FLOAT_EQ(other.axis.y, 0.2f);
+    EXPECT_FLOAT_EQ(other.axis.z, 0.3f);
+}
+
+TEST_F(BillboardComponentMoveTest, MoveAssignmentOperatorTransfersVao) {
+    BillboardComponent original;
+    original.vao = nullptr;
+
+    BillboardComponent other;
+    other = std::move(original);
+    EXPECT_EQ(other.vao, nullptr);
+}
+
+TEST_F(BillboardComponentMoveTest, MoveAssignmentOverwritesExistingData) {
+    BillboardComponent original;
+    original.type = BillboardType::AXIS_CUSTOM;
+    original.axis = glm::vec3(1.0f, 2.0f, 3.0f);
+
+    BillboardComponent other;
+    other.type = BillboardType::FULL;
+    other.axis = glm::vec3(0.0f, 0.0f, 0.0f);
+
+    other = std::move(original);
+
+    EXPECT_EQ(other.type, BillboardType::AXIS_CUSTOM);
+    EXPECT_FLOAT_EQ(other.axis.x, 1.0f);
+    EXPECT_FLOAT_EQ(other.axis.y, 2.0f);
+    EXPECT_FLOAT_EQ(other.axis.z, 3.0f);
+}
+
+// =============================================================================
+// Complex State Tests
+// =============================================================================
+
+class BillboardComponentComplexStateTest : public ::testing::Test {};
+
+TEST_F(BillboardComponentComplexStateTest, FullBillboardCompleteSetup) {
+    BillboardComponent billboard;
+    billboard.type = BillboardType::FULL;
+    billboard.axis = glm::vec3(0.0f, 1.0f, 0.0f);  // Axis ignored for FULL
+    billboard.vao = nullptr;
+
+    EXPECT_EQ(billboard.type, BillboardType::FULL);
+    EXPECT_EQ(billboard.vao, nullptr);
+}
+
+TEST_F(BillboardComponentComplexStateTest, AxisYBillboardCompleteSetup) {
+    BillboardComponent billboard;
+    billboard.type = BillboardType::AXIS_Y;
+    billboard.axis = glm::vec3(0.0f, 1.0f, 0.0f);
+    billboard.vao = nullptr;
+
+    EXPECT_EQ(billboard.type, BillboardType::AXIS_Y);
+    EXPECT_FLOAT_EQ(billboard.axis.y, 1.0f);
+    EXPECT_EQ(billboard.vao, nullptr);
+}
+
+TEST_F(BillboardComponentComplexStateTest, AxisCustomBillboardCompleteSetup) {
+    BillboardComponent billboard;
+    billboard.type = BillboardType::AXIS_CUSTOM;
+    billboard.axis = glm::normalize(glm::vec3(1.0f, 1.0f, 0.0f));
+    billboard.vao = nullptr;
+
+    EXPECT_EQ(billboard.type, BillboardType::AXIS_CUSTOM);
+    float length = glm::length(billboard.axis);
+    EXPECT_NEAR(length, 1.0f, 0.0001f);
+    EXPECT_EQ(billboard.vao, nullptr);
+}
+
+TEST_F(BillboardComponentComplexStateTest, MultipleStateChanges) {
+    BillboardComponent billboard;
+
+    // State 1: FULL
+    billboard.type = BillboardType::FULL;
+    EXPECT_EQ(billboard.type, BillboardType::FULL);
+
+    // State 2: AXIS_Y
+    billboard.type = BillboardType::AXIS_Y;
+    billboard.axis = glm::vec3(0.0f, 1.0f, 0.0f);
+    EXPECT_EQ(billboard.type, BillboardType::AXIS_Y);
+    EXPECT_FLOAT_EQ(billboard.axis.y, 1.0f);
+
+    // State 3: AXIS_CUSTOM
+    billboard.type = BillboardType::AXIS_CUSTOM;
+    billboard.axis = glm::normalize(glm::vec3(1.0f, 0.0f, 1.0f));
+    EXPECT_EQ(billboard.type, BillboardType::AXIS_CUSTOM);
+
+    // State 4: Back to FULL
+    billboard.type = BillboardType::FULL;
+    EXPECT_EQ(billboard.type, BillboardType::FULL);
+}
+
+// =============================================================================
+// Struct Size and Alignment Tests
+// =============================================================================
+
+class BillboardComponentStructTest : public ::testing::Test {};
+
+TEST_F(BillboardComponentStructTest, StructIsNotEmpty) {
+    EXPECT_GT(sizeof(BillboardComponent), 0u);
+}
+
+TEST_F(BillboardComponentStructTest, StructContainsExpectedMembers) {
+    // This test ensures the struct has the expected layout
+    BillboardComponent billboard;
+
+    // Verify we can access all members
+    billboard.type = BillboardType::FULL;
+    billboard.axis = glm::vec3(0.0f);
+    billboard.vao = nullptr;
+
+    EXPECT_EQ(billboard.type, BillboardType::FULL);
+    EXPECT_FLOAT_EQ(billboard.axis.x, 0.0f);
+    EXPECT_EQ(billboard.vao, nullptr);
+}
+
+// =============================================================================
+// Integration Tests
+// =============================================================================
+
+class BillboardComponentIntegrationTest : public ::testing::Test {};
+
+TEST_F(BillboardComponentIntegrationTest, ParticleSystemSetup) {
+    // Typical particle system billboard setup
+    BillboardComponent particle;
+    particle.type = BillboardType::FULL;
+    particle.vao = nullptr;
+
+    EXPECT_EQ(particle.type, BillboardType::FULL);
+    EXPECT_EQ(particle.vao, nullptr);
+}
+
+TEST_F(BillboardComponentIntegrationTest, TreeBillboardSetup) {
+    // Typical tree billboard setup (Y-axis aligned)
+    BillboardComponent tree;
+    tree.type = BillboardType::AXIS_Y;
+    tree.axis = glm::vec3(0.0f, 1.0f, 0.0f);
+    tree.vao = nullptr;
+
+    EXPECT_EQ(tree.type, BillboardType::AXIS_Y);
+    EXPECT_FLOAT_EQ(tree.axis.y, 1.0f);
+}
+
+TEST_F(BillboardComponentIntegrationTest, HealthBarBillboardSetup) {
+    // Health bar that rotates around Y but not X/Z
+    BillboardComponent healthBar;
+    healthBar.type = BillboardType::AXIS_Y;
+    healthBar.axis = glm::vec3(0.0f, 1.0f, 0.0f);
+    healthBar.vao = nullptr;
+
+    EXPECT_EQ(healthBar.type, BillboardType::AXIS_Y);
+}
+
+TEST_F(BillboardComponentIntegrationTest, SlopedSurfaceBillboard) {
+    // Billboard constrained to a sloped surface normal
+    BillboardComponent slope;
+    slope.type = BillboardType::AXIS_CUSTOM;
+    slope.axis = glm::normalize(glm::vec3(0.0f, 0.707f, 0.707f));  // 45 degree slope
+    slope.vao = nullptr;
+
+    EXPECT_EQ(slope.type, BillboardType::AXIS_CUSTOM);
+    float length = glm::length(slope.axis);
+    EXPECT_NEAR(length, 1.0f, 0.0001f);
+}
+
+TEST_F(BillboardComponentIntegrationTest, MultipleComponentsIndependent) {
+    BillboardComponent billboard1;
+    BillboardComponent billboard2;
+    BillboardComponent billboard3;
+
+    billboard1.type = BillboardType::FULL;
+    billboard2.type = BillboardType::AXIS_Y;
+    billboard3.type = BillboardType::AXIS_CUSTOM;
+    billboard3.axis = glm::vec3(1.0f, 0.0f, 0.0f);
+
+    EXPECT_EQ(billboard1.type, BillboardType::FULL);
+    EXPECT_EQ(billboard2.type, BillboardType::AXIS_Y);
+    EXPECT_EQ(billboard3.type, BillboardType::AXIS_CUSTOM);
+    EXPECT_FLOAT_EQ(billboard3.axis.x, 1.0f);
+}
+
 }  // namespace nexo::components
