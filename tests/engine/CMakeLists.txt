@@ -72,6 +72,16 @@ add_executable(engine_tests
     ${BASEDIR}/renderPasses/Masks.test.cpp
     ${BASEDIR}/Types.test.cpp
     ${BASEDIR}/../crash/CrashTracker.test.cpp
+    ${BASEDIR}/scripting/FieldType.test.cpp
+    ${BASEDIR}/scripting/Field.test.cpp
+    ${BASEDIR}/scripting/ManagedTypedef.test.cpp
+    ${BASEDIR}/components/Material.test.cpp
+    ${BASEDIR}/components/RenderContext.test.cpp
+    ${BASEDIR}/components/StaticMesh.test.cpp
+    ${BASEDIR}/components/MaterialComponent.test.cpp
+    ${BASEDIR}/components/Model.test.cpp
+    ${BASEDIR}/core/Signals.test.cpp
+    ${BASEDIR}/core/KeyCodes.test.cpp
         # Add other engine test files here
 )
 
