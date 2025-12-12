@@ -172,3 +172,4 @@ html/
 _CPack_Packages/
 
 myinstall/
+*.gcov

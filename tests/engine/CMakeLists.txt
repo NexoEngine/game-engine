@@ -33,6 +33,7 @@ add_executable(engine_tests
     ${BASEDIR}/components/Camera.test.cpp
     ${BASEDIR}/components/Transform.test.cpp
     ${BASEDIR}/components/Light.test.cpp
+    ${BASEDIR}/components/LightContext.test.cpp
     ${BASEDIR}/components/Name.test.cpp
     ${BASEDIR}/components/Uuid.test.cpp
     ${BASEDIR}/components/Parent.test.cpp
@@ -64,12 +65,16 @@ add_executable(engine_tests
     ${BASEDIR}/ecs/ComponentArray.test.cpp
     ${BASEDIR}/ecs/EntityManager.test.cpp
     ${BASEDIR}/ecs/SingletonComponent.test.cpp
+    ${BASEDIR}/ecs/Coordinator.test.cpp
     ${BASEDIR}/ecs/Access.test.cpp
 	${BASEDIR}/physics/PhysicsSystem.test.cpp
     ${BASEDIR}/ecs/Definitions.test.cpp
     ${BASEDIR}/ecs/ECSExceptions.test.cpp
     ${BASEDIR}/ecs/TypeErasedComponent/TypeErasedComponent.test.cpp
+    ${BASEDIR}/ecs/FieldType.test.cpp
+    ${BASEDIR}/ecs/Field.test.cpp
     ${BASEDIR}/renderPasses/Masks.test.cpp
+    ${BASEDIR}/renderPasses/Passes.test.cpp
     ${BASEDIR}/Types.test.cpp
     ${BASEDIR}/../crash/CrashTracker.test.cpp
     ${BASEDIR}/scripting/FieldType.test.cpp
@@ -80,8 +85,10 @@ add_executable(engine_tests
     ${BASEDIR}/components/StaticMesh.test.cpp
     ${BASEDIR}/components/MaterialComponent.test.cpp
     ${BASEDIR}/components/Model.test.cpp
+    ${BASEDIR}/components/PhysicsBodyComponent.test.cpp
     ${BASEDIR}/core/Signals.test.cpp
     ${BASEDIR}/core/KeyCodes.test.cpp
+    ${BASEDIR}/systems/TransformMatrixSystem.test.cpp
         # Add other engine test files here
 )
 

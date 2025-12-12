@@ -182,4 +182,150 @@ namespace nexo::assets {
         EXPECT_NO_FATAL_FAILURE(ref.unload());
     }
 
+    // GenericAssetRef Comparison Operator Tests
+    TEST_F(AssetRefTest, EqualityOperatorComparingTwoRefsToSameAsset) {
+        GenericAssetRef ref1(genericAsset);
+        GenericAssetRef ref2(genericAsset);
+
+        EXPECT_TRUE(ref1 == ref2);
+        EXPECT_FALSE(ref1 != ref2);
+    }
+
+    TEST_F(AssetRefTest, EqualityOperatorComparingTwoRefsToSameAssetAfterCopy) {
+        GenericAssetRef ref1(genericAsset);
+        GenericAssetRef ref2(ref1); // Copy constructor
+
+        EXPECT_TRUE(ref1 == ref2);
+        EXPECT_FALSE(ref1 != ref2);
+    }
+
+    TEST_F(AssetRefTest, EqualityOperatorComparingTwoRefsToSameAssetAfterAssignment) {
+        GenericAssetRef ref1(genericAsset);
+        GenericAssetRef ref2;
+        ref2 = ref1; // Copy assignment
+
+        EXPECT_TRUE(ref1 == ref2);
+        EXPECT_FALSE(ref1 != ref2);
+    }
+
+    TEST_F(AssetRefTest, EqualityOperatorComparingTwoRefsToDifferentAssets) {
+        GenericAssetRef ref1(textureAsset);
+        GenericAssetRef ref2(modelAsset);
+
+        EXPECT_FALSE(ref1 == ref2);
+        EXPECT_TRUE(ref1 != ref2);
+    }
+
+    TEST_F(AssetRefTest, EqualityOperatorComparingTwoNullRefs) {
+        GenericAssetRef ref1;
+        GenericAssetRef ref2;
+
+        // Two null refs should be equal (both lock to nullptr)
+        EXPECT_TRUE(ref1 == ref2);
+        EXPECT_FALSE(ref1 != ref2);
+    }
+
+    TEST_F(AssetRefTest, EqualityOperatorComparingValidRefToNullRef) {
+        GenericAssetRef validRef(genericAsset);
+        GenericAssetRef nullRef;
+
+        EXPECT_FALSE(validRef == nullRef);
+        EXPECT_TRUE(validRef != nullRef);
+    }
+
+    TEST_F(AssetRefTest, EqualityOperatorComparingExpiredRefToNullRef) {
+        GenericAssetRef expiredRef;
+        {
+            auto tempAsset = std::make_shared<Texture>();
+            expiredRef = GenericAssetRef(tempAsset);
+        }
+        // tempAsset goes out of scope, expiredRef is now expired
+
+        GenericAssetRef nullRef;
+
+        // Expired ref and null ref should be equal (both lock to nullptr)
+        EXPECT_TRUE(expiredRef == nullRef);
+        EXPECT_FALSE(expiredRef != nullRef);
+    }
+
+    TEST_F(AssetRefTest, NullptrEqualityOperatorWithNullRef) {
+        GenericAssetRef nullRef;
+
+        EXPECT_TRUE(nullRef == nullptr);
+        EXPECT_FALSE(nullRef != nullptr);
+    }
+
+    TEST_F(AssetRefTest, NullptrEqualityOperatorWithValidRef) {
+        GenericAssetRef validRef(genericAsset);
+
+        EXPECT_FALSE(validRef == nullptr);
+        EXPECT_TRUE(validRef != nullptr);
+    }
+
+    TEST_F(AssetRefTest, NullptrEqualityOperatorWithExpiredRef) {
+        GenericAssetRef expiredRef;
+        {
+            auto tempAsset = std::make_shared<Texture>();
+            expiredRef = GenericAssetRef(tempAsset);
+        }
+        // tempAsset goes out of scope, expiredRef is now expired
+
+        EXPECT_TRUE(expiredRef == nullptr);
+        EXPECT_FALSE(expiredRef != nullptr);
+    }
+
+    TEST_F(AssetRefTest, InequalityOperatorWithDifferentAssetTypes) {
+        GenericAssetRef textureRef(textureAsset);
+        GenericAssetRef modelRef(modelAsset);
+
+        EXPECT_TRUE(textureRef != modelRef);
+        EXPECT_FALSE(textureRef == modelRef);
+    }
+
+    TEST_F(AssetRefTest, EqualityOperatorWithSelfComparison) {
+        GenericAssetRef ref(genericAsset);
+
+        EXPECT_TRUE(ref == ref);
+        EXPECT_FALSE(ref != ref);
+    }
+
+    // TypedAssetRef Comparison Tests
+    TEST_F(AssetRefTest, TypedAssetRefEqualityWithSameAsset) {
+        AssetRef<Texture> ref1(textureAsset);
+        AssetRef<Texture> ref2(textureAsset);
+
+        EXPECT_TRUE(ref1 == ref2);
+        EXPECT_FALSE(ref1 != ref2);
+    }
+
+    TEST_F(AssetRefTest, TypedAssetRefEqualityWithDifferentAssets) {
+        auto texture1 = std::make_shared<Texture>();
+        auto texture2 = std::make_shared<Texture>();
+
+        AssetRef<Texture> ref1(texture1);
+        AssetRef<Texture> ref2(texture2);
+
+        EXPECT_FALSE(ref1 == ref2);
+        EXPECT_TRUE(ref1 != ref2);
+    }
+
+    TEST_F(AssetRefTest, TypedAssetRefNullptrComparison) {
+        AssetRef<Texture> validRef(textureAsset);
+        AssetRef<Texture> nullRef;
+
+        EXPECT_FALSE(validRef == nullptr);
+        EXPECT_TRUE(validRef != nullptr);
+
+        EXPECT_TRUE(nullRef == nullptr);
+        EXPECT_FALSE(nullRef != nullptr);
+    }
+
+    TEST_F(AssetRefTest, TypedAssetRefConstructedWithNullptr) {
+        AssetRef<Texture> nullRef(nullptr);
+
+        EXPECT_TRUE(nullRef == nullptr);
+        EXPECT_FALSE(nullRef != nullptr);
+        EXPECT_FALSE(nullRef.isValid());
+    }
+
 } // namespace nexo::assets

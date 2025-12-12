@@ -254,4 +254,241 @@ namespace nexo::assets {
         EXPECT_EQ(locationNeq, fullLocationNeq);
     }
 
+    // ============================================================================
+    // Path Normalization Edge Cases
+    // ============================================================================
+
+    TEST(AssetLocationTest, PathNormalizationLeadingSlash)
+    {
+        AssetLocation location("myAsset@/path/to/asset");
+        EXPECT_EQ(location.getPath(), "path/to/asset");
+        EXPECT_EQ(location.getFullLocation(), "myAsset@path/to/asset");
+    }
+
+    TEST(AssetLocationTest, PathNormalizationMultipleLeadingSlashes)
+    {
+        AssetLocation location("myAsset@///path/to/asset");
+        EXPECT_EQ(location.getPath(), "path/to/asset");
+        EXPECT_EQ(location.getFullLocation(), "myAsset@path/to/asset");
+    }
+
+    TEST(AssetLocationTest, PathNormalizationBackslashes)
+    {
+        AssetLocation location("myAsset@path\\to\\asset");
+        // On Windows, backslashes are normalized to forward slashes
+        // On Linux, backslashes are treated as literal characters in filenames
+        #ifdef _WIN32
+            EXPECT_EQ(location.getPath(), "path/to/asset");
+            EXPECT_EQ(location.getFullLocation(), "myAsset@path/to/asset");
+        #else
+            // On Linux, backslashes are valid filename characters
+            EXPECT_EQ(location.getPath(), "path\\to\\asset");
+            EXPECT_EQ(location.getFullLocation(), "myAsset@path\\to\\asset");
+        #endif
+    }
+
+    TEST(AssetLocationTest, PathNormalizationMixedSlashes)
+    {
+        AssetLocation location("myAsset@path/to\\asset");
+        // On Windows, backslashes are normalized to forward slashes
+        // On Linux, backslashes are treated as literal characters
+        #ifdef _WIN32
+            EXPECT_EQ(location.getPath(), "path/to/asset");
+            EXPECT_EQ(location.getFullLocation(), "myAsset@path/to/asset");
+        #else
+            // On Linux, backslashes are valid filename characters
+            EXPECT_EQ(location.getPath(), "path/to\\asset");
+            EXPECT_EQ(location.getFullLocation(), "myAsset@path/to\\asset");
+        #endif
+    }
+
+    TEST(AssetLocationTest, SetPathWithLeadingSlash)
+    {
+        AssetLocation location("myAsset");
+        location.setPath("/new/path");
+        EXPECT_EQ(location.getPath(), "new/path");
+        EXPECT_EQ(location.getFullLocation(), "myAsset@new/path");
+    }
+
+    // ============================================================================
+    // Setter Method Chaining
+    // ============================================================================
+
+    TEST(AssetLocationTest, SetterMethodChainingAll)
+    {
+        AssetLocation location("initial");
+        AssetLocation& result = location.setName("chainedAsset")
+                                       .setPath("chained/path")
+                                       .setPackName("chainedPack");
+
+        EXPECT_EQ(&result, &location);
+        EXPECT_EQ(location.getName(), "chainedAsset");
+        EXPECT_EQ(location.getPath(), "chained/path");
+        ASSERT_TRUE(location.getPackName().has_value());
+        EXPECT_EQ(location.getPackName()->get(), "chainedPack");
+        EXPECT_EQ(location.getFullLocation(), "chainedPack::chainedAsset@chained/path");
+    }
+
+    TEST(AssetLocationTest, SetterMethodChainingNameAndPath)
+    {
+        AssetLocation location("initial");
+        location.setName("asset1").setPath("path1");
+
+        EXPECT_EQ(location.getName(), "asset1");
+        EXPECT_EQ(location.getPath(), "path1");
+        EXPECT_EQ(location.getFullLocation(), "asset1@path1");
+    }
+
+    TEST(AssetLocationTest, SetterMethodChainingWithClear)
+    {
+        AssetLocation location("pack::asset@path");
+        location.clearPackName().setPath("newpath");
+
+        EXPECT_FALSE(location.getPackName().has_value());
+        EXPECT_EQ(location.getPath(), "newpath");
+        EXPECT_EQ(location.getFullLocation(), "asset@newpath");
+    }
+
+    // ============================================================================
+    // Copy and Move Semantics
+    // ============================================================================
+
+    TEST(AssetLocationTest, CopyConstructorPreservesAllFields)
+    {
+        AssetLocation original("myPack::myAsset@path/to/asset");
+        AssetLocation copy(original);
+
+        EXPECT_EQ(copy.getName(), original.getName());
+        EXPECT_EQ(copy.getPath(), original.getPath());
+        ASSERT_TRUE(copy.getPackName().has_value());
+        ASSERT_TRUE(original.getPackName().has_value());
+        EXPECT_EQ(copy.getPackName()->get(), original.getPackName()->get());
+        EXPECT_EQ(copy.getFullLocation(), original.getFullLocation());
+    }
+
+    TEST(AssetLocationTest, CopyConstructorWithoutPack)
+    {
+        AssetLocation original("myAsset@path/to/asset");
+        AssetLocation copy(original);
+
+        EXPECT_EQ(copy.getName(), original.getName());
+        EXPECT_EQ(copy.getPath(), original.getPath());
+        EXPECT_FALSE(copy.getPackName().has_value());
+        EXPECT_EQ(copy.getFullLocation(), original.getFullLocation());
+    }
+
+    TEST(AssetLocationTest, MoveConstructorWorks)
+    {
+        AssetLocation original("myPack::myAsset@path/to/asset");
+        std::string originalFullLocation = original.getFullLocation();
+
+        AssetLocation moved(std::move(original));
+
+        EXPECT_EQ(moved.getFullLocation(), originalFullLocation);
+        EXPECT_EQ(moved.getName(), "myAsset");
+        EXPECT_EQ(moved.getPath(), "path/to/asset");
+        ASSERT_TRUE(moved.getPackName().has_value());
+        EXPECT_EQ(moved.getPackName()->get(), "myPack");
+    }
+
+    TEST(AssetLocationTest, CopyAssignmentWorks)
+    {
+        AssetLocation original("myPack::myAsset@path/to/asset");
+        AssetLocation copy("different");
+
+        copy = original;
+
+        EXPECT_EQ(copy.getName(), original.getName());
+        EXPECT_EQ(copy.getPath(), original.getPath());
+        EXPECT_EQ(copy.getFullLocation(), original.getFullLocation());
+    }
+
+    TEST(AssetLocationTest, MoveAssignmentWorks)
+    {
+        AssetLocation original("myPack::myAsset@path/to/asset");
+        std::string originalFullLocation = original.getFullLocation();
+        AssetLocation moved("different");
+
+        moved = std::move(original);
+
+        EXPECT_EQ(moved.getFullLocation(), originalFullLocation);
+        EXPECT_EQ(moved.getName(), "myAsset");
+    }
+
+    // ============================================================================
+    // InvalidAssetLocation Exception Details
+    // ============================================================================
+
+    TEST(AssetLocationTest, InvalidAssetLocationContainsOriginalString)
+    {
+        const std::string invalidLocation = "pack::@invalid";
+        try {
+            AssetLocation location(invalidLocation);
+            FAIL() << "Expected InvalidAssetLocation exception";
+        } catch (const InvalidAssetLocation& e) {
+            std::string message = e.getMessage();
+            EXPECT_NE(message.find(invalidLocation), std::string::npos)
+                << "Exception message should contain original location string";
+        }
+    }
+
+    TEST(AssetLocationTest, InvalidAssetLocationContainsErrorDescription)
+    {
+        const std::string invalidLocation = "pack::@invalid";
+        try {
+            AssetLocation location(invalidLocation);
+            FAIL() << "Expected InvalidAssetLocation exception";
+        } catch (const InvalidAssetLocation& e) {
+            std::string message = e.getMessage();
+            EXPECT_FALSE(message.empty());
+            EXPECT_NE(message.find("Invalid"), std::string::npos)
+                << "Exception message should describe the error";
+        }
+    }
+
+    // ============================================================================
+    // getFullLocation() Format Tests
+    // ============================================================================
+
+    TEST(AssetLocationTest, GetFullLocationOnlyName)
+    {
+        AssetLocation location("myAsset");
+        EXPECT_EQ(location.getFullLocation(), "myAsset");
+        EXPECT_EQ(location.getName(), "myAsset");
+        EXPECT_EQ(location.getPath(), "");
+        EXPECT_FALSE(location.getPackName().has_value());
+    }
+
+    TEST(AssetLocationTest, GetFullLocationNameAndPath)
+    {
+        AssetLocation location("myAsset@some/path");
+        EXPECT_EQ(location.getFullLocation(), "myAsset@some/path");
+        EXPECT_EQ(location.getName(), "myAsset");
+        EXPECT_EQ(location.getPath(), "some/path");
+        EXPECT_FALSE(location.getPackName().has_value());
+    }
+
+    TEST(AssetLocationTest, GetFullLocationNameAndPack)
+    {
+        AssetLocation location("myPack::myAsset");
+        EXPECT_EQ(location.getFullLocation(), "myPack::myAsset");
+        EXPECT_EQ(location.getName(), "myAsset");
+        EXPECT_EQ(location.getPath(), "");
+        ASSERT_TRUE(location.getPackName().has_value());
+        EXPECT_EQ(location.getPackName()->get(), "myPack");
+    }
+
+    TEST(AssetLocationTest, GetFullLocationAllComponents)
+    {
+        AssetLocation location("myPack::myAsset@some/path");
+        EXPECT_EQ(location.getFullLocation(), "myPack::myAsset@some/path");
+    }
+
+    TEST(AssetLocationTest, GetFullLocationAfterClearingPack)
+    {
+        AssetLocation location("myPack::myAsset@path");
+        location.clearPackName();
+        EXPECT_EQ(location.getFullLocation(), "myAsset@path");
+    }
+
 } // namespace nexo::assets

@@ -285,4 +285,62 @@ TEST_F(SceneManagerTest, CreateSceneAfterReset) {
     EXPECT_EQ(sceneId2, 1);
 }
 
+TEST_F(SceneManagerTest, CreateEditorScene) {
+    // Test creating an editor-only scene
+    std::string editorSceneName = "EditorScene";
+    unsigned int editorSceneId = manager->createEditorScene(editorSceneName);
+
+    // Scene IDs should start at 0
+    EXPECT_EQ(editorSceneId, 0);
+
+    // Verify we can retrieve the editor scene
+    Scene& editorScene = manager->getScene(editorSceneId);
+    EXPECT_EQ(editorScene.getName(), editorSceneName);
+    EXPECT_EQ(editorScene.getId(), editorSceneId);
+}
+
+TEST_F(SceneManagerTest, CreateEditorSceneWithoutCoordinator) {
+    // Test creating an editor scene without setting a coordinator
+    SceneManager newManager;
+
+    // This should throw an exception since coordinator is required
+    std::string sceneName = "EditorTestScene";
+    EXPECT_THROW(newManager.createEditorScene(sceneName), core::SceneManagerLifecycleException);
+}
+
+TEST_F(SceneManagerTest, CreateMixedScenes) {
+    // Test creating both regular and editor scenes
+    unsigned int regularSceneId1 = manager->createScene("RegularScene1");
+    unsigned int editorSceneId1 = manager->createEditorScene("EditorScene1");
+    unsigned int regularSceneId2 = manager->createScene("RegularScene2");
+    unsigned int editorSceneId2 = manager->createEditorScene("EditorScene2");
+
+    // Scene IDs should be sequential regardless of scene type
+    EXPECT_EQ(regularSceneId1, 0);
+    EXPECT_EQ(editorSceneId1, 1);
+    EXPECT_EQ(regularSceneId2, 2);
+    EXPECT_EQ(editorSceneId2, 3);
+
+    // Verify all scenes exist and have correct names
+    EXPECT_EQ(manager->getScene(regularSceneId1).getName(), "RegularScene1");
+    EXPECT_EQ(manager->getScene(editorSceneId1).getName(), "EditorScene1");
+    EXPECT_EQ(manager->getScene(regularSceneId2).getName(), "RegularScene2");
+    EXPECT_EQ(manager->getScene(editorSceneId2).getName(), "EditorScene2");
+}
+
+TEST_F(SceneManagerTest, DeleteEditorScene) {
+    // Test deleting an editor scene
+    unsigned int editorSceneId = manager->createEditorScene("EditorScene");
+
+    // Verify the editor scene exists
+    Scene& editorScene = manager->getScene(editorSceneId);
+    EXPECT_EQ(editorScene.getName(), "EditorScene");
+
+    // Delete the editor scene
+    manager->deleteScene(editorSceneId);
+
+    // Verify the scene no longer exists
+    EXPECT_THROW(manager->getScene(editorSceneId), std::out_of_range);
+}
+
 } // namespace nexo::scene

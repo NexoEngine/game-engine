@@ -29,7 +29,9 @@ namespace nexo::system {
         ecs::WriteSingleton<components::RenderContext>> {
 			public:
                void update();
-           private:
+           public:
+               // Made public for unit testing - only called from update()
                static glm::mat4 createTransformMatrix(const components::TransformComponent &transform);
+           private:
 	};
 }

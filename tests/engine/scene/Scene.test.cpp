@@ -306,4 +306,226 @@ TEST_F(SceneTest, SetRenderStatusNoEntities) {
     EXPECT_TRUE(scene.isRendered());
 }
 
+TEST_F(SceneTest, ConstructorWithEditorOnlyFlag) {
+    // Test creating a scene with editorOnly=true parameter
+    std::string sceneName = "EditorScene";
+    Scene editorScene(sceneName, coordinator, true);
+
+    EXPECT_EQ(editorScene.getName(), sceneName);
+    EXPECT_TRUE(editorScene.isActive());
+    EXPECT_TRUE(editorScene.isRendered());
+    EXPECT_FALSE(editorScene.getUuid().empty());
+}
+
+TEST_F(SceneTest, ConstructorWithEditorOnlyFalse) {
+    // Test creating a scene with editorOnly=false parameter explicitly
+    std::string sceneName = "RuntimeScene";
+    Scene runtimeScene(sceneName, coordinator, false);
+
+    EXPECT_EQ(runtimeScene.getName(), sceneName);
+    EXPECT_TRUE(runtimeScene.isActive());
+    EXPECT_TRUE(runtimeScene.isRendered());
+    EXPECT_FALSE(runtimeScene.getUuid().empty());
+}
+
+TEST_F(SceneTest, GetEntitiesExplicit) {
+    // Explicitly test getEntities() method
+    Scene scene("TestScene", coordinator);
+
+    // Initially, the scene should have no entities
+    EXPECT_TRUE(scene.getEntities().empty());
+
+    // Add some entities
+    nexo::ecs::Entity entity1 = coordinator->createEntity();
+    nexo::ecs::Entity entity2 = coordinator->createEntity();
+    nexo::ecs::Entity entity3 = coordinator->createEntity();
+
+    scene.addEntity(entity1);
+    scene.addEntity(entity2);
+    scene.addEntity(entity3);
+
+    // Get the entities set
+    const std::set<nexo::ecs::Entity>& entities = scene.getEntities();
+
+    // Verify the set contains all three entities
+    EXPECT_EQ(entities.size(), 3);
+    EXPECT_TRUE(entities.find(entity1) != entities.end());
+    EXPECT_TRUE(entities.find(entity2) != entities.end());
+    EXPECT_TRUE(entities.find(entity3) != entities.end());
+
+    // Remove one entity
+    scene.removeEntity(entity2);
+
+    // Verify the set now contains only two entities
+    const std::set<nexo::ecs::Entity>& updatedEntities = scene.getEntities();
+    EXPECT_EQ(updatedEntities.size(), 2);
+    EXPECT_TRUE(updatedEntities.find(entity1) != updatedEntities.end());
+    EXPECT_FALSE(updatedEntities.find(entity2) != updatedEntities.end());
+    EXPECT_TRUE(updatedEntities.find(entity3) != updatedEntities.end());
+}
+
+TEST_F(SceneTest, AddChildEntityToSceneSimple) {
+    // Test addChildEntityToScene with a single parent-child relationship
+    Scene scene("TestScene", coordinator);
+
+    // Create parent and child entities
+    nexo::ecs::Entity parentEntity = coordinator->createEntity();
+    nexo::ecs::Entity childEntity = coordinator->createEntity();
+
+    // Add transform components to both
+    components::TransformComponent parentTransform;
+    components::TransformComponent childTransform;
+
+    // Setup parent-child relationship
+    parentTransform.children.push_back(childEntity);
+
+    coordinator->addComponent<components::TransformComponent>(parentEntity, parentTransform);
+    coordinator->addComponent<components::TransformComponent>(childEntity, childTransform);
+
+    // Add parent entity to scene - should automatically add child
+    scene.addEntity(parentEntity);
+
+    // Verify both parent and child are in the scene
+    const std::set<nexo::ecs::Entity>& entities = scene.getEntities();
+    EXPECT_EQ(entities.size(), 2);
+    EXPECT_TRUE(entities.find(parentEntity) != entities.end());
+    EXPECT_TRUE(entities.find(childEntity) != entities.end());
+
+    // Verify both have scene tags
+    auto parentTag = coordinator->tryGetComponent<components::SceneTag>(parentEntity);
+    auto childTag = coordinator->tryGetComponent<components::SceneTag>(childEntity);
+
+    EXPECT_TRUE(parentTag);
+    EXPECT_TRUE(childTag);
+    EXPECT_EQ(parentTag->get().id, scene.getId());
+    EXPECT_EQ(childTag->get().id, scene.getId());
+}
+
+TEST_F(SceneTest, AddChildEntityToSceneNested) {
+    // Test addChildEntityToScene with nested parent-child-grandchild relationships
+    Scene scene("TestScene", coordinator);
+
+    // Create parent, child, and grandchild entities
+    nexo::ecs::Entity parentEntity = coordinator->createEntity();
+    nexo::ecs::Entity childEntity = coordinator->createEntity();
+    nexo::ecs::Entity grandchildEntity = coordinator->createEntity();
+
+    // Add transform components
+    components::TransformComponent parentTransform;
+    components::TransformComponent childTransform;
+    components::TransformComponent grandchildTransform;
+
+    // Setup nested hierarchy
+    parentTransform.children.push_back(childEntity);
+    childTransform.children.push_back(grandchildEntity);
+
+    coordinator->addComponent<components::TransformComponent>(parentEntity, parentTransform);
+    coordinator->addComponent<components::TransformComponent>(childEntity, childTransform);
+    coordinator->addComponent<components::TransformComponent>(grandchildEntity, grandchildTransform);
+
+    // Add parent entity to scene - should recursively add all children
+    scene.addEntity(parentEntity);
+
+    // Verify all three entities are in the scene
+    const std::set<nexo::ecs::Entity>& entities = scene.getEntities();
+    EXPECT_EQ(entities.size(), 3);
+    EXPECT_TRUE(entities.find(parentEntity) != entities.end());
+    EXPECT_TRUE(entities.find(childEntity) != entities.end());
+    EXPECT_TRUE(entities.find(grandchildEntity) != entities.end());
+
+    // Verify all have scene tags with correct scene ID
+    auto parentTag = coordinator->tryGetComponent<components::SceneTag>(parentEntity);
+    auto childTag = coordinator->tryGetComponent<components::SceneTag>(childEntity);
+    auto grandchildTag = coordinator->tryGetComponent<components::SceneTag>(grandchildEntity);
+
+    EXPECT_TRUE(parentTag);
+    EXPECT_TRUE(childTag);
+    EXPECT_TRUE(grandchildTag);
+    EXPECT_EQ(parentTag->get().id, scene.getId());
+    EXPECT_EQ(childTag->get().id, scene.getId());
+    EXPECT_EQ(grandchildTag->get().id, scene.getId());
+}
+
+TEST_F(SceneTest, AddChildEntityToSceneMultipleChildren) {
+    // Test addChildEntityToScene with a parent having multiple children
+    Scene scene("TestScene", coordinator);
+
+    // Create parent and three child entities
+    nexo::ecs::Entity parentEntity = coordinator->createEntity();
+    nexo::ecs::Entity child1 = coordinator->createEntity();
+    nexo::ecs::Entity child2 = coordinator->createEntity();
+    nexo::ecs::Entity child3 = coordinator->createEntity();
+
+    // Add transform components
+    components::TransformComponent parentTransform;
+    components::TransformComponent child1Transform;
+    components::TransformComponent child2Transform;
+    components::TransformComponent child3Transform;
+
+    // Setup parent with multiple children
+    parentTransform.children.push_back(child1);
+    parentTransform.children.push_back(child2);
+    parentTransform.children.push_back(child3);
+
+    coordinator->addComponent<components::TransformComponent>(parentEntity, parentTransform);
+    coordinator->addComponent<components::TransformComponent>(child1, child1Transform);
+    coordinator->addComponent<components::TransformComponent>(child2, child2Transform);
+    coordinator->addComponent<components::TransformComponent>(child3, child3Transform);
+
+    // Add parent entity to scene - should add all children
+    scene.addEntity(parentEntity);
+
+    // Verify all four entities are in the scene
+    const std::set<nexo::ecs::Entity>& entities = scene.getEntities();
+    EXPECT_EQ(entities.size(), 4);
+    EXPECT_TRUE(entities.find(parentEntity) != entities.end());
+    EXPECT_TRUE(entities.find(child1) != entities.end());
+    EXPECT_TRUE(entities.find(child2) != entities.end());
+    EXPECT_TRUE(entities.find(child3) != entities.end());
+
+    // Verify all have scene tags
+    auto parentTag = coordinator->tryGetComponent<components::SceneTag>(parentEntity);
+    auto child1Tag = coordinator->tryGetComponent<components::SceneTag>(child1);
+    auto child2Tag = coordinator->tryGetComponent<components::SceneTag>(child2);
+    auto child3Tag = coordinator->tryGetComponent<components::SceneTag>(child3);
+
+    EXPECT_TRUE(parentTag);
+    EXPECT_TRUE(child1Tag);
+    EXPECT_TRUE(child2Tag);
+    EXPECT_TRUE(child3Tag);
+}
+
+TEST_F(SceneTest, AddChildEntityToSceneDuplicateProtection) {
+    // Test that addChildEntityToScene doesn't add duplicate entities
+    Scene scene("TestScene", coordinator);
+
+    // Create entities
+    nexo::ecs::Entity parentEntity = coordinator->createEntity();
+    nexo::ecs::Entity childEntity = coordinator->createEntity();
+
+    // Add transform components
+    components::TransformComponent parentTransform;
+    components::TransformComponent childTransform;
+
+    parentTransform.children.push_back(childEntity);
+
+    coordinator->addComponent<components::TransformComponent>(parentEntity, parentTransform);
+    coordinator->addComponent<components::TransformComponent>(childEntity, childTransform);
+
+    // First add child entity directly to the scene
+    scene.addEntity(childEntity);
+
+    // Verify child is in scene
+    EXPECT_EQ(scene.getEntities().size(), 1);
+
+    // Now add parent entity - should not duplicate child
+    scene.addEntity(parentEntity);
+
+    // Verify we have exactly 2 entities (parent and child, no duplicates)
+    const std::set<nexo::ecs::Entity>& entities = scene.getEntities();
+    EXPECT_EQ(entities.size(), 2);
+    EXPECT_TRUE(entities.find(parentEntity) != entities.end());
+    EXPECT_TRUE(entities.find(childEntity) != entities.end());
+}
+
 } // namespace nexo::scene
