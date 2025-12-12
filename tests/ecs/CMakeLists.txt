@@ -29,6 +29,7 @@ set(COMMON_SOURCES
 # TODO: Make an ecs library
 set(ECS_SOURCES
         engine/src/ecs/Components.cpp
+        engine/src/ecs/ComponentArray.cpp
         engine/src/ecs/Coordinator.cpp
         engine/src/ecs/Entity.cpp
         engine/src/ecs/System.cpp
@@ -47,6 +48,7 @@ add_executable(ecs_tests
         ${BASEDIR}/SingletonComponent.test.cpp
         ${BASEDIR}/Group.test.cpp
         ${BASEDIR}/ComponentArray.test.cpp
+        ${BASEDIR}/ComponentManager.test.cpp
         ${BASEDIR}/Definitions.test.cpp
         ${BASEDIR}/GroupSystem.test.cpp
         ${BASEDIR}/QuerySystem.test.cpp

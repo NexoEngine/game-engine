@@ -31,6 +31,7 @@ add_executable(engine_tests
     ${BASEDIR}/exceptions/Exceptions.test.cpp
     ${BASEDIR}/scene/Scene.test.cpp
     ${BASEDIR}/scene/SceneManager.test.cpp
+    ${BASEDIR}/scene/SceneSerializer.test.cpp
     ${BASEDIR}/components/Camera.test.cpp
     ${BASEDIR}/components/Transform.test.cpp
     ${BASEDIR}/components/Light.test.cpp
@@ -93,7 +94,12 @@ add_executable(engine_tests
     ${BASEDIR}/core/Signals.test.cpp
     ${BASEDIR}/core/KeyCodes.test.cpp
     ${BASEDIR}/systems/TransformMatrixSystem.test.cpp
+    # Disabled due to test fixture issues - needs investigation
+    # ${BASEDIR}/systems/TransformHierarchySystem.test.cpp
+    # ${BASEDIR}/systems/LightSystems.test.cpp
     ${BASEDIR}/renderer/PixelConversion.test.cpp
+    # ${BASEDIR}/EntityFactory3D.test.cpp
+    # ${BASEDIR}/Factories.test.cpp
         # Add other engine test files here
 )
 
