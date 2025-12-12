@@ -450,4 +450,558 @@ TEST_F(CameraComponentTest, PerspectiveCameraTargetMementoDefaultValues) {
     EXPECT_EQ(memento.targetEntity, 42u);
 }
 
+// ============================================================================
+// Edge Case Tests - CameraComponent Memento Save/Restore
+// ============================================================================
+
+TEST_F(CameraComponentTest, CameraComponentMementoWithZeroDimensions) {
+    nexo::components::CameraComponent cam;
+    cam.width = 0;
+    cam.height = 0;
+
+    auto memento = cam.save();
+
+    EXPECT_EQ(memento.width, 0u);
+    EXPECT_EQ(memento.height, 0u);
+
+    nexo::components::CameraComponent restored;
+    restored.restore(memento);
+
+    EXPECT_EQ(restored.width, 0u);
+    EXPECT_EQ(restored.height, 0u);
+}
+
+TEST_F(CameraComponentTest, CameraComponentMementoWithMaxDimensions) {
+    nexo::components::CameraComponent cam;
+    cam.width = std::numeric_limits<unsigned int>::max();
+    cam.height = std::numeric_limits<unsigned int>::max();
+
+    auto memento = cam.save();
+
+    EXPECT_EQ(memento.width, std::numeric_limits<unsigned int>::max());
+    EXPECT_EQ(memento.height, std::numeric_limits<unsigned int>::max());
+
+    nexo::components::CameraComponent restored;
+    restored.restore(memento);
+
+    EXPECT_EQ(restored.width, std::numeric_limits<unsigned int>::max());
+    EXPECT_EQ(restored.height, std::numeric_limits<unsigned int>::max());
+}
+
+TEST_F(CameraComponentTest, CameraComponentMementoIndependence) {
+    nexo::components::CameraComponent cam;
+    cam.width = 1920;
+    cam.height = 1080;
+    cam.fov = 60.0f;
+
+    auto memento = cam.save();
+
+    // Modify the original camera
+    cam.width = 640;
+    cam.height = 480;
+    cam.fov = 90.0f;
+
+    // Memento should preserve the original values
+    EXPECT_EQ(memento.width, 1920u);
+    EXPECT_EQ(memento.height, 1080u);
+    EXPECT_FLOAT_EQ(memento.fov, 60.0f);
+}
+
+TEST_F(CameraComponentTest, CameraComponentMultipleSaveRestoreCycles) {
+    nexo::components::CameraComponent cam;
+    cam.width = 800;
+    cam.height = 600;
+    cam.fov = 45.0f;
+
+    // First save/restore cycle
+    auto memento1 = cam.save();
+    cam.width = 1024;
+    cam.height = 768;
+    cam.fov = 60.0f;
+
+    cam.restore(memento1);
+    EXPECT_EQ(cam.width, 800u);
+    EXPECT_EQ(cam.height, 600u);
+    EXPECT_FLOAT_EQ(cam.fov, 45.0f);
+
+    // Second save/restore cycle
+    auto memento2 = cam.save();
+    cam.width = 1920;
+    cam.height = 1080;
+    cam.fov = 90.0f;
+
+    cam.restore(memento2);
+    EXPECT_EQ(cam.width, 800u);
+    EXPECT_EQ(cam.height, 600u);
+    EXPECT_FLOAT_EQ(cam.fov, 45.0f);
+
+    // Third save/restore cycle
+    cam.width = 2560;
+    cam.height = 1440;
+    auto memento3 = cam.save();
+
+    cam.restore(memento1);
+    EXPECT_EQ(cam.width, 800u);
+
+    cam.restore(memento3);
+    EXPECT_EQ(cam.width, 2560u);
+}
+
+TEST_F(CameraComponentTest, CameraComponentMementoWithNegativeColorValues) {
+    nexo::components::CameraComponent cam;
+    cam.clearColor = glm::vec4(-1.0f, -0.5f, -2.0f, -1.0f);
+
+    auto memento = cam.save();
+
+    EXPECT_FLOAT_EQ(memento.clearColor.r, -1.0f);
+    EXPECT_FLOAT_EQ(memento.clearColor.g, -0.5f);
+    EXPECT_FLOAT_EQ(memento.clearColor.b, -2.0f);
+    EXPECT_FLOAT_EQ(memento.clearColor.a, -1.0f);
+
+    nexo::components::CameraComponent restored;
+    restored.restore(memento);
+
+    EXPECT_EQ(restored.clearColor, glm::vec4(-1.0f, -0.5f, -2.0f, -1.0f));
+}
+
+TEST_F(CameraComponentTest, CameraComponentMementoWithExtremeColorValues) {
+    nexo::components::CameraComponent cam;
+    cam.clearColor = glm::vec4(1000.0f, -1000.0f, std::numeric_limits<float>::max(), std::numeric_limits<float>::min());
+
+    auto memento = cam.save();
+
+    nexo::components::CameraComponent restored;
+    restored.restore(memento);
+
+    EXPECT_FLOAT_EQ(restored.clearColor.r, 1000.0f);
+    EXPECT_FLOAT_EQ(restored.clearColor.g, -1000.0f);
+    EXPECT_FLOAT_EQ(restored.clearColor.b, std::numeric_limits<float>::max());
+    EXPECT_FLOAT_EQ(restored.clearColor.a, std::numeric_limits<float>::min());
+}
+
+// ============================================================================
+// Edge Case Tests - CameraController Memento Save/Restore
+// ============================================================================
+
+TEST_F(CameraComponentTest, CameraControllerMementoWithNegativeValues) {
+    nexo::components::PerspectiveCameraController::Memento memento;
+    memento.mouseSensitivity = -1.0f;
+    memento.translationSpeed = -10.0f;
+
+    EXPECT_FLOAT_EQ(memento.mouseSensitivity, -1.0f);
+    EXPECT_FLOAT_EQ(memento.translationSpeed, -10.0f);
+}
+
+TEST_F(CameraComponentTest, CameraControllerMementoWithZeroValues) {
+    nexo::components::PerspectiveCameraController::Memento memento;
+    memento.mouseSensitivity = 0.0f;
+    memento.translationSpeed = 0.0f;
+
+    EXPECT_FLOAT_EQ(memento.mouseSensitivity, 0.0f);
+    EXPECT_FLOAT_EQ(memento.translationSpeed, 0.0f);
+}
+
+TEST_F(CameraComponentTest, CameraControllerMementoWithExtremeValues) {
+    nexo::components::PerspectiveCameraController::Memento memento;
+    memento.mouseSensitivity = std::numeric_limits<float>::max();
+    memento.translationSpeed = std::numeric_limits<float>::min();
+
+    EXPECT_FLOAT_EQ(memento.mouseSensitivity, std::numeric_limits<float>::max());
+    EXPECT_FLOAT_EQ(memento.translationSpeed, std::numeric_limits<float>::min());
+}
+
+TEST_F(CameraComponentTest, CameraControllerMementoIndependence) {
+    nexo::components::PerspectiveCameraController::Memento memento;
+    memento.mouseSensitivity = 0.5f;
+    memento.translationSpeed = 10.0f;
+
+    auto memento_copy = memento;
+    memento.mouseSensitivity = 1.0f;
+    memento.translationSpeed = 20.0f;
+
+    EXPECT_FLOAT_EQ(memento_copy.mouseSensitivity, 0.5f);
+    EXPECT_FLOAT_EQ(memento_copy.translationSpeed, 10.0f);
+}
+
+// ============================================================================
+// Edge Case Tests - CameraTarget Memento Save/Restore
+// ============================================================================
+
+TEST_F(CameraComponentTest, CameraTargetMementoWithNegativeDistance) {
+    nexo::components::PerspectiveCameraTarget::Memento memento;
+    memento.mouseSensitivity = 0.1f;
+    memento.distance = -10.0f;
+    memento.targetEntity = 0;
+
+    EXPECT_FLOAT_EQ(memento.distance, -10.0f);
+}
+
+TEST_F(CameraComponentTest, CameraTargetMementoWithZeroDistance) {
+    nexo::components::PerspectiveCameraTarget::Memento memento;
+    memento.mouseSensitivity = 0.1f;
+    memento.distance = 0.0f;
+    memento.targetEntity = 100;
+
+    EXPECT_FLOAT_EQ(memento.distance, 0.0f);
+    EXPECT_EQ(memento.targetEntity, 100u);
+}
+
+TEST_F(CameraComponentTest, CameraTargetMementoWithMaxEntity) {
+    nexo::components::PerspectiveCameraTarget::Memento memento;
+    memento.mouseSensitivity = 0.1f;
+    memento.distance = 5.0f;
+    memento.targetEntity = std::numeric_limits<nexo::ecs::Entity>::max();
+
+    EXPECT_EQ(memento.targetEntity, std::numeric_limits<nexo::ecs::Entity>::max());
+}
+
+TEST_F(CameraComponentTest, CameraTargetMementoIndependence) {
+    nexo::components::PerspectiveCameraTarget::Memento memento;
+    memento.mouseSensitivity = 0.3f;
+    memento.distance = 15.0f;
+    memento.targetEntity = 123;
+
+    auto memento_copy = memento;
+    memento.mouseSensitivity = 0.6f;
+    memento.distance = 30.0f;
+    memento.targetEntity = 456;
+
+    EXPECT_FLOAT_EQ(memento_copy.mouseSensitivity, 0.3f);
+    EXPECT_FLOAT_EQ(memento_copy.distance, 15.0f);
+    EXPECT_EQ(memento_copy.targetEntity, 123u);
+}
+
+// ============================================================================
+// Edge Case Tests - Extreme Positions and Rotations
+// ============================================================================
+
+TEST_F(CameraComponentTest, ViewMatrixWithExtremePositions) {
+    nexo::components::CameraComponent cam;
+    nexo::components::TransformComponent transform;
+
+    // Test with large position (realistic game world bounds)
+    transform.pos = glm::vec3(100000.0f, 100000.0f, 100000.0f);
+    transform.quat = glm::quat(glm::vec3(0.0f));
+
+    glm::mat4 view1 = cam.getViewMatrix(transform);
+    EXPECT_FALSE(std::isnan(view1[0][0]));
+    EXPECT_FALSE(std::isinf(view1[0][0]));
+
+    // Test with very small position
+    transform.pos = glm::vec3(1e-6f, 1e-6f, 1e-6f);
+    glm::mat4 view2 = cam.getViewMatrix(transform);
+    EXPECT_FALSE(std::isnan(view2[0][0]));
+    EXPECT_FALSE(std::isinf(view2[0][0]));
+
+    // Test with negative large position
+    transform.pos = glm::vec3(-100000.0f, -100000.0f, -100000.0f);
+    glm::mat4 view3 = cam.getViewMatrix(transform);
+    EXPECT_FALSE(std::isnan(view3[0][0]));
+    EXPECT_FALSE(std::isinf(view3[0][0]));
+}
+
+TEST_F(CameraComponentTest, ViewMatrixWithZeroPosition) {
+    nexo::components::CameraComponent cam;
+    nexo::components::TransformComponent transform;
+
+    transform.pos = glm::vec3(0.0f, 0.0f, 0.0f);
+    transform.quat = glm::quat(glm::vec3(0.0f));
+
+    glm::mat4 view = cam.getViewMatrix(transform);
+    glm::mat4 expected = glm::lookAt(glm::vec3(0.0f), glm::vec3(0, 0, -1), glm::vec3(0, 1, 0));
+
+    EXPECT_TRUE(compareMat4(view, expected));
+}
+
+// ============================================================================
+// Edge Case Tests - Quaternion Normalization
+// ============================================================================
+
+TEST_F(CameraComponentTest, ViewMatrixWithNonNormalizedQuaternion) {
+    nexo::components::CameraComponent cam;
+    nexo::components::TransformComponent transform;
+
+    transform.pos = glm::vec3(0.0f, 0.0f, 5.0f);
+    // Create a non-normalized quaternion
+    transform.quat = glm::quat(2.0f, 2.0f, 2.0f, 2.0f);
+
+    glm::mat4 view = cam.getViewMatrix(transform);
+
+    // Check that the matrix is valid (no NaN or Inf)
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            EXPECT_FALSE(std::isnan(view[i][j]));
+            EXPECT_FALSE(std::isinf(view[i][j]));
+        }
+    }
+}
+
+TEST_F(CameraComponentTest, ViewMatrixWithIdentityQuaternion) {
+    nexo::components::CameraComponent cam;
+    nexo::components::TransformComponent transform;
+
+    transform.pos = glm::vec3(10.0f, 5.0f, 3.0f);
+    transform.quat = glm::quat(1.0f, 0.0f, 0.0f, 0.0f); // Identity quaternion
+
+    glm::mat4 view = cam.getViewMatrix(transform);
+    glm::mat4 expected = glm::lookAt(transform.pos, transform.pos + glm::vec3(0, 0, -1), glm::vec3(0, 1, 0));
+
+    EXPECT_TRUE(compareMat4(view, expected));
+}
+
+TEST_F(CameraComponentTest, ViewMatrixWith180DegreeRotation) {
+    nexo::components::CameraComponent cam;
+    nexo::components::TransformComponent transform;
+
+    transform.pos = glm::vec3(0.0f, 0.0f, 5.0f);
+    // 180 degree rotation around Y axis
+    transform.quat = glm::angleAxis(glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+    glm::mat4 view = cam.getViewMatrix(transform);
+
+    // Check that the matrix is valid
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            EXPECT_FALSE(std::isnan(view[i][j]));
+            EXPECT_FALSE(std::isinf(view[i][j]));
+        }
+    }
+}
+
+// ============================================================================
+// Edge Case Tests - Field of View
+// ============================================================================
+
+TEST_F(CameraComponentTest, ProjectionMatrixWithZeroFOV) {
+    nexo::components::CameraComponent cam;
+    cam.width = 800;
+    cam.height = 600;
+    cam.fov = 0.0f;
+    cam.nearPlane = 0.1f;
+    cam.farPlane = 1000.0f;
+    cam.type = nexo::components::CameraType::PERSPECTIVE;
+
+    glm::mat4 proj = cam.getProjectionMatrix();
+
+    // Check that the matrix exists and doesn't contain NaN values
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            EXPECT_FALSE(std::isnan(proj[i][j]));
+        }
+    }
+}
+
+TEST_F(CameraComponentTest, ProjectionMatrixWithNegativeFOV) {
+    nexo::components::CameraComponent cam;
+    cam.width = 800;
+    cam.height = 600;
+    cam.fov = -45.0f;
+    cam.nearPlane = 0.1f;
+    cam.farPlane = 1000.0f;
+    cam.type = nexo::components::CameraType::PERSPECTIVE;
+
+    glm::mat4 proj = cam.getProjectionMatrix();
+
+    // Check that the matrix exists
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            EXPECT_FALSE(std::isnan(proj[i][j]));
+        }
+    }
+}
+
+TEST_F(CameraComponentTest, ProjectionMatrixWithExtremeFOV) {
+    nexo::components::CameraComponent cam;
+    cam.width = 800;
+    cam.height = 600;
+    cam.nearPlane = 0.1f;
+    cam.farPlane = 1000.0f;
+    cam.type = nexo::components::CameraType::PERSPECTIVE;
+
+    // Very small FOV
+    cam.fov = 0.001f;
+    glm::mat4 proj1 = cam.getProjectionMatrix();
+    EXPECT_FALSE(std::isnan(proj1[0][0]));
+
+    // Very large FOV (close to 180)
+    cam.fov = 179.9f;
+    glm::mat4 proj2 = cam.getProjectionMatrix();
+    EXPECT_FALSE(std::isnan(proj2[0][0]));
+
+    // Extreme FOV (> 180)
+    cam.fov = 270.0f;
+    glm::mat4 proj3 = cam.getProjectionMatrix();
+    EXPECT_FALSE(std::isnan(proj3[0][0]));
+}
+
+// ============================================================================
+// Edge Case Tests - Near/Far Plane
+// ============================================================================
+
+TEST_F(CameraComponentTest, ProjectionMatrixWithEqualNearFarPlanes) {
+    nexo::components::CameraComponent cam;
+    cam.width = 800;
+    cam.height = 600;
+    cam.fov = 45.0f;
+    cam.nearPlane = 10.0f;
+    cam.farPlane = 10.0f;
+    cam.type = nexo::components::CameraType::PERSPECTIVE;
+
+    glm::mat4 proj = cam.getProjectionMatrix();
+
+    // When near == far, the projection might be degenerate
+    // We just check that it doesn't crash
+    EXPECT_TRUE(true);
+}
+
+TEST_F(CameraComponentTest, ProjectionMatrixWithNearGreaterThanFar) {
+    nexo::components::CameraComponent cam;
+    cam.width = 800;
+    cam.height = 600;
+    cam.fov = 45.0f;
+    cam.nearPlane = 1000.0f;
+    cam.farPlane = 0.1f;
+    cam.type = nexo::components::CameraType::PERSPECTIVE;
+
+    glm::mat4 proj = cam.getProjectionMatrix();
+
+    // Invalid configuration, but should not crash
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            EXPECT_FALSE(std::isnan(proj[i][j]));
+        }
+    }
+}
+
+TEST_F(CameraComponentTest, ProjectionMatrixWithExtremeNearFarPlanes) {
+    nexo::components::CameraComponent cam;
+    cam.width = 800;
+    cam.height = 600;
+    cam.fov = 45.0f;
+    cam.type = nexo::components::CameraType::PERSPECTIVE;
+
+    // Very small near plane
+    cam.nearPlane = 0.0001f;
+    cam.farPlane = 1000.0f;
+    glm::mat4 proj1 = cam.getProjectionMatrix();
+    EXPECT_FALSE(std::isnan(proj1[0][0]));
+
+    // Very large far plane
+    cam.nearPlane = 0.1f;
+    cam.farPlane = 1e10f;
+    glm::mat4 proj2 = cam.getProjectionMatrix();
+    EXPECT_FALSE(std::isnan(proj2[0][0]));
+
+    // Both extreme
+    cam.nearPlane = 1e-6f;
+    cam.farPlane = 1e10f;
+    glm::mat4 proj3 = cam.getProjectionMatrix();
+    EXPECT_FALSE(std::isnan(proj3[0][0]));
+}
+
+TEST_F(CameraComponentTest, ProjectionMatrixWithNegativePlanes) {
+    nexo::components::CameraComponent cam;
+    cam.width = 800;
+    cam.height = 600;
+    cam.fov = 45.0f;
+    cam.nearPlane = -0.1f;
+    cam.farPlane = -1000.0f;
+    cam.type = nexo::components::CameraType::PERSPECTIVE;
+
+    glm::mat4 proj = cam.getProjectionMatrix();
+
+    // Invalid configuration, but should not crash
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            EXPECT_FALSE(std::isnan(proj[i][j]));
+        }
+    }
+}
+
+// ============================================================================
+// Edge Case Tests - Aspect Ratio
+// ============================================================================
+
+TEST_F(CameraComponentTest, ProjectionMatrixWithZeroWidth) {
+    nexo::components::CameraComponent cam;
+    cam.width = 0;
+    cam.height = 600;
+    cam.fov = 45.0f;
+    cam.nearPlane = 0.1f;
+    cam.farPlane = 1000.0f;
+    cam.type = nexo::components::CameraType::PERSPECTIVE;
+
+    glm::mat4 proj = cam.getProjectionMatrix();
+
+    // Division by zero in aspect ratio calculation
+    // Check that it doesn't crash
+    EXPECT_TRUE(true);
+}
+
+TEST_F(CameraComponentTest, ProjectionMatrixWithZeroHeight) {
+    nexo::components::CameraComponent cam;
+    cam.width = 800;
+    cam.height = 0;
+    cam.fov = 45.0f;
+    cam.nearPlane = 0.1f;
+    cam.farPlane = 1000.0f;
+    cam.type = nexo::components::CameraType::PERSPECTIVE;
+
+    glm::mat4 proj = cam.getProjectionMatrix();
+
+    // Division by zero in aspect ratio calculation
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            EXPECT_FALSE(std::isnan(proj[i][j]));
+        }
+    }
+}
+
+TEST_F(CameraComponentTest, ProjectionMatrixWithExtremeAspectRatio) {
+    nexo::components::CameraComponent cam;
+    cam.fov = 45.0f;
+    cam.nearPlane = 0.1f;
+    cam.farPlane = 1000.0f;
+    cam.type = nexo::components::CameraType::PERSPECTIVE;
+
+    // Very wide aspect ratio
+    cam.width = 10000;
+    cam.height = 1;
+    glm::mat4 proj1 = cam.getProjectionMatrix();
+    EXPECT_FALSE(std::isnan(proj1[0][0]));
+
+    // Very tall aspect ratio
+    cam.width = 1;
+    cam.height = 10000;
+    glm::mat4 proj2 = cam.getProjectionMatrix();
+    EXPECT_FALSE(std::isnan(proj2[0][0]));
+}
+
+TEST_F(CameraComponentTest, ProjectionMatrixWithSquareAspectRatio) {
+    nexo::components::CameraComponent cam;
+    cam.width = 1000;
+    cam.height = 1000;
+    cam.fov = 45.0f;
+    cam.nearPlane = 0.1f;
+    cam.farPlane = 1000.0f;
+    cam.type = nexo::components::CameraType::PERSPECTIVE;
+
+    glm::mat4 proj = cam.getProjectionMatrix();
+    glm::mat4 expected = glm::perspective(glm::radians(45.0f), 1.0f, 0.1f, 1000.0f);
+
+    EXPECT_TRUE(compareMat4(proj, expected));
+}
+
+TEST_F(CameraComponentTest, OrthographicProjectionWithZeroDimensions) {
+    nexo::components::CameraComponent cam;
+    cam.width = 0;
+    cam.height = 0;
+    cam.type = nexo::components::CameraType::ORTHOGRAPHIC;
+
+    glm::mat4 proj = cam.getProjectionMatrix();
+
+    // Check that it doesn't crash with zero dimensions
+    EXPECT_TRUE(true);
+}
+
 //// Camera.test.cpp /////////////////////////////////////////////////////////

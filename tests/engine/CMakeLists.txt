@@ -64,6 +64,7 @@ add_executable(engine_tests
     ${BASEDIR}/renderer/RendererExceptions.test.cpp
     ${BASEDIR}/renderer/RendererAPIEnums.test.cpp
     ${BASEDIR}/renderer/TransparentStringHasher.test.cpp
+    ${BASEDIR}/renderer/Attributes.test.cpp
     ${BASEDIR}/ecs/ComponentArray.test.cpp
     ${BASEDIR}/ecs/EntityManager.test.cpp
     ${BASEDIR}/ecs/SingletonComponent.test.cpp
