@@ -289,7 +289,7 @@ protected:
     }
 
     std::shared_ptr<ecs::Coordinator> coordinator;
-    const std::string testFilePath = "/tmp/nexo_test_scene.json";
+    const std::string testFilePath = (std::filesystem::temp_directory_path() / "nexo_test_scene.json").string();
 };
 
 // ============================================================================
