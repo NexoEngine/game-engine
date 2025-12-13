@@ -521,4 +521,334 @@ namespace nexo::editor {
         EXPECT_EQ(selector.getPrimaryEntity(), maxInt);
     }
 
+    // Additional Stress and Edge Case Tests
+
+    TEST_F(SelectorTest, MinIntEntityId) {
+        constexpr int minInt = std::numeric_limits<int>::min();
+        selector.addToSelection("uuid-min", minInt, SelectionType::ENTITY);
+        EXPECT_TRUE(selector.isEntitySelected(minInt));
+        EXPECT_EQ(selector.getPrimaryEntity(), minInt);
+    }
+
+    TEST_F(SelectorTest, MixedEntityIdsIncludingExtremes) {
+        selector.addToSelection("uuid-min", std::numeric_limits<int>::min(), SelectionType::ENTITY);
+        selector.addToSelection("uuid-zero", 0, SelectionType::CAMERA);
+        selector.addToSelection("uuid-max", std::numeric_limits<int>::max(), SelectionType::POINT_LIGHT);
+
+        EXPECT_EQ(selector.getSelectedEntities().size(), 3u);
+        EXPECT_TRUE(selector.isEntitySelected(std::numeric_limits<int>::min()));
+        EXPECT_TRUE(selector.isEntitySelected(0));
+        EXPECT_TRUE(selector.isEntitySelected(std::numeric_limits<int>::max()));
+    }
+
+    TEST_F(SelectorTest, RemoveAllEntitiesOneByOne) {
+        constexpr int NUM_ENTITIES = 10;
+        std::vector<int> entityIds;
+
+        for (int i = 0; i < NUM_ENTITIES; ++i) {
+            entityIds.push_back(i * 10);
+            selector.addToSelection("uuid-" + std::to_string(i), i * 10, SelectionType::ENTITY);
+        }
+
+        EXPECT_EQ(selector.getSelectedEntities().size(), NUM_ENTITIES);
+
+        // Remove all one by one
+        for (int id : entityIds) {
+            EXPECT_TRUE(selector.removeFromSelection(id));
+            EXPECT_FALSE(selector.isEntitySelected(id));
+        }
+
+        EXPECT_FALSE(selector.hasSelection());
+        EXPECT_EQ(selector.getSelectedEntities().size(), 0u);
+    }
+
+    TEST_F(SelectorTest, AlternateAddAndRemove) {
+        selector.addToSelection("uuid-1", 1, SelectionType::ENTITY);
+        EXPECT_TRUE(selector.hasSelection());
+
+        selector.removeFromSelection(1);
+        EXPECT_FALSE(selector.hasSelection());
+
+        selector.addToSelection("uuid-2", 2, SelectionType::CAMERA);
+        EXPECT_TRUE(selector.hasSelection());
+
+        selector.removeFromSelection(2);
+        EXPECT_FALSE(selector.hasSelection());
+    }
+
+    TEST_F(SelectorTest, SelectEntityMultipleTimes) {
+        selector.selectEntity("uuid-1", 10, SelectionType::ENTITY);
+        EXPECT_EQ(selector.getPrimaryEntity(), 10);
+
+        selector.selectEntity("uuid-2", 20, SelectionType::CAMERA);
+        EXPECT_EQ(selector.getPrimaryEntity(), 20);
+        EXPECT_EQ(selector.getSelectedEntities().size(), 1u);
+
+        selector.selectEntity("uuid-3", 30, SelectionType::POINT_LIGHT);
+        EXPECT_EQ(selector.getPrimaryEntity(), 30);
+        EXPECT_EQ(selector.getSelectedEntities().size(), 1u);
+    }
+
+    TEST_F(SelectorTest, GetSelectionTypeWithMultipleTypes) {
+        selector.addToSelection("uuid-1", 1, SelectionType::ENTITY);
+        selector.addToSelection("uuid-2", 2, SelectionType::CAMERA);
+        selector.addToSelection("uuid-3", 3, SelectionType::DIR_LIGHT);
+        selector.addToSelection("uuid-4", 4, SelectionType::AMBIENT_LIGHT);
+        selector.addToSelection("uuid-5", 5, SelectionType::SPOT_LIGHT);
+        selector.addToSelection("uuid-6", 6, SelectionType::POINT_LIGHT);
+        selector.addToSelection("uuid-7", 7, SelectionType::SCENE);
+        selector.addToSelection("uuid-8", 8, SelectionType::CHILD);
+
+        EXPECT_EQ(selector.getSelectionType(1), SelectionType::ENTITY);
+        EXPECT_EQ(selector.getSelectionType(2), SelectionType::CAMERA);
+        EXPECT_EQ(selector.getSelectionType(3), SelectionType::DIR_LIGHT);
+        EXPECT_EQ(selector.getSelectionType(4), SelectionType::AMBIENT_LIGHT);
+        EXPECT_EQ(selector.getSelectionType(5), SelectionType::SPOT_LIGHT);
+        EXPECT_EQ(selector.getSelectionType(6), SelectionType::POINT_LIGHT);
+        EXPECT_EQ(selector.getSelectionType(7), SelectionType::SCENE);
+        EXPECT_EQ(selector.getSelectionType(8), SelectionType::CHILD);
+    }
+
+    TEST_F(SelectorTest, UuidWithOnlyWhitespace) {
+        const std::string whitespaceUuid = "   \t\n   ";
+        selector.addToSelection(whitespaceUuid, 10, SelectionType::ENTITY);
+        EXPECT_TRUE(selector.isEntitySelected(10));
+
+        auto uuids = selector.getSelectedUuids();
+        ASSERT_EQ(uuids.size(), 1u);
+        EXPECT_EQ(uuids[0], whitespaceUuid);
+    }
+
+    TEST_F(SelectorTest, VeryLongUuid) {
+        const std::string longUuid = std::string(10000, 'x');
+        selector.addToSelection(longUuid, 42, SelectionType::ENTITY);
+        EXPECT_TRUE(selector.isEntitySelected(42));
+        EXPECT_EQ(selector.getPrimaryUuid(), longUuid);
+    }
+
+    TEST_F(SelectorTest, MultipleRemoveOfSameEntity) {
+        selector.addToSelection("uuid-1", 10, SelectionType::ENTITY);
+        EXPECT_TRUE(selector.removeFromSelection(10));
+        EXPECT_FALSE(selector.removeFromSelection(10)); // Second remove should fail
+        EXPECT_FALSE(selector.removeFromSelection(10)); // Third remove should fail
+    }
+
+    TEST_F(SelectorTest, GetSelectedEntitiesPreservesInsertionOrder) {
+        std::vector<int> insertionOrder = {42, 7, 99, 1, 666, 13, 88};
+
+        for (int id : insertionOrder) {
+            selector.addToSelection("uuid-" + std::to_string(id), id, SelectionType::ENTITY);
+        }
+
+        const auto& entities = selector.getSelectedEntities();
+        ASSERT_EQ(entities.size(), insertionOrder.size());
+
+        for (size_t i = 0; i < insertionOrder.size(); ++i) {
+            EXPECT_EQ(entities[i], insertionOrder[i]);
+        }
+    }
+
+    TEST_F(SelectorTest, ClearEmptySelectionDoesNothing) {
+        EXPECT_FALSE(selector.hasSelection());
+        selector.clearSelection();
+        EXPECT_FALSE(selector.hasSelection());
+    }
+
+    TEST_F(SelectorTest, ClearSelectionMultipleTimes) {
+        selector.addToSelection("uuid-1", 10, SelectionType::ENTITY);
+        selector.clearSelection();
+        EXPECT_FALSE(selector.hasSelection());
+
+        selector.clearSelection(); // Clear again
+        EXPECT_FALSE(selector.hasSelection());
+
+        selector.clearSelection(); // And again
+        EXPECT_FALSE(selector.hasSelection());
+    }
+
+    TEST_F(SelectorTest, PrimaryEntityChangesWhenFirstIsRemoved) {
+        selector.addToSelection("uuid-1", 10, SelectionType::ENTITY);
+        selector.addToSelection("uuid-2", 20, SelectionType::ENTITY);
+        selector.addToSelection("uuid-3", 30, SelectionType::ENTITY);
+
+        EXPECT_EQ(selector.getPrimaryEntity(), 10);
+
+        selector.removeFromSelection(10);
+        EXPECT_EQ(selector.getPrimaryEntity(), 20);
+
+        selector.removeFromSelection(20);
+        EXPECT_EQ(selector.getPrimaryEntity(), 30);
+
+        selector.removeFromSelection(30);
+        EXPECT_EQ(selector.getPrimaryEntity(), -1);
+    }
+
+    TEST_F(SelectorTest, UiHandleEmptyString) {
+        selector.setUiHandle("uuid-test", "");
+        EXPECT_EQ(selector.getUiHandle("uuid-test", "default"), "");
+    }
+
+    TEST_F(SelectorTest, UiHandleDefaultNotUsedWhenHandleExists) {
+        selector.setUiHandle("uuid-1", "ExistingHandle");
+
+        // Call with different defaults - should always return existing handle
+        EXPECT_EQ(selector.getUiHandle("uuid-1", "Default1"), "ExistingHandle");
+        EXPECT_EQ(selector.getUiHandle("uuid-1", "Default2"), "ExistingHandle");
+        EXPECT_EQ(selector.getUiHandle("uuid-1", "Default3"), "ExistingHandle");
+    }
+
+    TEST_F(SelectorTest, SceneSelectionIndependentOfEntitySelection) {
+        selector.setSelectedScene(5);
+        selector.addToSelection("uuid-1", 10, SelectionType::ENTITY);
+
+        EXPECT_EQ(selector.getSelectedScene(), 5);
+        EXPECT_TRUE(selector.isEntitySelected(10));
+
+        selector.clearSelection();
+        EXPECT_EQ(selector.getSelectedScene(), 5); // Scene selection unaffected
+
+        selector.setSelectedScene(10);
+        EXPECT_EQ(selector.getSelectedScene(), 10);
+    }
+
+    TEST_F(SelectorTest, ToggleMultipleEntities) {
+        // Toggle on several entities
+        EXPECT_TRUE(selector.toggleSelection("uuid-1", 1, SelectionType::ENTITY));
+        EXPECT_TRUE(selector.toggleSelection("uuid-2", 2, SelectionType::ENTITY));
+        EXPECT_TRUE(selector.toggleSelection("uuid-3", 3, SelectionType::ENTITY));
+
+        EXPECT_EQ(selector.getSelectedEntities().size(), 3u);
+
+        // Toggle off middle one
+        EXPECT_FALSE(selector.toggleSelection("uuid-2", 2, SelectionType::ENTITY));
+        EXPECT_EQ(selector.getSelectedEntities().size(), 2u);
+
+        // Toggle it back on
+        EXPECT_TRUE(selector.toggleSelection("uuid-2", 2, SelectionType::ENTITY));
+        EXPECT_EQ(selector.getSelectedEntities().size(), 3u);
+    }
+
+    TEST_F(SelectorTest, GetSelectedUuidsMatchesEntities) {
+        selector.addToSelection("uuid-a", 1, SelectionType::ENTITY);
+        selector.addToSelection("uuid-b", 2, SelectionType::ENTITY);
+        selector.addToSelection("uuid-c", 3, SelectionType::ENTITY);
+
+        const auto& entities = selector.getSelectedEntities();
+        auto uuids = selector.getSelectedUuids();
+
+        ASSERT_EQ(entities.size(), uuids.size());
+        EXPECT_EQ(uuids[0], "uuid-a");
+        EXPECT_EQ(uuids[1], "uuid-b");
+        EXPECT_EQ(uuids[2], "uuid-c");
+    }
+
+    TEST_F(SelectorTest, MixOfAllSelectionTypes) {
+        selector.addToSelection("uuid-none", 1, SelectionType::NONE);
+        selector.addToSelection("uuid-scene", 2, SelectionType::SCENE);
+        selector.addToSelection("uuid-camera", 3, SelectionType::CAMERA);
+        selector.addToSelection("uuid-dir", 4, SelectionType::DIR_LIGHT);
+        selector.addToSelection("uuid-ambient", 5, SelectionType::AMBIENT_LIGHT);
+        selector.addToSelection("uuid-spot", 6, SelectionType::SPOT_LIGHT);
+        selector.addToSelection("uuid-point", 7, SelectionType::POINT_LIGHT);
+        selector.addToSelection("uuid-entity", 8, SelectionType::ENTITY);
+        selector.addToSelection("uuid-child", 9, SelectionType::CHILD);
+
+        EXPECT_EQ(selector.getSelectedEntities().size(), 9u);
+        EXPECT_EQ(selector.getPrimarySelectionType(), SelectionType::NONE);
+    }
+
+    TEST_F(SelectorTest, DuplicateUuidsWithDifferentEntities) {
+        // Same UUID with different entity IDs (unusual but should work)
+        const std::string sameUuid = "duplicate-uuid";
+
+        selector.addToSelection(sameUuid, 1, SelectionType::ENTITY);
+        selector.addToSelection(sameUuid, 2, SelectionType::CAMERA);
+
+        // Both entities should be selected
+        EXPECT_TRUE(selector.isEntitySelected(1));
+        EXPECT_TRUE(selector.isEntitySelected(2));
+        EXPECT_EQ(selector.getSelectedEntities().size(), 2u);
+
+        auto uuids = selector.getSelectedUuids();
+        EXPECT_EQ(uuids[0], sameUuid);
+        EXPECT_EQ(uuids[1], sameUuid);
+    }
+
+    TEST_F(SelectorTest, SelectEntityClearsLargeSelection) {
+        constexpr int NUM_ENTITIES = 50;
+        for (int i = 0; i < NUM_ENTITIES; ++i) {
+            selector.addToSelection("uuid-" + std::to_string(i), i, SelectionType::ENTITY);
+        }
+
+        EXPECT_EQ(selector.getSelectedEntities().size(), NUM_ENTITIES);
+
+        // selectEntity should clear all and leave only one
+        selector.selectEntity("uuid-new", 999, SelectionType::CAMERA);
+        EXPECT_EQ(selector.getSelectedEntities().size(), 1u);
+        EXPECT_EQ(selector.getPrimaryEntity(), 999);
+        EXPECT_EQ(selector.getPrimarySelectionType(), SelectionType::CAMERA);
+    }
+
+    TEST_F(SelectorTest, RemoveFromSelectionInReverseOrder) {
+        selector.addToSelection("uuid-1", 1, SelectionType::ENTITY);
+        selector.addToSelection("uuid-2", 2, SelectionType::ENTITY);
+        selector.addToSelection("uuid-3", 3, SelectionType::ENTITY);
+        selector.addToSelection("uuid-4", 4, SelectionType::ENTITY);
+
+        // Remove in reverse order
+        EXPECT_TRUE(selector.removeFromSelection(4));
+        EXPECT_EQ(selector.getSelectedEntities().size(), 3u);
+
+        EXPECT_TRUE(selector.removeFromSelection(3));
+        EXPECT_EQ(selector.getSelectedEntities().size(), 2u);
+
+        EXPECT_TRUE(selector.removeFromSelection(2));
+        EXPECT_EQ(selector.getSelectedEntities().size(), 1u);
+
+        EXPECT_TRUE(selector.removeFromSelection(1));
+        EXPECT_FALSE(selector.hasSelection());
+    }
+
+    TEST_F(SelectorTest, AddAfterPartialRemoval) {
+        selector.addToSelection("uuid-1", 1, SelectionType::ENTITY);
+        selector.addToSelection("uuid-2", 2, SelectionType::ENTITY);
+        selector.addToSelection("uuid-3", 3, SelectionType::ENTITY);
+
+        selector.removeFromSelection(2);
+        EXPECT_EQ(selector.getSelectedEntities().size(), 2u);
+
+        selector.addToSelection("uuid-4", 4, SelectionType::CAMERA);
+        EXPECT_EQ(selector.getSelectedEntities().size(), 3u);
+
+        const auto& entities = selector.getSelectedEntities();
+        EXPECT_EQ(entities[0], 1);
+        EXPECT_EQ(entities[1], 3);
+        EXPECT_EQ(entities[2], 4);
+    }
+
+    TEST_F(SelectorTest, ConsecutiveDuplicateEntityIds) {
+        selector.addToSelection("uuid-1", 42, SelectionType::ENTITY);
+        EXPECT_TRUE(selector.isEntitySelected(42));
+
+        // Try adding same entity multiple times consecutively
+        EXPECT_FALSE(selector.addToSelection("uuid-2", 42, SelectionType::CAMERA));
+        EXPECT_FALSE(selector.addToSelection("uuid-3", 42, SelectionType::POINT_LIGHT));
+
+        EXPECT_EQ(selector.getSelectedEntities().size(), 1u);
+        EXPECT_EQ(selector.getSelectionType(42), SelectionType::ENTITY); // Type unchanged
+    }
+
+    TEST_F(SelectorTest, UiHandleRetrievalConsistency) {
+        // First access sets default and we copy the value
+        std::string handle1 = selector.getUiHandle("unique-consistency-uuid", "DefaultA");
+        EXPECT_EQ(handle1, "DefaultA");
+
+        // Subsequent access should return same stored value (ignoring new default)
+        std::string handle2 = selector.getUiHandle("unique-consistency-uuid", "DefaultB");
+        EXPECT_EQ(handle2, "DefaultA"); // Not DefaultB, uses previously stored value
+
+        // Verify both copies are the same
+        EXPECT_EQ(handle1, handle2);
+    }
+
 }

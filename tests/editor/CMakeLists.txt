@@ -22,6 +22,7 @@ set(EDITOR_TEST_FILES
     ${BASEDIR}/inputs/WindowState.test.cpp
     ${BASEDIR}/utils/String.test.cpp
     ${BASEDIR}/utils/TransparentStringHash.test.cpp
+    ${BASEDIR}/utils/Config.test.cpp
     ${BASEDIR}/exceptions/Exceptions.test.cpp
 )
 
@@ -37,11 +38,16 @@ set(EDITOR_TESTABLE_SOURCES
     ${PROJECT_SOURCE_DIR}/editor/src/inputs/InputManager.cpp
     ${PROJECT_SOURCE_DIR}/editor/src/inputs/WindowState.cpp
     ${PROJECT_SOURCE_DIR}/editor/src/utils/String.cpp
+    ${PROJECT_SOURCE_DIR}/editor/src/utils/Config.cpp
     ${PROJECT_SOURCE_DIR}/common/Exception.cpp
+    ${PROJECT_SOURCE_DIR}/common/Path.cpp
 )
 
 # Find imgui for Command tests
 find_package(imgui CONFIG REQUIRED)
+
+# Find Boost for Path utilities (needed by Config tests)
+find_package(Boost CONFIG REQUIRED COMPONENTS dll)
 
 add_executable(editor_tests
     ${TEST_MAIN_FILES}
@@ -57,6 +63,7 @@ target_link_libraries(editor_tests
     GTest::gtest
     GTest::gmock
     imgui::imgui
+    Boost::dll
 )
 
 target_include_directories(editor_tests
