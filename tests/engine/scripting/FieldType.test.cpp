@@ -192,4 +192,295 @@ TEST_F(ScriptingFieldTypeTest, ExplicitCastToUint64Works) {
     EXPECT_LT(value, static_cast<uint64_t>(FieldType::_Count));
 }
 
+// =============================================================================
+// Edge Case Tests - Boundary Values
+// =============================================================================
+
+TEST_F(ScriptingFieldTypeTest, FirstEnumValueIsZero) {
+    // Verify the first enum value is 0 for proper indexing
+    EXPECT_EQ(static_cast<uint64_t>(FieldType::Blank), 0u);
+}
+
+TEST_F(ScriptingFieldTypeTest, ConsecutiveValues) {
+    // Verify that enum values are consecutive for array indexing
+    EXPECT_EQ(static_cast<uint64_t>(FieldType::Section),
+              static_cast<uint64_t>(FieldType::Blank) + 1);
+    EXPECT_EQ(static_cast<uint64_t>(FieldType::Bool),
+              static_cast<uint64_t>(FieldType::Section) + 1);
+    EXPECT_EQ(static_cast<uint64_t>(FieldType::Int8),
+              static_cast<uint64_t>(FieldType::Bool) + 1);
+}
+
+TEST_F(ScriptingFieldTypeTest, AllIntegerTypesSequential) {
+    // Verify signed integer types are sequential
+    EXPECT_EQ(static_cast<uint64_t>(FieldType::Int16),
+              static_cast<uint64_t>(FieldType::Int8) + 1);
+    EXPECT_EQ(static_cast<uint64_t>(FieldType::Int32),
+              static_cast<uint64_t>(FieldType::Int16) + 1);
+    EXPECT_EQ(static_cast<uint64_t>(FieldType::Int64),
+              static_cast<uint64_t>(FieldType::Int32) + 1);
+
+    // Verify unsigned integer types are sequential
+    EXPECT_EQ(static_cast<uint64_t>(FieldType::UInt8),
+              static_cast<uint64_t>(FieldType::Int64) + 1);
+    EXPECT_EQ(static_cast<uint64_t>(FieldType::UInt16),
+              static_cast<uint64_t>(FieldType::UInt8) + 1);
+    EXPECT_EQ(static_cast<uint64_t>(FieldType::UInt32),
+              static_cast<uint64_t>(FieldType::UInt16) + 1);
+    EXPECT_EQ(static_cast<uint64_t>(FieldType::UInt64),
+              static_cast<uint64_t>(FieldType::UInt32) + 1);
+}
+
+TEST_F(ScriptingFieldTypeTest, FloatingPointTypesSequential) {
+    EXPECT_EQ(static_cast<uint64_t>(FieldType::Float),
+              static_cast<uint64_t>(FieldType::UInt64) + 1);
+    EXPECT_EQ(static_cast<uint64_t>(FieldType::Double),
+              static_cast<uint64_t>(FieldType::Float) + 1);
+}
+
+TEST_F(ScriptingFieldTypeTest, VectorTypesSequential) {
+    EXPECT_EQ(static_cast<uint64_t>(FieldType::Vector3),
+              static_cast<uint64_t>(FieldType::Double) + 1);
+    EXPECT_EQ(static_cast<uint64_t>(FieldType::Vector4),
+              static_cast<uint64_t>(FieldType::Vector3) + 1);
+}
+
+TEST_F(ScriptingFieldTypeTest, CountIsImmediatelyAfterLastType) {
+    EXPECT_EQ(static_cast<uint64_t>(FieldType::_Count),
+              static_cast<uint64_t>(FieldType::Vector4) + 1);
+}
+
+// =============================================================================
+// Edge Case Tests - Type Categorization
+// =============================================================================
+
+TEST_F(ScriptingFieldTypeTest, SignedIntegerTypesGroup) {
+    std::vector<FieldType> signedInts = {
+        FieldType::Int8,
+        FieldType::Int16,
+        FieldType::Int32,
+        FieldType::Int64
+    };
+
+    // Verify all signed int types are in consecutive range
+    auto minVal = static_cast<uint64_t>(FieldType::Int8);
+    auto maxVal = static_cast<uint64_t>(FieldType::Int64);
+
+    for (const auto& type : signedInts) {
+        auto val = static_cast<uint64_t>(type);
+        EXPECT_GE(val, minVal);
+        EXPECT_LE(val, maxVal);
+    }
+}
+
+TEST_F(ScriptingFieldTypeTest, UnsignedIntegerTypesGroup) {
+    std::vector<FieldType> unsignedInts = {
+        FieldType::UInt8,
+        FieldType::UInt16,
+        FieldType::UInt32,
+        FieldType::UInt64
+    };
+
+    // Verify all unsigned int types are in consecutive range
+    auto minVal = static_cast<uint64_t>(FieldType::UInt8);
+    auto maxVal = static_cast<uint64_t>(FieldType::UInt64);
+
+    for (const auto& type : unsignedInts) {
+        auto val = static_cast<uint64_t>(type);
+        EXPECT_GE(val, minVal);
+        EXPECT_LE(val, maxVal);
+    }
+}
+
+TEST_F(ScriptingFieldTypeTest, FloatingPointTypesGroup) {
+    std::vector<FieldType> floatTypes = {
+        FieldType::Float,
+        FieldType::Double
+    };
+
+    auto minVal = static_cast<uint64_t>(FieldType::Float);
+    auto maxVal = static_cast<uint64_t>(FieldType::Double);
+
+    for (const auto& type : floatTypes) {
+        auto val = static_cast<uint64_t>(type);
+        EXPECT_GE(val, minVal);
+        EXPECT_LE(val, maxVal);
+    }
+}
+
+TEST_F(ScriptingFieldTypeTest, VectorTypesGroup) {
+    std::vector<FieldType> vectorTypes = {
+        FieldType::Vector3,
+        FieldType::Vector4
+    };
+
+    auto minVal = static_cast<uint64_t>(FieldType::Vector3);
+    auto maxVal = static_cast<uint64_t>(FieldType::Vector4);
+
+    for (const auto& type : vectorTypes) {
+        auto val = static_cast<uint64_t>(type);
+        EXPECT_GE(val, minVal);
+        EXPECT_LE(val, maxVal);
+    }
+}
+
+// =============================================================================
+// Edge Case Tests - Invalid Values
+// =============================================================================
+
+TEST_F(ScriptingFieldTypeTest, InvalidValueDetection) {
+    // Values beyond _Count should be detectable as invalid
+    uint64_t invalidValue = static_cast<uint64_t>(FieldType::_Count) + 1;
+    EXPECT_GT(invalidValue, static_cast<uint64_t>(FieldType::_Count));
+}
+
+TEST_F(ScriptingFieldTypeTest, MaxUint64Cast) {
+    // Verify we can cast maximum value (even though it's invalid)
+    uint64_t maxValue = std::numeric_limits<uint64_t>::max();
+    auto type = static_cast<FieldType>(maxValue);
+    EXPECT_EQ(static_cast<uint64_t>(type), maxValue);
+}
+
+TEST_F(ScriptingFieldTypeTest, ValidationFunction) {
+    // Helper function to validate field types
+    auto isValidFieldType = [](FieldType type) -> bool {
+        return static_cast<uint64_t>(type) < static_cast<uint64_t>(FieldType::_Count);
+    };
+
+    // Test all valid types
+    EXPECT_TRUE(isValidFieldType(FieldType::Blank));
+    EXPECT_TRUE(isValidFieldType(FieldType::Section));
+    EXPECT_TRUE(isValidFieldType(FieldType::Bool));
+    EXPECT_TRUE(isValidFieldType(FieldType::Int8));
+    EXPECT_TRUE(isValidFieldType(FieldType::Int64));
+    EXPECT_TRUE(isValidFieldType(FieldType::UInt64));
+    EXPECT_TRUE(isValidFieldType(FieldType::Float));
+    EXPECT_TRUE(isValidFieldType(FieldType::Double));
+    EXPECT_TRUE(isValidFieldType(FieldType::Vector3));
+    EXPECT_TRUE(isValidFieldType(FieldType::Vector4));
+
+    // Test invalid types
+    EXPECT_FALSE(isValidFieldType(FieldType::_Count));
+    EXPECT_FALSE(isValidFieldType(static_cast<FieldType>(100)));
+    EXPECT_FALSE(isValidFieldType(static_cast<FieldType>(999999)));
+}
+
+// =============================================================================
+// Edge Case Tests - Container Usage
+// =============================================================================
+
+TEST_F(ScriptingFieldTypeTest, CanBeUsedInArray) {
+    FieldType types[3] = {
+        FieldType::Int32,
+        FieldType::Float,
+        FieldType::Vector3
+    };
+
+    EXPECT_EQ(types[0], FieldType::Int32);
+    EXPECT_EQ(types[1], FieldType::Float);
+    EXPECT_EQ(types[2], FieldType::Vector3);
+}
+
+TEST_F(ScriptingFieldTypeTest, CanBeUsedInVector) {
+    std::vector<FieldType> types = {
+        FieldType::Bool,
+        FieldType::Int32,
+        FieldType::Double
+    };
+
+    EXPECT_EQ(types.size(), 3u);
+    EXPECT_EQ(types[0], FieldType::Bool);
+    EXPECT_EQ(types[1], FieldType::Int32);
+    EXPECT_EQ(types[2], FieldType::Double);
+}
+
+TEST_F(ScriptingFieldTypeTest, CanBeUsedAsMapKey) {
+    std::map<FieldType, std::string> typeNames;
+    typeNames[FieldType::Int32] = "Integer";
+    typeNames[FieldType::Float] = "Float";
+
+    EXPECT_EQ(typeNames[FieldType::Int32], "Integer");
+    EXPECT_EQ(typeNames[FieldType::Float], "Float");
+}
+
+TEST_F(ScriptingFieldTypeTest, CanBeUsedInSet) {
+    std::set<FieldType> uniqueTypes;
+    uniqueTypes.insert(FieldType::Int32);
+    uniqueTypes.insert(FieldType::Float);
+    uniqueTypes.insert(FieldType::Int32); // Duplicate
+
+    EXPECT_EQ(uniqueTypes.size(), 2u);
+    EXPECT_TRUE(uniqueTypes.count(FieldType::Int32) > 0);
+    EXPECT_TRUE(uniqueTypes.count(FieldType::Float) > 0);
+}
+
+// =============================================================================
+// Edge Case Tests - Type Conversion Patterns
+// =============================================================================
+
+TEST_F(ScriptingFieldTypeTest, BidirectionalCast) {
+    FieldType original = FieldType::Vector4;
+    uint64_t asInt = static_cast<uint64_t>(original);
+    FieldType backToEnum = static_cast<FieldType>(asInt);
+
+    EXPECT_EQ(original, backToEnum);
+}
+
+TEST_F(ScriptingFieldTypeTest, AllTypesBidirectionalCast) {
+    std::vector<FieldType> allTypes = {
+        FieldType::Blank, FieldType::Section, FieldType::Bool,
+        FieldType::Int8, FieldType::Int16, FieldType::Int32, FieldType::Int64,
+        FieldType::UInt8, FieldType::UInt16, FieldType::UInt32, FieldType::UInt64,
+        FieldType::Float, FieldType::Double,
+        FieldType::Vector3, FieldType::Vector4
+    };
+
+    for (const auto& original : allTypes) {
+        uint64_t asInt = static_cast<uint64_t>(original);
+        FieldType backToEnum = static_cast<FieldType>(asInt);
+        EXPECT_EQ(original, backToEnum);
+    }
+}
+
+TEST_F(ScriptingFieldTypeTest, ZeroCastToBlank) {
+    uint64_t zero = 0;
+    FieldType type = static_cast<FieldType>(zero);
+    EXPECT_EQ(type, FieldType::Blank);
+}
+
+// =============================================================================
+// Edge Case Tests - Sizeof and Alignment
+// =============================================================================
+
+TEST_F(ScriptingFieldTypeTest, EnumSize) {
+    // Verify the enum has the expected size (uint64_t)
+    EXPECT_EQ(sizeof(FieldType), sizeof(uint64_t));
+    EXPECT_EQ(sizeof(FieldType), 8u);
+}
+
+TEST_F(ScriptingFieldTypeTest, EnumAlignment) {
+    // Verify alignment matches uint64_t
+    EXPECT_EQ(alignof(FieldType), alignof(uint64_t));
+}
+
+// =============================================================================
+// Edge Case Tests - Constexpr Usage
+// =============================================================================
+
+TEST_F(ScriptingFieldTypeTest, CanBeUsedInConstexpr) {
+    constexpr FieldType type = FieldType::Int32;
+    constexpr uint64_t value = static_cast<uint64_t>(type);
+
+    EXPECT_EQ(type, FieldType::Int32);
+    EXPECT_GT(value, 0u);
+}
+
+TEST_F(ScriptingFieldTypeTest, ConstexprComparison) {
+    constexpr bool isEqual = (FieldType::Int32 == FieldType::Int32);
+    constexpr bool isNotEqual = (FieldType::Int32 != FieldType::Float);
+
+    EXPECT_TRUE(isEqual);
+    EXPECT_TRUE(isNotEqual);
+}
+
 }  // namespace nexo::scripting
