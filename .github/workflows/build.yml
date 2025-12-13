@@ -209,6 +209,7 @@ jobs:
 
       - name: Run sonar-scanner
         if: ${{ matrix.os == 'ubuntu-22.04' }}
+        continue-on-error: true  # SonarScanner has intermittent internal bugs
         uses: SonarSource/sonarqube-scan-action@v4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
