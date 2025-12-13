@@ -400,7 +400,9 @@ TEST_F(PathTestFixture, ExecutablePathIsAbsolute) {
 TEST_F(PathTestFixture, ResolveAlreadyAbsolutePath) {
 #ifdef _WIN32
     const auto resolved = nexo::Path::resolvePathRelativeToExe("C:/absolute/path.txt");
-    EXPECT_EQ(resolved.string(), "C:/absolute/path.txt");
+    // Windows may convert forward slashes to backslashes
+    EXPECT_TRUE(resolved.string() == "C:/absolute/path.txt" ||
+                resolved.string() == "C:\\absolute\\path.txt");
 #else
     const auto resolved = nexo::Path::resolvePathRelativeToExe("/absolute/path.txt");
     EXPECT_EQ(resolved.string(), "/absolute/path.txt");
@@ -833,7 +835,10 @@ TEST_F(PathTestFixture, ResolveEmptyPath) {
 TEST_F(PathTestFixture, ConcatenateWithSlashOnly) {
     const auto resolved = nexo::Path::resolvePathRelativeToExe("/");
 #ifdef _WIN32
-    EXPECT_EQ(resolved.string(), "/");
+    // On Windows, "/" is treated as the root of the current drive
+    // The result depends on the current drive, e.g., "C:\" or "D:\"
+    EXPECT_TRUE(resolved.is_absolute());
+    EXPECT_FALSE(resolved.empty());
 #else
     EXPECT_EQ(resolved.string(), "/");
 #endif

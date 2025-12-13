@@ -176,11 +176,7 @@ namespace nexo::editor {
 
     const std::string& Selector::getUiHandle(const std::string& uuid, const std::string& defaultHandle)
     {
-        const auto it = m_uiHandles.find(uuid);
-        if (it == m_uiHandles.end()) {
-            m_uiHandles[uuid] = defaultHandle;
-            return defaultHandle;
-        }
+        auto [it, inserted] = m_uiHandles.try_emplace(uuid, defaultHandle);
         return it->second;
     }
 
