@@ -651,4 +651,404 @@ TEST_F(UniformCacheEmptyTest, ClearAllDirtyFlagsOnEmptyCacheDoesNotCrash) {
     EXPECT_NO_THROW(cache.clearAllDirtyFlags());
 }
 
+// =============================================================================
+// Empty String Name Edge Cases
+// =============================================================================
+
+class UniformCacheEmptyStringTest : public ::testing::Test {
+protected:
+    UniformCache cache;
+};
+
+TEST_F(UniformCacheEmptyStringTest, SetFloatWithEmptyName) {
+    cache.setFloat("", 3.14f);
+    EXPECT_TRUE(cache.hasValue(""));
+    EXPECT_TRUE(cache.isDirty(""));
+}
+
+TEST_F(UniformCacheEmptyStringTest, SetIntWithEmptyName) {
+    cache.setInt("", 42);
+    auto value = cache.getValue("");
+    ASSERT_TRUE(value.has_value());
+    EXPECT_EQ(std::get<int>(*value), 42);
+}
+
+TEST_F(UniformCacheEmptyStringTest, SetBoolWithEmptyName) {
+    cache.setBool("", true);
+    EXPECT_TRUE(cache.hasValue(""));
+}
+
+TEST_F(UniformCacheEmptyStringTest, SetFloat2WithEmptyName) {
+    cache.setFloat2("", glm::vec2(1.0f, 2.0f));
+    auto value = cache.getValue("");
+    ASSERT_TRUE(value.has_value());
+    ASSERT_TRUE(std::holds_alternative<glm::vec2>(*value));
+}
+
+TEST_F(UniformCacheEmptyStringTest, SetFloat3WithEmptyName) {
+    cache.setFloat3("", glm::vec3(1.0f, 2.0f, 3.0f));
+    EXPECT_TRUE(cache.hasValue(""));
+}
+
+TEST_F(UniformCacheEmptyStringTest, SetFloat4WithEmptyName) {
+    cache.setFloat4("", glm::vec4(1.0f, 2.0f, 3.0f, 4.0f));
+    EXPECT_TRUE(cache.hasValue(""));
+}
+
+TEST_F(UniformCacheEmptyStringTest, SetMatrixWithEmptyName) {
+    cache.setMatrix("", glm::mat4(1.0f));
+    EXPECT_TRUE(cache.hasValue(""));
+}
+
+TEST_F(UniformCacheEmptyStringTest, ClearDirtyFlagWithEmptyName) {
+    cache.setFloat("", 1.0f);
+    cache.clearDirtyFlag("");
+    EXPECT_FALSE(cache.isDirty(""));
+}
+
+// =============================================================================
+// GLM Value Precision Tests
+// =============================================================================
+
+class UniformCacheGLMPrecisionTest : public ::testing::Test {
+protected:
+    UniformCache cache;
+};
+
+TEST_F(UniformCacheGLMPrecisionTest, Vec2ComponentVerification) {
+    glm::vec2 vec(1.23456f, 9.87654f);
+    cache.setFloat2("vec", vec);
+    auto value = cache.getValue("vec");
+    ASSERT_TRUE(value.has_value());
+    glm::vec2 result = std::get<glm::vec2>(*value);
+    EXPECT_FLOAT_EQ(result.x, vec.x);
+    EXPECT_FLOAT_EQ(result.y, vec.y);
+    EXPECT_EQ(result, vec);
+}
+
+TEST_F(UniformCacheGLMPrecisionTest, Vec3ComponentVerification) {
+    glm::vec3 vec(1.11111f, 2.22222f, 3.33333f);
+    cache.setFloat3("vec", vec);
+    auto value = cache.getValue("vec");
+    ASSERT_TRUE(value.has_value());
+    glm::vec3 result = std::get<glm::vec3>(*value);
+    EXPECT_FLOAT_EQ(result.x, vec.x);
+    EXPECT_FLOAT_EQ(result.y, vec.y);
+    EXPECT_FLOAT_EQ(result.z, vec.z);
+    EXPECT_EQ(result, vec);
+}
+
+TEST_F(UniformCacheGLMPrecisionTest, Vec4ComponentVerification) {
+    glm::vec4 vec(0.1f, 0.2f, 0.3f, 0.4f);
+    cache.setFloat4("vec", vec);
+    auto value = cache.getValue("vec");
+    ASSERT_TRUE(value.has_value());
+    glm::vec4 result = std::get<glm::vec4>(*value);
+    EXPECT_FLOAT_EQ(result.x, vec.x);
+    EXPECT_FLOAT_EQ(result.y, vec.y);
+    EXPECT_FLOAT_EQ(result.z, vec.z);
+    EXPECT_FLOAT_EQ(result.w, vec.w);
+    EXPECT_EQ(result, vec);
+}
+
+TEST_F(UniformCacheGLMPrecisionTest, Mat4RowColumnVerification) {
+    glm::mat4 mat(1.0f);
+    mat[0][0] = 2.0f;
+    mat[1][1] = 3.0f;
+    mat[2][2] = 4.0f;
+    mat[3][3] = 5.0f;
+
+    cache.setMatrix("mat", mat);
+    auto value = cache.getValue("mat");
+    ASSERT_TRUE(value.has_value());
+    glm::mat4 result = std::get<glm::mat4>(*value);
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            EXPECT_FLOAT_EQ(result[i][j], mat[i][j]);
+        }
+    }
+}
+
+TEST_F(UniformCacheGLMPrecisionTest, ZeroVectorStorage) {
+    glm::vec3 zero(0.0f, 0.0f, 0.0f);
+    cache.setFloat3("zero", zero);
+    auto value = cache.getValue("zero");
+    ASSERT_TRUE(value.has_value());
+    glm::vec3 result = std::get<glm::vec3>(*value);
+    EXPECT_EQ(result, zero);
+}
+
+TEST_F(UniformCacheGLMPrecisionTest, NegativeVectorStorage) {
+    glm::vec4 negative(-1.0f, -2.0f, -3.0f, -4.0f);
+    cache.setFloat4("negative", negative);
+    auto value = cache.getValue("negative");
+    ASSERT_TRUE(value.has_value());
+    glm::vec4 result = std::get<glm::vec4>(*value);
+    EXPECT_EQ(result, negative);
+}
+
+TEST_F(UniformCacheGLMPrecisionTest, ProjectionMatrixStorage) {
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 16.0f / 9.0f, 0.1f, 100.0f);
+    cache.setMatrix("projection", projection);
+    auto value = cache.getValue("projection");
+    ASSERT_TRUE(value.has_value());
+    glm::mat4 result = std::get<glm::mat4>(*value);
+    EXPECT_EQ(result, projection);
+}
+
+// =============================================================================
+// Complex Workflow Tests
+// =============================================================================
+
+class UniformCacheWorkflowTest : public ::testing::Test {
+protected:
+    UniformCache cache;
+};
+
+TEST_F(UniformCacheWorkflowTest, RenderLoopSimulation) {
+    // Initial setup
+    cache.setMatrix("uModelMatrix", glm::mat4(1.0f));
+    cache.setFloat3("uColor", glm::vec3(1.0f, 0.0f, 0.0f));
+    cache.setFloat("uTime", 0.0f);
+
+    EXPECT_TRUE(cache.isDirty("uModelMatrix"));
+    EXPECT_TRUE(cache.isDirty("uColor"));
+    EXPECT_TRUE(cache.isDirty("uTime"));
+
+    // First frame render
+    cache.clearAllDirtyFlags();
+    EXPECT_FALSE(cache.isDirty("uModelMatrix"));
+    EXPECT_FALSE(cache.isDirty("uColor"));
+    EXPECT_FALSE(cache.isDirty("uTime"));
+
+    // Second frame - only time changes
+    cache.setFloat("uTime", 0.016f);
+    EXPECT_FALSE(cache.isDirty("uModelMatrix"));
+    EXPECT_FALSE(cache.isDirty("uColor"));
+    EXPECT_TRUE(cache.isDirty("uTime"));
+
+    // Third frame - transform changes
+    cache.clearDirtyFlag("uTime");
+    glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+    cache.setMatrix("uModelMatrix", transform);
+    EXPECT_TRUE(cache.isDirty("uModelMatrix"));
+    EXPECT_FALSE(cache.isDirty("uColor"));
+    EXPECT_FALSE(cache.isDirty("uTime"));
+}
+
+TEST_F(UniformCacheWorkflowTest, MaterialSwitching) {
+    // Material 1
+    cache.setFloat3("uAlbedo", glm::vec3(1.0f, 0.0f, 0.0f));
+    cache.setFloat("uMetallic", 0.0f);
+    cache.setFloat("uRoughness", 0.5f);
+
+    cache.clearAllDirtyFlags();
+
+    // Switch to Material 2
+    cache.setFloat3("uAlbedo", glm::vec3(0.0f, 1.0f, 0.0f));
+    cache.setFloat("uMetallic", 1.0f);
+    cache.setFloat("uRoughness", 0.2f);
+
+    EXPECT_TRUE(cache.isDirty("uAlbedo"));
+    EXPECT_TRUE(cache.isDirty("uMetallic"));
+    EXPECT_TRUE(cache.isDirty("uRoughness"));
+}
+
+TEST_F(UniformCacheWorkflowTest, LightingUpdate) {
+    // Setup 4 lights
+    for (int i = 0; i < 4; i++) {
+        std::string lightPos = "uLights[" + std::to_string(i) + "].position";
+        std::string lightColor = "uLights[" + std::to_string(i) + "].color";
+        std::string lightIntensity = "uLights[" + std::to_string(i) + "].intensity";
+
+        cache.setFloat3(lightPos, glm::vec3(i * 5.0f, 10.0f, 0.0f));
+        cache.setFloat3(lightColor, glm::vec3(1.0f, 1.0f, 1.0f));
+        cache.setFloat(lightIntensity, 1.0f);
+    }
+
+    cache.clearAllDirtyFlags();
+
+    // Update only light 2
+    cache.setFloat3("uLights[2].position", glm::vec3(15.0f, 5.0f, 5.0f));
+
+    EXPECT_FALSE(cache.isDirty("uLights[0].position"));
+    EXPECT_FALSE(cache.isDirty("uLights[1].position"));
+    EXPECT_TRUE(cache.isDirty("uLights[2].position"));
+    EXPECT_FALSE(cache.isDirty("uLights[3].position"));
+}
+
+TEST_F(UniformCacheWorkflowTest, ShaderHotReload) {
+    // Setup uniforms
+    cache.setFloat("uTime", 1.0f);
+    cache.setFloat3("uColor", glm::vec3(1.0f, 0.0f, 0.0f));
+    cache.setMatrix("uModelMatrix", glm::mat4(1.0f));
+
+    cache.clearAllDirtyFlags();
+
+    // Shader reload - all uniforms should be re-uploaded
+    // In practice, this would be handled by clearing all dirty flags
+    // and letting the next set operation mark them dirty
+    EXPECT_FALSE(cache.isDirty("uTime"));
+    EXPECT_FALSE(cache.isDirty("uColor"));
+    EXPECT_FALSE(cache.isDirty("uModelMatrix"));
+
+    // Setting same values after shader reload should mark them dirty
+    cache.setFloat("uTime", 1.0f);
+    cache.setFloat3("uColor", glm::vec3(1.0f, 0.0f, 0.0f));
+    cache.setMatrix("uModelMatrix", glm::mat4(1.0f));
+
+    // Since we're setting the same values, they should NOT be dirty
+    EXPECT_FALSE(cache.isDirty("uTime"));
+    EXPECT_FALSE(cache.isDirty("uColor"));
+    EXPECT_FALSE(cache.isDirty("uModelMatrix"));
+}
+
+// =============================================================================
+// Large Scale Tests
+// =============================================================================
+
+class UniformCacheLargeScaleTest : public ::testing::Test {
+protected:
+    UniformCache cache;
+};
+
+TEST_F(UniformCacheLargeScaleTest, ManyUniformsSimultaneous) {
+    const int count = 100;
+
+    for (int i = 0; i < count; i++) {
+        cache.setFloat("uniform_" + std::to_string(i), static_cast<float>(i));
+    }
+
+    for (int i = 0; i < count; i++) {
+        std::string name = "uniform_" + std::to_string(i);
+        EXPECT_TRUE(cache.hasValue(name));
+        EXPECT_TRUE(cache.isDirty(name));
+
+        auto value = cache.getValue(name);
+        ASSERT_TRUE(value.has_value());
+        EXPECT_FLOAT_EQ(std::get<float>(*value), static_cast<float>(i));
+    }
+}
+
+TEST_F(UniformCacheLargeScaleTest, ClearAllDirtyFlagsPerformance) {
+    const int count = 1000;
+
+    for (int i = 0; i < count; i++) {
+        cache.setFloat("uniform_" + std::to_string(i), static_cast<float>(i));
+    }
+
+    cache.clearAllDirtyFlags();
+
+    for (int i = 0; i < count; i++) {
+        EXPECT_FALSE(cache.isDirty("uniform_" + std::to_string(i)));
+    }
+}
+
+TEST_F(UniformCacheLargeScaleTest, MixedTypesLargeScale) {
+    for (int i = 0; i < 50; i++) {
+        cache.setFloat("float_" + std::to_string(i), static_cast<float>(i));
+        cache.setInt("int_" + std::to_string(i), i);
+        cache.setBool("bool_" + std::to_string(i), i % 2 == 0);
+        cache.setFloat3("vec3_" + std::to_string(i), glm::vec3(i, i, i));
+    }
+
+    // Verify all values
+    for (int i = 0; i < 50; i++) {
+        auto floatVal = cache.getValue("float_" + std::to_string(i));
+        auto intVal = cache.getValue("int_" + std::to_string(i));
+        auto boolVal = cache.getValue("bool_" + std::to_string(i));
+        auto vec3Val = cache.getValue("vec3_" + std::to_string(i));
+
+        ASSERT_TRUE(floatVal.has_value());
+        ASSERT_TRUE(intVal.has_value());
+        ASSERT_TRUE(boolVal.has_value());
+        ASSERT_TRUE(vec3Val.has_value());
+
+        EXPECT_FLOAT_EQ(std::get<float>(*floatVal), static_cast<float>(i));
+        EXPECT_EQ(std::get<int>(*intVal), i);
+        EXPECT_EQ(std::get<bool>(*boolVal), i % 2 == 0);
+    }
+}
+
+// =============================================================================
+// Special Float Values Tests
+// =============================================================================
+
+class UniformCacheSpecialFloatTest : public ::testing::Test {
+protected:
+    UniformCache cache;
+};
+
+TEST_F(UniformCacheSpecialFloatTest, NegativeZeroFloat) {
+    cache.setFloat("negZero", -0.0f);
+    auto value = cache.getValue("negZero");
+    ASSERT_TRUE(value.has_value());
+    EXPECT_FLOAT_EQ(std::get<float>(*value), -0.0f);
+}
+
+TEST_F(UniformCacheSpecialFloatTest, VerySmallFloat) {
+    float tiny = 1e-10f;
+    cache.setFloat("tiny", tiny);
+    auto value = cache.getValue("tiny");
+    ASSERT_TRUE(value.has_value());
+    EXPECT_FLOAT_EQ(std::get<float>(*value), tiny);
+}
+
+TEST_F(UniformCacheSpecialFloatTest, VeryLargeFloat) {
+    float large = 1e10f;
+    cache.setFloat("large", large);
+    auto value = cache.getValue("large");
+    ASSERT_TRUE(value.has_value());
+    EXPECT_FLOAT_EQ(std::get<float>(*value), large);
+}
+
+TEST_F(UniformCacheSpecialFloatTest, NegativeFloat) {
+    cache.setFloat("negative", -123.456f);
+    auto value = cache.getValue("negative");
+    ASSERT_TRUE(value.has_value());
+    EXPECT_FLOAT_EQ(std::get<float>(*value), -123.456f);
+}
+
+// =============================================================================
+// Boundary Value Tests
+// =============================================================================
+
+class UniformCacheBoundaryTest : public ::testing::Test {
+protected:
+    UniformCache cache;
+};
+
+TEST_F(UniformCacheBoundaryTest, MaxIntValue) {
+    cache.setInt("maxInt", INT_MAX);
+    auto value = cache.getValue("maxInt");
+    ASSERT_TRUE(value.has_value());
+    EXPECT_EQ(std::get<int>(*value), INT_MAX);
+}
+
+TEST_F(UniformCacheBoundaryTest, MinIntValue) {
+    cache.setInt("minInt", INT_MIN);
+    auto value = cache.getValue("minInt");
+    ASSERT_TRUE(value.has_value());
+    EXPECT_EQ(std::get<int>(*value), INT_MIN);
+}
+
+TEST_F(UniformCacheBoundaryTest, LongUniformName) {
+    std::string longName(1000, 'a');
+    cache.setFloat(longName, 1.0f);
+    EXPECT_TRUE(cache.hasValue(longName));
+    auto value = cache.getValue(longName);
+    ASSERT_TRUE(value.has_value());
+    EXPECT_FLOAT_EQ(std::get<float>(*value), 1.0f);
+}
+
+TEST_F(UniformCacheBoundaryTest, SpecialCharactersInName) {
+    std::string specialName = "uniform[0].position.x";
+    cache.setFloat(specialName, 5.0f);
+    EXPECT_TRUE(cache.hasValue(specialName));
+    auto value = cache.getValue(specialName);
+    ASSERT_TRUE(value.has_value());
+    EXPECT_FLOAT_EQ(std::get<float>(*value), 5.0f);
+}
+
 }  // namespace nexo::renderer

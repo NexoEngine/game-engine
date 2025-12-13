@@ -28,6 +28,7 @@ add_executable(engine_tests
     ${BASEDIR}/event/Event.test.cpp
     ${BASEDIR}/event/EventManager.test.cpp
     ${BASEDIR}/event/WindowEvent.test.cpp
+    ${BASEDIR}/event/SignalEvent.test.cpp
     ${BASEDIR}/exceptions/Exceptions.test.cpp
     ${BASEDIR}/scene/Scene.test.cpp
     ${BASEDIR}/scene/SceneManager.test.cpp
@@ -64,11 +65,14 @@ add_executable(engine_tests
     ${BASEDIR}/renderer/DrawCommand.test.cpp
     ${BASEDIR}/renderer/RendererExceptions.test.cpp
     ${BASEDIR}/renderer/RendererAPIEnums.test.cpp
+    ${BASEDIR}/renderer/RenderCommand.test.cpp
     ${BASEDIR}/renderer/TransparentStringHasher.test.cpp
     ${BASEDIR}/renderer/Attributes.test.cpp
+    ${BASEDIR}/renderer/RenderPipeline.test.cpp
     ${BASEDIR}/ecs/ComponentArray.test.cpp
     ${BASEDIR}/ecs/EntityManager.test.cpp
     ${BASEDIR}/ecs/SingletonComponent.test.cpp
+    ${BASEDIR}/ecs/SystemManager.test.cpp
     ${BASEDIR}/ecs/Coordinator.test.cpp
     ${BASEDIR}/ecs/Access.test.cpp
 	${BASEDIR}/physics/PhysicsSystem.test.cpp
@@ -80,6 +84,7 @@ add_executable(engine_tests
     ${BASEDIR}/renderPasses/Masks.test.cpp
     ${BASEDIR}/renderPasses/Passes.test.cpp
     ${BASEDIR}/Types.test.cpp
+    # ${BASEDIR}/WorldState.test.cpp  # Disabled: circular include in WorldState.hpp -> Application.hpp
     ${BASEDIR}/../crash/CrashTracker.test.cpp
     ${BASEDIR}/scripting/FieldType.test.cpp
     ${BASEDIR}/scripting/Field.test.cpp
