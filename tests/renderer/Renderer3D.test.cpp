@@ -57,6 +57,7 @@ namespace nexo::renderer {
                 if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
                 {
                     glfwDestroyWindow(window);
+                    window = nullptr;
                     glfwTerminate();
                     GTEST_SKIP() << "Failed to initialize GLAD. Skipping OpenGL tests.";
                 }
@@ -67,6 +68,7 @@ namespace nexo::renderer {
                 if (major < 4 || (major == 4 && minor < 5))
                 {
                     glfwDestroyWindow(window);
+                    window = nullptr;
                     glfwTerminate();
                     GTEST_SKIP() << "OpenGL 4.5 is required. Skipping OpenGL tests.";
                 }
