@@ -216,13 +216,13 @@ namespace nexo::crash {
         return m_userConsent.load();
     }
 
-    void CrashTracker::setUserConsent(bool consent) {
-        m_userConsent = consent;
-        saveUserConsent(consent);
+    void CrashTracker::setUserConsent(bool crashReporting, [[maybe_unused]] bool performanceMonitoring) {
+        m_userConsent = crashReporting;
+        saveUserConsent(crashReporting);
 
-        if (consent && !m_initialized) {
+        if (crashReporting && !m_initialized) {
             initialize();
-        } else if (!consent && m_initialized) {
+        } else if (!crashReporting && m_initialized) {
             shutdown();
         }
     }

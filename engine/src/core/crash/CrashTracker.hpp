@@ -61,7 +61,7 @@ namespace nexo::crash {
 
         bool hasUserConsent();
 
-        void setUserConsent(bool consent);
+        void setUserConsent(bool crashReporting, bool performanceMonitoring = false);
 
         [[nodiscard]] bool isInitialized() const { return m_initialized; }
 

@@ -126,9 +126,9 @@ jobs:
         run: |
             git submodule update --init --recursive
 
-      - name: Install sonar-scanner
+      - name: Install sonar-scanner and build-wrapper
         if: ${{ matrix.os == 'ubuntu-22.04' }}
-        uses: sonarsource/sonarcloud-github-c-cpp@v3
+        uses: SonarSource/sonarqube-scan-action/install-build-wrapper@v4
 
       - name: Install latest CMake and Ninja
         uses: lukka/get-cmake@latest
