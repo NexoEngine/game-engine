@@ -130,6 +130,7 @@ namespace nexo::assets {
         [[nodiscard]] virtual AssetType getType() const                = 0;
         [[nodiscard]] virtual AssetID getID() const                    = 0;
         [[nodiscard]] virtual AssetStatus getStatus() const            = 0;
+        [[nodiscard]] virtual AssetLocation getLocation() const        = 0;
 
         [[nodiscard]] virtual bool isLoaded() const  = 0;
         [[nodiscard]] virtual bool isErrored() const = 0;
@@ -173,17 +174,25 @@ namespace nexo::assets {
         {
             return m_metadata;
         }
+
         [[nodiscard]] AssetType getType() const override
         {
             return getMetadata().type;
         }
+
         [[nodiscard]] AssetID getID() const override
         {
             return getMetadata().id;
         }
+
         [[nodiscard]] AssetStatus getStatus() const override
         {
             return getMetadata().status;
+        }
+
+        [[nodiscard]] AssetLocation getLocation() const override
+        {
+            return getMetadata().location;
         }
 
         [[nodiscard]] bool isLoaded() const override

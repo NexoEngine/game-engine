@@ -1,7 +1,8 @@
 #pragma once
 
 #include "SceneComponents.hpp"
-#include "save/Serializer.hpp"
+
+#include "save/Serialization.hpp"
 
 namespace nexo::save {
 
@@ -24,4 +25,3 @@ namespace nexo::save {
     };
 
 } // namespace nexo::save
-

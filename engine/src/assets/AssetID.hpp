@@ -25,3 +25,5 @@ namespace nexo::assets {
     using AssetID = boost::uuids::uuid;
 
 } // namespace nexo::assets
+
+#include "AssetID.serializer.hpp"

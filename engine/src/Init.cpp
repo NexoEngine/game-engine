@@ -81,6 +81,7 @@ namespace nexo {
         m_coordinator->registerComponent<components::NameComponent>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
         m_coordinator->registerComponent<components::PhysicsBodyComponent>("Physic Body");
+        m_coordinator->registerComponent<components::EditorTag>();
     }
 
     void Application::registerWindowCallbacks() const

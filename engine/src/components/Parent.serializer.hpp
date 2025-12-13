@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Parent.hpp"
-#include "save/Serializer.hpp"
+#include "save/Serialization.hpp"
 
 namespace nexo::save {
 
@@ -32,7 +32,7 @@ namespace nexo::save {
 
         static void deserialize(const json& j, components::RootComponent& v, const SerializationContext& /*ctx*/ = {}) {
             v.name = j.at("name").get<std::string>();
-            v.modelRef = j.at("model").get<assets::GenericAssetRef>();
+            v.modelRef = j.at("model").get<assets::GenericAssetRef>().as<assets::Model>();
             v.childCount = j.at("childCount").get<int>();
         }
 

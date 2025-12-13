@@ -39,3 +39,5 @@ namespace nexo::components {
     };
 
 } // namespace nexo::components
+
+#include "StaticMesh.serializer.hpp"

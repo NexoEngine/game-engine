@@ -35,7 +35,7 @@ try {
     loguru::init(argc, argv);
     loguru::g_stderr_verbosity   = loguru::Verbosity_3;
     nexo::editor::Editor &editor = nexo::editor::Editor::getInstance();
-
+    
     editor.registerWindow<nexo::editor::EditorScene>(
         std::format("Default Scene{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, 0));
     editor.registerWindow<nexo::editor::SceneTreeWindow>(NEXO_WND_USTRID_SCENE_TREE);

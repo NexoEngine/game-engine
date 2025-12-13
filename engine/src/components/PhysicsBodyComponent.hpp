@@ -44,3 +44,5 @@ namespace nexo::components {
         glm::quat lastRot{};
     };
 } // namespace nexo::components
+
+#include "PhysicsBodyComponent.serializer.hpp"

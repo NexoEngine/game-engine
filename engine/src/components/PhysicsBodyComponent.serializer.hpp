@@ -1,8 +1,9 @@
 #pragma once
 
 #include "PhysicsBodyComponent.hpp"
-#include "save/Serializer.hpp"
 #include "save/glm/glm.hpp"
+
+#include "save/Serialization.hpp"
 
 namespace nexo::save {
 

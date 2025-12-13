@@ -1,7 +1,8 @@
 #pragma once
 
 #include "MaterialComponent.hpp"
-#include "save/Serializer.hpp"
+
+#include "save/Serialization.hpp"
 
 namespace nexo::save {
 
@@ -15,7 +16,7 @@ namespace nexo::save {
         }
 
         static void deserialize(const json& j, components::MaterialComponent& v, const SerializationContext& /*ctx*/ = {}) {
-            v.material = j.at("material").get<assets::GenericAssetRef>();
+            v.material = j.at("material").get<assets::GenericAssetRef>().as<assets::Material>();
         }
 
         static void migrate_from_previous(json& /*j*/) {}

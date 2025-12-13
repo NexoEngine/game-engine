@@ -41,3 +41,5 @@ namespace nexo::components {
     };
 
 } // namespace nexo::components
+
+#include "SceneComponents.serializer.hpp"

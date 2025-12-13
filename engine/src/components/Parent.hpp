@@ -63,3 +63,5 @@ namespace nexo::components {
     };
 
 } // namespace nexo::components
+
+#include "Parent.serializer.hpp"

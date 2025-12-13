@@ -43,14 +43,14 @@ namespace nexo {
         std::string_view name{nameString};
 
         // Remove any leading compiler-specific prefixes
-        #if defined(_MSC_VER)
+    #if defined(_MSC_VER)
         // MSVC: Remove leading "class " or "struct "
         if (name.starts_with("class ")) {
             name.remove_prefix(strlen("class "));
         } else if (name.starts_with("struct ")) {
             name.remove_prefix(strlen("struct "));
         }
-        #endif
+    #endif
 
         // skip space
         size_t endPos = name.find_first_of(' ');
@@ -59,4 +59,11 @@ namespace nexo {
         }
         return std::string{name};
     }
+
+    template<typename T>
+    [[nodiscard]] constexpr std::string type_name(const T& /*unused*/)
+    {
+        return type_name<T>();
+    }
+
 } // namespace nexo

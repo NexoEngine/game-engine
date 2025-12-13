@@ -25,6 +25,8 @@
 #include "String.hpp"
 #include "System.hpp"
 #include "TypeErasedComponent/ComponentDescription.hpp"
+#include "save/Serialization.hpp"
+#include "save/SerializationConcepts.hpp"
 #include "save/SerializationContext.hpp"
 
 namespace nexo::ecs {
@@ -135,7 +137,7 @@ namespace nexo::ecs {
          * @brief Registers a new component type within the ComponentManager.
          */
         template<typename T>
-        void registerComponent(const std::string& displayName = std::string(type_name<T>()))
+        void registerComponent(const std::string& displayName = type_name<T>())
         {
             m_componentManager->registerComponent<T>();
             addComponentDescription(getComponentType<T>(),
@@ -174,6 +176,16 @@ namespace nexo::ecs {
                 };
             } else {
                 m_supportsMementoPattern.emplace(typeid(T), false);
+            }
+
+            if constexpr (JSONSerializable<T>) {
+                m_serializeComponentArrayFunctions[typeid(T)] =
+                    [this](json& j, const save::SerializationContext& ctx = save::SerializationContext{}) {
+                        auto componentArray = this->getComponentArray<T>();
+                        if (componentArray == nullptr) return;
+
+                        save::serialize(j, *componentArray, ctx);
+                };
             }
         }
 
@@ -860,7 +872,7 @@ namespace nexo::ecs {
         std::unordered_map<std::type_index, std::function<void(Entity, const std::any&)>> m_addComponentFunctions;
         std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentFunctions;
         std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentPointers;
-        std::unordered_map<std::type_index, std::function<void(nexo::json&, const nexo::save::SerializationContext&)>> m_serializeComponentArrayFunctions;
+        std::unordered_map<std::type_index, std::function<void(json&, const save::SerializationContext&)>> m_serializeComponentArrayFunctions;
 
         std::unordered_map<ComponentType, std::shared_ptr<ComponentDescription>> m_componentDescriptions;
     };

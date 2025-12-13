@@ -16,7 +16,9 @@
 
 #include "Asset.hpp"
 #include "AssetRef.hpp"
-#include "save/Serializer.hpp"
+#include "AssetID.hpp"
+
+#include "save/Serialization.hpp"
 
 namespace nexo::save {
 
@@ -30,35 +32,37 @@ namespace nexo::save {
         static void serialize(json& j, const assets::GenericAssetRef& value,
                               const SerializationContext& ctx = SerializationContext{})
         {
-            // Serialize as a boolean indicating validity
-            auto lock = value.lock();
-            if (!lock) {
-                j = json{
-                        {"uuid", nullptr},
-                    };
-                return;
+            (void)ctx;
+
+            const auto lock = value.lock();
+
+            switch (ctx.mode) {
+                case SerializationMode::TEXT:
+                    j = lock ? json{{"location", lock->getLocation()}} : json{{"uuid", nullptr}};
+                    break;
+                case SerializationMode::BINARY:
+                    j= lock ? json{{"uuid", lock->getID()}} : json{{"uuid", nullptr}};
+                    break;
             }
-            j = json{
-                    {"uuid", lock->getID()},
-                };
         }
 
         static void deserialize(const json& j, assets::GenericAssetRef& value,
                                 const SerializationContext& ctx = SerializationContext{})
         {
-            // Deserialize from a boolean indicating validity
-            if (j.at("uuid").is_null()) {
-                value = assets::GenericAssetRef{};
+            (void)ctx;
+            if (j.contains("uuid")) {
+                // TODO: Fix compilation
+                //const assets::AssetID id = j.at("uuid").get<assets::AssetID>();
+                // value = assets::GenericAssetRef{id};
                 return;
             }
-            const std::string uuid = j.at("uuid").get<std::string>();
-            auto asset = ctx.assetCatalog->getAssetByID(uuid);
-            if (!asset) {
-                Logger::error("AssetRef deserialization failed: asset with UUID {} not found", uuid);
-                value = assets::GenericAssetRef{};
+
+            if (j.contains("location")) {
+                const assets::AssetLocation location = j.at("location").get<assets::AssetLocation>();
+                value = assets::GenericAssetRef{location};
                 return;
             }
-            value = assets::GenericAssetRef{asset};
+            LOG(NEXO_WARN, "AssetRef deserialization: no valid data found (uuid or location)");
         }
 
         static void migrate_from_previous(const json& j)
@@ -68,6 +72,32 @@ namespace nexo::save {
 
     };
 
+    template<typename InputAsset>
+    struct CurrentVersion<assets::AssetRef<InputAsset>> {
+        static constexpr uint32_t value = 0;
+    };
 
+    template<typename InputAsset>
+    struct Serializer<assets::AssetRef<InputAsset>, 0> {
+        static void serialize(json& j, const assets::AssetRef<InputAsset>& value,
+                              const SerializationContext& ctx = SerializationContext{})
+        {
+            assets::GenericAssetRef genericRef = value;
+            j = genericRef;
+        }
+
+        static void deserialize(const json& j, assets::AssetRef<InputAsset>& value,
+                                const SerializationContext& ctx = SerializationContext{})
+        {
+            assets::GenericAssetRef genericRef;
+            j.get_to(genericRef);
+            value = genericRef.as<InputAsset>();
+        }
+
+        static void migrate_from_previous(const json& j)
+        {
+            (void)j; // No previous version
+        }
+    };
 
 } // namespace nexo::save

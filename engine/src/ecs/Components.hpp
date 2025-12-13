@@ -263,10 +263,12 @@ namespace nexo::ecs {
         {
             const ComponentType typeID = getComponentTypeID<T>();
 
-            if (m_componentArrays[typeID] == nullptr) THROW_EXCEPTION(ComponentNotRegistered);
+            if (m_componentArrays[typeID] == nullptr) THROW_EXCEPTION(ComponentNotRegistered, type_name<T>());
 
             return typeID;
         }
+
+
 
         /**
          * @brief Adds a component to an entity

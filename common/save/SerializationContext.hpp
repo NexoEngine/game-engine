@@ -23,6 +23,11 @@
 
 namespace nexo::save {
 
+    enum class SerializationMode : uint8_t {
+        TEXT = 0,
+        BINARY = 1,
+    };
+
     /**
      * @brief Serialization context flags
      *
@@ -34,6 +39,7 @@ namespace nexo::save {
         bool includeEditorData = false;     // Editor notes, viewport locks, debug info
         bool includeDefaults = true;        // Include default values (true = verbose, false = compact)
         bool resolveAssetRefs = true;       // True = serialize full asset ID, false = serialize weak refs
+        SerializationMode mode = SerializationMode::TEXT; // Serialization mode
 
         // Custom data (for future extensions)
         std::unordered_map<std::string, std::string> metadata;

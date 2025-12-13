@@ -1,7 +1,8 @@
 #pragma once
 
 #include "StaticMesh.hpp"
-#include "save/Serializer.hpp"
+
+#include "save/Serialization.hpp"
 
 namespace nexo::save {
 

@@ -847,3 +847,5 @@ namespace nexo::ecs {
 #endif
 
 } // namespace nexo::ecs
+
+#include "ComponentArray.serializer.hpp"

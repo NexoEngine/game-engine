@@ -240,6 +240,21 @@ namespace nexo {
             }
             ofs << root.dump(4);
             ofs.close();
+
+            std::filesystem::path binPath = path;
+            binPath.replace_extension(".nexob");
+
+            std::ofstream ofsb(binPath, std::ios::out | std::ios::binary);
+            if (!ofsb) {
+                LOG(NEXO_ERROR, "Failed to open binary save file: {}", binPath.string());
+                return false;
+            }
+
+            std::vector<uint8_t> output_vector;
+            json::to_msgpack(root, output_vector);
+            ofsb.write(reinterpret_cast<const char *>(output_vector.data()), output_vector.size());
+            ofsb.close();
+
             LOG(NEXO_INFO, "Game saved to {}", path.string());
             return true;
         } catch (const std::exception &e) {

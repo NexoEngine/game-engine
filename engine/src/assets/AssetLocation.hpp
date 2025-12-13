@@ -39,6 +39,8 @@ namespace nexo::assets {
      */
     class AssetLocation {
        public:
+        AssetLocation() = default;
+
         explicit AssetLocation(const std::string& fullLocation)
         {
             setLocation(fullLocation);
@@ -246,3 +248,5 @@ namespace nexo::assets {
     };
 
 } // namespace nexo::assets
+
+#include "AssetLocation.serializer.hpp"

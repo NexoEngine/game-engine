@@ -136,8 +136,8 @@ namespace nexo::editor {
 
         m_sceneUuid = app.getSceneManager().getScene(m_sceneId).getUuid();
         if (m_defaultScene) {
-            //loadDefaultEntities();
-            fullScene();
+            loadDefaultEntities();
+            //fullScene();
             // dominoScene({7.5f, 4.07f, -0.5f});
             // lightsScene(glm::vec3{0.0f, 0.0f, 0.0f});
             // chambouleScene(glm::vec3{0.0f, 0.0f, 0.0f});

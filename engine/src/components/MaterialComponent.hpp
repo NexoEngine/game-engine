@@ -33,3 +33,5 @@ namespace nexo::components {
         }
     };
 } // namespace nexo::components
+
+#include "MaterialComponent.serializer.hpp"

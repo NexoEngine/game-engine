@@ -55,10 +55,24 @@ namespace nexo::assets {
         {}
 
         // Standard copy/move
-        AssetRef(const AssetRef&)                = default;
-        AssetRef& operator=(const AssetRef&)     = default;
-        AssetRef(AssetRef&&) noexcept            = default;
-        AssetRef& operator=(AssetRef&&) noexcept = default;
+        // AssetRef(const AssetRef&)                = default;
+        // AssetRef& operator=(const AssetRef&)     = default;
+        // AssetRef(AssetRef&&) noexcept            = default;
+        // AssetRef& operator=(AssetRef&&) noexcept = default;
+
+        // Converting constructors (allow constructing AssetRef<T> from AssetRef<U> when U* is convertible to T*)
+        template<typename U>
+            requires std::is_convertible_v<U*, TAsset*>
+        AssetRef(const AssetRef<U>& other) {
+            m_variant = other.m_variant;
+        }
+
+        template<typename U>
+            requires std::is_convertible_v<U*, TAsset*>
+        AssetRef(AssetRef<U>&& other) noexcept {
+            m_variant = std::move(other.m_variant);
+        }
+
         ~AssetRef()                              = default;
 
         [[nodiscard]] bool operator==(const GenericAssetRef& other) const;
@@ -73,8 +87,8 @@ namespace nexo::assets {
         template<typename U, typename = std::enable_if_t<std::is_convertible_v<U*, TAsset*>>>
         AssetRef& operator=(const AssetRef<U>& other);
 
-        template <typename U = TAsset, typename = std::enable_if_t<!std::is_same_v<U, IAsset> && std::is_convertible_v<U*, IAsset*>>>
-        explicit(false) operator GenericAssetRef() const {
+        // Conversion to GenericAssetRef (implicit operator to help copy-initialization sites)
+        operator GenericAssetRef() const noexcept {
             return GenericAssetRef(*this);
         }
 
@@ -339,3 +353,5 @@ namespace nexo::assets {
     }
 
 } // namespace nexo::assets
+
+#include "AssetRef.serializer.hpp"

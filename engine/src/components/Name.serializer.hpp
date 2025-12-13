@@ -14,7 +14,8 @@
 #pragma once
 
 #include "Name.hpp"
-#include "save/Serializer.hpp"
+
+#include "save/Serialization.hpp"
 
 namespace nexo::save {
 

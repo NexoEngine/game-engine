@@ -20,19 +20,8 @@ namespace nexo::save {
         static void serialize(json& j, const nexo::ecs::ComponentArray<T>& arr,
                               const SerializationContext& ctx = SerializationContext{})
         {
-            j = json::array();
-            const auto span = arr.entities();
-            for (size_t i = 0; i < span.size(); ++i) {
-                const auto entity = span[i];
-                json item;
-                item["entity"] = entity;
-                // Use the public save API for the component type
-                const T& comp = arr.get(entity);
-                json compj;
-                nexo::save::serialize(compj, comp, ctx);
-                item["component"] = compj;
-                j.push_back(item);
-            }
+            j["entitiesDense"] = arr.entities();
+            j["componentsDense"] = arr.getAllComponents();
         }
 
         static void deserialize(const json& j, nexo::ecs::ComponentArray<T>& arr,

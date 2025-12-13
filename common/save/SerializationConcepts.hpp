@@ -115,4 +115,9 @@ namespace nexo {
     template<typename T>
     concept JSONSerializable = save::HasSerializer<T> || HasJsonFunctions<T>;
 
+
+    template<typename T>
+    inline constexpr bool JSONSerializable_v = JSONSerializable<T>;
+
+
 } // namespace nexo

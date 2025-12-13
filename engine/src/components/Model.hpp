@@ -23,3 +23,5 @@ namespace nexo::components {
         assets::AssetRef<assets::Model> model;
     };
 } // namespace nexo::components
+
+#include "Model.serializer.hpp"

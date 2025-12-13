@@ -56,3 +56,5 @@ namespace nexo::components {
         std::string uuid = genUuid();
     };
 } // namespace nexo::components
+
+#include "Uuid.serializer.hpp"

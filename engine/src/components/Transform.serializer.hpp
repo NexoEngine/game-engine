@@ -15,8 +15,8 @@
 #pragma once
 
 #include "Transform.hpp"
-#include "save/Serializer.hpp"
 
+#include "save/Serialization.hpp"
 #include "save/glm/glm.hpp"
 
 namespace nexo::save {
@@ -25,6 +25,7 @@ namespace nexo::save {
     struct Serializer<components::TransformComponent, 0> {
         static void serialize(json& j, const components::TransformComponent& value, const SerializationContext& ctx = SerializationContext{})
         {
+            (void)ctx;
             j = json{
                 {"pos", value.pos},
                 {"size", value.size},
@@ -37,6 +38,7 @@ namespace nexo::save {
 
         static void deserialize(const json& j, components::TransformComponent& value, const SerializationContext& ctx = SerializationContext{})
         {
+            (void)ctx;
             value.pos = j.at("pos").get<glm::vec3>();
             value.size = j.at("size").get<glm::vec3>();
             value.quat = j.at("quat").get<glm::quat>();

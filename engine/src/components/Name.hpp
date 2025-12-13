@@ -34,3 +34,5 @@ namespace nexo::components {
         }
     };
 } // namespace nexo::components
+
+#include "Name.serializer.hpp"
