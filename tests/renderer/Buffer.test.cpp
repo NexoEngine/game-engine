@@ -74,6 +74,7 @@ namespace nexo::renderer {
 	        if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
 	        {
 	            glfwDestroyWindow(window);
+	            window = nullptr;
 	            glfwTerminate();
 	            GTEST_SKIP() << "Failed to initialize GLAD. Skipping OpenGL tests.";
 	        }
@@ -84,13 +85,17 @@ namespace nexo::renderer {
 	        if (major < 4 || (major == 4 && minor < 5))
 	        {
 	            glfwDestroyWindow(window);
+	            window = nullptr;
 	            glfwTerminate();
 	            GTEST_SKIP() << "OpenGL 4.5 is required. Skipping OpenGL tests.";
 	        }
         }
 
         void TearDown() override {
-            // Clean up if needed
+            if (window) {
+                glfwDestroyWindow(window);
+                window = nullptr;
+            }
         }
     };
 
@@ -121,6 +126,7 @@ namespace nexo::renderer {
 	        if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
 	        {
 	            glfwDestroyWindow(window);
+	            window = nullptr;
 	            glfwTerminate();
 	            GTEST_SKIP() << "Failed to initialize GLAD. Skipping OpenGL tests.";
 	        }
@@ -131,9 +137,17 @@ namespace nexo::renderer {
 	        if (major < 4 || (major == 4 && minor < 5))
 	        {
 	            glfwDestroyWindow(window);
+	            window = nullptr;
 	            glfwTerminate();
 	            GTEST_SKIP() << "OpenGL 4.5 is required. Skipping OpenGL tests.";
 	        }
+        }
+
+        void TearDown() override {
+            if (window) {
+                glfwDestroyWindow(window);
+                window = nullptr;
+            }
         }
     };
 

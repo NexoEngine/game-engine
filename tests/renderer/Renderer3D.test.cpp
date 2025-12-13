@@ -77,7 +77,9 @@ namespace nexo::renderer {
 
             void TearDown() override
             {
-                EXPECT_NO_THROW(renderer3D->shutdown());
+                if (renderer3D) {
+                    EXPECT_NO_THROW(renderer3D->shutdown());
+                }
                 if (window)
                 {
                     glfwDestroyWindow(window);
