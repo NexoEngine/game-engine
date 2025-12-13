@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include <gtest/gtest.h>
+#include <algorithm>
 #include "ecs/Entity.hpp"
 #include "ecs/ECSExceptions.hpp"
 
