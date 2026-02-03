@@ -137,7 +137,7 @@ namespace nexo::editor {
             lightsScene(m_sceneId, glm::vec3{0.0f, 0.0f, 0.0f});
             // chambouleScene(m_sceneId, glm::vec3{0.0f, 0.0f, 0.0f});
             // physicScene(m_sceneId, glm::vec3{-60.0f, 0.0f, 0.0f});
-            // videoScene(m_sceneId, glm::vec3{0.0f, 0.0f, 0.0f});
+            videoScene(m_sceneId, glm::vec3{0.0f, 0.0f, 0.0f});
             // forestScene(m_sceneId, glm::vec3{100.0f, 1.0f, 0.0f});
         }
     }
