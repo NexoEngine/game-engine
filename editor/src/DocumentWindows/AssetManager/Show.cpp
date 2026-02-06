@@ -103,6 +103,9 @@ namespace nexo::editor {
 
         beginRender(NEXO_WND_USTRID_ASSET_MANAGER);
 
+        // Handle keyboard shortcuts
+        handleSearchKeyboardShortcuts();
+
         drawMenuBar();
 
         // Left panel

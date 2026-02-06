@@ -19,12 +19,15 @@
 
 #include <ADocumentWindow.hpp>
 #include <assets/AssetRef.hpp>
+#include <assets/AssetSearchFilter.hpp>
+#include <assets/SearchCriteria.hpp>
 #include <core/event/WindowEvent.hpp>
 #include <imgui.h>
 #include <set>
 #include "DocumentWindows/PopupManager.hpp"
 #include "FolderManager.hpp"
 #include "assets/Asset.hpp"
+#include "context/SearchHistory.hpp"
 
 namespace nexo::editor {
 
@@ -188,6 +191,18 @@ namespace nexo::editor {
         void handleFolderDrop(const std::string& folderPath, const std::string &folderName);
         void importDroppedFile(const std::string& filePath) const;
 
+        // search functionality
+        void drawSearchBar();
+        void drawAdvancedSearchPanel();
+        void drawStatusFilters();
+        void drawSearchSuggestions();
+        void updateSearchFilter();
+        void applySearch();
+        void clearSearch();
+        void handleSearchInput();
+        void handleSearchKeyboardShortcuts();
+        [[nodiscard]] std::vector<assets::GenericAssetRef> getFilteredAssets() const;
+
         std::set<unsigned int> m_selectedAssets;        // Set of selected asset indices
         std::shared_ptr<assets::IAsset> m_hoveredAsset; // Currently hovered asset
 
@@ -199,6 +214,17 @@ namespace nexo::editor {
         std::string m_currentFolder;             // Currently selected folder
         std::string m_hoveredFolder;             // Currently hovered folder
         std::string m_searchBuffer;
+
+        // Search functionality
+        assets::AssetSearchFilter m_searchFilter;
+        SearchHistory m_searchHistory;
+        assets::SearchCriteria m_searchCriteria;
+        bool m_showAdvancedSearch = false;
+        bool m_showSearchSuggestions = false;
+        std::vector<std::string> m_searchSuggestions;
+        int m_selectedSuggestion = -1;
+        std::chrono::steady_clock::time_point m_lastSearchTime;
+        static constexpr int SEARCH_DEBOUNCE_MS = 300;
 
         PopupManager m_popupManager;
 

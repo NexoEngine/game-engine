@@ -18,12 +18,16 @@
 
 #pragma once
 
-#include <cstdint>
-#include <filesystem>
 #include <Texture.hpp>
-#include <boost/uuid/uuid.hpp>
+#include <array>
 #include <boost/uuid/basic_random_generator.hpp>
 #include <boost/uuid/nil_generator.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <chrono>
+#include <cstdint>
+#include <filesystem>
+#include <string>
+#include <vector>
 
 #include "AssetLocation.hpp"
 #include "AssetRef.hpp"
@@ -40,39 +44,17 @@ namespace nexo::assets {
      * @note The order of the enum is important, as it is used to index into the AssetTypeNames array.
      *       Make sure to update the array if you add new asset types.
      */
-    enum class AssetType {
-        UNKNOWN,
-        TEXTURE,
-        MATERIAL,
-        MODEL,
-        SOUND,
-        MUSIC,
-        FONT,
-        SHADER,
-        SCRIPT,
-        _COUNT
-    };
+    enum class AssetType { UNKNOWN, TEXTURE, MATERIAL, MODEL, SOUND, MUSIC, FONT, SHADER, SCRIPT, _COUNT };
 
     /**
      * @brief Array of asset type names
      * @note The order of the array must match the order of the AssetType enum.
      */
-    constexpr const char *AssetTypeNames[] = {
-        "UNKNOWN",
-        "TEXTURE",
-        "MATERIAL",
-        "MODEL",
-        "SOUND",
-        "MUSIC",
-        "FONT",
-        "SHADER",
-        "SCRIPT"
-    };
+    constexpr std::array<const char*, 9> AssetTypeNames = {{"UNKNOWN", "TEXTURE", "MATERIAL", "MODEL", "SOUND",
+                                                             "MUSIC",   "FONT",    "SHADER",   "SCRIPT"}};
 
-    static_assert(
-        static_cast<int>(AssetType::_COUNT) == std::size(AssetTypeNames),
-        "AssetTypeNames array size must match AssetType enum size"
-    );
+    static_assert(static_cast<int>(AssetType::_COUNT) == std::size(AssetTypeNames),
+                  "AssetTypeNames array size must match AssetType enum size");
 
     /**
      * @brief Retrieves the name corresponding to the specified asset type.
@@ -82,7 +64,8 @@ namespace nexo::assets {
      * @param type The asset type value.
      * @return const char* The name of the asset type.
      */
-    constexpr const char *getAssetTypeName(AssetType type) {
+    constexpr const char* getAssetTypeName(AssetType type)
+    {
         return AssetTypeNames[static_cast<int>(type)];
     }
 
@@ -95,7 +78,8 @@ namespace nexo::assets {
      * @param j JSON object to receive the serialized asset type.
      * @param type The AssetType enum value to convert.
      */
-    inline void to_json(nlohmann::json& j, AssetType type) {
+    inline void to_json(nlohmann::json& j, AssetType type)
+    {
         j = getAssetTypeName(type);
     }
 
@@ -109,7 +93,8 @@ namespace nexo::assets {
      * @param j JSON object containing the asset type as a string.
      * @param type Output parameter to store the resulting AssetType.
      */
-    inline void from_json(const nlohmann::json& j, AssetType& type) {
+    inline void from_json(const nlohmann::json& j, AssetType& type)
+    {
         for (int i = 0; i < static_cast<int>(AssetType::_COUNT); ++i) {
             if (j == AssetTypeNames[i]) {
                 type = static_cast<AssetType>(i);
@@ -125,21 +110,22 @@ namespace nexo::assets {
      */
     using AssetID = boost::uuids::uuid;
 
-    enum class AssetStatus {
-        UNLOADED,
-        LOADED,
-        ERROR
-    };
+    enum class AssetStatus { UNLOADED, LOADED, ERROR };
 
     class AssetCatalog;
     class AssetImporter;
 
     struct AssetMetadata {
-        AssetType type;              //< Asset type
-        AssetStatus status;          //< Asset status
-        uint64_t referenceCount;     //< Number of references to the asset
-        AssetID id;                  //< Unique identifier
-        AssetLocation location;      //< Location of the asset
+        AssetType type = AssetType::UNKNOWN;                                         //< Asset type
+        AssetStatus status = AssetStatus::UNLOADED;                                  //< Asset status
+        uint64_t referenceCount = 0;                                                 //< Number of references to the asset
+        AssetID id = boost::uuids::nil_uuid();                                       //< Unique identifier
+        AssetLocation location = AssetLocation("default");                           //< Location of the asset
+        std::chrono::system_clock::time_point creationTime = std::chrono::system_clock::now();     //< Asset creation time
+        std::chrono::system_clock::time_point modificationTime = std::chrono::system_clock::now(); //< Last modification time
+        size_t fileSize = 0;                                                         //< File size in bytes
+        std::vector<std::string> tags = {};                                          //< Asset tags for categorization
+        std::string description = "";                                                //< Asset description
     };
 
     /**
@@ -148,36 +134,31 @@ namespace nexo::assets {
     class IAsset {
         friend class AssetCatalog;
         friend class AssetImporter;
-        public:
-            virtual ~IAsset() = default;
 
-            [[nodiscard]] virtual const AssetMetadata& getMetadata() const = 0;
-            [[nodiscard]] virtual AssetType getType() const = 0;
-            [[nodiscard]] virtual AssetID getID() const = 0;
-            [[nodiscard]] virtual AssetStatus getStatus() const = 0;
+       public:
+        virtual ~IAsset() = default;
 
-            [[nodiscard]] virtual bool isLoaded() const = 0;
-            [[nodiscard]] virtual bool isErrored() const = 0;
+        [[nodiscard]] virtual const AssetMetadata& getMetadata() const = 0;
+        [[nodiscard]] virtual AssetType getType() const                = 0;
+        [[nodiscard]] virtual AssetID getID() const                    = 0;
+        [[nodiscard]] virtual AssetStatus getStatus() const            = 0;
 
-        protected:
-            explicit IAsset()
-                : m_metadata({
-                    .type = AssetType::UNKNOWN,
-                    .status = AssetStatus::UNLOADED,
-                    .referenceCount = 0,
-                    .id = boost::uuids::nil_uuid(),
-                    .location = AssetLocation("default"),
-                })
-            {
-            }
+        [[nodiscard]] virtual bool isLoaded() const  = 0;
+        [[nodiscard]] virtual bool isErrored() const = 0;
 
-        public:
-            AssetMetadata m_metadata;
+       protected:
+        explicit IAsset() = default;
 
-            /**
-             * @brief Get the metadata of the asset (for modification)
-             */
-            [[nodiscard]] AssetMetadata& getMetadata() { return m_metadata; }
+       public:
+        AssetMetadata m_metadata;
+
+        /**
+         * @brief Get the metadata of the asset (for modification)
+         */
+        [[nodiscard]] AssetMetadata& getMetadata()
+        {
+            return m_metadata;
+        }
     };
 
     template<typename TAssetData, AssetType TAssetType>
@@ -185,58 +166,77 @@ namespace nexo::assets {
         friend class AssetCatalog;
         friend class AssetRef<TAssetData>;
 
-        public:
-            // SFINAE definitions
-            using AssetDataType = TAssetData;
-            static constexpr AssetType TYPE = TAssetType;
+       public:
+        // SFINAE definitions
+        using AssetDataType             = TAssetData;
+        static constexpr AssetType TYPE = TAssetType;
 
-            ~Asset() override = default;
+        ~Asset() override = default;
 
-            [[nodiscard]] const AssetMetadata& getMetadata() const override { return m_metadata; }
-            [[nodiscard]] AssetType getType() const override { return getMetadata().type; }
-            [[nodiscard]] AssetID getID() const override { return getMetadata().id; }
-            [[nodiscard]] AssetStatus getStatus() const override { return getMetadata().status; }
+        using IAsset::getMetadata;
+        [[nodiscard]] const AssetMetadata& getMetadata() const override
+        {
+            return m_metadata;
+        }
+        [[nodiscard]] AssetType getType() const override
+        {
+            return getMetadata().type;
+        }
+        [[nodiscard]] AssetID getID() const override
+        {
+            return getMetadata().id;
+        }
+        [[nodiscard]] AssetStatus getStatus() const override
+        {
+            return getMetadata().status;
+        }
 
-            [[nodiscard]] bool isLoaded() const override { return getStatus() == AssetStatus::LOADED; }
-            [[nodiscard]] bool isErrored() const override { return getStatus() == AssetStatus::ERROR; }
+        [[nodiscard]] bool isLoaded() const override
+        {
+            return getStatus() == AssetStatus::LOADED;
+        }
+        [[nodiscard]] bool isErrored() const override
+        {
+            return getStatus() == AssetStatus::ERROR;
+        }
 
-            [[nodiscard]] const std::unique_ptr<TAssetData>& getData() const { return data; }
-            Asset& setData(std::unique_ptr<TAssetData> newData);
+        [[nodiscard]] const std::unique_ptr<TAssetData>& getData() const
+        {
+            return data;
+        }
+        Asset& setData(std::unique_ptr<TAssetData> newData);
 
-        protected:
-            explicit Asset() : data(nullptr)
-            {
-                m_metadata.type = TAssetType;
-            }
+       protected:
+        explicit Asset() : data(nullptr)
+        {
+            m_metadata.type = TAssetType;
+        }
 
-            explicit Asset(TAssetData* data) : data(data)
-            {
-                m_metadata.type = TAssetType;
-                m_metadata.status = AssetStatus::LOADED;
-            }
+        explicit Asset(TAssetData* data) : data(data)
+        {
+            m_metadata.type   = TAssetType;
+            m_metadata.status = AssetStatus::LOADED;
+        }
 
-            std::unique_ptr<TAssetData> data;
+        std::unique_ptr<TAssetData> data;
 
-        private:
-            /*virtual AssetStatus load() = 0;
-            virtual AssetStatus unload() = 0;*/
+       private:
+        /*virtual AssetStatus load() = 0;
+        virtual AssetStatus unload() = 0;*/
     };
-
 
     template<typename T>
     concept IsAsset =
         requires {
             typename T::AssetDataType;
             { T::TYPE } -> std::convertible_to<AssetType>;
-        } && std::derived_from<T, Asset<typename T::AssetDataType, T::TYPE>>
-          && std::is_base_of_v<Asset<typename T::AssetDataType, T::TYPE>, T>
-          && std::is_base_of_v<IAsset, T>;
-
+        } && std::derived_from<T, Asset<typename T::AssetDataType, T::TYPE>> &&
+        std::is_base_of_v<Asset<typename T::AssetDataType, T::TYPE>, T> && std::is_base_of_v<IAsset, T>;
 
     template<typename TAssetData, AssetType TAssetType>
     Asset<TAssetData, TAssetType>& Asset<TAssetData, TAssetType>::setData(std::unique_ptr<TAssetData> newData)
     {
-        data.reset();  // Clean up existing data
+        data.reset(); // Clean up existing data
         if (newData == nullptr) {
             m_metadata.status = AssetStatus::UNLOADED;
         } else {
@@ -245,4 +245,4 @@ namespace nexo::assets {
         data = std::move(newData);
         return *this;
     }
-} // namespace nexo::editor
+} // namespace nexo::assets
