@@ -176,5 +176,6 @@ namespace nexo::editor {
             bool m_showDemoWindow = false;
             WindowRegistry m_windowRegistry;
             InputManager m_inputManager;
+            class PrivacyConsentDialog* m_privacyDialog = nullptr;
     };
 }

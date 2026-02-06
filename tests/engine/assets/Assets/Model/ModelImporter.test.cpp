@@ -43,6 +43,15 @@ class TestModelImporter : public ModelImporter {
     FRIEND_TEST(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat);
     FRIEND_TEST(ModelImporterTestFixture, ImportImplSetsMainAsset);
     FRIEND_TEST(ModelImporterTestFixture, ProcessMeshHandlesEmptyMesh);
+    FRIEND_TEST(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_InvalidByteValues);
+    FRIEND_TEST(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_NonRGBAChannelCodes);
+    FRIEND_TEST(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_NullAndSpecialCharacters);
+    FRIEND_TEST(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_MalformedFormatHints);
+    FRIEND_TEST(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_EmptyAndEdgeCases);
+    FRIEND_TEST(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_UnsupportedBitDepths);
+    FRIEND_TEST(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_WrongChannelOrder);
+    FRIEND_TEST(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_BoundaryLengthCases);
+    FRIEND_TEST(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_ValidEdgeCases);
 
 };
 
@@ -239,4 +248,141 @@ TEST_F(ModelImporterTestFixture, ImportCubeModel) {
     // Check roughness and metallic properties if supported
     EXPECT_FLOAT_EQ(materialData->roughness, 0.5f); // Pr in MTL
     EXPECT_FLOAT_EQ(materialData->metallic, 0.7f);  // Pm in MTL
+}
+
+// Edge case tests for convertAssimpHintToNxTextureFormat
+TEST_F(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_InvalidByteValues) {
+    // Test with non-digit characters in bit positions
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgbaa888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba888a"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba8a88"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgbax888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba 888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba-888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba_888"), nexo::renderer::NxTextureFormat::INVALID);
+}
+
+TEST_F(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_NonRGBAChannelCodes) {
+    // Test with invalid channel codes
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("xgba8888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("ryba8888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgza8888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgbw8888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("1234888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("!@#$8888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("    8888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("\t\t\t\t8888"), nexo::renderer::NxTextureFormat::INVALID);
+}
+
+TEST_F(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_NullAndSpecialCharacters) {
+    // Test with embedded null characters (string will be truncated at null)
+    char hintWithNull[10] = "rgba\08888";
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat(hintWithNull), nexo::renderer::NxTextureFormat::INVALID);
+
+    // Test with null at different positions
+    char hintWithNull2[10] = "rg\0a8888";
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat(hintWithNull2), nexo::renderer::NxTextureFormat::INVALID);
+
+    // Test with special characters
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgb\n8888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgb\r8888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgb\t8888"), nexo::renderer::NxTextureFormat::INVALID);
+}
+
+TEST_F(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_MalformedFormatHints) {
+    // Test with mismatched channel and bit positions
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rrrr8888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("gggg8888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("bbbb8888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("aaaa8888"), nexo::renderer::NxTextureFormat::INVALID);
+
+    // Test with uppercase (case-insensitive due to tolower)
+    // Note: The function requires EXACTLY 8 characters
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("RGBA8888"), nexo::renderer::NxTextureFormat::RGBA8);
+
+    // These are wrong length - function requires 8 chars
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("RGB8880"), nexo::renderer::NxTextureFormat::INVALID);  // 7 chars
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("RG8800"), nexo::renderer::NxTextureFormat::INVALID);   // 6 chars
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("R8000"), nexo::renderer::NxTextureFormat::INVALID);    // 5 chars
+
+    // Test with mixed case (case-insensitive due to tolower)
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("RgBa8888"), nexo::renderer::NxTextureFormat::RGBA8);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rGbA8888"), nexo::renderer::NxTextureFormat::RGBA8);
+}
+
+TEST_F(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_EmptyAndEdgeCases) {
+    // Empty string was already tested but let's be explicit
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat(""), nexo::renderer::NxTextureFormat::INVALID);
+
+    // Single character
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("r"), nexo::renderer::NxTextureFormat::INVALID);
+
+    // Just channel codes, no bits
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba"), nexo::renderer::NxTextureFormat::INVALID);
+
+    // Just bits, no channels
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("8888"), nexo::renderer::NxTextureFormat::INVALID);
+
+    // All zeros
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba0000"), nexo::renderer::NxTextureFormat::INVALID);
+
+    // All nines (invalid bit depth)
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba9999"), nexo::renderer::NxTextureFormat::INVALID);
+}
+
+TEST_F(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_UnsupportedBitDepths) {
+    // Test with non-8 bit depths
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba1111"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba2222"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba3333"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba4444"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba5555"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba6666"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba7777"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba9999"), nexo::renderer::NxTextureFormat::INVALID);
+
+    // Mixed bit depths (only some are 8)
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba8848"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba8188"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba1688"), nexo::renderer::NxTextureFormat::INVALID);
+}
+
+TEST_F(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_WrongChannelOrder) {
+    // Test valid channels but wrong order for RGBA pattern
+    // These should be INVALID because the function checks for strict order: r, then g, then b, then a
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("argb8888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("gbar8888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("barg8888"), nexo::renderer::NxTextureFormat::INVALID);
+
+    // Test reversed order
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("abgr8888"), nexo::renderer::NxTextureFormat::INVALID);
+
+    // Test with gaps in wrong positions
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rga08800"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("ra080080"), nexo::renderer::NxTextureFormat::INVALID);
+}
+
+TEST_F(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_BoundaryLengthCases) {
+    // Test strings that are close to valid length but not exactly 8
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba888"), nexo::renderer::NxTextureFormat::INVALID);  // 7 chars
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba88888"), nexo::renderer::NxTextureFormat::INVALID);  // 9 chars
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba88"), nexo::renderer::NxTextureFormat::INVALID);  // 6 chars
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba8888 "), nexo::renderer::NxTextureFormat::INVALID);  // 9 chars with trailing space
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat(" rgba8888"), nexo::renderer::NxTextureFormat::INVALID);  // 9 chars with leading space
+
+    // Very long strings
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba8888rgba8888"), nexo::renderer::NxTextureFormat::INVALID);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba8888888888888"), nexo::renderer::NxTextureFormat::INVALID);
+}
+
+TEST_F(ModelImporterTestFixture, ConvertAssimpHintToNxTextureFormat_ValidEdgeCases) {
+    // Test valid formats - function requires EXACTLY 8 chars
+    // All 4 channel positions must be r/g/b/a, bits with 0 are inactive
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba8000"), nexo::renderer::NxTextureFormat::R8);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba8800"), nexo::renderer::NxTextureFormat::RG8);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rgba8880"), nexo::renderer::NxTextureFormat::RGB8);
+
+    // Test that case insensitivity works correctly
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("RGBA8888"), nexo::renderer::NxTextureFormat::RGBA8);
+    EXPECT_EQ(importer.convertAssimpHintToNxTextureFormat("rGbA8888"), nexo::renderer::NxTextureFormat::RGBA8);
 }

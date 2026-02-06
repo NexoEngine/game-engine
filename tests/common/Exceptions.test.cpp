@@ -68,4 +68,50 @@ namespace nexo {
             FAIL() << "Unexpected exception type thrown";
         }
     }
+
+    TEST(ExceptionTest, GetFile) {
+        constexpr const char* expectedFile = __FILE__;
+        Exception ex("Test", std::source_location::current());
+
+        EXPECT_STREQ(ex.getFile(), expectedFile);
+    }
+
+    TEST(ExceptionTest, GetLine) {
+        constexpr unsigned int expectedLine = __LINE__ + 1;
+        Exception ex("Test", std::source_location::current());
+
+        EXPECT_EQ(ex.getLine(), expectedLine);
+    }
+
+    TEST(ExceptionTest, GetFunction) {
+        Exception ex("Test", std::source_location::current());
+
+        // Function name should contain the test function name
+        std::string funcName = ex.getFunction();
+        EXPECT_FALSE(funcName.empty());
+    }
+
+    TEST(ExceptionTest, GetFormattedMessage) {
+        Exception ex("Formatted test", std::source_location::current());
+
+        const std::string& formatted = ex.getFormattedMessage();
+        EXPECT_NE(formatted.find("Formatted test"), std::string::npos);
+        EXPECT_FALSE(formatted.empty());
+    }
+
+    TEST(ExceptionTest, GetSourceLocation) {
+        const auto loc = std::source_location::current();
+        Exception ex("Source location test", loc);
+
+        const auto& exLoc = ex.getSourceLocation();
+        EXPECT_EQ(exLoc.line(), loc.line());
+        EXPECT_STREQ(exLoc.file_name(), loc.file_name());
+    }
+
+    TEST(ExceptionTest, WhatReturnsFormattedMessage) {
+        Exception ex("What test", std::source_location::current());
+
+        // what() should return the same as getFormattedMessage()
+        EXPECT_EQ(std::string(ex.what()), ex.getFormattedMessage());
+    }
 }

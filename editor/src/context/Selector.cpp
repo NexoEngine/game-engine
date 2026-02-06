@@ -17,8 +17,11 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Selector.hpp"
+
+#ifndef NEXO_TESTING
 #include "Application.hpp"
 #include "components/Editor.hpp"
+#endif
 
 namespace nexo::editor {
 
@@ -173,11 +176,7 @@ namespace nexo::editor {
 
     const std::string& Selector::getUiHandle(const std::string& uuid, const std::string& defaultHandle)
     {
-        const auto it = m_uiHandles.find(uuid);
-        if (it == m_uiHandles.end()) {
-            m_uiHandles[uuid] = defaultHandle;
-            return defaultHandle;
-        }
+        auto [it, inserted] = m_uiHandles.try_emplace(uuid, defaultHandle);
         return it->second;
     }
 
@@ -188,13 +187,21 @@ namespace nexo::editor {
 
     void Selector::addSelectedTag(const int entity)
     {
+#ifndef NEXO_TESTING
         constexpr components::SelectedTag selectTag{};
         Application::m_coordinator->addComponent(entity, selectTag);
+#else
+        (void)entity; // Suppress unused parameter warning in test builds
+#endif
     }
 
     void Selector::removeSelectedTag(const int entity)
     {
+#ifndef NEXO_TESTING
         if (Application::m_coordinator->entityHasComponent<components::SelectedTag>(entity))
             Application::m_coordinator->removeComponent<components::SelectedTag>(entity);
+#else
+        (void)entity; // Suppress unused parameter warning in test builds
+#endif
     }
 }

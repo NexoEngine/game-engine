@@ -285,4 +285,375 @@ TEST_F(SceneManagerTest, CreateSceneAfterReset) {
     EXPECT_EQ(sceneId2, 1);
 }
 
+TEST_F(SceneManagerTest, CreateEditorScene) {
+    // Test creating an editor-only scene
+    std::string editorSceneName = "EditorScene";
+    unsigned int editorSceneId = manager->createEditorScene(editorSceneName);
+
+    // Scene IDs should start at 0
+    EXPECT_EQ(editorSceneId, 0);
+
+    // Verify we can retrieve the editor scene
+    Scene& editorScene = manager->getScene(editorSceneId);
+    EXPECT_EQ(editorScene.getName(), editorSceneName);
+    EXPECT_EQ(editorScene.getId(), editorSceneId);
+}
+
+TEST_F(SceneManagerTest, CreateEditorSceneWithoutCoordinator) {
+    // Test creating an editor scene without setting a coordinator
+    SceneManager newManager;
+
+    // This should throw an exception since coordinator is required
+    std::string sceneName = "EditorTestScene";
+    EXPECT_THROW(newManager.createEditorScene(sceneName), core::SceneManagerLifecycleException);
+}
+
+TEST_F(SceneManagerTest, CreateMixedScenes) {
+    // Test creating both regular and editor scenes
+    unsigned int regularSceneId1 = manager->createScene("RegularScene1");
+    unsigned int editorSceneId1 = manager->createEditorScene("EditorScene1");
+    unsigned int regularSceneId2 = manager->createScene("RegularScene2");
+    unsigned int editorSceneId2 = manager->createEditorScene("EditorScene2");
+
+    // Scene IDs should be sequential regardless of scene type
+    EXPECT_EQ(regularSceneId1, 0);
+    EXPECT_EQ(editorSceneId1, 1);
+    EXPECT_EQ(regularSceneId2, 2);
+    EXPECT_EQ(editorSceneId2, 3);
+
+    // Verify all scenes exist and have correct names
+    EXPECT_EQ(manager->getScene(regularSceneId1).getName(), "RegularScene1");
+    EXPECT_EQ(manager->getScene(editorSceneId1).getName(), "EditorScene1");
+    EXPECT_EQ(manager->getScene(regularSceneId2).getName(), "RegularScene2");
+    EXPECT_EQ(manager->getScene(editorSceneId2).getName(), "EditorScene2");
+}
+
+TEST_F(SceneManagerTest, DeleteEditorScene) {
+    // Test deleting an editor scene
+    unsigned int editorSceneId = manager->createEditorScene("EditorScene");
+
+    // Verify the editor scene exists
+    Scene& editorScene = manager->getScene(editorSceneId);
+    EXPECT_EQ(editorScene.getName(), "EditorScene");
+
+    // Delete the editor scene
+    manager->deleteScene(editorSceneId);
+
+    // Verify the scene no longer exists
+    EXPECT_THROW(manager->getScene(editorSceneId), std::out_of_range);
+}
+
+// ============================================================================
+// Edge Case Tests
+// ============================================================================
+
+TEST_F(SceneManagerTest, DeleteSameSceneMultipleTimes) {
+    // Test deleting the same scene multiple times
+    unsigned int sceneId = manager->createScene("TestScene");
+
+    // First deletion should work
+    EXPECT_NO_THROW(manager->deleteScene(sceneId));
+
+    // Second deletion should not crash (scene doesn't exist)
+    EXPECT_NO_THROW(manager->deleteScene(sceneId));
+
+    // Third deletion should also not crash
+    EXPECT_NO_THROW(manager->deleteScene(sceneId));
+
+    // Verify the scene still doesn't exist
+    EXPECT_THROW(manager->getScene(sceneId), std::out_of_range);
+}
+
+TEST_F(SceneManagerTest, RapidSceneCreationAndDeletion) {
+    // Test rapidly creating and deleting scenes
+    std::vector<unsigned int> sceneIds;
+
+    // Create 100 scenes rapidly
+    for (int i = 0; i < 100; i++) {
+        sceneIds.push_back(manager->createScene("Scene" + std::to_string(i)));
+    }
+
+    // Verify all scenes exist
+    for (auto id : sceneIds) {
+        EXPECT_NO_THROW(manager->getScene(id));
+    }
+
+    // Delete all scenes rapidly
+    for (auto id : sceneIds) {
+        manager->deleteScene(id);
+    }
+
+    // Verify all scenes are gone
+    for (auto id : sceneIds) {
+        EXPECT_THROW(manager->getScene(id), std::out_of_range);
+    }
+}
+
+TEST_F(SceneManagerTest, AlternatingCreateAndDelete) {
+    // Test alternating between creating and deleting scenes
+    unsigned int sceneId1 = manager->createScene("Scene1");
+    EXPECT_NO_THROW(manager->getScene(sceneId1));
+
+    manager->deleteScene(sceneId1);
+    EXPECT_THROW(manager->getScene(sceneId1), std::out_of_range);
+
+    unsigned int sceneId2 = manager->createScene("Scene2");
+    EXPECT_NO_THROW(manager->getScene(sceneId2));
+
+    unsigned int sceneId3 = manager->createScene("Scene3");
+    EXPECT_NO_THROW(manager->getScene(sceneId3));
+
+    manager->deleteScene(sceneId2);
+    EXPECT_THROW(manager->getScene(sceneId2), std::out_of_range);
+    EXPECT_NO_THROW(manager->getScene(sceneId3));
+
+    unsigned int sceneId4 = manager->createScene("Scene4");
+    EXPECT_NO_THROW(manager->getScene(sceneId4));
+
+    manager->deleteScene(sceneId3);
+    manager->deleteScene(sceneId4);
+    EXPECT_THROW(manager->getScene(sceneId3), std::out_of_range);
+    EXPECT_THROW(manager->getScene(sceneId4), std::out_of_range);
+}
+
+TEST_F(SceneManagerTest, SceneIdBoundaryConditions) {
+    // Test scene ID behavior at boundary conditions
+    nexo::scene::nextSceneId = 0;
+    manager.reset(new SceneManager());
+    manager->setCoordinator(coordinator);
+
+    // Create scene with ID 0
+    unsigned int sceneId0 = manager->createScene("Scene0");
+    EXPECT_EQ(sceneId0, 0);
+
+    // Create many more scenes to test incrementing IDs
+    for (unsigned int i = 1; i < 100; i++) {
+        unsigned int sceneId = manager->createScene("Scene" + std::to_string(i));
+        EXPECT_EQ(sceneId, i);
+    }
+}
+
+TEST_F(SceneManagerTest, GetSceneWithMaxIntId) {
+    // Test getting a scene with maximum integer ID
+    unsigned int maxId = std::numeric_limits<unsigned int>::max();
+    EXPECT_THROW(manager->getScene(maxId), std::out_of_range);
+}
+
+TEST_F(SceneManagerTest, DeleteSceneWithMaxIntId) {
+    // Test deleting a scene with maximum integer ID
+    unsigned int maxId = std::numeric_limits<unsigned int>::max();
+    EXPECT_NO_THROW(manager->deleteScene(maxId));
+}
+
+TEST_F(SceneManagerTest, GetSceneZeroId) {
+    // Test getting scene with ID 0 when no scenes exist
+    EXPECT_THROW(manager->getScene(0), std::out_of_range);
+
+    // Create a scene with ID 0
+    unsigned int sceneId = manager->createScene("Scene0");
+    EXPECT_EQ(sceneId, 0);
+    EXPECT_NO_THROW(manager->getScene(0));
+
+    // Delete it
+    manager->deleteScene(0);
+    EXPECT_THROW(manager->getScene(0), std::out_of_range);
+}
+
+TEST_F(SceneManagerTest, MultipleCreationDestructionCycles) {
+    // Test multiple cycles of creating and destroying SceneManager
+    for (int cycle = 0; cycle < 5; cycle++) {
+        // Create new manager
+        manager.reset(new SceneManager());
+        manager->setCoordinator(coordinator);
+
+        // Create some scenes
+        std::vector<unsigned int> sceneIds;
+        for (int i = 0; i < 10; i++) {
+            sceneIds.push_back(manager->createScene("Cycle" + std::to_string(cycle) + "_Scene" + std::to_string(i)));
+        }
+
+        // Verify all scenes exist
+        for (auto id : sceneIds) {
+            EXPECT_NO_THROW(manager->getScene(id));
+        }
+
+        // Delete half the scenes
+        for (size_t i = 0; i < sceneIds.size() / 2; i++) {
+            manager->deleteScene(sceneIds[i]);
+        }
+
+        // Manager will be destroyed at the end of this iteration
+    }
+}
+
+TEST_F(SceneManagerTest, CreateSceneWithEmptyName) {
+    // Test creating a scene with an empty name
+    unsigned int sceneId = manager->createScene("");
+    Scene& scene = manager->getScene(sceneId);
+    EXPECT_EQ(scene.getName(), "");
+}
+
+TEST_F(SceneManagerTest, CreateSceneWithVeryLongName) {
+    // Test creating a scene with a very long name
+    std::string longName(10000, 'X');
+    unsigned int sceneId = manager->createScene(longName);
+    Scene& scene = manager->getScene(sceneId);
+    EXPECT_EQ(scene.getName(), longName);
+}
+
+TEST_F(SceneManagerTest, CreateMultipleScenesWithSameName) {
+    // Test creating multiple scenes with the same name (should be allowed)
+    unsigned int sceneId1 = manager->createScene("SameName");
+    unsigned int sceneId2 = manager->createScene("SameName");
+    unsigned int sceneId3 = manager->createScene("SameName");
+
+    // All scenes should exist with different IDs
+    EXPECT_NE(sceneId1, sceneId2);
+    EXPECT_NE(sceneId2, sceneId3);
+    EXPECT_NE(sceneId1, sceneId3);
+
+    // All scenes should have the same name
+    EXPECT_EQ(manager->getScene(sceneId1).getName(), "SameName");
+    EXPECT_EQ(manager->getScene(sceneId2).getName(), "SameName");
+    EXPECT_EQ(manager->getScene(sceneId3).getName(), "SameName");
+}
+
+TEST_F(SceneManagerTest, ModifySceneAfterRetrieval) {
+    // Test modifying a scene after retrieving it from the manager
+    unsigned int sceneId = manager->createScene("OriginalScene");
+
+    Scene& scene1 = manager->getScene(sceneId);
+    scene1.setName("ModifiedScene");
+    scene1.setActiveStatus(false);
+    scene1.setRenderStatus(false);
+
+    // Get the scene again and verify modifications persisted
+    Scene& scene2 = manager->getScene(sceneId);
+    EXPECT_EQ(scene2.getName(), "ModifiedScene");
+    EXPECT_FALSE(scene2.isActive());
+    EXPECT_FALSE(scene2.isRendered());
+}
+
+TEST_F(SceneManagerTest, StressTestSceneCreation) {
+    // Stress test with creating many scenes
+    const size_t sceneCount = 10000;
+    std::vector<unsigned int> sceneIds;
+
+    for (size_t i = 0; i < sceneCount; i++) {
+        sceneIds.push_back(manager->createScene("StressScene" + std::to_string(i)));
+    }
+
+    // Verify all scenes exist
+    EXPECT_EQ(sceneIds.size(), sceneCount);
+
+    // Sample verify some scenes
+    for (size_t i = 0; i < sceneCount; i += 1000) {
+        EXPECT_NO_THROW(manager->getScene(sceneIds[i]));
+    }
+
+    // Delete all scenes
+    for (auto id : sceneIds) {
+        manager->deleteScene(id);
+    }
+}
+
+TEST_F(SceneManagerTest, DeleteAllScenesInReverseOrder) {
+    // Test deleting scenes in reverse order of creation
+    std::vector<unsigned int> sceneIds;
+
+    for (int i = 0; i < 20; i++) {
+        sceneIds.push_back(manager->createScene("Scene" + std::to_string(i)));
+    }
+
+    // Delete in reverse order
+    for (auto it = sceneIds.rbegin(); it != sceneIds.rend(); ++it) {
+        unsigned int id = *it;
+        EXPECT_NO_THROW(manager->getScene(id));
+        manager->deleteScene(id);
+        EXPECT_THROW(manager->getScene(id), std::out_of_range);
+    }
+}
+
+TEST_F(SceneManagerTest, DeleteEveryOtherScene) {
+    // Test deleting every other scene
+    std::vector<unsigned int> sceneIds;
+
+    for (int i = 0; i < 20; i++) {
+        sceneIds.push_back(manager->createScene("Scene" + std::to_string(i)));
+    }
+
+    // Delete every other scene
+    for (size_t i = 0; i < sceneIds.size(); i += 2) {
+        manager->deleteScene(sceneIds[i]);
+    }
+
+    // Verify deleted scenes are gone and others remain
+    for (size_t i = 0; i < sceneIds.size(); i++) {
+        if (i % 2 == 0) {
+            EXPECT_THROW(manager->getScene(sceneIds[i]), std::out_of_range);
+        } else {
+            EXPECT_NO_THROW(manager->getScene(sceneIds[i]));
+        }
+    }
+}
+
+TEST_F(SceneManagerTest, CreateEditorAndRegularScenesInterleaved) {
+    // Test creating editor and regular scenes in an interleaved pattern
+    std::vector<unsigned int> sceneIds;
+
+    for (int i = 0; i < 10; i++) {
+        if (i % 2 == 0) {
+            sceneIds.push_back(manager->createScene("RegularScene" + std::to_string(i)));
+        } else {
+            sceneIds.push_back(manager->createEditorScene("EditorScene" + std::to_string(i)));
+        }
+    }
+
+    // Verify all scenes exist
+    for (auto id : sceneIds) {
+        EXPECT_NO_THROW(manager->getScene(id));
+    }
+
+    // IDs should be sequential
+    for (size_t i = 0; i < sceneIds.size(); i++) {
+        EXPECT_EQ(sceneIds[i], i);
+    }
+}
+
+TEST_F(SceneManagerTest, SceneManagerResetAfterMultipleScenes) {
+    // Test resetting the SceneManager after creating multiple scenes
+    std::vector<unsigned int> sceneIds;
+
+    for (int i = 0; i < 10; i++) {
+        sceneIds.push_back(manager->createScene("Scene" + std::to_string(i)));
+    }
+
+    // Reset the manager
+    manager.reset(new SceneManager());
+    manager->setCoordinator(coordinator);
+
+    // Old scene IDs should not be accessible
+    for (auto id : sceneIds) {
+        EXPECT_THROW(manager->getScene(id), std::out_of_range);
+    }
+
+    // Should be able to create new scenes
+    unsigned int newSceneId = manager->createScene("NewScene");
+    EXPECT_NO_THROW(manager->getScene(newSceneId));
+}
+
+TEST_F(SceneManagerTest, GetSceneReturnsReference) {
+    // Test that getScene returns a reference that can be modified
+    unsigned int sceneId = manager->createScene("TestScene");
+
+    Scene& sceneRef1 = manager->getScene(sceneId);
+    Scene& sceneRef2 = manager->getScene(sceneId);
+
+    // Modify through first reference
+    sceneRef1.setName("ModifiedName");
+
+    // Should see change through second reference
+    EXPECT_EQ(sceneRef2.getName(), "ModifiedName");
+}
+
 } // namespace nexo::scene

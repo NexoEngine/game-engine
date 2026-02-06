@@ -29,6 +29,7 @@
 #include "ImNexo/Elements.hpp"
 #include "context/ActionManager.hpp"
 #include "DocumentWindows/TestWindow/TestWindow.hpp"
+#include "PrivacyConsentDialog.hpp"
 
 #include <imgui_internal.h>
 #include "imgui.h"
@@ -49,6 +50,9 @@ namespace nexo::editor {
         LOG(NEXO_INFO, "All windows destroyed");
         m_windowRegistry.shutdown();
         ImGuiBackend::shutdown();
+
+        delete m_privacyDialog;
+        const_cast<Editor*>(this)->m_privacyDialog = nullptr;
     }
 
     void Editor::setupEngine() const
@@ -235,6 +239,9 @@ namespace nexo::editor {
         app.initScripting(); // TODO: scripting is init here since it requires a scene, later scenes shouldn't be created in the editor window
         for (const auto inspectorWindow : m_windowRegistry.getWindows<InspectorWindow>())
             inspectorWindow->registerTypeErasedProperties(); // TODO: this should be done in the InspectorWindow constructor, but we need the scripting to init
+
+        const_cast<Editor*>(this)->m_privacyDialog = new PrivacyConsentDialog();
+        m_privacyDialog->checkAndShow();
     }
 
     bool Editor::isOpen() const
@@ -548,6 +555,9 @@ namespace nexo::editor {
         const std::vector<CommandInfo> possibleCommands = handleFocusedWindowCommands();
         drawShortcutBar(possibleCommands);
         drawBackground();
+
+        if (m_privacyDialog)
+            m_privacyDialog->show();
 
         ImGui::Render();
 

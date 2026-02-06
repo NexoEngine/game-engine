@@ -460,6 +460,9 @@ namespace nexo::ecs {
              */
             [[nodiscard]] std::shared_ptr<IComponentArray> getComponentArray(const ComponentType typeID) const
 		    {
+		        if (typeID >= MAX_COMPONENT_TYPE)
+		            THROW_EXCEPTION(ComponentNotRegistered);
+
 		        const auto& componentArray = m_componentArrays[typeID];
 		        if (componentArray == nullptr)
 		            THROW_EXCEPTION(ComponentNotRegistered);

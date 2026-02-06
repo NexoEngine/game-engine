@@ -34,6 +34,7 @@ include(${CMAKE_CURRENT_LIST_DIR}/engine/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/common/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/renderer/CMakeLists.txt)
 include(${CMAKE_CURRENT_LIST_DIR}/ecs/CMakeLists.txt)
+include(${CMAKE_CURRENT_LIST_DIR}/editor/CMakeLists.txt)
 
 # Add tests
 gtest_discover_tests(engine_tests
@@ -48,6 +49,9 @@ gtest_discover_tests(renderer_tests
 gtest_discover_tests(ecs_tests
                      TEST_LIST ecsTestsList
 )
+gtest_discover_tests(editor_tests
+                     TEST_LIST editorTestsList
+)
 
                      # Core engine tests
 set_tests_properties(${engineTestsList} PROPERTIES LABELS "engine")
@@ -57,6 +61,8 @@ set_tests_properties(${commonTestsList} PROPERTIES LABELS "common")
 set_tests_properties(${rendererTestsList} PROPERTIES LABELS "renderer")
 # Ecs tests
 set_tests_properties(${ecsTestsList} PROPERTIES LABELS "ecs")
+# Editor tests
+set_tests_properties(${editorTestsList} PROPERTIES LABELS "editor")
 
 # Exclude tests from the "ALL" target
 message(STATUS "NEXO_BUILD_TESTS: ${NEXO_BUILD_TESTS}")
@@ -66,6 +72,7 @@ if(NOT NEXO_BUILD_TESTS)
     set_target_properties(common_tests PROPERTIES EXCLUDE_FROM_ALL TRUE)
     set_target_properties(renderer_tests PROPERTIES EXCLUDE_FROM_ALL TRUE)
     set_target_properties(ecs_tests PROPERTIES EXCLUDE_FROM_ALL TRUE)
+    set_target_properties(editor_tests PROPERTIES EXCLUDE_FROM_ALL TRUE)
 else()
     message(STATUS "Including tests in the 'ALL' target")
 endif()

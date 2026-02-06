@@ -20,6 +20,10 @@
 
 #include <format>
 
+#if defined(NEXO_SENTRY_ENABLED) || defined(NEXO_SENTRY_DEBUG_MODE)
+namespace nexo::crash { class CrashTracker; }
+#endif
+
 namespace nexo {
     const char *Exception::what() const noexcept
     {

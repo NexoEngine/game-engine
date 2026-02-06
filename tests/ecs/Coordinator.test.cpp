@@ -455,4 +455,505 @@ namespace nexo::ecs {
         types = coordinator->getAllComponentTypes(entity);
         EXPECT_EQ(types.size(), 3);
     }
+
+    // ========================================================================
+    // Edge Case Tests
+    // ========================================================================
+
+    TEST_F(CoordinatorTest, DuplicateEntity_BasicCopy) {
+        coordinator->registerComponent<TestComponent>();
+
+        Entity original = coordinator->createEntity();
+        coordinator->addComponent(original, TestComponent{42});
+        coordinator->addComponent(original, ComponentA{100});
+        coordinator->addComponent(original, ComponentB{3.14f});
+
+        // Duplicate the entity
+        Entity duplicate = coordinator->duplicateEntity(original);
+
+        // Verify the duplicate is a different entity
+        EXPECT_NE(original, duplicate);
+
+        // Verify all components were copied
+        EXPECT_TRUE(coordinator->entityHasComponent<TestComponent>(duplicate));
+        EXPECT_TRUE(coordinator->entityHasComponent<ComponentA>(duplicate));
+        EXPECT_TRUE(coordinator->entityHasComponent<ComponentB>(duplicate));
+
+        // Verify component values are identical
+        EXPECT_EQ(coordinator->getComponent<TestComponent>(duplicate).data, 42);
+        EXPECT_EQ(coordinator->getComponent<ComponentA>(duplicate).value, 100);
+        EXPECT_FLOAT_EQ(coordinator->getComponent<ComponentB>(duplicate).data, 3.14f);
+    }
+
+    TEST_F(CoordinatorTest, DuplicateEntity_EmptyEntity) {
+        // Create an entity with no components
+        Entity original = coordinator->createEntity();
+
+        // Duplicate it
+        Entity duplicate = coordinator->duplicateEntity(original);
+
+        // Verify the duplicate is a different entity
+        EXPECT_NE(original, duplicate);
+
+        // Verify both entities have no components
+        auto originalTypes = coordinator->getAllComponentTypes(original);
+        auto duplicateTypes = coordinator->getAllComponentTypes(duplicate);
+        EXPECT_TRUE(originalTypes.empty());
+        EXPECT_TRUE(duplicateTypes.empty());
+    }
+
+    TEST_F(CoordinatorTest, DuplicateEntity_IndependentModification) {
+        coordinator->registerComponent<TestComponent>();
+
+        Entity original = coordinator->createEntity();
+        coordinator->addComponent(original, TestComponent{42});
+
+        Entity duplicate = coordinator->duplicateEntity(original);
+
+        // Modify the original
+        coordinator->getComponent<TestComponent>(original).data = 100;
+
+        // Verify the duplicate is unchanged
+        EXPECT_EQ(coordinator->getComponent<TestComponent>(original).data, 100);
+        EXPECT_EQ(coordinator->getComponent<TestComponent>(duplicate).data, 42);
+
+        // Modify the duplicate
+        coordinator->getComponent<TestComponent>(duplicate).data = 200;
+
+        // Verify the original is unchanged
+        EXPECT_EQ(coordinator->getComponent<TestComponent>(original).data, 100);
+        EXPECT_EQ(coordinator->getComponent<TestComponent>(duplicate).data, 200);
+    }
+
+    TEST_F(CoordinatorTest, DuplicateEntity_MultipleDuplicates) {
+        coordinator->registerComponent<TestComponent>();
+
+        Entity original = coordinator->createEntity();
+        coordinator->addComponent(original, TestComponent{42});
+
+        // Create multiple duplicates
+        Entity dup1 = coordinator->duplicateEntity(original);
+        Entity dup2 = coordinator->duplicateEntity(original);
+        Entity dup3 = coordinator->duplicateEntity(original);
+
+        // Verify all are unique
+        EXPECT_NE(original, dup1);
+        EXPECT_NE(original, dup2);
+        EXPECT_NE(original, dup3);
+        EXPECT_NE(dup1, dup2);
+        EXPECT_NE(dup1, dup3);
+        EXPECT_NE(dup2, dup3);
+
+        // Verify all have the same components
+        EXPECT_EQ(coordinator->getComponent<TestComponent>(dup1).data, 42);
+        EXPECT_EQ(coordinator->getComponent<TestComponent>(dup2).data, 42);
+        EXPECT_EQ(coordinator->getComponent<TestComponent>(dup3).data, 42);
+    }
+
+    TEST_F(CoordinatorTest, GetEntitySignature_ValidEntity) {
+        coordinator->registerComponent<TestComponent>();
+
+        Entity entity = coordinator->createEntity();
+
+        // Get signature of entity with no components
+        Signature sig1 = coordinator->getSignature(entity);
+        EXPECT_FALSE(sig1.any());
+
+        // Add a component
+        coordinator->addComponent(entity, TestComponent{42});
+        Signature sig2 = coordinator->getSignature(entity);
+
+        ComponentType typeId = coordinator->getComponentType<TestComponent>();
+        EXPECT_TRUE(sig2.test(typeId));
+    }
+
+    TEST_F(CoordinatorTest, GetEntitySignature_AfterComponentChanges) {
+        coordinator->registerComponent<TestComponent>();
+
+        Entity entity = coordinator->createEntity();
+        coordinator->addComponent(entity, TestComponent{42});
+        coordinator->addComponent(entity, ComponentA{10});
+
+        Signature sig1 = coordinator->getSignature(entity);
+
+        // Remove a component
+        coordinator->removeComponent<TestComponent>(entity);
+        Signature sig2 = coordinator->getSignature(entity);
+
+        // Signatures should be different
+        EXPECT_NE(sig1, sig2);
+
+        // Verify the signature reflects the current state
+        ComponentType typeA = coordinator->getComponentType<ComponentA>();
+        ComponentType typeTest = coordinator->getComponentType<TestComponent>();
+        EXPECT_TRUE(sig2.test(typeA));
+        EXPECT_FALSE(sig2.test(typeTest));
+    }
+
+    TEST_F(CoordinatorTest, HasComponent_NonExistentEntity) {
+        coordinator->registerComponent<TestComponent>();
+
+        // Test with an entity that was never created
+        Entity nonexistent = 99999;
+
+        // This should not crash, but may return false or have undefined behavior
+        // Depending on implementation, this test documents the current behavior
+        EXPECT_NO_THROW({
+            bool hasComponent = coordinator->entityHasComponent<TestComponent>(nonexistent);
+            // The result may vary based on implementation
+            (void)hasComponent;
+        });
+    }
+
+    TEST_F(CoordinatorTest, HasComponent_AfterEntityDestroyed) {
+        coordinator->registerComponent<TestComponent>();
+
+        Entity entity = coordinator->createEntity();
+        coordinator->addComponent(entity, TestComponent{42});
+
+        // Verify component exists
+        EXPECT_TRUE(coordinator->entityHasComponent<TestComponent>(entity));
+
+        // Destroy the entity
+        coordinator->destroyEntity(entity);
+
+        // After destruction, the entity should not have components
+        // Note: This behavior depends on whether the signature is reset on destruction
+        EXPECT_NO_THROW({
+            bool hasComponent = coordinator->entityHasComponent<TestComponent>(entity);
+            // The result may vary based on implementation
+            (void)hasComponent;
+        });
+    }
+
+    TEST_F(CoordinatorTest, HasComponent_ComponentTypeByID) {
+        coordinator->registerComponent<TestComponent>();
+
+        Entity entity = coordinator->createEntity();
+        coordinator->addComponent(entity, TestComponent{42});
+
+        ComponentType typeId = coordinator->getComponentType<TestComponent>();
+
+        // Test the overload that takes ComponentType
+        EXPECT_TRUE(coordinator->entityHasComponent(entity, typeId));
+
+        // Test with a component the entity doesn't have
+        ComponentType typeA = coordinator->getComponentType<ComponentA>();
+        EXPECT_FALSE(coordinator->entityHasComponent(entity, typeA));
+    }
+
+    TEST_F(CoordinatorTest, GetAllComponentTypes_EdgeCases) {
+        coordinator->registerComponent<TestComponent>();
+
+        Entity entity = coordinator->createEntity();
+
+        // Test with entity that has no components
+        auto types1 = coordinator->getAllComponentTypes(entity);
+        EXPECT_TRUE(types1.empty());
+
+        // Add one component
+        coordinator->addComponent(entity, TestComponent{42});
+        auto types2 = coordinator->getAllComponentTypes(entity);
+        EXPECT_EQ(types2.size(), 1);
+
+        // Add multiple components
+        coordinator->addComponent(entity, ComponentA{10});
+        coordinator->addComponent(entity, ComponentB{3.14f});
+        auto types3 = coordinator->getAllComponentTypes(entity);
+        EXPECT_EQ(types3.size(), 3);
+
+        // Remove all components one by one
+        coordinator->removeComponent<TestComponent>(entity);
+        auto types4 = coordinator->getAllComponentTypes(entity);
+        EXPECT_EQ(types4.size(), 2);
+
+        coordinator->removeComponent<ComponentA>(entity);
+        auto types5 = coordinator->getAllComponentTypes(entity);
+        EXPECT_EQ(types5.size(), 1);
+
+        coordinator->removeComponent<ComponentB>(entity);
+        auto types6 = coordinator->getAllComponentTypes(entity);
+        EXPECT_TRUE(types6.empty());
+    }
+
+    TEST_F(CoordinatorTest, GetAllComponentTypes_AfterDuplication) {
+        coordinator->registerComponent<TestComponent>();
+
+        Entity original = coordinator->createEntity();
+        coordinator->addComponent(original, TestComponent{42});
+        coordinator->addComponent(original, ComponentA{100});
+
+        Entity duplicate = coordinator->duplicateEntity(original);
+
+        auto originalTypes = coordinator->getAllComponentTypes(original);
+        auto duplicateTypes = coordinator->getAllComponentTypes(duplicate);
+
+        // Both should have the same number of component types
+        EXPECT_EQ(originalTypes.size(), duplicateTypes.size());
+        EXPECT_EQ(duplicateTypes.size(), 2);
+
+        // Verify the component types are the same
+        std::sort(originalTypes.begin(), originalTypes.end());
+        std::sort(duplicateTypes.begin(), duplicateTypes.end());
+        EXPECT_EQ(originalTypes, duplicateTypes);
+    }
+
+    TEST_F(CoordinatorTest, ComponentArray_DirectManipulation) {
+        coordinator->registerComponent<TestComponent>();
+
+        auto componentArray = coordinator->getComponentArray<TestComponent>();
+        ASSERT_NE(componentArray, nullptr);
+
+        Entity e1 = coordinator->createEntity();
+        Entity e2 = coordinator->createEntity();
+
+        // Insert through component array
+        componentArray->insert(e1, TestComponent{10});
+        componentArray->insert(e2, TestComponent{20});
+
+        // Verify through coordinator
+        EXPECT_EQ(coordinator->getComponent<TestComponent>(e1).data, 10);
+        EXPECT_EQ(coordinator->getComponent<TestComponent>(e2).data, 20);
+
+        // Modify through component array
+        componentArray->get(e1).data = 100;
+
+        // Verify change is visible through coordinator
+        EXPECT_EQ(coordinator->getComponent<TestComponent>(e1).data, 100);
+    }
+
+    TEST_F(CoordinatorTest, ComponentArray_NullptrForUnregistered) {
+        // Try to get a component array for an unregistered component
+        struct UnregisteredComponent { int value; };
+
+        // This should throw or return nullptr depending on implementation
+        EXPECT_THROW({
+            auto componentArray = coordinator->getComponentArray<UnregisteredComponent>();
+        }, ComponentNotRegistered);
+    }
+
+    TEST_F(CoordinatorTest, GetAllEntitiesWith_EmptyResult) {
+        coordinator->registerComponent<TestComponent>();
+
+        // Create entities without the component we're looking for
+        Entity e1 = coordinator->createEntity();
+        Entity e2 = coordinator->createEntity();
+
+        coordinator->addComponent(e1, ComponentA{10});
+        coordinator->addComponent(e2, ComponentB{3.14f});
+
+        // Search for entities with TestComponent
+        auto result = coordinator->getAllEntitiesWith<TestComponent>();
+        EXPECT_TRUE(result.empty());
+    }
+
+    TEST_F(CoordinatorTest, GetAllEntitiesWith_SingleComponentType) {
+        coordinator->registerComponent<TestComponent>();
+
+        Entity e1 = coordinator->createEntity();
+        Entity e2 = coordinator->createEntity();
+        Entity e3 = coordinator->createEntity();
+
+        coordinator->addComponent(e1, TestComponent{10});
+        coordinator->addComponent(e2, TestComponent{20});
+        coordinator->addComponent(e2, ComponentA{5});
+        coordinator->addComponent(e3, ComponentA{15});
+
+        // Get all entities with TestComponent
+        auto result = coordinator->getAllEntitiesWith<TestComponent>();
+        EXPECT_EQ(result.size(), 2);
+        EXPECT_TRUE(std::find(result.begin(), result.end(), e1) != result.end());
+        EXPECT_TRUE(std::find(result.begin(), result.end(), e2) != result.end());
+        EXPECT_TRUE(std::find(result.begin(), result.end(), e3) == result.end());
+    }
+
+    TEST_F(CoordinatorTest, GetAllEntitiesWith_AfterDestruction) {
+        coordinator->registerComponent<TestComponent>();
+
+        Entity e1 = coordinator->createEntity();
+        Entity e2 = coordinator->createEntity();
+
+        coordinator->addComponent(e1, TestComponent{10});
+        coordinator->addComponent(e2, TestComponent{20});
+
+        auto result1 = coordinator->getAllEntitiesWith<TestComponent>();
+        EXPECT_EQ(result1.size(), 2);
+
+        // Destroy one entity
+        coordinator->destroyEntity(e1);
+
+        auto result2 = coordinator->getAllEntitiesWith<TestComponent>();
+        EXPECT_EQ(result2.size(), 1);
+        EXPECT_TRUE(std::find(result2.begin(), result2.end(), e2) != result2.end());
+        EXPECT_TRUE(std::find(result2.begin(), result2.end(), e1) == result2.end());
+    }
+
+    TEST_F(CoordinatorTest, TryGetComponent_EdgeCases) {
+        coordinator->registerComponent<TestComponent>();
+
+        Entity entity = coordinator->createEntity();
+
+        // Try to get a component that doesn't exist
+        auto opt1 = coordinator->tryGetComponent<TestComponent>(entity);
+        EXPECT_FALSE(opt1.has_value());
+
+        // Add the component
+        coordinator->addComponent(entity, TestComponent{42});
+
+        // Try to get it again
+        auto opt2 = coordinator->tryGetComponent<TestComponent>(entity);
+        ASSERT_TRUE(opt2.has_value());
+        EXPECT_EQ(opt2->get().data, 42);
+
+        // Modify through the optional reference
+        opt2->get().data = 100;
+        EXPECT_EQ(coordinator->getComponent<TestComponent>(entity).data, 100);
+
+        // Remove the component
+        coordinator->removeComponent<TestComponent>(entity);
+
+        // Try to get it after removal
+        auto opt3 = coordinator->tryGetComponent<TestComponent>(entity);
+        EXPECT_FALSE(opt3.has_value());
+    }
+
+    TEST_F(CoordinatorTest, ErrorHandling_GetComponentFromEntityWithout) {
+        coordinator->registerComponent<TestComponent>();
+
+        Entity entity = coordinator->createEntity();
+
+        // Try to get a component the entity doesn't have
+        EXPECT_THROW({
+            coordinator->getComponent<TestComponent>(entity);
+        }, ComponentNotFound);
+    }
+
+    TEST_F(CoordinatorTest, ErrorHandling_RemoveNonexistentComponent) {
+        coordinator->registerComponent<TestComponent>();
+
+        Entity entity = coordinator->createEntity();
+
+        // Try to remove a component the entity doesn't have
+        EXPECT_THROW({
+            coordinator->removeComponent<TestComponent>(entity);
+        }, ComponentNotFound);
+    }
+
+    TEST_F(CoordinatorTest, ErrorHandling_AddComponentTwice) {
+        coordinator->registerComponent<TestComponent>();
+
+        Entity entity = coordinator->createEntity();
+        coordinator->addComponent(entity, TestComponent{42});
+
+        // Try to add the same component type again
+        // Current implementation logs a warning and keeps the original value
+        EXPECT_NO_THROW({
+            coordinator->addComponent(entity, TestComponent{100});
+        });
+
+        // Verify the original value is unchanged (component was not overwritten)
+        EXPECT_EQ(coordinator->getComponent<TestComponent>(entity).data, 42);
+    }
+
+    TEST_F(CoordinatorTest, MultipleEntities_ComponentIsolation) {
+        coordinator->registerComponent<TestComponent>();
+
+        // Create multiple entities with the same component type
+        Entity e1 = coordinator->createEntity();
+        Entity e2 = coordinator->createEntity();
+        Entity e3 = coordinator->createEntity();
+
+        coordinator->addComponent(e1, TestComponent{10});
+        coordinator->addComponent(e2, TestComponent{20});
+        coordinator->addComponent(e3, TestComponent{30});
+
+        // Modify one entity's component
+        coordinator->getComponent<TestComponent>(e1).data = 100;
+
+        // Verify other entities are unaffected
+        EXPECT_EQ(coordinator->getComponent<TestComponent>(e1).data, 100);
+        EXPECT_EQ(coordinator->getComponent<TestComponent>(e2).data, 20);
+        EXPECT_EQ(coordinator->getComponent<TestComponent>(e3).data, 30);
+
+        // Remove component from one entity
+        coordinator->removeComponent<TestComponent>(e2);
+
+        // Verify others still have their components
+        EXPECT_TRUE(coordinator->entityHasComponent<TestComponent>(e1));
+        EXPECT_FALSE(coordinator->entityHasComponent<TestComponent>(e2));
+        EXPECT_TRUE(coordinator->entityHasComponent<TestComponent>(e3));
+    }
+
+    TEST_F(CoordinatorTest, EntityLifecycle_ReuseAfterDestruction) {
+        coordinator->registerComponent<TestComponent>();
+
+        // Create and destroy an entity
+        Entity e1 = coordinator->createEntity();
+        coordinator->addComponent(e1, TestComponent{42});
+        coordinator->destroyEntity(e1);
+
+        // Create a new entity (may reuse the ID)
+        Entity e2 = coordinator->createEntity();
+
+        // The new entity should not have components from the old one
+        EXPECT_FALSE(coordinator->entityHasComponent<TestComponent>(e2));
+
+        auto types = coordinator->getAllComponentTypes(e2);
+        EXPECT_TRUE(types.empty());
+    }
+
+    TEST_F(CoordinatorTest, GetAllComponents_MultipleComponents) {
+        coordinator->registerComponent<TestComponent>();
+
+        Entity entity = coordinator->createEntity();
+        coordinator->addComponent(entity, TestComponent{42});
+        coordinator->addComponent(entity, ComponentA{100});
+        coordinator->addComponent(entity, ComponentB{3.14f});
+
+        // Get all components
+        auto components = coordinator->getAllComponents(entity);
+        EXPECT_EQ(components.size(), 3);
+
+        // Note: The specific order may vary, so we just check the count
+    }
+
+    TEST_F(CoordinatorTest, GetAllComponents_EmptyEntity) {
+        Entity entity = coordinator->createEntity();
+
+        // Get components from an entity with no components
+        auto components = coordinator->getAllComponents(entity);
+        EXPECT_TRUE(components.empty());
+    }
+
+    TEST_F(CoordinatorTest, SignatureUpdates_AddRemoveSequence) {
+        coordinator->registerComponent<TestComponent>();
+
+        Entity entity = coordinator->createEntity();
+
+        // Track signature changes
+        Signature sig1 = coordinator->getSignature(entity);
+        EXPECT_FALSE(sig1.any());
+
+        // Add component
+        coordinator->addComponent(entity, TestComponent{42});
+        Signature sig2 = coordinator->getSignature(entity);
+        EXPECT_TRUE(sig2.any());
+        EXPECT_NE(sig1, sig2);
+
+        // Add another component
+        coordinator->addComponent(entity, ComponentA{10});
+        Signature sig3 = coordinator->getSignature(entity);
+        EXPECT_NE(sig2, sig3);
+
+        // Remove first component
+        coordinator->removeComponent<TestComponent>(entity);
+        Signature sig4 = coordinator->getSignature(entity);
+        EXPECT_NE(sig3, sig4);
+
+        // Remove second component
+        coordinator->removeComponent<ComponentA>(entity);
+        Signature sig5 = coordinator->getSignature(entity);
+        EXPECT_FALSE(sig5.any());
+        EXPECT_EQ(sig1, sig5);
+    }
 }

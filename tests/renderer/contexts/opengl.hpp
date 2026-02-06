@@ -33,7 +33,7 @@ namespace nexo::renderer {
 
         void SetUp() override {
             if (!glfwInit()) {
-                GTEST_FAIL() << "GLFW initialization failed. Failing OpenGL tests.";
+                GTEST_SKIP() << "GLFW initialization failed. Skipping OpenGL tests.";
             }
 
             glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -43,15 +43,16 @@ namespace nexo::renderer {
             window = glfwCreateWindow(800, 600, "Test Window", nullptr, nullptr);
             if (!window) {
                 glfwTerminate();
-                GTEST_FAIL() << "Failed to create GLFW window. Failing OpenGL tests.";
+                GTEST_SKIP() << "Failed to create GLFW window. Skipping OpenGL tests.";
             }
 
             glfwMakeContextCurrent(window);
 
             if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
                 glfwDestroyWindow(window);
+                window = nullptr;
                 glfwTerminate();
-                GTEST_FAIL() << "Failed to initialize GLAD. Failing OpenGL tests.";
+                GTEST_SKIP() << "Failed to initialize GLAD. Skipping OpenGL tests.";
             }
 
             GLint major = 0, minor = 0;
@@ -59,8 +60,9 @@ namespace nexo::renderer {
             glGetIntegerv(GL_MINOR_VERSION, &minor);
             if (major < 4 || (major == 4 && minor < 5)) {
                 glfwDestroyWindow(window);
+                window = nullptr;
                 glfwTerminate();
-                GTEST_FAIL() << "OpenGL 4.5 is required. Failing OpenGL tests.";
+                GTEST_SKIP() << "OpenGL 4.5 is required. Skipping OpenGL tests.";
             }
         }
 
