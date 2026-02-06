@@ -269,6 +269,26 @@ namespace nexo::editor {
 			void resetDockId(const std::string &name);
 
 			/**
+			 * @brief Splits a dock node and attaches a new window to the split.
+			 *
+			 * Finds the source window's dock node, splits it in the specified direction,
+			 * and docks both windows to the resulting nodes. Updates the docking registry
+			 * with the new dock IDs.
+			 *
+			 * @param sourceWindowName Name of the window whose dock will be split
+			 * @param newWindowName Name of the window to dock in the new split
+			 * @param splitDirection Direction to split (ImGuiDir_Left/Right/Up/Down)
+			 * @param splitRatio Ratio of the split (0.0-1.0, typically 0.5 for 50/50)
+			 * @return true if split was successful, false if source window not found
+			 */
+			bool splitDockAndAttachWindow(
+				const std::string& sourceWindowName,
+				const std::string& newWindowName,
+				ImGuiDir splitDirection,
+				float splitRatio
+			);
+
+			/**
 			 * @brief Initializes all managed windows.
 			 *
 			 * Iterates through the collection of windows and calls the `setup()` method on each one.

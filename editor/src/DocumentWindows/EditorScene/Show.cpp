@@ -163,34 +163,6 @@ namespace nexo::editor
 
     void EditorScene::show()
     {
-        // Handle deferred dock split before rendering
-        if (m_shouldSplitDock && !m_gameWindowNameToSplit.empty())
-        {
-            const std::string currentWindowName = m_windowName;
-            const ImGuiWindow *currentImGuiWindow = ImGui::FindWindowByName((currentWindowName + NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(m_sceneId)).c_str());
-
-            if (currentImGuiWindow && currentImGuiWindow->DockId)
-            {
-                const ImGuiID editorDockId = currentImGuiWindow->DockId;
-                ImGuiID rightNode, leftNode;
-
-                if (ImGui::DockBuilderSplitNode(editorDockId, ImGuiDir_Right, 0.5f, &rightNode, &leftNode))
-                {
-                    // Dock the windows
-                    ImGui::DockBuilderDockWindow((currentWindowName + NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(m_sceneId)).c_str(), leftNode);
-                    ImGui::DockBuilderDockWindow(m_gameWindowNameToSplit.c_str(), rightNode);
-                    ImGui::DockBuilderFinish(editorDockId);
-
-                    // Update registry
-                    m_windowRegistry.setDockId(currentWindowName + NEXO_WND_USTRID_DEFAULT_SCENE + std::to_string(m_sceneId), leftNode);
-                    m_windowRegistry.setDockId(m_gameWindowNameToSplit, rightNode);
-                }
-            }
-
-            m_shouldSplitDock = false;
-            m_gameWindowNameToSplit.clear();
-        }
-
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
         ImGui::SetNextWindowSizeConstraints(ImVec2(480, 270), ImVec2(1920, 1080));
         auto& selector = Selector::get();
