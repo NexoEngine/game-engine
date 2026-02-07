@@ -19,8 +19,6 @@
 
 #pragma once
 
-#include "Application.hpp"
-
 namespace nexo {
 
     struct WorldState {
@@ -34,4 +32,4 @@ namespace nexo {
         } stats;
     };
 
-} // namespace nexo::scripting
+} // namespace nexo

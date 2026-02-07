@@ -20,19 +20,20 @@
 #include "AEntityProperty.hpp"
 
 namespace nexo::editor {
-	class DirectionalLightProperty final : public AEntityProperty {
-		public:
-			using AEntityProperty::AEntityProperty;
+    class DirectionalLightProperty final : public AEntityProperty {
+       public:
+        using AEntityProperty::AEntityProperty;
 
-			/**
-			 * @brief Displays and enables editing of an entity's directional light properties.
-			 *
-			 * Retrieves the directional light component from the specified entity and, if the header is expanded,
-			 * renders a GUI section that includes controls for modifying the light's color and direction. The color
-			 * editor uses a customizable picker while the direction is adjusted via draggable float inputs arranged in a table.
-			 *
-			 * @param entity The entity whose directional light properties are to be displayed.
-			 */
-			void show(ecs::Entity entity) override;
-	};
-}
+        /**
+         * @brief Displays and enables editing of an entity's directional light properties.
+         *
+         * Retrieves the directional light component from the specified entity and, if the header is expanded,
+         * renders a GUI section that includes controls for modifying the light's color and direction. The color
+         * editor uses a customizable picker while the direction is adjusted via draggable float inputs arranged in a
+         * table.
+         *
+         * @param entity The entity whose directional light properties are to be displayed.
+         */
+        void show(ecs::Entity entity) override;
+    };
+} // namespace nexo::editor

@@ -26,6 +26,7 @@ set(COMMON_SOURCES
         engine/src/core/event/opengl/InputOpenGl.cpp
         engine/src/core/event/WindowEvent.cpp
         engine/src/components/Camera.cpp
+        engine/src/components/Video.cpp
         engine/src/components/Transform.cpp
         engine/src/renderer/Buffer.cpp
         engine/src/renderer/Shader.cpp
@@ -58,6 +59,7 @@ set(COMMON_SOURCES
         engine/src/systems/CameraSystem.cpp
         engine/src/systems/RenderCommandSystem.cpp
         engine/src/systems/RenderBillboardSystem.cpp
+        engine/src/systems/RenderVideoSystem.cpp
         engine/src/systems/LightSystem.cpp
         engine/src/systems/ScriptingSystem.cpp
         engine/src/systems/PhysicsSystem.cpp
@@ -86,7 +88,7 @@ set(COMMON_SOURCES
 )
 
 # Add API-specific sources
-if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
+if (NEXO_GRAPHICS_API STREQUAL "OpenGL")
     list(APPEND COMMON_SOURCES
             engine/src/renderer/opengl/OpenGlBuffer.cpp
             engine/src/renderer/opengl/OpenGlWindow.cpp
@@ -98,7 +100,7 @@ if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
             engine/src/renderer/opengl/OpenGlFramebuffer.cpp
             engine/src/renderer/opengl/OpenGlShaderReflection.cpp
     )
-endif()
+endif ()
 
 # Create the library
 add_library(nexoRenderer STATIC ${COMMON_SOURCES})
@@ -106,18 +108,18 @@ add_library(nexoRenderer STATIC ${COMMON_SOURCES})
 # Find glm and add its include directories
 find_package(glm CONFIG REQUIRED)
 
-if(glm_FOUND)
+if (glm_FOUND)
     message(STATUS "GLM found at: ${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-linux/include")
     target_include_directories(nexoRenderer PUBLIC ${CMAKE_SOURCE_DIR}/vcpkg/installed/x64-linux/include)
-else()
+else ()
     message(FATAL_ERROR "GLM not found!")
-endif()
+endif ()
 
 # Add include directories for this target
 target_include_directories(nexoRenderer PUBLIC
-                           ${CMAKE_SOURCE_DIR}/engine/include
-                           ${CMAKE_SOURCE_DIR}/engine/src
-                           ${CMAKE_SOURCE_DIR}/common)
+        ${CMAKE_SOURCE_DIR}/engine/include
+        ${CMAKE_SOURCE_DIR}/engine/src
+        ${CMAKE_SOURCE_DIR}/common)
 
 # loguru
 find_package(loguru CONFIG REQUIRED)
@@ -136,9 +138,13 @@ target_link_libraries(nexoRenderer PRIVATE assimp::assimp)
 find_package(Boost CONFIG REQUIRED COMPONENTS dll uuid)
 target_link_libraries(nexoRenderer PRIVATE Boost::dll Boost::uuid)
 
-# joltphysics
+# jolt-physics
 find_package(Jolt CONFIG REQUIRED)
 target_link_libraries(nexoRenderer PRIVATE Jolt::Jolt)
+
+# OpenCV
+find_package(OpenCV CONFIG REQUIRED)
+target_link_libraries(nexoRenderer PRIVATE opencv_core opencv_imgproc opencv_highgui)
 
 ###########################################
 # Scripting
@@ -148,13 +154,13 @@ target_link_libraries(nexoRenderer PRIVATE Jolt::Jolt)
 find_package(unofficial-nethost CONFIG REQUIRED)
 target_link_libraries(nexoRenderer PRIVATE unofficial::nethost::nethost)
 
-if(NEXO_GRAPHICS_API STREQUAL "OpenGL")
+if (NEXO_GRAPHICS_API STREQUAL "OpenGL")
     target_compile_definitions(nexoRenderer PRIVATE NX_GRAPHICS_API_OPENGL)
     find_package(OpenGL REQUIRED)
     find_package(glfw3 CONFIG REQUIRED)
     find_package(glad CONFIG REQUIRED)
     target_link_libraries(nexoRenderer PRIVATE OpenGL::GL glfw glad::glad)
-endif()
+endif ()
 
 ###########################################
 # Sentry Crash Tracking

@@ -19,9 +19,7 @@
 
 #include "ActionHistory.hpp"
 #include "ActionGroup.hpp"
-#ifndef NEXO_TESTING
 #include "context/actions/EntityActions.hpp"
-#endif
 #include <memory>
 
 namespace nexo::editor {
@@ -32,38 +30,37 @@ namespace nexo::editor {
 #endif
 
     class ActionManager {
-        public:
-            void recordAction(std::unique_ptr<Action> action);
-#ifndef NEXO_TESTING
-            void recordEntityCreation(ecs::Entity entityId);
-            static std::unique_ptr<Action> prepareEntityDeletion(ecs::Entity entityId);
-            static std::unique_ptr<Action> prepareEntityHierarchyDeletion(ecs::Entity entityId);
+       public:
+        void recordAction(std::unique_ptr<Action> action);
+        void recordEntityCreation(ecs::Entity entityId);
+        static std::unique_ptr<Action> prepareEntityDeletion(ecs::Entity entityId);
+        static std::unique_ptr<Action> prepareEntityHierarchyDeletion(ecs::Entity entityId);
 
-            template<typename MementoComponent>
-            void recordComponentChange(ecs::Entity entityId,
-                                    const typename MementoComponent::Memento& beforeState,
-                                    const typename MementoComponent::Memento& afterState)
-            {
-                auto action = std::make_unique<ComponentChangeAction<MementoComponent>>(entityId, beforeState, afterState);
-                recordAction(std::move(action));
-            }
-#endif
+        template<typename MementoComponent>
+        void recordComponentChange(ecs::Entity entityId, const typename MementoComponent::Memento& beforeState,
+                                   const typename MementoComponent::Memento& afterState)
+        {
+            auto action = std::make_unique<ComponentChangeAction<MementoComponent>>(entityId, beforeState, afterState);
+            recordAction(std::move(action));
+        }
 
-            static std::unique_ptr<ActionGroup> createActionGroup();
+        static std::unique_ptr<ActionGroup> createActionGroup();
 
-            void undo();
-            void redo();
-            [[nodiscard]] bool canUndo() const;
-            [[nodiscard]] bool canRedo() const;
-            void clearHistory(unsigned int count = 0);
-            [[nodiscard]] unsigned int getUndoStackSize() const;
+        void undo();
+        void redo();
+        [[nodiscard]] bool canUndo() const;
+        [[nodiscard]] bool canRedo() const;
+        void clearHistory(unsigned int count = 0);
+        [[nodiscard]] unsigned int getUndoStackSize() const;
 
-            static ActionManager& get() {
-                static ActionManager instance;
-                return instance;
-            }
-        private:
-            ActionHistory history;
+        static ActionManager& get()
+        {
+            static ActionManager instance;
+            return instance;
+        }
+
+       private:
+        ActionHistory history;
     };
 
-}
+} // namespace nexo::editor

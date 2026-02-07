@@ -22,7 +22,7 @@ namespace nexo::components {
 
     struct SceneTag {
         unsigned int id{};
-        bool isActive = true;
+        bool isActive   = true;
         bool isRendered = true;
 
         struct Memento {
@@ -33,8 +33,8 @@ namespace nexo::components {
 
         void restore(const Memento &memento)
         {
-            id = memento.id;
-            isActive = memento.isActive;
+            id         = memento.id;
+            isActive   = memento.isActive;
             isRendered = memento.isRendered;
         }
 
@@ -44,4 +44,4 @@ namespace nexo::components {
         }
     };
 
-}
+} // namespace nexo::components

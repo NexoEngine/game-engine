@@ -20,43 +20,48 @@
 #include "Access.hpp"
 #include "DrawCommand.hpp"
 #include "GroupSystem.hpp"
+#include "components/MaterialComponent.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
-#include "components/MaterialComponent.hpp"
 #include "components/StaticMesh.hpp"
 #include "components/Transform.hpp"
 
 namespace nexo::system {
 
-	/**
-	* @brief System responsible for rendering the scene.
-	*
-	* The RenderSystem iterates over the active cameras stored in the RenderContext singleton,
-	* sets up lighting uniforms using the sceneLights data, and then renders entities that have
-	* a valid RenderComponent. The system binds each camera's render target, clears the buffers,
-	* and then draws each renderable entity.
-	*
-	* @note Component Access Rights:
-	*  - READ access to components::TransformComponent (owned)
-	*  - READ access to components::RenderComponent (owned)
-	*  - READ access to components::SceneTag (non-owned)
-	*  - WRITE access to components::RenderContext (singleton)
-	*
-	* @note The system uses scene partitioning to only render entities belonging to the
-	* currently active scene (identified by RenderContext.sceneRendered).
-	*/
-	class RenderCommandSystem final : public ecs::GroupSystem<
-		ecs::Owned<
-			ecs::Read<components::TransformComponent>,
-	        ecs::Read<components::StaticMeshComponent>,
-			ecs::Read<components::MaterialComponent>>,
-        ecs::NonOwned<
-        	ecs::Read<components::SceneTag>>,
-    	ecs::WriteSingleton<components::RenderContext>> {
-			public:
-                void update();
+    /**
+     * @brief System responsible for rendering the scene.
+     *
+     * The RenderSystem iterates over the active cameras stored in the RenderContext singleton,
+     * sets up lighting uniforms using the sceneLights data, and then renders entities that have
+     * a valid RenderComponent. The system binds each camera's render target, clears the buffers,
+     * and then draws each renderable entity.
+     *
+     * @note Component Access Rights:
+     *  - READ access to components::TransformComponent (owned)
+     *  - READ access to components::RenderComponent (owned)
+     *  - READ access to components::SceneTag (non-owned)
+     *  - WRITE access to components::RenderContext (singleton)
+     *
+     * @note The system uses scene partitioning to only render entities belonging to the
+     * currently active scene (identified by RenderContext.sceneRendered).
+     */
+    class RenderCommandSystem final
+        : public ecs::GroupSystem<
+              ecs::Owned<ecs::Read<components::TransformComponent>, ecs::Read<components::StaticMeshComponent>,
+                         ecs::Read<components::MaterialComponent>>,
+              ecs::NonOwned<ecs::Read<components::SceneTag>>, ecs::WriteSingleton<components::RenderContext>> {
+       public:
+        /** @brief Updates the rendering of the active scene.
+         * This method retrieves the currently active scene from the RenderContext singleton.
+         * It then partitions entities by their SceneTag to find those belonging to the active scene.
+         * For each renderable entity found, it creates draw commands using the entity's
+         * TransformComponent, StaticMeshComponent, and MaterialComponent.
+         * The draw commands are then added to the camera pipelines in the RenderContext.
+         * If no renderable entities are found for the active scene, a warning is logged.
+         */
+        void update();
 
-			private:
-			    static void setupLights(renderer::DrawCommand &cmd, const components::LightContext& lightContext);
-	};
-}
+       private:
+        static void setupLights(renderer::DrawCommand& cmd, const components::LightContext& lightContext);
+    };
+} // namespace nexo::system

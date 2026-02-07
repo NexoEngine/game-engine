@@ -18,8 +18,8 @@
 
 #include "SceneTreeWindow.hpp"
 #include "components/SceneComponents.hpp"
-#include "context/ActionManager.hpp"
 #include "components/Uuid.hpp"
+#include "context/ActionManager.hpp"
 #include "context/actions/EntityActions.hpp"
 
 namespace nexo::editor {
@@ -31,7 +31,7 @@ namespace nexo::editor {
 
     void SceneTreeWindow::setupDefaultState()
     {
-        m_defaultState = {static_cast<unsigned int>(SceneTreeState::GLOBAL)};
+        m_defaultState = WindowState(static_cast<unsigned int>(SceneTreeState::GLOBAL));
 
         // CTRL context
         m_defaultState.registerCommand(
@@ -39,119 +39,87 @@ namespace nexo::editor {
                 .description("Control context")
                 .key("Ctrl")
                 .modifier(true)
+                .addChild(Command::create()
+                              .description("Select all")
+                              .key("A")
+                              .onPressed([]() { selectAllCallback(); })
+                              .build())
+                .addChild(Command::create()
+                              .description("Duplicate")
+                              .key("D")
+                              .onPressed([]() { duplicateSelectedCallback(); })
+                              .build())
                 .addChild(
-                    Command::create()
-                        .description("Select all")
-                        .key("A")
-                        .onPressed([](){
-                            selectAllCallback(); })
-                        .build()
-                )
-                .addChild(
-                    Command::create()
-                        .description("Duplicate")
-                        .key("D")
-                        .onPressed([](){ duplicateSelectedCallback(); })
-                        .build()
-                )
-                .addChild(
-                    Command::create()
-                        .description("Unhide all")
-                        .key("H")
-                        .onPressed([](){ showAllCallback(); })
-                        .build()
-                )
-                .addChild(
-                    Command::create()
-                        .description("Create Scene")
-                        .key("N")
-                        .onPressed([this](){ this->m_popupManager.openPopup("Create New Scene"); })
-                        .build()
-                )
-                .build()
-        );
+                    Command::create().description("Unhide all").key("H").onPressed([]() { showAllCallback(); }).build())
+                .addChild(Command::create()
+                              .description("Create Scene")
+                              .key("N")
+                              .onPressed([this]() { this->m_popupManager.openPopup("Create New Scene"); })
+                              .build())
+                .build());
 
         // Delete selected
         m_defaultState.registerCommand(
-            Command::create()
-                .description("Add Entity")
-                .key("A")
-                .onPressed([this](){ addEntityCallback(); })
-                .build()
-        );
+            Command::create().description("Add Entity").key("A").onPressed([this]() { addEntityCallback(); }).build());
 
         // Delete selected
-        m_defaultState.registerCommand(
-            Command::create()
-                .description("Delete")
-                .key("Delete")
-                .onPressed([this](){ deleteSelectedCallback(); })
-                .build()
-        );
+        m_defaultState.registerCommand(Command::create()
+                                           .description("Delete")
+                                           .key("Delete")
+                                           .onPressed([this]() { deleteSelectedCallback(); })
+                                           .build());
 
         // Rename selected
-        m_defaultState.registerCommand(
-            Command::create()
-                .description("Rename")
-                .key("F2")
-                .onPressed([this](){ renameSelectedCallback(); })
-                .build()
-        );
+        m_defaultState.registerCommand(Command::create()
+                                           .description("Rename")
+                                           .key("F2")
+                                           .onPressed([]() { renameSelectedCallback(); })
+                                           .build());
 
         // Expand all nodes
-        m_defaultState.registerCommand(
-            Command::create()
-                .description("Expand all")
-                .key("Down")
-                .onPressed([this](){ expandAllCallback(); })
-                .build()
-        );
+        m_defaultState.registerCommand(Command::create()
+                                           .description("Expand all")
+                                           .key("Down")
+                                           .onPressed([this]() { expandAllCallback(); })
+                                           .build());
 
         // Collapse all nodes
-        m_defaultState.registerCommand(
-            Command::create()
-                .description("Collapse all")
-                .key("Up")
-                .onPressed([this](){ collapseAllCallback(); })
-                .build()
-        );
+        m_defaultState.registerCommand(Command::create()
+                                           .description("Collapse all")
+                                           .key("Up")
+                                           .onPressed([this]() { collapseAllCallback(); })
+                                           .build());
 
         // Hide selected
         m_defaultState.registerCommand(
-            Command::create()
-                .description("Hide")
-                .key("H")
-                .onPressed([](){ hideSelectedCallback(); })
-                .build()
-        );
+            Command::create().description("Hide").key("H").onPressed([]() { hideSelectedCallback(); }).build());
     }
 
     void SceneTreeWindow::addEntityCallback()
     {
-        const auto &selector = Selector::get();
-        int currentSceneId = selector.getSelectedScene();
-        if (currentSceneId == -1)
-            return;
+        const auto& selector = Selector::get();
+        int currentSceneId   = selector.getSelectedScene();
+        if (currentSceneId == -1) return;
 
-        m_popupManager.openPopupWithCallback(
-            "Scene selection context menu",
-            [this, currentSceneId]() {showSceneSelectionContextMenu(currentSceneId);}
-        );
+        m_popupManager.openPopupWithCallback("Scene selection context menu", [this, currentSceneId]() {
+            showSceneSelectionContextMenu(currentSceneId);
+        });
     }
 
     void SceneTreeWindow::selectAllCallback()
     {
-        auto& selector = Selector::get();
+        auto& selector           = Selector::get();
         const int currentSceneId = selector.getSelectedScene();
 
         if (currentSceneId != -1) {
-            auto& app = getApp();
+            auto& app         = getApp();
             const auto& scene = app.getSceneManager().getScene(currentSceneId);
 
             selector.clearSelection();
 
             for (const auto entity : scene.getEntities()) {
-                const auto uuidComponent = Application::m_coordinator->tryGetComponent<components::UuidComponent>(entity);
+                const auto uuidComponent =
+                    Application::m_coordinator->tryGetComponent<components::UuidComponent>(entity);
                 if (uuidComponent) {
                     selector.addToSelection(uuidComponent->get().uuid, static_cast<int>(entity));
                 }
@@ -161,13 +129,12 @@ namespace nexo::editor {
 
     void SceneTreeWindow::deleteSelectedCallback()
     {
-        auto& selector = Selector::get();
+        auto& selector               = Selector::get();
         const auto& selectedEntities = selector.getSelectedEntities();
 
-        if (selectedEntities.empty())
-            return;
+        if (selectedEntities.empty()) return;
 
-        auto& app = getApp();
+        auto& app           = getApp();
         auto& actionManager = ActionManager::get();
 
         if (selectedEntities.size() > 1) {
@@ -187,38 +154,35 @@ namespace nexo::editor {
         m_windowState = m_defaultState;
     }
 
-
     void SceneTreeWindow::expandAllCallback()
     {
         m_forceCollapseAll = false;
-        m_forceExpandAll = true;
+        m_forceExpandAll   = true;
     }
 
     void SceneTreeWindow::collapseAllCallback()
     {
         m_forceCollapseAll = true;
-        m_forceExpandAll = false;
+        m_forceExpandAll   = false;
     }
 
     void SceneTreeWindow::renameSelectedCallback()
     {
-        //TODO: Implement rename callback
+        // TODO: Implement rename callback
     }
 
     void SceneTreeWindow::duplicateSelectedCallback()
     {
-        auto& selector = Selector::get();
+        auto& selector               = Selector::get();
         const auto& selectedEntities = selector.getSelectedEntities();
 
-        if (selectedEntities.empty())
-            return;
+        if (selectedEntities.empty()) return;
 
-        auto& app = nexo::getApp();
-        auto& actionManager = ActionManager::get();
+        auto& app                = nexo::getApp();
+        auto& actionManager      = ActionManager::get();
         const int currentSceneId = selector.getSelectedScene();
 
-        if (currentSceneId == -1)
-            return;
+        if (currentSceneId == -1) return;
 
         std::vector<ecs::Entity> newEntities;
         newEntities.reserve(selectedEntities.size());
@@ -240,7 +204,8 @@ namespace nexo::editor {
 
         // Select all the newly created entities
         for (const auto newEntity : newEntities) {
-            const auto uuidComponent = Application::m_coordinator->tryGetComponent<components::UuidComponent>(newEntity);
+            const auto uuidComponent =
+                Application::m_coordinator->tryGetComponent<components::UuidComponent>(newEntity);
             if (uuidComponent) {
                 selector.addToSelection(uuidComponent->get().uuid, static_cast<int>(newEntity));
             }
@@ -249,22 +214,21 @@ namespace nexo::editor {
 
     void SceneTreeWindow::hideSelectedCallback()
     {
-        const auto& selector = Selector::get();
+        const auto& selector         = Selector::get();
         const auto& selectedEntities = selector.getSelectedEntities();
 
-        if (selectedEntities.empty())
-            return;
+        if (selectedEntities.empty()) return;
 
         auto& actionManager = ActionManager::get();
-        auto actionGroup = ActionManager::createActionGroup();
+        auto actionGroup    = ActionManager::createActionGroup();
 
         for (const auto entity : selectedEntities) {
             if (Application::m_coordinator->entityHasComponent<components::RenderComponent>(entity)) {
                 auto& renderComponent = Application::m_coordinator->getComponent<components::RenderComponent>(entity);
                 if (renderComponent.isRendered) {
-                    auto beforeState = renderComponent.save();
+                    auto beforeState           = renderComponent.save();
                     renderComponent.isRendered = !renderComponent.isRendered;
-                    auto afterState = renderComponent.save();
+                    auto afterState            = renderComponent.save();
                     actionGroup->addAction(std::make_unique<ComponentChangeAction<components::RenderComponent>>(
                         entity, beforeState, afterState));
                 }
@@ -276,23 +240,23 @@ namespace nexo::editor {
 
     void SceneTreeWindow::showAllCallback()
     {
-        const auto& selector = Selector::get();
+        const auto& selector     = Selector::get();
         const int currentSceneId = selector.getSelectedScene();
 
         if (currentSceneId == -1) return;
 
-        auto& app = getApp();
-        const auto& scene = app.getSceneManager().getScene(currentSceneId);
+        auto& app           = getApp();
+        const auto& scene   = app.getSceneManager().getScene(currentSceneId);
         auto& actionManager = ActionManager::get();
-        auto actionGroup = ActionManager::createActionGroup();
+        auto actionGroup    = ActionManager::createActionGroup();
 
         for (const auto entity : scene.getEntities()) {
             if (Application::m_coordinator->entityHasComponent<components::RenderComponent>(entity)) {
                 auto& renderComponent = Application::m_coordinator->getComponent<components::RenderComponent>(entity);
                 if (!renderComponent.isRendered) {
-                    auto beforeState = renderComponent.save();
+                    auto beforeState           = renderComponent.save();
                     renderComponent.isRendered = true;
-                    auto afterState = renderComponent.save();
+                    auto afterState            = renderComponent.save();
                     actionGroup->addAction(std::make_unique<ComponentChangeAction<components::RenderComponent>>(
                         entity, beforeState, afterState));
                 }
@@ -301,4 +265,4 @@ namespace nexo::editor {
 
         actionManager.recordAction(std::move(actionGroup));
     }
-}
+} // namespace nexo::editor

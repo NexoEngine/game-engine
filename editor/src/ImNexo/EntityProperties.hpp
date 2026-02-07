@@ -17,20 +17,63 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "components/Camera.hpp"
 #include "components/Light.hpp"
 #include "components/Transform.hpp"
-#include "components/Camera.hpp"
 
 namespace ImNexo {
 
+    /**
+     * @brief Renders and handles the ambient light component editor UI.
+     *
+     * Creates a color picker for adjusting the ambient light color.
+     * The color is represented as a vec3 in the component, but displayed
+     * as a vec4 in the UI for compatibility with ImGui's color picker.
+     *
+     * @param ambientComponent Reference to the ambient light component being edited
+     */
     void Ambient(nexo::components::AmbientLightComponent &ambientComponent);
 
+    /**
+     * @brief Renders and handles the directional light component editor UI.
+     *
+     * Creates a color picker for adjusting the directional light color,
+     * and a table-based editor for the light's direction vector (x, y, z).
+     * The direction is represented as a vec3 in the component.
+     *
+     * @param directionalComponent Reference to the directional light component being edited
+     */
     void DirectionalLight(nexo::components::DirectionalLightComponent &directionalComponent);
 
-    void PointLight(nexo::components::PointLightComponent &pointComponent, nexo::components::TransformComponent &pointTransform);
+    /**
+     * @brief Renders and handles the point light component editor UI.
+     *
+     * Creates a color picker for adjusting the point light color,
+     * and a table-based editor for the light's position (x, y, z)
+     * and attenuation parameters (constant, linear, quadratic).
+     * The position is represented as a vec3 in the transform component,
+     * while attenuation parameters are floats in the point light component.
+     *
+     * @param pointComponent Reference to the point light component being edited
+     * @param pointTransform Reference to the transform component for position editing
+     */
+    void PointLight(nexo::components::PointLightComponent &pointComponent,
+                    nexo::components::TransformComponent &pointTransform);
 
-    void SpotLight(nexo::components::SpotLightComponent &spotComponent, nexo::components::TransformComponent &spotTransform);
-
+    /**
+     * @brief Renders and handles the spotlight component editor UI.
+     *
+     * Creates a color picker for adjusting the spotlight color,
+     * and a table-based editor for the light's position (x, y, z),
+     * direction (x, y, z), and cutoff angles (inner and outer).
+     * The position is represented as a vec3 in the transform component,
+     * while direction and cutoff angles are part of the spotlight component.
+     *
+     * @param spotComponent Reference to the spotlight component being edited
+     * @param spotTransform Reference to the transform component for position editing
+     */
+    void SpotLight(nexo::components::SpotLightComponent &spotComponent,
+                   nexo::components::TransformComponent &spotTransform);
 
     /**
      * @brief Renders and handles the transform component editor UI.
@@ -44,7 +87,6 @@ namespace ImNexo {
      * @param lastDisplayedEuler Reference to vector storing the last displayed euler angles for computing deltas
      */
     void Transform(nexo::components::TransformComponent &transformComponent, glm::vec3 &lastDisplayedEuler);
-
 
     /**
      * @brief Renders and handles the camera component editor UI.
@@ -81,11 +123,11 @@ namespace ImNexo {
      * @brief Renders and handles the camera controller component editor UI.
      *
      * Creates a table-based editor for a free-moving camera controller component.
-     * Currently includes only mouse sensitivity adjustment, which controls how
+     * Currently, includes only mouse sensitivity adjustment, which controls how
      * quickly the camera rotates in response to mouse movement.
      *
      * @param cameraControllerComponent Reference to the camera controller component being edited
      */
     void CameraController(nexo::components::PerspectiveCameraController &cameraControllerComponent);
 
-}
+} // namespace ImNexo

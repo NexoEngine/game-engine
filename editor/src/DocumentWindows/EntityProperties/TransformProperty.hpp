@@ -22,19 +22,19 @@
 
 namespace nexo::editor {
     class TransformProperty final : public AEntityProperty {
-        public:
-        	using AEntityProperty::AEntityProperty;
+       public:
+        using AEntityProperty::AEntityProperty;
 
-			/**
-			* @brief Displays and edits the transform properties of an entity using an ImGui interface.
-			*
-			* Retrieves the transform component (position, scale, and rotation quaternion) of the given entity,
-			* displaying the values in an ImGui table. The rotation is converted from a quaternion to Euler angles
-			* to allow intuitive editing; any changes in Euler angles are applied incrementally back to the quaternion,
-			* ensuring it remains normalized.
-			*
-			* @param entity The entity whose transform properties are rendered.
-			*/
-            void show(ecs::Entity entity) override;
+        /**
+         * @brief Displays and edits the transform properties of an entity using an ImGui interface.
+         *
+         * Retrieves the transform component (position, scale, and rotation quaternion) of the given entity,
+         * displaying the values in an ImGui table. The rotation is converted from a quaternion to Euler angles
+         * to allow intuitive editing; any changes in Euler angles are applied incrementally back to the quaternion,
+         * ensuring it remains normalized.
+         *
+         * @param entity The entity whose transform properties are rendered.
+         */
+        void show(ecs::Entity entity) override;
     };
-}
+} // namespace nexo::editor

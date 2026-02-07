@@ -27,20 +27,16 @@
 
 namespace nexo::editor {
 
-    void EditorScene::handleDropModel(const AssetDragDropPayload &payload) const
+    void EditorScene::handleDropModel(const AssetDragDropPayload& payload) const
     {
         const auto modelRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
-        if (!modelRef)
-            return;
-        if (const auto model = modelRef.as<assets::Model>(); model)
-        {
+        if (!modelRef) return;
+        if (const auto model = modelRef.as<assets::Model>(); model) {
             auto& sceneManager = Application::getInstance().getSceneManager();
             // Create entity with the model
-            ecs::Entity newEntity = EntityFactory3D::createModel(
-                model,
-                {0.0f, 0.0f, 0.0f}, // position
-                {1.0f, 1.0f, 1.0f}, // scale
-                {0.0f, 0.0f, 0.0f}  // rotation
+            ecs::Entity newEntity = EntityFactory3D::createModel(model, {0.0f, 0.0f, 0.0f}, // position
+                                                                 {1.0f, 1.0f, 1.0f},        // scale
+                                                                 {0.0f, 0.0f, 0.0f}         // rotation
             );
 
             // Add to the scene
@@ -52,13 +48,11 @@ namespace nexo::editor {
         }
     }
 
-    void EditorScene::handleDropTexture(const AssetDragDropPayload &payload) const
+    void EditorScene::handleDropTexture(const AssetDragDropPayload& payload) const
     {
         const auto textureRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
-        if (!textureRef)
-            return;
-        if (const auto texture = textureRef.as<assets::Texture>(); texture)
-        {
+        if (!textureRef) return;
+        if (const auto texture = textureRef.as<assets::Texture>(); texture) {
             auto [mx, my] = ImGui::GetMousePos();
             mx -= m_viewportBounds[0].x;
             my -= m_viewportBounds[0].y;
@@ -67,21 +61,18 @@ namespace nexo::editor {
             my = m_contentSize.y - my;
 
             // Check if mouse is inside viewport
-            if (!(mx >= 0 && my >= 0 && mx < m_contentSize.x && my < m_contentSize.y))
-                return;
+            if (!(mx >= 0 && my >= 0 && mx < m_contentSize.x && my < m_contentSize.y)) return;
             const int entityId = sampleEntityTexture(mx, my);
             if (entityId == -1) {
                 auto& sceneManager = Application::getInstance().getSceneManager();
                 components::Material material;
                 material.albedoTexture = texture;
-                material.albedoColor = glm::vec4(1.0f); // White to show texture colors
+                material.albedoColor   = glm::vec4(1.0f); // White to show texture colors
 
                 // Create billboard entity
-                ecs::Entity newEntity = EntityFactory3D::createBillboard(
-                    {0.0f, 0.0f, 0.0f}, // position
-                    {1.0f, 1.0f, 1.0f}, // size
-                    material
-                );
+                ecs::Entity newEntity = EntityFactory3D::createBillboard({0.0f, 0.0f, 0.0f}, // position
+                                                                         {1.0f, 1.0f, 1.0f}, // size
+                                                                         material);
 
                 // Add to the scene
                 auto& scene = sceneManager.getScene(m_sceneId);
@@ -92,23 +83,20 @@ namespace nexo::editor {
                 ActionManager::get().recordAction(std::move(action));
                 return;
             }
-            const auto matComponent = Application::m_coordinator->tryGetComponent<components::MaterialComponent>(entityId);
-            if (!matComponent)
-                return;
+            const auto matComponent =
+                Application::m_coordinator->tryGetComponent<components::MaterialComponent>(entityId);
+            if (!matComponent) return;
             const auto material = matComponent->get().material.lock();
-            if (!material)
-                return;
+            if (!material) return;
             material->getData()->albedoTexture = texture;
         }
     }
 
-    void EditorScene::handleDropMaterial(const AssetDragDropPayload &payload) const
+    void EditorScene::handleDropMaterial(const AssetDragDropPayload& payload) const
     {
         const auto materialRef = assets::AssetCatalog::getInstance().getAsset(payload.id);
-        if (!materialRef)
-            return;
-        if (const auto material = materialRef.as<assets::Material>(); material)
-        {
+        if (!materialRef) return;
+        if (const auto material = materialRef.as<assets::Material>(); material) {
             auto [mx, my] = ImGui::GetMousePos();
             mx -= m_viewportBounds[0].x;
             my -= m_viewportBounds[0].y;
@@ -117,25 +105,22 @@ namespace nexo::editor {
             my = m_contentSize.y - my;
 
             // Check if mouse is inside viewport
-            if (!(mx >= 0 && my >= 0 && mx < m_contentSize.x && my < m_contentSize.y))
-                return;
+            if (!(mx >= 0 && my >= 0 && mx < m_contentSize.x && my < m_contentSize.y)) return;
             const int entityId = sampleEntityTexture(mx, my);
-            if (entityId == -1)
-                return;
-            const auto matComponent = Application::m_coordinator->tryGetComponent<components::MaterialComponent>(entityId);
-            if (!matComponent)
-                return;
+            if (entityId == -1) return;
+            const auto matComponent =
+                Application::m_coordinator->tryGetComponent<components::MaterialComponent>(entityId);
+            if (!matComponent) return;
             matComponent->get().material = material;
         }
     }
 
     void EditorScene::handleDropTarget()
     {
-        if (ImGui::BeginDragDropTarget())
-        {
+        if (ImGui::BeginDragDropTarget()) {
             // Handle drops from asset manager
-            if (const ImGuiPayload* assetPayload = ImGui::AcceptDragDropPayload("ASSET_DRAG", ImGuiDragDropFlags_AcceptBeforeDelivery))
-            {
+            if (const ImGuiPayload* assetPayload =
+                    ImGui::AcceptDragDropPayload("ASSET_DRAG", ImGuiDragDropFlags_AcceptBeforeDelivery)) {
                 IM_ASSERT(assetPayload->DataSize == sizeof(AssetDragDropPayload));
                 auto [mx, my] = ImGui::GetMousePos();
                 mx -= m_viewportBounds[0].x;
@@ -145,39 +130,35 @@ namespace nexo::editor {
                 my = m_contentSize.y - my;
 
                 // Check if mouse is inside viewport
-                if (!(mx >= 0 && my >= 0 && mx < m_contentSize.x && my < m_contentSize.y))
-                    return;
+                if (!(mx >= 0 && my >= 0 && mx < m_contentSize.x && my < m_contentSize.y)) return;
                 const int entityId = sampleEntityTexture(mx, my);
-                if (entityId != -1 && static_cast<ecs::Entity>(entityId) != m_entityHovered)
-                {
+                if (entityId != -1 && static_cast<ecs::Entity>(entityId) != m_entityHovered) {
                     m_entityHovered = static_cast<ecs::Entity>(entityId);
                     Application::m_coordinator->addComponent(m_entityHovered, components::SelectedTag{});
                 }
-                if (entityId == -1 && m_entityHovered != ecs::INVALID_ENTITY)
-                {
+                if (entityId == -1 && m_entityHovered != ecs::INVALID_ENTITY) {
                     Application::m_coordinator->removeComponent<components::SelectedTag>(m_entityHovered);
                     m_entityHovered = ecs::INVALID_ENTITY;
                 }
-                if (!assetPayload->IsDelivery())
-                {
+                if (!assetPayload->IsDelivery()) {
                     return;
                 }
                 if (m_entityHovered != ecs::INVALID_ENTITY)
                     Application::m_coordinator->removeComponent<components::SelectedTag>(m_entityHovered);
-                m_entityHovered = ecs::INVALID_ENTITY;
+                m_entityHovered     = ecs::INVALID_ENTITY;
                 const auto& payload = *static_cast<const AssetDragDropPayload*>(assetPayload->Data);
 
-                switch(payload.type)
-                {
-                    case assets::AssetType::MODEL:
+                using enum assets::AssetType;
+                switch (payload.type) {
+                    case MODEL:
                         handleDropModel(payload);
-                        break;
-                    case assets::AssetType::TEXTURE:
+                    break;
+                    case TEXTURE:
                         handleDropTexture(payload);
-                        break;
-                    case assets::AssetType::MATERIAL:
+                    break;
+                    case MATERIAL:
                         handleDropMaterial(payload);
-                        break;
+                    break;
                     default:
                         break;
                 }
@@ -185,4 +166,4 @@ namespace nexo::editor {
             ImGui::EndDragDropTarget();
         }
     }
-}
+} // namespace nexo::editor

@@ -17,46 +17,44 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "SceneManager.hpp"
+#include <cmath>
 #include "Exception.hpp"
 #include "core/exceptions/Exceptions.hpp"
-#include <cmath>
 
 namespace nexo::scene {
-	SceneManager::SceneManager() = default;
+    SceneManager::SceneManager() = default;
 
-	void SceneManager::setCoordinator(const std::shared_ptr<ecs::Coordinator> &coordinator)
-	{
-		m_coordinator = coordinator;
-	}
+    void SceneManager::setCoordinator(const std::shared_ptr<ecs::Coordinator> &coordinator)
+    {
+        m_coordinator = coordinator;
+    }
 
-	unsigned int SceneManager::createScene(const std::string &name)
-	{
-		if (!m_coordinator)
-			THROW_EXCEPTION(core::SceneManagerLifecycleException, "Coordinator is not set");
-		Scene newScene = {name, m_coordinator};
-		m_scenes.try_emplace(newScene.getId(), newScene);
+    unsigned int SceneManager::createScene(const std::string &name)
+    {
+        if (!m_coordinator) THROW_EXCEPTION(core::SceneManagerLifecycleException, "Coordinator is not set");
+        Scene newScene = {name, m_coordinator};
+        m_scenes.try_emplace(newScene.getId(), newScene);
 
-		return newScene.getId();
-	}
+        return newScene.getId();
+    }
 
-	unsigned int SceneManager::createEditorScene(const std::string &name)
-	{
-		if (!m_coordinator)
-			THROW_EXCEPTION(core::SceneManagerLifecycleException, "Coordinator is not set");
-		Scene newScene = {name, m_coordinator, true};
-		m_scenes.try_emplace(newScene.getId(), newScene);
+    unsigned int SceneManager::createEditorScene(const std::string &name)
+    {
+        if (!m_coordinator) THROW_EXCEPTION(core::SceneManagerLifecycleException, "Coordinator is not set");
+        Scene newScene = {name, m_coordinator, true};
+        m_scenes.try_emplace(newScene.getId(), newScene);
 
-		return newScene.getId();
-	}
+        return newScene.getId();
+    }
 
-	void SceneManager::deleteScene(const unsigned int id)
-	{
-		m_scenes.erase(id);
-	}
+    void SceneManager::deleteScene(const unsigned int id)
+    {
+        m_scenes.erase(id);
+    }
 
-	Scene &SceneManager::getScene(const unsigned int id)
-	{
-		return m_scenes.at(id);
-	}
+    Scene &SceneManager::getScene(const unsigned int id)
+    {
+        return m_scenes.at(id);
+    }
 
-}
+} // namespace nexo::scene

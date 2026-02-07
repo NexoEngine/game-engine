@@ -20,39 +20,39 @@
 
 #include <core/event/SignalEvent.hpp>
 #include <glad/glad.h>
-#include <sys/types.h>
 
 #include "Renderer3D.hpp"
+#include "Timestep.hpp"
 #include "components/BillboardMesh.hpp"
 #include "components/Camera.hpp"
+#include "components/Editor.hpp"
 #include "components/Light.hpp"
+#include "components/MaterialComponent.hpp"
 #include "components/Model.hpp"
 #include "components/Name.hpp"
 #include "components/Parent.hpp"
+#include "components/Render.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
 #include "components/StaticMesh.hpp"
 #include "components/Transform.hpp"
-#include "components/Editor.hpp"
 #include "components/Uuid.hpp"
-#include "components/Render.hpp"
-#include "components/MaterialComponent.hpp"
+#include "components/Video.hpp"
 #include "core/event/Input.hpp"
-#include "Timestep.hpp"
 #include "exceptions/Exceptions.hpp"
-#include "renderer/RendererExceptions.hpp"
 #include "renderer/Renderer.hpp"
+#include "renderer/RendererExceptions.hpp"
 #include "scripting/native/Scripting.hpp"
 #include "systems/CameraSystem.hpp"
 #include "systems/RenderBillboardSystem.hpp"
 #include "systems/RenderCommandSystem.hpp"
+#include "systems/ScriptingSystem.hpp"
 #include "systems/TransformHierarchySystem.hpp"
 #include "systems/TransformMatrixSystem.hpp"
-#include "systems/ScriptingSystem.hpp"
 #include "systems/lights/DirectionalLightsSystem.hpp"
 #include "systems/lights/PointLightsSystem.hpp"
 
-std::unique_ptr<nexo::Application> nexo::Application::_instance = nullptr;
+std::unique_ptr<nexo::Application> nexo::Application::_instance          = nullptr;
 std::shared_ptr<nexo::ecs::Coordinator> nexo::Application::m_coordinator = nullptr;
 
 namespace nexo {
@@ -76,7 +76,7 @@ namespace nexo {
         LOG(NEXO_DEV, "Signal listeners registered");
     }
 
-    void Application::registerEcsComponents() const
+    void Application::registerEcsComponents()
     {
         m_coordinator->registerComponent<components::TransformComponent>();
         m_coordinator->registerComponent<components::RootComponent>();
@@ -107,10 +107,10 @@ namespace nexo {
         m_coordinator->registerComponent<components::ParentComponent>();
         m_coordinator->registerComponent<components::ModelComponent>();
         m_coordinator->registerComponent<components::BillboardComponent>();
+        m_coordinator->registerComponent<components::VideoComponent>();
         m_coordinator->registerComponent<components::MaterialComponent>();
         m_coordinator->registerComponent<components::NameComponent>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
-
         m_coordinator->registerComponent<components::PhysicsBodyComponent>();
     }
 
@@ -128,9 +128,8 @@ namespace nexo {
         m_window->setKeyCallback([this](const int key, const int action, const int mods) {
             event::EventKey eventKey;
             eventKey.keycode = key;
-            eventKey.mods = mods;
-            switch (action)
-            {
+            eventKey.mods    = mods;
+            switch (action) {
                 case GLFW_PRESS: {
                     eventKey.action = event::KeyAction::PRESSED;
                     break;
@@ -143,7 +142,8 @@ namespace nexo {
                     eventKey.action = event::KeyAction::REPEAT;
                     break;
                 }
-                default: return;
+                default:
+                    return;
             }
             m_eventManager->emitEvent<event::EventKey>(std::make_shared<event::EventKey>(eventKey));
         });
@@ -151,9 +151,8 @@ namespace nexo {
         m_window->setKeyCallback([this](const int key, const int action, const int mods) {
             event::EventKey eventKey;
             eventKey.keycode = key;
-            eventKey.mods = mods;
-            switch (action)
-            {
+            eventKey.mods    = mods;
+            switch (action) {
                 case GLFW_PRESS: {
                     eventKey.action = event::KeyAction::PRESSED;
                     break;
@@ -166,7 +165,8 @@ namespace nexo {
                     eventKey.action = event::KeyAction::REPEAT;
                     break;
                 }
-                default: return;
+                default:
+                    return;
             }
             m_eventManager->emitEvent<event::EventKey>(std::make_shared<event::EventKey>(eventKey));
         });
@@ -174,9 +174,8 @@ namespace nexo {
         m_window->setMouseClickCallback([this](const int button, const int action, const int mods) {
             event::EventMouseClick event;
             event.button = static_cast<nexo::event::MouseButton>(button);
-            event.mods = mods;
-            switch (action)
-            {
+            event.mods   = mods;
+            switch (action) {
                 case GLFW_PRESS: {
                     event.action = event::KeyAction::PRESSED;
                     break;
@@ -184,7 +183,8 @@ namespace nexo {
                 case GLFW_RELEASE:
                     event.action = event::KeyAction::RELEASED;
                     break;
-                default: return;
+                default:
+                    return;
             }
             m_eventManager->emitEvent<event::EventMouseClick>(std::make_shared<event::EventMouseClick>(event));
         });
@@ -199,34 +199,36 @@ namespace nexo {
                 std::make_shared<event::EventMouseMove>(static_cast<float>(xpos), static_cast<float>(ypos)));
         });
 
-        m_window->setFileDropCallback([this](const int count, const char** paths) {
+        m_window->setFileDropCallback([this](const int count, const char **paths) {
             std::vector<std::string> files;
             files.reserve(count);
             for (int i = 0; i < count; ++i) {
                 files.emplace_back(paths[i]);
             }
-            m_eventManager->emitEvent<event::EventFileDrop>(
-                std::make_shared<event::EventFileDrop>(files));
+            m_eventManager->emitEvent<event::EventFileDrop>(std::make_shared<event::EventFileDrop>(files));
         });
     }
 
     void Application::registerSystems()
     {
         m_cameraContextSystem = m_coordinator->registerGroupSystem<system::CameraContextSystem>();
-        m_perspectiveCameraControllerSystem = m_coordinator->registerQuerySystem<system::PerspectiveCameraControllerSystem>();
+        m_perspectiveCameraControllerSystem =
+            m_coordinator->registerQuerySystem<system::PerspectiveCameraControllerSystem>();
         m_perspectiveCameraTargetSystem = m_coordinator->registerQuerySystem<system::PerspectiveCameraTargetSystem>();
-        m_renderCommandSystem = m_coordinator->registerGroupSystem<system::RenderCommandSystem>();
-        m_renderBillboardSystem = m_coordinator->registerGroupSystem<system::RenderBillboardSystem>();
-        m_transformHierarchySystem = m_coordinator->registerGroupSystem<system::TransformHierarchySystem>();
-        m_transformMatrixSystem = m_coordinator->registerQuerySystem<system::TransformMatrixSystem>();
-        m_physicsSystem = m_coordinator->registerQuerySystem<system::PhysicsSystem>();
+        m_renderCommandSystem           = m_coordinator->registerGroupSystem<system::RenderCommandSystem>();
+        m_renderBillboardSystem         = m_coordinator->registerGroupSystem<system::RenderBillboardSystem>();
+        m_renderVideoSystem             = m_coordinator->registerGroupSystem<system::RenderVideoSystem>();
+        m_transformHierarchySystem      = m_coordinator->registerGroupSystem<system::TransformHierarchySystem>();
+        m_transformMatrixSystem         = m_coordinator->registerQuerySystem<system::TransformMatrixSystem>();
+        m_physicsSystem                 = m_coordinator->registerQuerySystem<system::PhysicsSystem>();
         m_physicsSystem->init();
 
-        auto pointLightSystem = m_coordinator->registerGroupSystem<system::PointLightsSystem>();
+        auto pointLightSystem       = m_coordinator->registerGroupSystem<system::PointLightsSystem>();
         auto directionalLightSystem = m_coordinator->registerGroupSystem<system::DirectionalLightsSystem>();
-        auto spotLightSystem = m_coordinator->registerGroupSystem<system::SpotLightsSystem>();
-        auto ambientLightSystem = m_coordinator->registerGroupSystem<system::AmbientLightSystem>();
-        m_lightSystem = std::make_shared<system::LightSystem>(ambientLightSystem, directionalLightSystem, pointLightSystem, spotLightSystem);
+        auto spotLightSystem        = m_coordinator->registerGroupSystem<system::SpotLightsSystem>();
+        auto ambientLightSystem     = m_coordinator->registerGroupSystem<system::AmbientLightSystem>();
+        m_lightSystem               = std::make_shared<system::LightSystem>(ambientLightSystem, directionalLightSystem,
+                                                              pointLightSystem, spotLightSystem);
 
         m_scriptingSystem = std::make_shared<system::ScriptingSystem>();
     }
@@ -243,13 +245,13 @@ namespace nexo {
 
     Application::Application()
     {
-        m_window = renderer::NxWindow::create();
+        m_window       = renderer::NxWindow::create();
         m_eventManager = std::make_shared<event::EventManager>();
         registerAllDebugListeners();
         registerSignalListeners();
 
         // Debug flags
-        //m_eventDebugFlags |= DEBUG_LOG_KEYBOARD_EVENT;
+        // m_eventDebugFlags |= DEBUG_LOG_KEYBOARD_EVENT;
 
         m_coordinator = std::make_shared<ecs::Coordinator>();
 
@@ -260,8 +262,7 @@ namespace nexo {
 
     void Application::displayProfileResults() const
     {
-        for (auto &result: m_profilesResults)
-        {
+        for (auto &result : m_profilesResults) {
             std::ostringstream stream;
             stream << std::fixed << std::setprecision(3) << result.time;
             std::string label = stream.str() + "ms" + " " + result.name;
@@ -281,8 +282,7 @@ namespace nexo {
         m_window->setDarkMode(true);
 
 #ifdef NX_GRAPHICS_API_OPENGL
-        if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
-        {
+        if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
             THROW_EXCEPTION(renderer::NxGraphicsApiInitFailure, "Failed to initialize OpenGL context with glad");
         }
         LOG(NEXO_INFO, "OpenGL context initialized with glad");
@@ -302,7 +302,7 @@ namespace nexo {
 
     void Application::beginFrame()
     {
-	    const auto time = glfwGetTime();
+        const auto time             = glfwGetTime();
         m_worldState.time.deltaTime = time - m_worldState.time.totalTime;
         m_worldState.time.totalTime = time;
         m_worldState.stats.frameCount += 1;
@@ -310,60 +310,60 @@ namespace nexo {
 
     void Application::run(const SceneInfo &sceneInfo)
     {
-       	auto &renderContext = m_coordinator->getSingletonComponent<components::RenderContext>();
+        static bool areVideoLoaded = false;
+        auto &renderContext        = m_coordinator->getSingletonComponent<components::RenderContext>();
 
         if (isInPlayMode()) {
             m_scriptingSystem->update();
         }
 
-        if (!m_isMinimized)
-        {
-         	renderContext.sceneRendered = static_cast<int>(sceneInfo.id);
-            renderContext.sceneType = sceneInfo.sceneType;
+        if (!m_isMinimized) {
+            renderContext.sceneRendered = static_cast<int>(sceneInfo.id);
+            renderContext.sceneType     = sceneInfo.sceneType;
             if (sceneInfo.isChildWindow) {
-                renderContext.isChildWindow = true;
+                renderContext.isChildWindow     = true;
                 renderContext.viewportBounds[0] = sceneInfo.viewportBounds[0];
                 renderContext.viewportBounds[1] = sceneInfo.viewportBounds[1];
             }
-        	if (m_SceneManager.getScene(sceneInfo.id).isRendered())
-			{
+            if (m_SceneManager.getScene(sceneInfo.id).isRendered()) {
                 m_transformMatrixSystem->update();
                 m_transformHierarchySystem->update();
-				m_cameraContextSystem->update();
-				m_lightSystem->update();
-				m_renderCommandSystem->update();
-				m_renderBillboardSystem->update();
-				for (auto &camera : renderContext.cameras)
-				    camera.pipeline.execute();
-				// We have to unbind after the whole pipeline since multiple passes can use the same textures
-				// but we cant bind everything beforehand since a resize can be triggered and invalidate the whole state
+                m_cameraContextSystem->update();
+                m_lightSystem->update();
+                m_renderCommandSystem->update();
+                m_renderBillboardSystem->update();
+                if (!areVideoLoaded) {
+                    m_renderVideoSystem->update();
+                    areVideoLoaded = true;
+                }
+                for (auto &camera : renderContext.cameras) camera.pipeline.execute();
+                // We have to unbind after the whole pipeline since multiple passes can use the same textures
+                // but we cant bind everything beforehand since a resize can be triggered and invalidate the whole state
                 renderer::NxRenderer3D::get().unbindTextures();
-                
+
                 if (isInPlayMode()) {
                     m_physicsSystem->update();
+                    m_renderVideoSystem->update();
                 }
-			}
-			if (m_SceneManager.getScene(sceneInfo.id).isActive())
-			{
-				m_perspectiveCameraControllerSystem->update(m_worldState.time.deltaTime);
-			}
+            }
+            if (m_SceneManager.getScene(sceneInfo.id).isActive()) {
+                m_perspectiveCameraControllerSystem->update(m_worldState.time.deltaTime);
+            }
         }
 
         // Update (swap buffers and poll events)
-        if (sceneInfo.renderingType == RenderingType::WINDOW)
-            m_window->onUpdate();
+        if (sceneInfo.renderingType == RenderingType::WINDOW) m_window->onUpdate();
         m_eventManager->dispatchEvents();
         renderContext.reset();
-        if (m_displayProfileResult)
-            displayProfileResults();
+        if (m_displayProfileResult) displayProfileResults();
     }
 
-    void Application::endFrame()
+    void Application::endFrame() const
     {
-    	m_eventManager->clearEvents();
+        m_eventManager->clearEvents();
     }
 
-    ecs::Entity Application::createEntity() const
+    ecs::Entity Application::createEntity()
     {
         return m_coordinator->createEntity();
     }
@@ -385,14 +385,13 @@ namespace nexo {
         m_coordinator->destroyEntity(entity);
     }
 
-    void Application::removeEntityFromParent(const ecs::Entity entity) const
+    void Application::removeEntityFromParent(const ecs::Entity entity)
     {
         // Get the parent component to find the parent entity
         auto parentComponent = m_coordinator->tryGetComponent<components::ParentComponent>(entity);
-        if (!parentComponent || parentComponent->get().parent == ecs::INVALID_ENTITY)
-            return;
+        if (!parentComponent || parentComponent->get().parent == ecs::INVALID_ENTITY) return;
 
-        ecs::Entity parentEntity = parentComponent->get().parent;
+        const ecs::Entity parentEntity = parentComponent->get().parent;
 
         // Get the parent's transform component which now stores children
         auto parentTransform = m_coordinator->tryGetComponent<components::TransformComponent>(parentEntity);
@@ -406,15 +405,13 @@ namespace nexo {
     {
         // Check if this entity has a transform component with children
         auto transform = m_coordinator->tryGetComponent<components::TransformComponent>(entity);
-        if (!transform || transform->get().children.empty())
-            return;
+        if (!transform || transform->get().children.empty()) return;
 
         // Create a copy of the children vector since we'll be modifying it during iteration
         const std::vector<ecs::Entity> childrenCopy = transform->get().children;
 
         // Delete each child entity recursively
-        for (const auto& childEntity : childrenCopy)
-        {
+        for (const auto &childEntity : childrenCopy) {
             if (childEntity != ecs::INVALID_ENTITY && childEntity != entity) // Avoid circular references
                 deleteEntity(childEntity);
         }
@@ -422,4 +419,4 @@ namespace nexo {
         // Clear the children list to avoid dangling references
         transform->get().children.clear();
     }
-}
+} // namespace nexo

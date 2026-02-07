@@ -52,12 +52,11 @@ namespace nexo::renderer {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
 
-    void NxOpenGlVertexBuffer::setData(void *data, size_t size)
+    void NxOpenGlVertexBuffer::setData(void *data, const size_t size)
     {
         glBindBuffer(GL_ARRAY_BUFFER, _id);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(size), data);
     }
-
 
     // INDEX BUFFER
 
@@ -85,11 +84,12 @@ namespace nexo::renderer {
     void NxOpenGlIndexBuffer::setData(unsigned int *indices, const size_t count)
     {
         _count = count;
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, static_cast<GLsizeiptr>(count * sizeof(unsigned int)), indices,
+                     GL_STATIC_DRAW);
     }
 
     size_t NxOpenGlIndexBuffer::getCount() const
     {
         return _count;
     }
-}
+} // namespace nexo::renderer

@@ -66,8 +66,8 @@ jobs:
             libxcb-icccm4-dev libxcb-keysyms1-dev libxcb-dri2-0-dev libxcb-dri3-dev
             libxcb-glx0-dev libx11-xcb-dev libglu1-mesa-dev
             libxrender-dev libxi-dev libxkbcommon-dev libxkbcommon-x11-dev
-            libegl1-mesa-dev mono-complete
-          version: 1.0
+            libegl1-mesa-dev mono-complete libxtst-dev libltdl-dev
+          version: 1.1
           execute_install_scripts: true
 
       - name: Install .NET SDK 9.0

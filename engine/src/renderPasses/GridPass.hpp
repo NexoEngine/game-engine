@@ -18,15 +18,17 @@
 #pragma once
 
 #include "renderer/RenderPass.hpp"
-#include "renderer/Framebuffer.hpp"
 
 namespace nexo::renderer {
 
     class GridPass : public RenderPass {
-        public:
-            GridPass();
-            ~GridPass() override = default;
+       public:
+        GridPass();
+        ~GridPass() override = default;
 
-            void execute(RenderPipeline& pipeline) override;
+        /**
+         * @brief Executes the grid rendering pass.
+         */
+        void execute(RenderPipeline& pipeline) override;
     };
-}
+} // namespace nexo::renderer

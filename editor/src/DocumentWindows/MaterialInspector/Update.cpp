@@ -21,8 +21,8 @@
 namespace nexo::editor {
 
     void MaterialInspector::update()
-	{
-		// No need to update anything
-	}
+    {
+        // No need to update anything
+    }
 
-}
+} // namespace nexo::editor

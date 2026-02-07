@@ -21,6 +21,16 @@
 
 namespace nexo::editor {
 
+    /**
+     * @brief Renders radio buttons for selecting a test result.
+     *
+     * This function displays three radio buttons labeled "Passed", "Failed",
+     * and "Skipped". The currently selected test result is highlighted, and
+     * clicking on a button updates the provided TestResult reference to the
+     * corresponding value.
+     *
+     * @param result A reference to the TestResult variable to be updated based on user selection.
+     */
     static void renderRadioButtons(TestResult &result)
     {
         if (ImGui::RadioButton("Passed",   result == TestResult::PASSED))
@@ -33,6 +43,15 @@ namespace nexo::editor {
             result = TestResult::SKIPPED;
     }
 
+    /**
+     * @brief Renders the test cases within a given test section.
+     *
+     * This function creates a table layout to display each test case's name
+     * and its associated result. For test cases marked as "Skipped", an input
+     * field is provided to enter the reason for skipping the test.
+     *
+     * @param section The TestSection containing the test cases to be rendered.
+     */
     static void renderTestCases(TestSection &section)
     {
         if (ImGui::BeginTable("TestCasesTable", 2, ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersInnerV))
@@ -75,6 +94,15 @@ namespace nexo::editor {
         }
     }
 
+    /**
+     * @brief Renders the subsections within a test section.
+     *
+     * This function iterates through each subsection, creating a toggleable
+     * header for each. If a subsection is expanded, its test cases are rendered
+     * using the renderTestCases function.
+     *
+     * @param subSections A vector of TestSection objects representing the subsections to be rendered.
+     */
     static void renderSubSections(std::vector<TestSection> &subSections)
     {
         for (unsigned int i = 0; i < subSections.size(); ++i) {
@@ -102,7 +130,7 @@ namespace nexo::editor {
                 // Any test cases directly in this section
                 renderTestCases(section);
 
-                // Now sub-sections
+                // Now subsections
                 renderSubSections(section.subSections);
                 ImGui::TreePop();
             }

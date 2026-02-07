@@ -16,24 +16,22 @@
 
 #include <algorithm>
 #ifndef M_PI
-#define M_PI 3.14159265358979323846
+    #define M_PI 3.14159265358979323846
 #endif
 #ifndef M_PI_2
-#define M_PI_2 1.57079632679489661923 // π/2
+    #define M_PI_2 1.57079632679489661923 // π/2
 #endif
 #include <glm/fwd.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <Logger.hpp>
-#include <map>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include <map>
 
-namespace nexo::renderer
-{
+namespace nexo::renderer {
     static void normalizeVertices(std::vector<glm::vec3>& vertices)
     {
-        for (auto& vertex : vertices)
-        {
+        for (auto& vertex : vertices) {
             vertex = normalize(vertex);
         }
     }
@@ -44,20 +42,20 @@ namespace nexo::renderer
         vertices.reserve(12); // Reserve space for the 12 vertices of the icosahedron
 
         const float phi = (1.0f + sqrtf(5.0f)) * 0.5f; // golden ratio
-        float a = 1.0f;
-        float b = 1.0f / phi;
+        float a         = 1.0f;
+        float b         = 1.0f / phi;
 
-        vertices.emplace_back(0, b, -a); // 0
-        vertices.emplace_back(b, a, 0); // 1
-        vertices.emplace_back(-b, a, 0); // 2
-        vertices.emplace_back(0, b, a); // 3
-        vertices.emplace_back(0, -b, a); // 4
-        vertices.emplace_back(-a, 0, b); // 5
+        vertices.emplace_back(0, b, -a);  // 0
+        vertices.emplace_back(b, a, 0);   // 1
+        vertices.emplace_back(-b, a, 0);  // 2
+        vertices.emplace_back(0, b, a);   // 3
+        vertices.emplace_back(0, -b, a);  // 4
+        vertices.emplace_back(-a, 0, b);  // 5
         vertices.emplace_back(0, -b, -a); // 6
-        vertices.emplace_back(a, 0, -b); // 7
-        vertices.emplace_back(a, 0, b); // 8
+        vertices.emplace_back(a, 0, -b);  // 7
+        vertices.emplace_back(a, 0, b);   // 8
         vertices.emplace_back(-a, 0, -b); // 9
-        vertices.emplace_back(b, -a, 0); // 10
+        vertices.emplace_back(b, -a, 0);  // 10
         vertices.emplace_back(-b, -a, 0); // 11
 
         // Normalize the vertices to create a unit sphere
@@ -68,34 +66,14 @@ namespace nexo::renderer
 
     static std::vector<unsigned int> generateSphereIndices()
     {
-        std::vector<unsigned int> indices = {
-            2, 1, 0,
-            1, 2, 3,
-            5, 4, 3,
-            4, 8, 3,
-            7, 6, 0,
-            6, 9, 0,
-            11, 10, 4,
-            10, 11, 6,
-            9, 5, 2,
-            5, 9, 11,
-            8, 7, 1,
-            7, 8, 10,
-            2, 5, 3,
-            8, 1, 3,
-            9, 2, 0,
-            1, 7, 0,
-            11, 9, 6,
-            7, 10, 6,
-            5, 11, 4,
-            10, 8, 4
-        };
+        std::vector<unsigned int> indices = {2, 1,  0,  1, 2, 3, 5, 4, 3,  4,  8, 3, 7,  6, 0, 6,  9, 0,  11, 10,
+                                             4, 10, 11, 6, 9, 5, 2, 5, 9,  11, 8, 7, 1,  7, 8, 10, 2, 5,  3,  8,
+                                             1, 3,  9,  2, 0, 1, 7, 0, 11, 9,  6, 7, 10, 6, 5, 11, 4, 10, 8,  4};
 
         return indices;
     }
 
-    struct Vec3Comparator
-    {
+    struct Vec3Comparator {
         bool operator()(const glm::vec3& a, const glm::vec3& b) const
         {
             if (a.x != b.x) return a.x < b.x;
@@ -105,15 +83,13 @@ namespace nexo::renderer
     };
 
     void loopSubdivision(std::vector<unsigned int>& indices, std::vector<glm::vec3>& vertices,
-                                const unsigned int nbSubdivision)
+                         const unsigned int nbSubdivision)
     {
-        for (unsigned int i = 0; i < nbSubdivision; ++i)
-        {
+        for (unsigned int i = 0; i < nbSubdivision; ++i) {
             std::vector<unsigned int> newIndices{};
             std::map<glm::vec3, unsigned int, Vec3Comparator> newVertices{};
 
-            for (size_t j = 0; j < indices.size(); j += 3)
-            {
+            for (size_t j = 0; j < indices.size(); j += 3) {
                 const unsigned int v1 = indices[j];
                 const unsigned int v2 = indices[j + 1];
                 const unsigned int v3 = indices[j + 2];
@@ -122,18 +98,15 @@ namespace nexo::renderer
                 const glm::vec3 m2_pos = (vertices[v2] + vertices[v3]) / 2.0f;
                 const glm::vec3 m3_pos = (vertices[v1] + vertices[v3]) / 2.0f;
 
-                if (!newVertices.contains(m1_pos))
-                {
+                if (!newVertices.contains(m1_pos)) {
                     vertices.emplace_back(m1_pos);
                     newVertices.insert({m1_pos, static_cast<unsigned int>(vertices.size() - 1)});
                 }
-                if (!newVertices.contains(m2_pos))
-                {
+                if (!newVertices.contains(m2_pos)) {
                     vertices.emplace_back(m2_pos);
                     newVertices.insert({m2_pos, static_cast<unsigned int>(vertices.size() - 1)});
                 }
-                if (!newVertices.contains(m3_pos))
-                {
+                if (!newVertices.contains(m3_pos)) {
                     vertices.emplace_back(m3_pos);
                     newVertices.insert({m3_pos, static_cast<unsigned int>(vertices.size() - 1)});
                 }
@@ -170,8 +143,7 @@ namespace nexo::renderer
         std::vector<glm::vec2> texCoords{};
         texCoords.reserve(vertices.size()); // Reserve space for texture coordinates
 
-        for (const auto vertex : vertices)
-        {
+        for (const auto vertex : vertices) {
             auto u = (atan2(vertex.z, vertex.x) + M_PI) / (2 * M_PI);
             auto v = acos(vertex.y) / M_PI;
 
@@ -185,8 +157,7 @@ namespace nexo::renderer
         std::vector<glm::vec3> normals{};
         normals.reserve(vertices.size()); // Reserve space for normals
 
-        for (auto vec : vertices)
-        {
+        for (auto vec : vertices) {
             const glm::vec3 vector1 = vec - glm::vec3(0, 0, 0);
             normals.emplace_back(vector1);
         }
@@ -205,39 +176,34 @@ namespace nexo::renderer
      */
     std::shared_ptr<NxVertexArray> NxRenderer3D::getSphereVAO(const unsigned int nbSubdivision)
     {
-        static std::map <unsigned int, std::shared_ptr<NxVertexArray>> sphereVaoMap;
-        if (sphereVaoMap.contains(nbSubdivision))
-            return sphereVaoMap[nbSubdivision];
+        static std::map<unsigned int, std::shared_ptr<NxVertexArray>> sphereVaoMap;
+        if (sphereVaoMap.contains(nbSubdivision)) return sphereVaoMap[nbSubdivision];
 
-        const unsigned int nbVertices = getNbVerticesSphere(nbSubdivision);
-        sphereVaoMap[nbSubdivision] = createVertexArray();
-        const auto vertexBuffer = createVertexBuffer(nbVertices * sizeof(NxVertex));
+        const unsigned int nbVertices                 = getNbVerticesSphere(nbSubdivision);
+        sphereVaoMap[nbSubdivision]                   = createVertexArray();
+        const auto vertexBuffer                       = createVertexBuffer(nbVertices * sizeof(NxVertex));
         const NxBufferLayout sphereVertexBufferLayout = {
-            {NxShaderDataType::FLOAT3, "aPos"},
-            {NxShaderDataType::FLOAT2, "aTexCoord"},
-            {NxShaderDataType::FLOAT3, "aNormal"},
-            {NxShaderDataType::FLOAT3, "aTangent"},
-            {NxShaderDataType::FLOAT3, "aBiTangent"},
-            {NxShaderDataType::INT, "aEntityID"}
-        };
+            {NxShaderDataType::FLOAT3, "aPos"},       {NxShaderDataType::FLOAT2, "aTexCoord"},
+            {NxShaderDataType::FLOAT3, "aNormal"},    {NxShaderDataType::FLOAT3, "aTangent"},
+            {NxShaderDataType::FLOAT3, "aBiTangent"}, {NxShaderDataType::INT, "aEntityID"}};
         vertexBuffer->setLayout(sphereVertexBufferLayout);
 
-        std::vector<glm::vec3> vertices = generateSphereVertices();
+        std::vector<glm::vec3> vertices   = generateSphereVertices();
         std::vector<unsigned int> indices = generateSphereIndices();
 
         loopSubdivision(indices, vertices, nbSubdivision);
 
-        const std::vector<glm::vec3> normals = generateSphereNormals(vertices);
+        const std::vector<glm::vec3> normals   = generateSphereNormals(vertices);
         const std::vector<glm::vec2> texCoords = generateTextureCoords(vertices);
 
         std::vector<NxVertex> vertexData(nbVertices);
         for (unsigned int i = 0; i < nbVertices; ++i) {
-            vertexData[i].position = glm::vec4(vertices[i], 1.0f);
-            vertexData[i].texCoord = texCoords[i];
-            vertexData[i].normal = normals[i];
-            vertexData[i].tangent = glm::vec3(0.0f, 0.0f, 0.0f); // Default tangent
+            vertexData[i].position  = glm::vec4(vertices[i], 1.0f);
+            vertexData[i].texCoord  = texCoords[i];
+            vertexData[i].normal    = normals[i];
+            vertexData[i].tangent   = glm::vec3(0.0f, 0.0f, 0.0f); // Default tangent
             vertexData[i].bitangent = glm::vec3(0.0f, 0.0f, 0.0f); // Default bi tangent
-            vertexData[i].entityID = 0; // Default entity ID
+            vertexData[i].entityID  = 0;                           // Default entity ID
         }
 
         vertexBuffer->setData(vertexData.data(), static_cast<unsigned int>(vertexData.size() * sizeof(NxVertex)));
@@ -249,4 +215,4 @@ namespace nexo::renderer
 
         return sphereVaoMap[nbSubdivision];
     }
-}
+} // namespace nexo::renderer

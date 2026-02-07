@@ -13,9 +13,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <string>
 #include "Action.hpp"
 #include "assets/Asset.hpp"
-#include <string>
 
 namespace nexo::editor {
 
@@ -25,15 +25,13 @@ namespace nexo::editor {
      * Handles undo/redo for asset location changes
      */
     class AssetMoveAction final : public Action {
-    public:
-        AssetMoveAction(assets::AssetID assetId,
-                       const std::string& fromPath,
-                       const std::string& toPath);
+       public:
+        AssetMoveAction(assets::AssetID assetId, std::string fromPath, std::string toPath);
 
         void redo() override;
         void undo() override;
 
-    private:
+       private:
         assets::AssetID m_assetId;
         std::string m_fromPath;
         std::string m_toPath;

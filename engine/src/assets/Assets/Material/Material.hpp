@@ -29,10 +29,10 @@ namespace nexo::assets {
      * @brief Represents a material asset.
      */
     class Material final : public Asset<components::Material, AssetType::MATERIAL> {
-        public:
-            Material() = default;
+       public:
+        Material() = default;
 
-            ~Material() override = default;
+        ~Material() override = default;
     };
 
-}
+} // namespace nexo::assets

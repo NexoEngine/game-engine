@@ -70,6 +70,7 @@ target_include_directories(editor_tests
     PRIVATE
     ${PROJECT_SOURCE_DIR}/editor/src
     ${PROJECT_SOURCE_DIR}/engine/src
+    ${PROJECT_SOURCE_DIR}/engine/include
     ${PROJECT_SOURCE_DIR}/common/src
     ${BASEDIR}/mocks
     ${BASEDIR}/contexts

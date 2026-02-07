@@ -16,18 +16,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include <cstring>
 #include <imgui.h>
 #include "AssetManagerWindow.hpp"
 #include "IconsFontAwesome.h"
 #include "ImNexo/Elements.hpp"
 #include "Path.hpp"
 #include "assets/AssetCatalog.hpp"
-#include "context/ThumbnailCache.hpp"
 #include "context/ActionManager.hpp"
-#include "context/actions/AssetActions.hpp"
-#include "ImNexo/Elements.hpp"
-#include <cstring>
-#include <imgui.h>
+#include "context/ThumbnailCache.hpp"
 
 namespace nexo::editor {
 
@@ -70,7 +67,7 @@ namespace nexo::editor {
         if (ImGui::Button("Assets")) m_currentFolder.clear();
 
         handleAssetDrop("");
-        handleFolderDrop("", m_currentFolder);
+        handleFolderDrop("");
         ImGui::PopID();
 
         std::string path                      = m_currentFolder;
@@ -86,11 +83,11 @@ namespace nexo::editor {
             ImGui::PushID(("breadcrumb_" + crumb).c_str());
             if (i == lastIndex)
                 ImGui::TextColored(ImVec4(1.0f, 0.8f, 0.0f, 1.0f), "%s", crumb.c_str());
-            else if (ImNexo::Button(crumb + "##" + std::to_string(i)))
+            else if (ImNexo::Button(std::format("{}##{}", crumb, i)))
                 m_currentFolder = fullPath;
 
             handleAssetDrop(fullPath);
-            handleFolderDrop(fullPath, crumb.empty() ? crumb : "Assets");
+            handleFolderDrop(fullPath);
             ImGui::PopID();
         }
     }
@@ -99,7 +96,7 @@ namespace nexo::editor {
     {
         ImGui::SetNextWindowSize(ImVec2(800, 600), ImGuiCond_FirstUseEver);
         ImGui::Begin(ICON_FA_FOLDER_OPEN " Asset Manager" NEXO_WND_USTRID_ASSET_MANAGER, &m_opened,
-                     ImGuiWindowFlags_MenuBar);
+                     ImGuiWindowFlags_NoTitleBar);
 
         beginRender(NEXO_WND_USTRID_ASSET_MANAGER);
 
@@ -148,7 +145,7 @@ namespace nexo::editor {
             // Asset popups
             if (m_popupManager.showPopupModal("Rename Asset Popup")) renameAssetPopup();
             if (m_popupManager.showPopupModal("Delete Asset Popup")) deleteAssetPopup();
-            if (m_popupManager.showPopupModal("Delete Not Empty Asset Popup")) deleteUsedAssetPopup();
+            if (m_popupManager.showPopupModal("Delete Used Asset Popup")) deleteUsedAssetPopup();
             if (m_popupManager.showPopupModal("Details Asset Popup")) assetDetailsPopup();
         }
 

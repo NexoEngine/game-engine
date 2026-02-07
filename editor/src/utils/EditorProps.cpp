@@ -17,32 +17,39 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "EditorProps.hpp"
+#include "Nexo.hpp"
+#include "Path.hpp"
 #include "Renderer3D.hpp"
+#include "assets/AssetCatalog.hpp"
 #include "components/BillboardMesh.hpp"
 #include "components/Render3D.hpp"
-#include "Path.hpp"
-#include "Nexo.hpp"
-#include "assets/AssetCatalog.hpp"
 
 namespace nexo::editor::utils {
 
+    /**
+     * @brief Adds camera props to the specified entity.
+     *
+     * This function attaches a billboard mesh and a material component to the given entity,
+     * representing a camera icon in the editor. The billboard uses a predefined camera icon texture
+     * and is set up to always face the camera in the 3D scene.
+     *
+     * @param entity The ECS entity to which the camera props will be added.
+     */
     static void addCameraProps(const ecs::Entity entity)
     {
         auto& catalog = assets::AssetCatalog::getInstance();
 
         static const assets::AssetRef<assets::Texture> cameraIconTexture = catalog.createAsset<assets::Texture>(
             assets::AssetLocation("_internal::cameraIcon@_internal"),
-            Path::resolvePathRelativeToExe("../resources/textures/cameraIcon.png")
-        );
+            Path::resolvePathRelativeToExe("../resources/textures/cameraIcon.png"));
 
         static const assets::AssetRef<assets::Material> materialRef = [&catalog]() {
-            auto billboardMat = std::make_unique<components::Material>();
-            billboardMat->isOpaque = false;
+            auto billboardMat           = std::make_unique<components::Material>();
+            billboardMat->isOpaque      = false;
             billboardMat->albedoTexture = cameraIconTexture;
-            billboardMat->shader = "Albedo unshaded transparent";
-            return catalog.createAsset<assets::Material>(
-                assets::AssetLocation("_internal::CameraPropMat@_internal"),
-                std::move(billboardMat));
+            billboardMat->shader        = "Albedo unshaded transparent";
+            return catalog.createAsset<assets::Material>(assets::AssetLocation("_internal::CameraPropMat@_internal"),
+                                                         std::move(billboardMat));
         }();
 
         components::MaterialComponent matComponent;
@@ -55,23 +62,30 @@ namespace nexo::editor::utils {
         Application::m_coordinator->addComponent(entity, matComponent);
     }
 
+    /**
+     * @brief Adds point light props to the specified entity.
+     *
+     * This function attaches a billboard mesh and a material component to the given entity,
+     * representing a point light icon in the editor. The billboard uses a predefined point light icon texture
+     * and is set up to always face the camera in the 3D scene.
+     *
+     * @param entity The ECS entity to which the point light props will be added.
+     */
     static void addPointLightProps(const ecs::Entity entity)
     {
         auto& catalog = assets::AssetCatalog::getInstance();
 
         static const assets::AssetRef<assets::Texture> pointLightIconTexture = catalog.createAsset<assets::Texture>(
             assets::AssetLocation("_internal::pointLightIcon@_internal"),
-            Path::resolvePathRelativeToExe("../resources/textures/pointLightIcon.png")
-        );
+            Path::resolvePathRelativeToExe("../resources/textures/pointLightIcon.png"));
 
         static const assets::AssetRef<assets::Material> materialRef = [&catalog]() {
-            auto billboardMat = std::make_unique<components::Material>();
-            billboardMat->isOpaque = false;
+            auto billboardMat           = std::make_unique<components::Material>();
+            billboardMat->isOpaque      = false;
             billboardMat->albedoTexture = pointLightIconTexture;
-            billboardMat->shader = "Albedo unshaded transparent";
+            billboardMat->shader        = "Albedo unshaded transparent";
             return catalog.createAsset<assets::Material>(
-                assets::AssetLocation("_internal::PointLightPropMat@_internal"),
-                std::move(billboardMat));
+                assets::AssetLocation("_internal::PointLightPropMat@_internal"), std::move(billboardMat));
         }();
 
         components::MaterialComponent matComponent;
@@ -84,23 +98,30 @@ namespace nexo::editor::utils {
         Application::m_coordinator->addComponent(entity, matComponent);
     }
 
+    /**
+     * @brief Adds spotlight props to the specified entity.
+     *
+     * This function attaches a billboard mesh and a material component to the given entity,
+     * representing a spotlight icon in the editor. The billboard uses a predefined spotlight icon texture
+     * and is set up to always face the camera in the 3D scene.
+     *
+     * @param entity The ECS entity to which the spotlight props will be added.
+     */
     static void addSpotLightProps(const ecs::Entity entity)
     {
         auto& catalog = assets::AssetCatalog::getInstance();
 
         static const assets::AssetRef<assets::Texture> spotLightIconTexture = catalog.createAsset<assets::Texture>(
             assets::AssetLocation("_internal::spotLightIcon@_internal"),
-            Path::resolvePathRelativeToExe("../resources/textures/spotLightIcon.png")
-        );
+            Path::resolvePathRelativeToExe("../resources/textures/spotLightIcon.png"));
 
         static const assets::AssetRef<assets::Material> materialRef = [&catalog]() {
-            auto billboardMat = std::make_unique<components::Material>();
-            billboardMat->isOpaque = false;
+            auto billboardMat           = std::make_unique<components::Material>();
+            billboardMat->isOpaque      = false;
             billboardMat->albedoTexture = spotLightIconTexture;
-            billboardMat->shader = "Albedo unshaded transparent";
-            return catalog.createAsset<assets::Material>(
-                assets::AssetLocation("_internal::SpotLightPropMat@_internal"),
-                std::move(billboardMat));
+            billboardMat->shader        = "Albedo unshaded transparent";
+            return catalog.createAsset<assets::Material>(assets::AssetLocation("_internal::SpotLightPropMat@_internal"),
+                                                         std::move(billboardMat));
         }();
 
         components::MaterialComponent matComponent;
@@ -115,15 +136,15 @@ namespace nexo::editor::utils {
 
     void addPropsTo(const ecs::Entity entity, const PropsType type)
     {
-        switch (type)
-        {
-            case PropsType::CAMERA:
+        using enum PropsType;
+        switch (type) {
+            case CAMERA:
                 addCameraProps(entity);
                 break;
-            case PropsType::POINT_LIGHT:
+            case POINT_LIGHT:
                 addPointLightProps(entity);
                 break;
-            case PropsType::SPOT_LIGHT:
+            case SPOT_LIGHT:
                 addSpotLightProps(entity);
                 break;
             default:
@@ -131,4 +152,4 @@ namespace nexo::editor::utils {
         }
     }
 
-}
+} // namespace nexo::editor::utils

@@ -22,7 +22,7 @@ namespace nexo::editor {
 
     void SceneTreeWindow::shutdown()
     {
-        // Nothing to shutdown
+        // Nothing to shut down
     }
 
-}
+} // namespace nexo::editor

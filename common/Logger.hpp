@@ -54,15 +54,16 @@ namespace nexo {
 
     inline std::string toString(const LogLevel level)
     {
+        using enum LogLevel;
         switch (level)
         {
-            case LogLevel::FATAL: return "FATAL";
-            case LogLevel::ERR: return "ERROR";
-            case LogLevel::WARN: return "WARN";
-            case LogLevel::INFO: return "INFO";
-            case LogLevel::USER: return "USER";
-            case LogLevel::DEBUG: return "DEBUG";
-            case LogLevel::DEV: return "DEV";
+            case FATAL: return "FATAL";
+            case ERR: return "ERROR";
+            case WARN: return "WARN";
+            case INFO: return "INFO";
+            case USER: return "USER";
+            case DEBUG: return "DEBUG";
+            case DEV: return "DEV";
         }
         return "UNKNOWN";
     }

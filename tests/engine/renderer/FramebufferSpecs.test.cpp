@@ -109,7 +109,7 @@ TEST_F(FrameBufferAttachmentsSpecificationsTest, DefaultConstructorEmptyAttachme
 
 TEST_F(FrameBufferAttachmentsSpecificationsTest, InitializerListSingleAttachment) {
     NxFrameBufferAttachmentsSpecifications specs{
-        {NxFrameBufferTextureFormats::RGBA8}
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)
     };
     ASSERT_EQ(specs.attachments.size(), 1);
     EXPECT_EQ(specs.attachments[0].textureFormat, NxFrameBufferTextureFormats::RGBA8);
@@ -117,9 +117,9 @@ TEST_F(FrameBufferAttachmentsSpecificationsTest, InitializerListSingleAttachment
 
 TEST_F(FrameBufferAttachmentsSpecificationsTest, InitializerListMultipleAttachments) {
     NxFrameBufferAttachmentsSpecifications specs{
-        {NxFrameBufferTextureFormats::RGBA8},
-        {NxFrameBufferTextureFormats::RGBA16},
-        {NxFrameBufferTextureFormats::Depth}
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8),
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA16),
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::Depth)
     };
     ASSERT_EQ(specs.attachments.size(), 3);
     EXPECT_EQ(specs.attachments[0].textureFormat, NxFrameBufferTextureFormats::RGBA8);
@@ -136,8 +136,8 @@ TEST_F(FrameBufferAttachmentsSpecificationsTest, PushBackAttachment) {
 
 TEST_F(FrameBufferAttachmentsSpecificationsTest, ColorAndDepthAttachment) {
     NxFrameBufferAttachmentsSpecifications specs{
-        {NxFrameBufferTextureFormats::RGBA8},
-        {NxFrameBufferTextureFormats::DEPTH24STENCIL8}
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8),
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)
     };
     EXPECT_EQ(specs.attachments.size(), 2);
 }
@@ -196,8 +196,8 @@ TEST_F(FramebufferSpecsTest, SetSwapChainTarget) {
 TEST_F(FramebufferSpecsTest, SetAttachments) {
     NxFramebufferSpecs specs;
     specs.attachments = {
-        {NxFrameBufferTextureFormats::RGBA8},
-        {NxFrameBufferTextureFormats::Depth}
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8),
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::Depth)
     };
     EXPECT_EQ(specs.attachments.attachments.size(), 2);
 }
@@ -209,9 +209,9 @@ TEST_F(FramebufferSpecsTest, FullConfiguration) {
     specs.samples = 8;
     specs.swapChainTarget = false;
     specs.attachments = {
-        {NxFrameBufferTextureFormats::RGBA16},
-        {NxFrameBufferTextureFormats::RED_INTEGER},
-        {NxFrameBufferTextureFormats::Depth}
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA16),
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RED_INTEGER),
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::Depth)
     };
 
     EXPECT_EQ(specs.width, 800u);
@@ -244,7 +244,7 @@ TEST_F(FramebufferCommonPatternsTest, SimpleColorBuffer) {
     NxFramebufferSpecs specs;
     specs.width = 1280;
     specs.height = 720;
-    specs.attachments = {{NxFrameBufferTextureFormats::RGBA8}};
+    specs.attachments = {NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8)};
 
     EXPECT_EQ(specs.attachments.attachments.size(), 1);
     EXPECT_EQ(specs.attachments.attachments[0].textureFormat, NxFrameBufferTextureFormats::RGBA8);
@@ -255,8 +255,8 @@ TEST_F(FramebufferCommonPatternsTest, ColorAndDepthBuffer) {
     specs.width = 1920;
     specs.height = 1080;
     specs.attachments = {
-        {NxFrameBufferTextureFormats::RGBA8},
-        {NxFrameBufferTextureFormats::Depth}
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8),
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::Depth)
     };
 
     EXPECT_EQ(specs.attachments.attachments.size(), 2);
@@ -268,10 +268,10 @@ TEST_F(FramebufferCommonPatternsTest, GBufferSetup) {
     specs.width = 1920;
     specs.height = 1080;
     specs.attachments = {
-        {NxFrameBufferTextureFormats::RGBA16},  // Position
-        {NxFrameBufferTextureFormats::RGBA16},  // Normal
-        {NxFrameBufferTextureFormats::RGBA8},   // Albedo
-        {NxFrameBufferTextureFormats::Depth}    // Depth
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA16),  // Position
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA16),  // Normal
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8),   // Albedo
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::Depth)    // Depth
     };
 
     EXPECT_EQ(specs.attachments.attachments.size(), 4);
@@ -283,8 +283,8 @@ TEST_F(FramebufferCommonPatternsTest, EntityPickingBuffer) {
     specs.width = 800;
     specs.height = 600;
     specs.attachments = {
-        {NxFrameBufferTextureFormats::RED_INTEGER},
-        {NxFrameBufferTextureFormats::Depth}
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RED_INTEGER),
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::Depth)
     };
 
     EXPECT_EQ(specs.attachments.attachments.size(), 2);
@@ -297,8 +297,8 @@ TEST_F(FramebufferCommonPatternsTest, MultisampledBuffer) {
     specs.height = 1080;
     specs.samples = 4;  // 4x MSAA
     specs.attachments = {
-        {NxFrameBufferTextureFormats::RGBA8},
-        {NxFrameBufferTextureFormats::Depth}
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::RGBA8),
+        NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::Depth)
     };
 
     EXPECT_EQ(specs.samples, 4u);

@@ -21,6 +21,9 @@
 #include "core/event/WindowEvent.hpp"
 
 namespace nexo::event {
+    using enum KeyAction;
+    using enum MouseButton;
+
         TEST(WindowEventTest, EventWindowCloseInstantiation) {
         EventWindowClose closeEvent;
         SUCCEED(); // Validate no crash on instantiation
@@ -37,10 +40,10 @@ namespace nexo::event {
     }
 
     TEST(WindowEventTest, EventKeyAttributesAndModifiers) {
-        EventKey keyEvent(65, PRESSED, GLFW_MOD_SHIFT | GLFW_MOD_CONTROL);
+        EventKey keyEvent(65, KeyAction::PRESSED, GLFW_MOD_SHIFT | GLFW_MOD_CONTROL);
 
         EXPECT_EQ(keyEvent.keycode, 65);
-        EXPECT_EQ(keyEvent.action, PRESSED);
+        EXPECT_EQ(keyEvent.action, KeyAction::PRESSED);
         EXPECT_TRUE(keyEvent.hasMod(KeyMods::SHIFT));
         EXPECT_TRUE(keyEvent.hasMod(KeyMods::CONTROL));
         EXPECT_FALSE(keyEvent.hasMod(KeyMods::ALT));
@@ -52,12 +55,12 @@ namespace nexo::event {
 
     TEST(WindowEventTest, EventMouseClickAttributes) {
         EventMouseClick mouseClickEvent;
-        mouseClickEvent.button = RIGHT;
-        mouseClickEvent.action = RELEASED;
+        mouseClickEvent.button = MouseButton::RIGHT;
+        mouseClickEvent.action = KeyAction::RELEASED;
         mouseClickEvent.mods = GLFW_MOD_ALT;
 
-        EXPECT_EQ(mouseClickEvent.button, RIGHT);
-        EXPECT_EQ(mouseClickEvent.action, RELEASED);
+        EXPECT_EQ(mouseClickEvent.button, MouseButton::RIGHT);
+        EXPECT_EQ(mouseClickEvent.action, KeyAction::RELEASED);
         EXPECT_TRUE(mouseClickEvent.hasMod(KeyMods::ALT));
         EXPECT_FALSE(mouseClickEvent.hasMod(KeyMods::CONTROL));
         EXPECT_FALSE(mouseClickEvent.hasMod(KeyMods::SHIFT));
@@ -91,15 +94,15 @@ namespace nexo::event {
 
     TEST(WindowEventTest, KeyActionStreamOperator) {
         std::ostringstream os;
-        os << PRESSED;
+        os << KeyAction::PRESSED;
         EXPECT_EQ(os.str(), "PRESSED");
 
         os.str(""); os.clear();
-        os << RELEASED;
+        os << KeyAction::RELEASED;
         EXPECT_EQ(os.str(), "RELEASED");
 
         os.str(""); os.clear();
-        os << REPEAT;
+        os << KeyAction::REPEAT;
         EXPECT_EQ(os.str(), "REPEAT");
     }
 
@@ -123,15 +126,15 @@ namespace nexo::event {
 
     TEST(WindowEventTest, MouseButtonStreamOperator) {
         std::ostringstream os;
-        os << LEFT;
+        os << MouseButton::LEFT;
         EXPECT_EQ(os.str(), "LEFT");
 
         os.str(""); os.clear();
-        os << RIGHT;
+        os << MouseButton::RIGHT;
         EXPECT_EQ(os.str(), "RIGHT");
 
         os.str(""); os.clear();
-        os << MIDDLE;
+        os << MouseButton::MIDDLE;
         EXPECT_EQ(os.str(), "MIDDLE");
     }
 
@@ -313,9 +316,9 @@ namespace nexo::event {
 
     // Additional KeyAction enum tests
     TEST(WindowEventTest, KeyActionEnumValues) {
-        EXPECT_EQ(PRESSED, 0);
-        EXPECT_EQ(RELEASED, 1);
-        EXPECT_EQ(REPEAT, 2);
+        EXPECT_EQ(static_cast<int>(PRESSED), 0);
+        EXPECT_EQ(static_cast<int>(RELEASED), 1);
+        EXPECT_EQ(static_cast<int>(REPEAT), 2);
     }
 
     TEST(WindowEventTest, EventKeyWithDifferentActions) {
@@ -331,9 +334,9 @@ namespace nexo::event {
 
     // Additional MouseButton enum tests
     TEST(WindowEventTest, MouseButtonEnumValues) {
-        EXPECT_EQ(LEFT, 0);
-        EXPECT_EQ(RIGHT, 1);
-        EXPECT_EQ(MIDDLE, 2);
+        EXPECT_EQ(static_cast<int>(LEFT), 0);
+        EXPECT_EQ(static_cast<int>(RIGHT), 1);
+        EXPECT_EQ(static_cast<int>(MIDDLE), 2);
     }
 
     TEST(WindowEventTest, EventMouseClickWithDifferentButtons) {

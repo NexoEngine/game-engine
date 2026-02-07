@@ -38,10 +38,10 @@ include_directories("../../common")
 #    include_directories("${CMAKE_CURRENT_BINARY_DIR}/vcpkg_installed/x64-osx/include")
 #endif()
 
-if(APPLE)
+if (APPLE)
     include_directories(/usr/local/include)
     link_directories(/usr/local/lib)
-endif()
+endif ()
 
 include_directories(include)
 

@@ -28,8 +28,8 @@
 namespace nexo::ecs {
 
     struct ComponentDescription {
-        std::string name;           // Name of the component
-        std::vector<Field> fields;  // List of fields in the component
+        std::string name;          // Name of the component
+        std::vector<Field> fields; // List of fields in the component
     };
 
 } // namespace nexo::ecs

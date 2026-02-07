@@ -45,7 +45,7 @@ namespace nexo::editor {
 
         ImGui::Text("Are you sure you want to delete %s?", assetName.c_str());
         ImGui::Separator();
-        if (Button("Delete", ImNexo::VALIDATION)) {
+        if (Button("Delete", ImNexo::ButtonTypes::VALIDATION)) {
             // TODO: Check if the asset is used before deleting
             // if (m_assetActionState.assetData->isUsed()) {
             //     m_popupManager.openPopup("Delete Used Asset Popup");
@@ -62,7 +62,7 @@ namespace nexo::editor {
             }
             // }
             ImGui::SameLine();
-            if (Button("Cancel", ImNexo::CANCEL)) {
+            if (Button("Cancel", ImNexo::ButtonTypes::CANCEL)) {
                 m_assetActionState.reset();
                 PopupManager::closePopup();
             }
@@ -80,7 +80,7 @@ namespace nexo::editor {
 
         ImGui::Text("%s is used by one or more entities.\nAre you sure you want to delete it?", assetName.c_str());
         ImGui::Separator();
-        if (Button("Delete", ImNexo::VALIDATION) &&
+        if (Button("Delete", ImNexo::ButtonTypes::VALIDATION) &&
             assets::AssetCatalog::getInstance().deleteAsset(m_assetActionState.assetData->getID())) {
             m_assetActionState.reset();
             PopupManager::closePopup();
@@ -89,7 +89,7 @@ namespace nexo::editor {
             m_assetActionState.errorMessage = "Failed to delete the asset (may currently be in use)";
         }
         ImGui::SameLine();
-        if (Button("Cancel", ImNexo::CANCEL)) {
+        if (Button("Cancel", ImNexo::ButtonTypes::CANCEL)) {
             m_assetActionState.reset();
             PopupManager::closePopup();
         }
@@ -132,9 +132,9 @@ namespace nexo::editor {
         ImGui::Text("Enter a new name for the asset:");
 
         // Input text for the new asset name
-        std::string assetName                  = m_assetActionState.assetData->m_metadata.location.getName().c_str();
         constexpr size_t MAX_ASSET_NAME_LENGTH = 256;
-        static std::string newName             = assetName;
+        static std::string newName;
+        std::string assetName = m_assetActionState.assetData->m_metadata.location.getName().c_str();
         if (newName.empty()) {
             newName = assetName;
         }
@@ -143,19 +143,19 @@ namespace nexo::editor {
             ImGui::SetKeyboardFocusHere();
             isFocus = false;
         }
-        ImGui::InputText("##AssetName", newName.data(), assetName.capacity(), ImGuiInputTextFlags_AutoSelectAll);
+        ImGui::InputText("##AssetName", newName.data(), MAX_ASSET_NAME_LENGTH, ImGuiInputTextFlags_AutoSelectAll);
         newName.resize(strlen(newName.c_str()));
         ImGui::Separator();
 
         // Buttons for renaming or canceling the action
-        if (Button("Rename", ImNexo::VALIDATION) && handleAssetRenaming(newName)) {
+        if (Button("Rename", ImNexo::ButtonTypes::VALIDATION) && handleAssetRenaming(newName)) {
             m_assetActionState.reset();
             newName = "";
             PopupManager::closePopup();
             isFocus = true;
         }
         ImGui::SameLine();
-        if (Button("Cancel", ImNexo::CANCEL)) {
+        if (Button("Cancel", ImNexo::ButtonTypes::CANCEL)) {
             m_assetActionState.reset();
             newName = "";
             PopupManager::closePopup();
@@ -179,7 +179,7 @@ namespace nexo::editor {
         ImGui::Text("Status: %s", m_assetActionState.assetData->isLoaded() ? "Loaded" : "Not Loaded");
 
         ImGui::Separator();
-        if (Button("Close", ImNexo::CANCEL)) {
+        if (Button("Close", ImNexo::ButtonTypes::CANCEL)) {
             m_assetActionState.reset();
             PopupManager::closePopup();
         }

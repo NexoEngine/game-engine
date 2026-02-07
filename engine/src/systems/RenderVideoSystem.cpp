@@ -1,0 +1,76 @@
+//// RenderVideoSystem.cpp ////////////////////////////////////////////////////////////
+//
+//  zzzzz      zzz   zzzzzzzzzzzzz   zzzz      zzzz      zzzzz  zzzzz
+//  zzz zzz    zzz   zzzz              zzzz  zzzz      zzzz        zzzz
+//  zzz   zzz  zzz   zzzzzzzzz            zzzz        zzzz          zzzz
+//  zzz    zzz zzz   zzzz              zzzz  zzzz      zzzz        zzzz
+//  zzz      zzzzz   zzzzzzzzzzzzz   zzzz      zzzz      zzzzz  zzzzz
+//
+//  Author:      Marie GIACOMEL
+//  Date:        03/09/2025
+//  Description: Source file for the Video System functions
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#include "RenderVideoSystem.hpp"
+#include "Application.hpp"
+#include "components/Video.hpp"
+
+namespace nexo::system {
+    int RenderVideoSystem::updateVideoComponent(components::VideoComponent &videoComponent, ecs::Entity entity)
+    {
+        if (!coord->entityHasComponent<components::MaterialComponent>(entity) || videoComponent.path.empty()) {
+            return 1;
+        }
+        if (!videoComponent.isLoaded) {
+            if (!videoComponent.loadVideoFrames(videoComponent.path)) {
+                LOG_ONCE(NEXO_ERROR, "Failed to load video frames from path: {}", videoComponent.path);
+                return 1;
+            }
+            return 0;
+        }
+
+        videoComponent.updateFrame();
+
+        // update material to current frame
+        auto &[material]          = coord->getComponent<components::MaterialComponent>(entity);
+        const auto &currentFrameMaterial = videoComponent.frames[videoComponent.currentFrameIndex];
+        material = currentFrameMaterial;
+
+        return 0;
+    }
+
+    void RenderVideoSystem::update()
+    {
+        const auto &renderContext = getSingleton<components::RenderContext>();
+        if (renderContext.sceneRendered == -1) return;
+
+        const auto sceneRendered = static_cast<unsigned int>(renderContext.sceneRendered);
+
+        const auto scenePartition = m_group->getPartitionView<components::SceneTag, unsigned int>(
+            [](const components::SceneTag &tag) { return tag.id; });
+        const auto *partition        = scenePartition.getPartition(sceneRendered);
+        auto &app                    = Application::getInstance();
+        const std::string &sceneName = app.getSceneManager().getScene(sceneRendered).getName();
+        if (!partition) {
+            LOG_ONCE(NEXO_WARN, "Nothing to render in scene {}, skipping", sceneName);
+            return;
+        }
+        Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render in scene {}, skipping", sceneName));
+
+        auto videoSpan                                = get<components::VideoComponent>();
+        const std::span<const ecs::Entity> entitySpan = m_group->entities();
+
+        for (size_t i = 0; i < videoSpan.size(); ++i) {
+            updateVideoComponent(videoSpan[i], entitySpan[i]);
+        }
+    }
+
+    void RenderVideoSystem::reset()
+    {
+        auto videoSpan                                = get<components::VideoComponent>();
+        for (auto & i : videoSpan) {
+            i.restartVideo();
+        }
+    }
+} // namespace nexo::system

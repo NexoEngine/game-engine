@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include "ValidatedName.hpp"
 #include "AssetName.hpp"
+#include "ValidatedName.hpp"
 
 namespace nexo::assets {
 

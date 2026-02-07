@@ -16,7 +16,7 @@
 
 namespace nexo::editor {
 
-    template <typename T>
+    template<typename T>
     void AssetManagerWindow::drawErrorMessageInPopup(T& actionState)
     {
         if (!actionState.showError) return;
@@ -47,10 +47,10 @@ namespace nexo::editor {
      * @param texture The asset reference to the texture.
      * @return ImTextureID The texture ID or 0 if the texture is invalid.
      */
-    ImTextureID AssetManagerWindow::getIconTexture(const assets::AssetRef<assets::Texture> &texture)
+    ImTextureID AssetManagerWindow::getIconTexture(const assets::AssetRef<assets::Texture>& texture)
     {
         if (const auto texRef = texture.lock()) {
-            const auto &texData = texRef->getData();
+            const auto& texData = texRef->getData();
             if (texData && texData->texture) {
                 return texData->texture->getId();
             }

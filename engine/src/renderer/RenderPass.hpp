@@ -16,12 +16,11 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
+#include <cstdint>
 #include <string>
 #include <utility>
 #include <vector>
-#include <cstdint>
 #include "Framebuffer.hpp"
-
 
 namespace nexo::renderer {
     using PassId = uint32_t;
@@ -29,32 +28,86 @@ namespace nexo::renderer {
     class RenderPipeline;
 
     class RenderPass {
-        public:
-            explicit RenderPass(const PassId id, std::string  debugName = "") : id(id), name(std::move(debugName)) {}
-            virtual ~RenderPass() = default;
+       public:
+        explicit RenderPass(const PassId id, std::string debugName = "") : id(id), name(std::move(debugName))
+        {}
+        virtual ~RenderPass() = default;
 
-            // The actual rendering work
-            virtual void execute(RenderPipeline& pipeline) = 0;
-            virtual void resize([[maybe_unused]] unsigned int width, [[maybe_unused]] unsigned int height) {};
-            void setFinal(const bool isFinal) {m_isFinal = isFinal;};
-            [[nodiscard]] bool isFinal() const {return m_isFinal;}
+        // The actual rendering work
+        /// Executes the render pass processing
+        /// @param pipeline Reference to the render pipeline this pass belongs to
+        virtual void execute(RenderPipeline &pipeline) = 0;
 
-            [[nodiscard]] PassId getId() const { return id; }
-            [[nodiscard]] const std::string& getName() const { return name; }
-            std::vector<PassId> &getPrerequisites() { return prerequisites; }
-            [[nodiscard]] const std::vector<PassId> &getPrerequisites() const { return prerequisites; }
-            std::vector<PassId> &getEffects() { return effects; }
-            [[nodiscard]] const std::vector<PassId> &getEffects() const { return effects; }
+        /// Handles resize events for the render pass
+        /// @param width New width in pixels
+        /// @param height New height in pixels
+        virtual void resize([[maybe_unused]] unsigned int width, [[maybe_unused]] unsigned int height){
+            // Default implementation does nothing
+        };
 
-            virtual std::shared_ptr<NxFramebuffer> getOutput() const { return nullptr; };
-        protected:
-            bool m_isFinal = false;
-            PassId id;
-            std::string name;
+        /// Sets whether this pass is the final one in the pipeline
+        /// @param isFinal True if this is the final pass
+        void setFinal(const bool isFinal)
+        {
+            m_isFinal = isFinal;
+        }
 
-            // Prerequisites - which passes must run before this one
-            std::vector<PassId> prerequisites;
-            // Effects - which passes this one enables
-            std::vector<PassId> effects;
+        /// @returns True if this is the final pass in the pipeline
+        [[nodiscard]] bool isFinal() const
+        {
+            return m_isFinal;
+        }
+
+        /// @returns The unique identifier of this pass
+        [[nodiscard]] PassId getId() const
+        {
+            return id;
+        }
+
+        /// @returns The debug name of this pass
+        [[nodiscard]] const std::string &getName() const
+        {
+            return name;
+        }
+
+        /// @returns Reference to the list of prerequisite pass IDs
+        std::vector<PassId> &getPrerequisites()
+        {
+            return prerequisites;
+        }
+
+        /// @returns Const reference to the list of prerequisite pass IDs
+        [[nodiscard]] const std::vector<PassId> &getPrerequisites() const
+        {
+            return prerequisites;
+        }
+
+        /// @returns Reference to the list of pass IDs that depend on this one
+        std::vector<PassId> &getEffects()
+        {
+            return effects;
+        }
+
+        /// @returns Const reference to the list of pass IDs that depend on this one
+        [[nodiscard]] const std::vector<PassId> &getEffects() const
+        {
+            return effects;
+        }
+
+        /// @returns The framebuffer output of this pass, or nullptr if none
+        [[nodiscard]] virtual std::shared_ptr<NxFramebuffer> getOutput() const
+        {
+            return nullptr;
+        }
+
+       protected:
+        bool m_isFinal = false;
+        PassId id;
+        std::string name;
+
+        // Prerequisites - which passes must run before this one
+        std::vector<PassId> prerequisites;
+        // Effects - which passes this one enables
+        std::vector<PassId> effects;
     };
-}
+} // namespace nexo::renderer

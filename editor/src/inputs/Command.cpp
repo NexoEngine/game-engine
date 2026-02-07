@@ -17,46 +17,46 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "Command.hpp"
+#include <algorithm>
+#include <cctype>
 #include <imgui.h>
 #include <sstream>
-#include <algorithm>
 #include <unordered_map>
-#include <cctype>
-#include <iostream>
 #include <utility>
 
 namespace nexo::editor {
 
     struct StringHash {
-        using is_transparent = void;                   // enable heterogeneous lookup
-        size_t operator()(std::string_view sv) const noexcept {
+        using is_transparent = void; // enable heterogeneous lookup
+        size_t operator()(const std::string_view sv) const noexcept
+        {
             return std::hash<std::string_view>{}(sv);
         }
-        size_t operator()(const std::string &s) const noexcept {
+        size_t operator()(const std::string &s) const noexcept
+        {
             return operator()(std::string_view(s));
         }
     };
 
     // 2) Transparent equal
     struct StringEqual {
-        using is_transparent = void;                   // enable heterogeneous lookup
-        bool operator()(std::string_view a, std::string_view b) const noexcept {
+        using is_transparent = void; // enable heterogeneous lookup
+        bool operator()(const std::string_view a, const std::string_view b) const noexcept
+        {
             return a == b;
         }
-        bool operator()(const std::string &a, const std::string &b) const noexcept {
+        bool operator()(const std::string &a, const std::string &b) const noexcept
+        {
             return a == b;
         }
     };
 
-    Command::Command(
-        std::string description,
-        const std::string &key,
-        const std::function<void()> &pressedCallback,
-        const std::function<void()> &releaseCallback,
-        const std::function<void()> &repeatCallback,
-        bool isModifier,
-        const std::vector<Command> &childrens)
-    : m_description(std::move(description)), m_key(key), m_pressedCallback(pressedCallback), m_releaseCallback(releaseCallback), m_repeatCallback(repeatCallback), m_isModifier(isModifier), m_childrens(childrens)
+    Command::Command(std::string description, const std::string &key, const std::function<void()> &pressedCallback,
+                     const std::function<void()> &releaseCallback, const std::function<void()> &repeatCallback,
+                     bool isModifier, const std::vector<Command> &children)
+        : m_description(std::move(description)), m_key(key), m_pressedCallback(pressedCallback),
+          m_releaseCallback(releaseCallback), m_repeatCallback(repeatCallback), m_isModifier(isModifier),
+          m_children(children)
     {
         // Create a mapping of key names to ImGuiKey values
         static const std::unordered_map<std::string, ImGuiKey, StringHash, StringEqual> keyMap = {
@@ -70,23 +70,58 @@ namespace nexo::editor {
             {"win", ImGuiKey_LeftSuper},
 
             // Alphanumeric keys
-            {"a", ImGuiKey_A}, {"b", ImGuiKey_B}, {"c", ImGuiKey_C}, {"d", ImGuiKey_D},
-            {"e", ImGuiKey_E}, {"f", ImGuiKey_F}, {"g", ImGuiKey_G}, {"h", ImGuiKey_H},
-            {"i", ImGuiKey_I}, {"j", ImGuiKey_J}, {"k", ImGuiKey_K}, {"l", ImGuiKey_L},
-            {"m", ImGuiKey_M}, {"n", ImGuiKey_N}, {"o", ImGuiKey_O}, {"p", ImGuiKey_P},
-            {"q", ImGuiKey_Q}, {"r", ImGuiKey_R}, {"s", ImGuiKey_S}, {"t", ImGuiKey_T},
-            {"u", ImGuiKey_U}, {"v", ImGuiKey_V}, {"w", ImGuiKey_W}, {"x", ImGuiKey_X},
-            {"y", ImGuiKey_Y}, {"z", ImGuiKey_Z},
+            {"a", ImGuiKey_A},
+            {"b", ImGuiKey_B},
+            {"c", ImGuiKey_C},
+            {"d", ImGuiKey_D},
+            {"e", ImGuiKey_E},
+            {"f", ImGuiKey_F},
+            {"g", ImGuiKey_G},
+            {"h", ImGuiKey_H},
+            {"i", ImGuiKey_I},
+            {"j", ImGuiKey_J},
+            {"k", ImGuiKey_K},
+            {"l", ImGuiKey_L},
+            {"m", ImGuiKey_M},
+            {"n", ImGuiKey_N},
+            {"o", ImGuiKey_O},
+            {"p", ImGuiKey_P},
+            {"q", ImGuiKey_Q},
+            {"r", ImGuiKey_R},
+            {"s", ImGuiKey_S},
+            {"t", ImGuiKey_T},
+            {"u", ImGuiKey_U},
+            {"v", ImGuiKey_V},
+            {"w", ImGuiKey_W},
+            {"x", ImGuiKey_X},
+            {"y", ImGuiKey_Y},
+            {"z", ImGuiKey_Z},
 
             // Numbers
-            {"0", ImGuiKey_0}, {"1", ImGuiKey_1}, {"2", ImGuiKey_2}, {"3", ImGuiKey_3},
-            {"4", ImGuiKey_4}, {"5", ImGuiKey_5}, {"6", ImGuiKey_6}, {"7", ImGuiKey_7},
-            {"8", ImGuiKey_8}, {"9", ImGuiKey_9},
+            {"0", ImGuiKey_0},
+            {"1", ImGuiKey_1},
+            {"2", ImGuiKey_2},
+            {"3", ImGuiKey_3},
+            {"4", ImGuiKey_4},
+            {"5", ImGuiKey_5},
+            {"6", ImGuiKey_6},
+            {"7", ImGuiKey_7},
+            {"8", ImGuiKey_8},
+            {"9", ImGuiKey_9},
 
             // Function keys
-            {"f1", ImGuiKey_F1}, {"f2", ImGuiKey_F2}, {"f3", ImGuiKey_F3}, {"f4", ImGuiKey_F4},
-            {"f5", ImGuiKey_F5}, {"f6", ImGuiKey_F6}, {"f7", ImGuiKey_F7}, {"f8", ImGuiKey_F8},
-            {"f9", ImGuiKey_F9}, {"f10", ImGuiKey_F10}, {"f11", ImGuiKey_F11}, {"f12", ImGuiKey_F12},
+            {"f1", ImGuiKey_F1},
+            {"f2", ImGuiKey_F2},
+            {"f3", ImGuiKey_F3},
+            {"f4", ImGuiKey_F4},
+            {"f5", ImGuiKey_F5},
+            {"f6", ImGuiKey_F6},
+            {"f7", ImGuiKey_F7},
+            {"f8", ImGuiKey_F8},
+            {"f9", ImGuiKey_F9},
+            {"f10", ImGuiKey_F10},
+            {"f11", ImGuiKey_F11},
+            {"f12", ImGuiKey_F12},
 
             // Special keys
             {"space", ImGuiKey_Space},
@@ -126,8 +161,7 @@ namespace nexo::editor {
             {"keypad+", ImGuiKey_KeypadAdd},
             {"keypad-", ImGuiKey_KeypadSubtract},
             {"keypad*", ImGuiKey_KeypadMultiply},
-            {"keypad/", ImGuiKey_KeypadDivide}
-        };
+            {"keypad/", ImGuiKey_KeypadDivide}};
 
         // Split the key string by '+' (e.g., "Ctrl+Shift+S")
         std::istringstream keyStream(key);
@@ -139,8 +173,7 @@ namespace nexo::editor {
             segment.erase(segment.find_last_not_of(" \t") + 1);
 
             // Convert to lowercase for case-insensitive comparison
-            std::ranges::transform(segment, segment.begin(),
-                                   [](const unsigned char c){ return std::tolower(c); });
+            std::ranges::transform(segment, segment.begin(), [](const unsigned char c) { return std::tolower(c); });
 
             // Look up in the map and set the bit in the signature
             const auto it = keyMap.find(segment);
@@ -162,25 +195,22 @@ namespace nexo::editor {
 
     void Command::executePressedCallback() const
     {
-        if (m_pressedCallback)
-            m_pressedCallback();
+        if (m_pressedCallback) m_pressedCallback();
     }
 
     void Command::executeReleasedCallback() const
     {
-        if (m_releaseCallback)
-            m_releaseCallback();
+        if (m_releaseCallback) m_releaseCallback();
     }
 
     void Command::executeRepeatCallback() const
     {
-        if (m_repeatCallback)
-            m_repeatCallback();
+        if (m_repeatCallback) m_repeatCallback();
     }
 
     std::span<const Command> Command::getChildren() const
     {
-        return {m_childrens};
+        return {m_children};
     }
 
     const std::bitset<ImGuiKey_NamedKey_COUNT> &Command::getSignature() const
@@ -203,4 +233,4 @@ namespace nexo::editor {
         return m_description;
     }
 
-}
+} // namespace nexo::editor

@@ -17,9 +17,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include <glm/glm.hpp>
 #include <memory>
 #include <vector>
-#include <glm/glm.hpp>
 
 namespace nexo::renderer {
 
@@ -63,11 +63,12 @@ namespace nexo::renderer {
      *
      * Constructors:
      * - FrameBufferTextureSpecifications(): Default constructor with no format.
-     * - FrameBufferTextureSpecifications(const NxFrameBufferTextureFormats format): Initializes with a specified texture format.
+     * - FrameBufferTextureSpecifications(const NxFrameBufferTextureFormats format): Initializes with a specified
+     * texture format.
      */
     struct NxFrameBufferTextureSpecifications {
         NxFrameBufferTextureSpecifications() = default;
-        NxFrameBufferTextureSpecifications(const NxFrameBufferTextureFormats format) : textureFormat(format) {};
+        explicit NxFrameBufferTextureSpecifications(const NxFrameBufferTextureFormats format) : textureFormat(format){};
 
         NxFrameBufferTextureFormats textureFormat = NxFrameBufferTextureFormats::NONE;
     };
@@ -89,7 +90,10 @@ namespace nexo::renderer {
      */
     struct NxFrameBufferAttachmentsSpecifications {
         NxFrameBufferAttachmentsSpecifications() = default;
-        NxFrameBufferAttachmentsSpecifications(const std::initializer_list<NxFrameBufferTextureSpecifications> attachments) : attachments(attachments) {};
+        NxFrameBufferAttachmentsSpecifications(
+            const std::initializer_list<NxFrameBufferTextureSpecifications> attachments)
+            : attachments(attachments)
+        {}
 
         std::vector<NxFrameBufferTextureSpecifications> attachments;
     };
@@ -151,159 +155,255 @@ namespace nexo::renderer {
      * 4. Unbind the framebuffer to render to the default framebuffer (screen).
      */
     class NxFramebuffer {
-        public:
-            /**
-            * @brief Destroys the framebuffer and releases associated resources.
-            *
-            * This virtual destructor ensures that derived classes properly clean up
-            * framebuffer resources (e.g., OpenGL framebuffers).
-            */
-            virtual ~NxFramebuffer() = default;
+       public:
+        /**
+         * @brief Destroys the framebuffer and releases associated resources.
+         *
+         * This virtual destructor ensures that derived classes properly clean up
+         * framebuffer resources (e.g., OpenGL framebuffers).
+         */
+        virtual ~NxFramebuffer() = default;
 
-            /**
-             * @brief Binds the framebuffer as the active rendering target.
-             *
-             * When a framebuffer is bound, subsequent rendering operations will be directed
-             * to this framebuffer instead of the default frame buffer (e.g., the screen).
-             */
-            virtual void bind() = 0;
+        /**
+         * @brief Binds the framebuffer as the active rendering target.
+         *
+         * When a framebuffer is bound, subsequent rendering operations will be directed
+         * to this framebuffer instead of the default frame buffer (e.g., the screen).
+         */
+        virtual void bind() = 0;
 
-            virtual void bindAsTexture(unsigned int slot = 0, unsigned int attachment = 0) = 0;
-            virtual void bindDepthAsTexture(unsigned int slot = 0) = 0;
+        /**
+         * @brief Binds a specific color attachment of the framebuffer as a texture.
+         *
+         * This method allows binding one of the framebuffer's color attachments
+         * to a specified texture slot for use in shaders.
+         *
+         * @param slot The texture slot to bind the attachment to (default is 0).
+         * @param attachment The index of the color attachment to bind (default is 0).
+         */
+        virtual void bindAsTexture(unsigned int slot, unsigned int attachment) = 0;
 
-            /**
-             * @brief Unbinds the current framebuffer, reverting to the default framebuffer.
-             *
-             * After unbinding, subsequent rendering operations will target the default framebuffer
-             * (usually the screen or swap chain).
-             */
-            virtual void unbind() = 0;
+        /**
+         * @brief Binds the depth attachment of the framebuffer as a texture.
+         *
+         * This method allows binding the framebuffer's depth attachment
+         * to a specified texture slot for use in shaders.
+         *
+         * @param slot The texture slot to bind the depth attachment to (default is 0).
+         */
+        virtual void bindDepthAsTexture(unsigned int slot) = 0;
 
-            virtual void setClearColor(const glm::vec4 &color) = 0;
+        /**
+         * @brief Unbinds the current framebuffer, reverting to the default framebuffer.
+         *
+         * After unbinding, subsequent rendering operations will target the default framebuffer
+         * (usually the screen or swap chain).
+         */
+        virtual void unbind() = 0;
 
-            virtual void copy(std::shared_ptr<NxFramebuffer> source) = 0;
+        /**
+         * @brief Sets the clear color for the framebuffer.
+         *
+         * The clear color is used when clearing the framebuffer's color attachments.
+         *
+         * @param color A `glm::vec4` representing the RGBA clear color.
+         */
+        virtual void setClearColor(const glm::vec4 &color) = 0;
 
-            /**
-             * @brief Retrieves the unique OpenGL ID of the framebuffer.
-             *
-             * The framebuffer ID is used internally by OpenGL to identify the framebuffer object.
-             *
-             * @return The OpenGL ID of the framebuffer.
-             */
-            [[nodiscard]] virtual unsigned int getFramebufferId() const = 0;
+        /**
+         * @brief Copies the contents from another framebuffer to this framebuffer.
+         *
+         * This method performs a blit operation, copying color and depth data
+         * from the source framebuffer to this framebuffer.
+         *
+         * @param source A shared pointer to the source `NxFramebuffer` to copy from.
+         */
+        virtual void copy(std::shared_ptr<NxFramebuffer> source) = 0;
 
-            /**
-             * @brief Resizes the framebuffer to new dimensions.
-             *
-             * Resizing the framebuffer adjusts the dimensions of all associated texture attachments.
-             * This is commonly used when the viewport size changes.
-             *
-             * @param width The new width of the framebuffer in pixels.
-             * @param height The new height of the framebuffer in pixels.
-             */
-            virtual void resize(unsigned int width, unsigned int height) = 0;
+        /**
+         * @brief Retrieves the unique OpenGL ID of the framebuffer.
+         *
+         * The framebuffer ID is used internally by OpenGL to identify the framebuffer object.
+         *
+         * @return The OpenGL ID of the framebuffer.
+         */
+        [[nodiscard]] virtual unsigned int getFramebufferId() const = 0;
 
-            [[nodiscard]] virtual glm::vec2 getSize() const = 0;
+        /**
+         * @brief Resizes the framebuffer to new dimensions.
+         *
+         * Resizing the framebuffer adjusts the dimensions of all associated texture attachments.
+         * This is commonly used when the viewport size changes.
+         *
+         * @param width The new width of the framebuffer in pixels.
+         * @param height The new height of the framebuffer in pixels.
+         */
+        virtual void resize(unsigned int width, unsigned int height) = 0;
 
-            virtual void getPixelWrapper(unsigned int attachementIndex, int x, int y, void *result, const std::type_info &ti) const = 0;
+        /**
+         * @brief Retrieves the size of the framebuffer.
+         *
+         * @return A `glm::vec2` representing the width and height of the framebuffer.
+         */
+        [[nodiscard]] virtual glm::vec2 getSize() const = 0;
 
+        /**
+         * @brief Retrieves the pixel data from a specified attachment.
+         *
+         * This method extracts the pixel data at the given (x, y) coordinates from
+         * the specified attachment and stores it in the provided result pointer.
+         *
+         * @param attachementIndex The index of the attachment to read from.
+         * @param x X-coordinate of the pixel to retrieve.
+         * @param y Y-coordinate of the pixel to retrieve.
+         * @param result Pointer to store the retrieved pixel data.
+         * @param ti The type information of the expected pixel data type.
+         */
+        virtual void getPixelWrapper(unsigned int attachementIndex, int x, int y, void *result,
+                                     const std::type_info &ti) const = 0;
 
-            /**
-             * @brief Retrieves the pixel data from a specified attachment.
-             *
-             * Template version of getPixelWrapper.
-             *
-             * @tparam T The expected type of the pixel data.
-             * @param attachmentIndex The index of the attachment.
-             * @param x X-coordinate of the pixel.
-             * @param y Y-coordinate of the pixel.
-             * @return T The pixel data.
-             */
-            template<typename T>
-            T getPixel(const unsigned int attachmentIndex, const int x, const int y) const
-            {
-                 T result;
-                 getPixelWrapper(attachmentIndex, x, y, &result, typeid(T));
-                 return result;
-            }
+        /**
+         * @brief Retrieves the pixel data from a specified attachment.
+         *
+         * Template version of getPixelWrapper.
+         *
+         * @tparam T The expected type of the pixel data.
+         * @param attachmentIndex The index of the attachment.
+         * @param x X-coordinate of the pixel.
+         * @param y Y-coordinate of the pixel.
+         * @return T The pixel data.
+         */
+        template<typename T>
+        T getPixel(const unsigned int attachmentIndex, const int x, const int y) const
+        {
+            T result;
+            getPixelWrapper(attachmentIndex, x, y, &result, typeid(T));
+            return result;
+        }
 
-            virtual void clearAttachmentWrapper(unsigned int attachmentIndex, const void *value, const std::type_info &ti) const = 0;
+        /**
+         * @brief Clears a specified attachment to a given value.
+         *
+         * This method clears the attachment at the specified index to the provided value.
+         * The type of the value is determined by the type information passed in.
+         *
+         * @param attachmentIndex The index of the attachment to clear.
+         * @param value Pointer to the value to clear the attachment to.
+         * @param ti The type information of the value.
+         */
+        virtual void clearAttachmentWrapper(unsigned int attachmentIndex, const void *value,
+                                            const std::type_info &ti) const = 0;
 
+        /**
+         * @brief Clears a specified attachment to a given value.
+         *
+         * Template version of clearAttachmentWrapper.
+         *
+         * @tparam T The type of the clear value.
+         * @param attachmentIndex The index of the attachment.
+         * @param value The value to clear the attachment to.
+         */
+        template<typename T>
+        void clearAttachment(unsigned int attachmentIndex, T value) const
+        {
+            clearAttachmentWrapper(attachmentIndex, &value, typeid(T));
+        }
 
-            /**
-             * @brief Clears a specified attachment to a given value.
-             *
-             * Template version of clearAttachmentWrapper.
-             *
-             * @tparam T The type of the clear value.
-             * @param attachmentIndex The index of the attachment.
-             * @param value The value to clear the attachment to.
-             */
-            template<typename T>
-            void clearAttachment(unsigned int attachmentIndex, T value) const
-            {
-                 clearAttachmentWrapper(attachmentIndex, &value, typeid(T));
-            }
+        /**
+         * @brief Retrieves the specifications of the framebuffer.
+         *
+         * This method provides access to the framebuffer's specifications, including
+         * dimensions, attachments, and sampling options.
+         *
+         * @return A reference to the NxFramebufferSpecs struct.
+         */
+        [[nodiscard]] virtual NxFramebufferSpecs &getSpecs() = 0;
 
-            /**
-             * @brief Retrieves the specifications of the framebuffer.
-             *
-             * This method provides access to the framebuffer's specifications, including
-             * dimensions, attachments, and sampling options.
-             *
-             * @return A reference to the NxFramebufferSpecs struct.
-             */
-            [[nodiscard]] virtual NxFramebufferSpecs &getSpecs() = 0;
+        /**
+         * @brief Retrieves the specifications of the framebuffer (const version).
+         *
+         * This method provides read-only access to the framebuffer's specifications.
+         *
+         * @return A constant reference to the NxFramebufferSpecs struct.
+         */
+        [[nodiscard]] virtual const NxFramebufferSpecs &getSpecs() const = 0;
 
-            /**
-            * @brief Retrieves the specifications of the framebuffer (const version).
-            *
-            * This method provides read-only access to the framebuffer's specifications.
-            *
-            * @return A constant reference to the NxFramebufferSpecs struct.
-            */
-            [[nodiscard]] virtual const NxFramebufferSpecs &getSpecs() const = 0;
+        /**
+         * @brief Retrieves the number of color attachments in the framebuffer.
+         *
+         * Color attachments are textures that store the rendered color output. This method
+         * returns the count of such attachments.
+         *
+         * @return The number of color attachments.
+         */
+        [[nodiscard]] virtual unsigned int getNbColorAttachments() const = 0;
 
-            [[nodiscard]] virtual unsigned int getNbColorAttachments() const = 0;
-            /**
-             * @brief Retrieves the OpenGL ID of a specific color attachment.
-             *
-             * Color attachments are textures that store the rendered color output. This method
-             * retrieves the OpenGL ID of the texture for the specified attachment index.
-             *
-             * @param index The index of the color attachment (default is 0).
-             * @return The OpenGL ID of the texture attachment.
-             *
-             * Notes:
-             * - If the framebuffer has multiple color attachments, specify the index accordingly.
-             * - An invalid index may result in undefined behavior.
-             */
-            [[nodiscard]] virtual unsigned int getColorAttachmentId(unsigned int index = 0) const = 0;
+        /**
+         * @brief Retrieves the OpenGL ID of a specific color attachment.
+         *
+         * Color attachments are textures that store the rendered color output. This method
+         * retrieves the OpenGL ID of the texture for the specified attachment index.
+         *
+         * @param index The index of the color attachment (default is 0).
+         * @return The OpenGL ID of the texture attachment.
+         *
+         * Notes:
+         * - If the framebuffer has multiple color attachments, specify the index accordingly.
+         * - An invalid index may result in undefined behavior.
+         */
+        [[nodiscard]] virtual unsigned int getColorAttachmentId(unsigned int index) const = 0;
 
-            [[nodiscard]] virtual unsigned int getDepthAttachmentId() const = 0;
+        /**
+         * @brief Retrieves the OpenGL ID of the depth attachment.
+         *
+         * The depth attachment is a texture that stores depth information for depth testing.
+         * This method retrieves the OpenGL ID of the depth texture attachment.
+         *
+         * @return The OpenGL ID of the depth texture attachment.
+         *
+         * Notes:
+         * - If the framebuffer does not have a depth attachment, the behavior is undefined.
+         */
+        [[nodiscard]] virtual unsigned int getDepthAttachmentId() const = 0;
 
-            [[nodiscard]] virtual bool hasDepthAttachment() const = 0;
-            [[nodiscard]] virtual bool hasStencilAttachment() const = 0;
-            [[nodiscard]] virtual bool hasDepthStencilAttachment() const = 0;
+        /**
+         * @brief Checks if the framebuffer has a depth attachment.
+         *
+         * @return True if the framebuffer includes a depth attachment; otherwise, false.
+         */
+        [[nodiscard]] virtual bool hasDepthAttachment() const = 0;
 
-            /**
-             * @brief Creates a framebuffer based on the provided specifications.
-             *
-             * This static method abstracts the creation of a framebuffer, delegating the actual
-             * implementation to the active graphics API (e.g., OpenGL).
-             *
-             * @param specs The specifications for creating the framebuffer, including dimensions,
-             *              attachments, and sampling options.
-             * @return A shared pointer to the created NxFramebuffer instance.
-             *
-             * Throws:
-             * - Implementation-specific exceptions if framebuffer creation fails.
-             *
-             * Notes:
-             * - This function is typically implemented in a platform-specific or API-specific source file.
-             */
-            static std::shared_ptr<NxFramebuffer> create(const NxFramebufferSpecs& specs);
+        /**
+         * @brief Checks if the framebuffer has a stencil attachment.
+         *
+         * @return True if the framebuffer includes a stencil attachment; otherwise, false.
+         */
+        [[nodiscard]] virtual bool hasStencilAttachment() const = 0;
+
+        /**
+         * @brief Checks if the framebuffer has a combined depth-stencil attachment.
+         *
+         * @return True if the framebuffer includes a depth-stencil attachment; otherwise, false.
+         */
+        [[nodiscard]] virtual bool hasDepthStencilAttachment() const = 0;
+
+        /**
+         * @brief Creates a framebuffer based on the provided specifications.
+         *
+         * This static method abstracts the creation of a framebuffer, delegating the actual
+         * implementation to the active graphics API (e.g., OpenGL).
+         *
+         * @param specs The specifications for creating the framebuffer, including dimensions,
+         *              attachments, and sampling options.
+         * @return A shared pointer to the created NxFramebuffer instance.
+         *
+         * Throws:
+         * - Implementation-specific exceptions if framebuffer creation fails.
+         *
+         * Notes:
+         * - This function is typically implemented in a platform-specific or API-specific source file.
+         */
+        static std::shared_ptr<NxFramebuffer> create(const NxFramebufferSpecs &specs);
     };
 
-
-}
+} // namespace nexo::renderer

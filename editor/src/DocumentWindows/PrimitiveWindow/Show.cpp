@@ -12,15 +12,15 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "PrimitiveWindow.hpp"
 #include "DocumentWindows/InspectorWindow/InspectorWindow.hpp"
+#include "PrimitiveWindow.hpp"
 
-namespace nexo::editor
-{
+namespace nexo::editor {
     void PrimitiveWindow::renderPrimitiveWindow() const
     {
-        switch (m_selectedPrimitive)
-        {
+        using enum Primitives;
+
+        switch (m_selectedPrimitive) {
             case CUBE:
                 ImGui::Text("Cube customization options");
                 break;
@@ -44,21 +44,17 @@ namespace nexo::editor
     void PrimitiveWindow::show()
     {
         const auto inspectorWindow = m_windowRegistry.getWindow<InspectorWindow>(NEXO_WND_USTRID_INSPECTOR).lock();
-        if (!inspectorWindow)
-            return;
-        if (inspectorWindow->getSubInspectorVisibility<PrimitiveWindow>())
-        {
+        if (!inspectorWindow) return;
+        if (inspectorWindow->getSubInspectorVisibility<PrimitiveWindow>()) {
             ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoCollapse;
-            if (m_firstOpened)
-                window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
+            if (m_firstOpened) window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus;
 
             if (ImGui::Begin("Primitive Window" NEXO_WND_USTRID_PRIMITIVE_WINDOW,
-                             &inspectorWindow->getSubInspectorVisibility<PrimitiveWindow>(), window_flags))
-            {
+                             &inspectorWindow->getSubInspectorVisibility<PrimitiveWindow>(), window_flags)) {
                 beginRender(NEXO_WND_USTRID_PRIMITIVE_WINDOW);
                 renderPrimitiveWindow();
             }
             ImGui::End();
         }
     }
-}
+} // namespace nexo::editor

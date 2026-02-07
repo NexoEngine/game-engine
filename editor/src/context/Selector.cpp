@@ -74,14 +74,9 @@ namespace nexo::editor {
 
     bool Selector::addToSelection(const std::string_view uuid, const int entity, const SelectionType type)
     {
-        if (m_selectedEntityIds.contains(entity))
-            return false;
+        if (m_selectedEntityIds.contains(entity)) return false;
 
-        SelectionData data = {
-            .entityId = entity,
-            .uuid = std::string(uuid),
-            .type = type
-        };
+        SelectionData data = {.entityId = entity, .uuid = std::string(uuid), .type = type};
         m_selectedEntities.push_back(std::move(data));
         m_selectedEntityIds.insert(entity);
 
@@ -99,9 +94,9 @@ namespace nexo::editor {
         return true;
     }
 
-    bool Selector::removeFromSelection(const int entity) {
-        if (!m_selectedEntityIds.contains(entity))
-            return false;
+    bool Selector::removeFromSelection(const int entity)
+    {
+        if (!m_selectedEntityIds.contains(entity)) return false;
 
         m_selectedEntityIds.erase(entity);
         for (auto it = m_selectedEntities.begin(); it != m_selectedEntities.end(); ++it) {
@@ -127,8 +122,7 @@ namespace nexo::editor {
 
     void Selector::clearSelection()
     {
-        for (const auto& data : m_selectedEntities)
-            removeSelectedTag(data.entityId);
+        for (const auto& data : m_selectedEntities) removeSelectedTag(data.entityId);
 
         m_selectedEntities.clear();
         m_selectedEntityIds.clear();
@@ -154,8 +148,7 @@ namespace nexo::editor {
 
     SelectionType Selector::getSelectionType(const int entity) const
     {
-        if (!m_selectedEntityIds.contains(entity))
-            return SelectionType::NONE;
+        if (!m_selectedEntityIds.contains(entity)) return SelectionType::NONE;
 
         for (const auto& data : m_selectedEntities) {
             if (data.entityId == entity) {
@@ -204,4 +197,4 @@ namespace nexo::editor {
         (void)entity; // Suppress unused parameter warning in test builds
 #endif
     }
-}
+} // namespace nexo::editor

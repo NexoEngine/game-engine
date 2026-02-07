@@ -24,8 +24,7 @@ namespace nexo::editor {
         undoStack.push_back(std::move(action));
         redoStack.clear();
 
-        while (undoStack.size() > maxUndoLevels)
-            undoStack.pop_front();
+        while (undoStack.size() > maxUndoLevels) undoStack.pop_front();
     }
 
     bool ActionHistory::canUndo() const
@@ -40,8 +39,7 @@ namespace nexo::editor {
 
     void ActionHistory::undo()
     {
-        if (!canUndo())
-            return;
+        if (!canUndo()) return;
         auto action = std::move(undoStack.back());
         undoStack.pop_back();
         action->undo();
@@ -50,8 +48,7 @@ namespace nexo::editor {
 
     void ActionHistory::redo()
     {
-        if (!canRedo())
-            return;
+        if (!canRedo()) return;
         auto action = std::move(redoStack.back());
         redoStack.pop_back();
         action->redo();
@@ -61,8 +58,7 @@ namespace nexo::editor {
     void ActionHistory::setMaxUndoLevels(const size_t levels)
     {
         maxUndoLevels = levels;
-        while (undoStack.size() > maxUndoLevels)
-            undoStack.pop_front();
+        while (undoStack.size() > maxUndoLevels) undoStack.pop_front();
     }
 
     void ActionHistory::clear(const unsigned int count)
@@ -73,12 +69,11 @@ namespace nexo::editor {
             return;
         }
         const unsigned int elementsToRemove = std::min(static_cast<unsigned int>(undoStack.size()), count);
-        for (unsigned int i = 0; i < elementsToRemove; ++i)
-            undoStack.pop_back();
+        for (unsigned int i = 0; i < elementsToRemove; ++i) undoStack.pop_back();
     }
 
     unsigned int ActionHistory::getUndoStackSize() const
     {
         return static_cast<unsigned int>(undoStack.size());
     }
-}
+} // namespace nexo::editor

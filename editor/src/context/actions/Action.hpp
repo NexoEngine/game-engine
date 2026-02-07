@@ -20,15 +20,15 @@
 namespace nexo::editor {
 
     /**
-    * Base Action interface for all undoable operations
-    */
+     * Base Action interface for all undoable operations
+     */
     class Action {
-        public:
-            virtual ~Action() = default;
+       public:
+        virtual ~Action() = default;
 
-            virtual void redo() = 0;
+        virtual void redo() = 0;
 
-            virtual void undo() = 0;
+        virtual void undo() = 0;
     };
 
-}
+} // namespace nexo::editor

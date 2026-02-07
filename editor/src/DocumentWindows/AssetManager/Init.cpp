@@ -17,49 +17,144 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "AssetManagerWindow.hpp"
+#include "Path.hpp"
 #include "assets/AssetCatalog.hpp"
 #include "assets/AssetImporter.hpp"
 #include "assets/Assets/Model/ModelImporter.hpp"
 #include "assets/Assets/Texture/TextureImporter.hpp"
-#include "Path.hpp"
 
 namespace nexo::editor {
     void AssetManagerWindow::setup()
     {
-        {
-            assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/9mn/scene.gltf");
-            assets::ImporterFileInput fileInput{path};
-            auto assetRef9mn = importer.importAsset<assets::Model>(assets::AssetLocation("my_package::9mn@DefaultScene"), fileInput);
-        }
-        {
-            assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/logo_nexo.png");
-            assets::ImporterFileInput fileInput{path};
-            auto textureRef = importer.importAsset<assets::Texture>(assets::AssetLocation("nexo_logo@Random"), fileInput);
-        }
+        // Internal resources
         {
             assets::AssetImporter importer;
             std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/icon_folder.png");
             assets::ImporterFileInput fileInput{path};
-            m_folderIcon = importer.importAsset<assets::Texture>(assets::AssetLocation("icon_folder@_internal"), fileInput);
+            m_folderIcon =
+                importer.importAsset<assets::Texture>(assets::AssetLocation("icon_folder@_internal"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/logoNexo.png");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("nexo_logo@Random"), fileInput);
+        }
+        // Models
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Avocado/Avocado.gltf");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Avocado@Models"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path =
+                Path::resolvePathRelativeToExe("../resources/models/SmilingFace/SmilingFace.gltf");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::SmilingFace@Models"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Sword/scene.gltf");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Sword@Models"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/frog.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Frog@Models"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/plane.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Plane@Models"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/bench.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Bench@Models"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/earth.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Earth@Models"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/tree.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Tree@Models"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/log.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Log@Models"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/rubixCube.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::RubixCube@Models"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/cup.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Cup@Models"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/plant.glb");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Plant@Models"), fileInput);
+        }
+        // Textures
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/grass.jpg");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::grass@Textures"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/rock.jpg");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::rock@Textures"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/wood.jpg");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::wood@Textures"), fileInput);
+        }
+        {
+            assets::AssetImporter importer;
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/textures/dirt.jpg");
+            assets::ImporterFileInput fileInput{path};
+            importer.importAsset<assets::Texture>(assets::AssetLocation("my_package::dirt@Textures"), fileInput);
         }
         // Register for file drop events
         Application::getInstance().getEventManager()->registerListener<event::EventFileDrop>(this);
 
-        m_layout.color.thumbnailBg = ImGui::GetColorU32(ImGuiCol_Button);
-        m_layout.color.thumbnailBgHovered = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
-        m_layout.color.thumbnailBgSelected = ImGui::GetColorU32(ImGuiCol_Header);
+        m_layout.color.thumbnailBg                = ImGui::GetColorU32(ImGuiCol_Button);
+        m_layout.color.thumbnailBgHovered         = ImGui::GetColorU32(ImGuiCol_ButtonHovered);
+        m_layout.color.thumbnailBgSelected        = ImGui::GetColorU32(ImGuiCol_Header);
         m_layout.color.thumbnailBgSelectedHovered = ImGui::GetColorU32(ImGuiCol_HeaderHovered);
 
         m_layout.color.selectedBoxColor = ImGui::GetColorU32(ImGuiCol_TabSelectedOverline);
 
-        m_layout.color.titleBg = ImGui::GetColorU32(ImGuiCol_Header);
-        m_layout.color.titleBgHovered = ImGui::GetColorU32(ImGuiCol_HeaderHovered);
-        m_layout.color.titleBgSelected = ImGui::GetColorU32(ImGuiCol_Header);
+        m_layout.color.titleBg                = ImGui::GetColorU32(ImGuiCol_Header);
+        m_layout.color.titleBgHovered         = ImGui::GetColorU32(ImGuiCol_HeaderHovered);
+        m_layout.color.titleBgSelected        = ImGui::GetColorU32(ImGuiCol_Header);
         m_layout.color.titleBgSelectedHovered = ImGui::GetColorU32(ImGuiCol_HeaderHovered);
 
         m_layout.color.titleText = ImGui::GetColorU32(ImGuiCol_Text);
         buildFolderStructure();
     }
-}
+} // namespace nexo::editor

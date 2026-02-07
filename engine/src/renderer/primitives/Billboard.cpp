@@ -16,22 +16,20 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "renderer/Renderer3D.hpp"
-
 #include <array>
 #include <glm/fwd.hpp>
+#include "renderer/Renderer3D.hpp"
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/quaternion.hpp>
 
-namespace nexo::renderer
-{
+namespace nexo::renderer {
     // Quad vertices for a 1x1 billboard centered at origin
     constexpr glm::vec3 billboardPositions[4] = {
         {-0.5f, -0.5f, 0.0f}, // Bottom left
-        {0.5f, -0.5f, 0.0f}, // Bottom right
-        {0.5f, 0.5f, 0.0f}, // Top right
-        {-0.5f, 0.5f, 0.0f} // Top left
+        {0.5f, -0.5f, 0.0f},  // Bottom right
+        {0.5f, 0.5f, 0.0f},   // Top right
+        {-0.5f, 0.5f, 0.0f}   // Top left
     };
 
     constexpr glm::vec2 billboardTexCoords[4] = {
@@ -70,29 +68,23 @@ namespace nexo::renderer
         texCoords[5] = billboardTexCoords[0]; // Bottom left
 
         // All normals point forward for billboard (will be transformed to face camera)
-        for (int i = 0; i < 6; ++i)
-        {
+        for (int i = 0; i < 6; ++i) {
             normals[i] = {0.0f, 0.0f, 1.0f};
         }
     }
 
     std::shared_ptr<NxVertexArray> NxRenderer3D::getBillboardVAO()
     {
-        constexpr unsigned int nbVerticesBillboard = 6;
+        constexpr unsigned int nbVerticesBillboard         = 6;
         static std::shared_ptr<NxVertexArray> billboardVao = nullptr;
-        if (billboardVao)
-            return billboardVao;
+        if (billboardVao) return billboardVao;
 
-        billboardVao = createVertexArray();
-        const auto vertexBuffer = createVertexBuffer(nbVerticesBillboard * sizeof(NxVertex));
+        billboardVao                                = createVertexArray();
+        const auto vertexBuffer                     = createVertexBuffer(nbVerticesBillboard * sizeof(NxVertex));
         const NxBufferLayout cubeVertexBufferLayout = {
-            {NxShaderDataType::FLOAT3, "aPos"},
-            {NxShaderDataType::FLOAT2, "aTexCoord"},
-            {NxShaderDataType::FLOAT3, "aNormal"},
-            {NxShaderDataType::FLOAT3, "aTangent"},
-            {NxShaderDataType::FLOAT3, "aBiTangent"},
-            {NxShaderDataType::INT, "aEntityID"}
-        };
+            {NxShaderDataType::FLOAT3, "aPos"},       {NxShaderDataType::FLOAT2, "aTexCoord"},
+            {NxShaderDataType::FLOAT3, "aNormal"},    {NxShaderDataType::FLOAT3, "aTangent"},
+            {NxShaderDataType::FLOAT3, "aBiTangent"}, {NxShaderDataType::INT, "aEntityID"}};
         vertexBuffer->setLayout(cubeVertexBufferLayout);
 
         std::array<glm::vec3, nbVerticesBillboard> vertices{};
@@ -101,22 +93,20 @@ namespace nexo::renderer
         genBillboardMesh(vertices, texCoords, normals);
 
         std::vector<NxVertex> vertexData(nbVerticesBillboard);
-        for (unsigned int i = 0; i < nbVerticesBillboard; ++i)
-        {
-            vertexData[i].position = glm::vec4(vertices[i], 1.0f);
-            vertexData[i].texCoord = texCoords[i];
-            vertexData[i].normal = normals[i];
-            vertexData[i].tangent = glm::vec3(0.0f, 0.0f, 0.0f); // Default tangent
+        for (unsigned int i = 0; i < nbVerticesBillboard; ++i) {
+            vertexData[i].position  = glm::vec4(vertices[i], 1.0f);
+            vertexData[i].texCoord  = texCoords[i];
+            vertexData[i].normal    = normals[i];
+            vertexData[i].tangent   = glm::vec3(0.0f, 0.0f, 0.0f); // Default tangent
             vertexData[i].bitangent = glm::vec3(0.0f, 0.0f, 0.0f); // Default bi tangent
-            vertexData[i].entityID = 0; // Default entity ID
+            vertexData[i].entityID  = 0;                           // Default entity ID
         }
 
         vertexBuffer->setData(vertexData.data(), static_cast<unsigned int>(vertexData.size() * sizeof(NxVertex)));
         billboardVao->addVertexBuffer(vertexBuffer);
 
         std::vector<unsigned int> indices(nbVerticesBillboard);
-        for (uint32_t i = 0; i < nbVerticesBillboard; ++i)
-            indices[i] = i;
+        for (uint32_t i = 0; i < nbVerticesBillboard; ++i) indices[i] = i;
 
         const auto indexBuffer = createIndexBuffer();
         indexBuffer->setData(indices.data(), static_cast<unsigned int>(indices.size()));
@@ -124,4 +114,4 @@ namespace nexo::renderer
 
         return billboardVao;
     }
-}
+} // namespace nexo::renderer

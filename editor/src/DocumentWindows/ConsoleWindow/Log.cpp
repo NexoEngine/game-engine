@@ -16,12 +16,12 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#include "ConsoleWindow.hpp"
 #include <fstream>
+#include "ConsoleWindow.hpp"
 
 namespace nexo::editor {
 
-    void ConsoleWindow::addLog(const LogMessage &message)
+    void ConsoleWindow::addLog(const LogMessage& message)
     {
         if (m_logs.size() >= m_maxLogCapacity) {
             m_bufferLogsToExport.push_back(message);
@@ -42,22 +42,19 @@ namespace nexo::editor {
         if (m_exportLog) {
             std::ofstream logFile(m_logFilePath, std::ios::app);
             for (const auto& log : m_logs) {
-                logFile << verbosityToString(log.verbosity) << " "
-                        << log.message << std::endl;
+                logFile << verbosityToString(log.verbosity) << " " << log.message << std::endl;
             }
         }
 
-    	m_logs.clear();
+        m_logs.clear();
     }
 
     void ConsoleWindow::exportLogsBuffered() const
     {
-        if (!m_exportLog)
-            return;
+        if (!m_exportLog) return;
         std::ofstream logFile(m_logFilePath, std::ios::app);
         for (const auto& log : m_bufferLogsToExport) {
-            logFile << verbosityToString(log.verbosity) << " "
-                    << log.message << std::endl;
+            logFile << verbosityToString(log.verbosity) << " " << log.message << std::endl;
         }
     }
-}
+} // namespace nexo::editor

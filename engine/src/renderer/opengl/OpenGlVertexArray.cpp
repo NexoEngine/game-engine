@@ -25,45 +25,62 @@
 namespace nexo::renderer {
 
     /**
-    * @brief Converts an `NxShaderDataType` enum value to the corresponding OpenGL type.
-    *
-    * @param type The shader data type to convert.
-    * @return The OpenGL equivalent type (e.g., `GL_FLOAT`).
-    *
-    * Example:
-    * ```cpp
-    * GLenum glType = nxShaderDataTypeToOpenGltype(NxShaderDataType::FLOAT3);
-    * ```
-    */
+     * @brief Converts an `NxShaderDataType` enum value to the corresponding OpenGL type.
+     *
+     * @param type The shader data type to convert.
+     * @return The OpenGL equivalent type (e.g., `GL_FLOAT`).
+     *
+     * Example:
+     * ```cpp
+     * GLenum glType = nxShaderDataTypeToOpenGltype(NxShaderDataType::FLOAT3);
+     * ```
+     **/
     static GLenum nxShaderDataTypeToOpenGltype(const NxShaderDataType type)
     {
-        switch (type)
-        {
-            case NxShaderDataType::FLOAT: return GL_FLOAT;
-            case NxShaderDataType::FLOAT2: return GL_FLOAT;
-            case NxShaderDataType::FLOAT3: return GL_FLOAT;
-            case NxShaderDataType::FLOAT4: return GL_FLOAT;
-            case NxShaderDataType::INT: return GL_INT;
-            case NxShaderDataType::INT2: return GL_INT;
-            case NxShaderDataType::INT3: return GL_INT;
-            case NxShaderDataType::INT4: return GL_INT;
-            case NxShaderDataType::MAT3: return GL_FLOAT;
-            case NxShaderDataType::MAT4: return GL_FLOAT;
-            case NxShaderDataType::BOOL: return GL_BOOL;
-            default: return 0;
+        switch (type) {
+            using enum NxShaderDataType;
+            case FLOAT:
+            case FLOAT2:
+            case FLOAT3:
+            case FLOAT4:
+            case MAT3:
+            case MAT4:
+                return GL_FLOAT;
+            case INT:
+            case INT2:
+            case INT3:
+            case INT4:
+                return GL_INT;
+            case BOOL:
+                return GL_BOOL;
+            default:
+                return 0;
         }
     }
 
+    /**
+     * @brief Checks if the given `NxShaderDataType` is an integer type.
+     *
+     * @param type The shader data type to check.
+     * @return `true` if the type is an integer type, `false` otherwise.
+     *
+     * Example:
+     * ```cpp
+     * bool isIntType = isInt(NxShaderDataType::INT3); //returns true
+     * ```
+     **/
     static bool isInt(const NxShaderDataType type)
     {
-        switch (type)
-        {
-            case NxShaderDataType::INT: return true;
-            case NxShaderDataType::INT2: return true;
-            case NxShaderDataType::INT3: return true;
-            case NxShaderDataType::INT4: return true;
-            case NxShaderDataType::BOOL: return true;
-            default: return false;
+        switch (type) {
+            using enum NxShaderDataType;
+            case INT:
+            case INT2:
+            case INT3:
+            case INT4:
+            case BOOL:
+                return true;
+            default:
+                return false;
         }
     }
 
@@ -84,40 +101,26 @@ namespace nexo::renderer {
 
     void NxOpenGlVertexArray::addVertexBuffer(const std::shared_ptr<NxVertexBuffer> &vertexBuffer)
     {
-        if (!vertexBuffer)
-            THROW_EXCEPTION(NxInvalidValue, "OPENGL", "Vertex buffer is null");
+        if (!vertexBuffer) THROW_EXCEPTION(NxInvalidValue, "OPENGL", "Vertex buffer is null");
         glBindVertexArray(_id);
         vertexBuffer->bind();
 
-        if (vertexBuffer->getLayout().getElements().empty())
-            THROW_EXCEPTION(NxBufferLayoutEmpty, "OPENGL");
+        if (vertexBuffer->getLayout().getElements().empty()) THROW_EXCEPTION(NxBufferLayoutEmpty, "OPENGL");
 
-        auto index = static_cast<unsigned int>(!_vertexBuffers.empty()
-            ? _vertexBuffers.back()->getLayout().getElements().size()
-            : 0);
-        const auto& layout = vertexBuffer->getLayout();
+        auto index = static_cast<unsigned int>(
+            !_vertexBuffers.empty() ? _vertexBuffers.back()->getLayout().getElements().size() : 0);
+        const auto &layout = vertexBuffer->getLayout();
         for (const auto &element : layout) {
             glEnableVertexAttribArray(index);
-            if (isInt(element.type))
-            {
-                glVertexAttribIPointer(
-                    index,
-                    static_cast<int>(element.getComponentCount()),
-                    nxShaderDataTypeToOpenGltype(element.type),
-                    static_cast<int>(layout.getStride()),
-                    reinterpret_cast<const void *>(static_cast<uintptr_t>(element.offset))
-                );
-            }
-            else
-            {
-                glVertexAttribPointer(
-                    index,
-                    static_cast<int>(element.getComponentCount()),
-                    nxShaderDataTypeToOpenGltype(element.type),
-                    element.normalized ? GL_TRUE : GL_FALSE,
-                    static_cast<int>(layout.getStride()),
-                    reinterpret_cast<const void *>(static_cast<uintptr_t>(element.offset))
-                );
+            if (isInt(element.type)) {
+                glVertexAttribIPointer(index, static_cast<int>(element.getComponentCount()),
+                                       nxShaderDataTypeToOpenGltype(element.type), static_cast<int>(layout.getStride()),
+                                       static_cast<const void *>(reinterpret_cast<uintptr_t *>(element.offset)));
+            } else {
+                glVertexAttribPointer(index, static_cast<int>(element.getComponentCount()),
+                                      nxShaderDataTypeToOpenGltype(element.type),
+                                      element.normalized ? GL_TRUE : GL_FALSE, static_cast<int>(layout.getStride()),
+                                      reinterpret_cast<const void *>(static_cast<uintptr_t>(element.offset)));
             }
             index++;
         }
@@ -126,8 +129,7 @@ namespace nexo::renderer {
 
     void NxOpenGlVertexArray::setIndexBuffer(const std::shared_ptr<NxIndexBuffer> &indexBuffer)
     {
-        if (!indexBuffer)
-            THROW_EXCEPTION(NxInvalidValue, "OPENGL", "Index buffer cannot be null");
+        if (!indexBuffer) THROW_EXCEPTION(NxInvalidValue, "OPENGL", "Index buffer cannot be null");
         glBindVertexArray(_id);
         indexBuffer->bind();
 
@@ -149,4 +151,4 @@ namespace nexo::renderer {
         return _id;
     }
 
-}
+} // namespace nexo::renderer

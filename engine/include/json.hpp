@@ -35,10 +35,14 @@ namespace nexo {
      *
      * @note See nlohmann::json documentation for detailed implementation guidelines.
      */
-    template <typename T>
+    template<typename T>
     concept JSONSerializable = requires(T obj, json& j) {
-        { to_json(j, obj) } -> std::same_as<void>;
-        { from_json(j, obj) } -> std::same_as<void>;
+        {
+            to_json(j, obj)
+        } -> std::same_as<void>;
+        {
+            from_json(j, obj)
+        } -> std::same_as<void>;
     };
 
 } // namespace nexo
