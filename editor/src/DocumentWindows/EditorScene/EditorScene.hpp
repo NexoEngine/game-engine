@@ -699,6 +699,7 @@ namespace nexo::editor {
          * @param offset Position offset to apply to all forest elements.
          */
         void forestScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
+        void spawnBallsScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
 
         enum class EditorState { GLOBAL, GIZMO, GIZMO_TRANSLATE, GIZMO_ROTATE, GIZMO_SCALE, NB_STATE };
 

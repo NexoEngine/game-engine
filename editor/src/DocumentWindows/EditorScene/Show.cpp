@@ -140,6 +140,59 @@ namespace nexo::editor {
         m_viewportBounds[1]      = viewportMax;
     }
 
+    void EditorScene::showFullscreen(bool fullscreen)
+    {
+        if (fullscreen) {
+            const ImGuiViewport* viewport = ImGui::GetMainViewport();
+            ImGui::SetNextWindowPos(viewport->Pos);
+            ImGui::SetNextWindowSize(viewport->Size);
+            ImGui::SetNextWindowViewport(viewport->ID);
+
+            ImGuiWindowFlags fullscreenFlags =
+                ImGuiWindowFlags_NoDecoration |
+                ImGuiWindowFlags_NoMove |
+                ImGuiWindowFlags_NoResize |
+                ImGuiWindowFlags_NoBringToFrontOnFocus |
+                ImGuiWindowFlags_NoScrollbar |
+                ImGuiWindowFlags_NoScrollWithMouse;
+
+            ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
+
+            auto& selector = Selector::get();
+            m_windowName = selector.getUiHandle(m_sceneUuid, std::string(ICON_FA_GLOBE) + "   " + m_windowName);
+            const std::string& sceneWindowName = std::format("{}{}{}", m_windowName, NEXO_WND_USTRID_DEFAULT_SCENE, m_sceneId);
+
+            if (ImGui::Begin(sceneWindowName.c_str(), &m_opened, fullscreenFlags)) {
+                const std::string renderName = std::format("{}{}", NEXO_WND_USTRID_DEFAULT_SCENE, m_sceneId);
+                beginRender(renderName);
+                auto& app = getApp();
+
+                app.getSceneManager().getScene(m_sceneId).setActiveStatus(m_focused);
+
+                if (m_activeCamera == -1) {
+                    renderNoActiveCamera();
+                } else {
+                    renderView();
+                    renderGizmo();
+                }
+
+                if (m_popupManager.showPopup("Add new entity popup")) {
+                    renderNewEntityPopup();
+                }
+                if (m_popupManager.showPopup("Sphere creation popup")) {
+                    ImNexo::PrimitiveCustomizationMenu(m_sceneId, Primitives::SPHERE);
+                }
+                if (m_popupManager.showPopup("Cylinder creation popup")) {
+                    ImNexo::PrimitiveCustomizationMenu(m_sceneId, Primitives::CYLINDER);
+                }
+            }
+            ImGui::End();
+            ImGui::PopStyleVar();
+        } else {
+            show();
+        }
+    }
+
     void EditorScene::show()
     {
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
