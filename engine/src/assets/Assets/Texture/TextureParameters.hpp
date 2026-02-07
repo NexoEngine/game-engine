@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "json.hpp"
+#include <nlohmann/json.hpp>
 
 namespace nexo::assets {
 
@@ -41,11 +41,14 @@ namespace nexo::assets {
         };
         Format format = Format::Preserve;
 
+        enum class MinFilter { Nearest, Bilinear, Trilinear };
+        MinFilter minFilter = MinFilter::Bilinear;
+
         int maxSize              = 4096; // Max texture dimension
         float compressionQuality = 0.9f;
 
         NLOHMANN_DEFINE_TYPE_INTRUSIVE(TextureImportParameters, generateMipmaps, convertToSRGB, flipVertically, format,
-                                       maxSize, compressionQuality)
+                                       minFilter, maxSize, compressionQuality)
     };
 
     /**

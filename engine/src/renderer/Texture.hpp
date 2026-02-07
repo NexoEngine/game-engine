@@ -21,6 +21,8 @@
 #include <string>
 #include <string_view>
 
+#include "assets/Assets/Texture/TextureParameters.hpp"
+
 namespace nexo::renderer {
 
     /**
@@ -252,6 +254,9 @@ namespace nexo::renderer {
          */
         static std::shared_ptr<NxTexture2D> create(const uint8_t *buffer, unsigned int width, unsigned int height,
                                                    NxTextureFormat format);
+
+        static std::shared_ptr<NxTexture2D> create(const std::string& path,
+                                             const assets::TextureImportParameters& ip);
 
         /**
          * @brief Creates a 2D texture from file in memory.

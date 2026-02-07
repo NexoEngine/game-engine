@@ -17,10 +17,10 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
-#include "ActionHistory.hpp"
-#include "ActionGroup.hpp"
-#include "context/actions/EntityActions.hpp"
 #include <memory>
+#include "ActionGroup.hpp"
+#include "ActionHistory.hpp"
+#include "context/actions/EntityActions.hpp"
 
 namespace nexo::editor {
 

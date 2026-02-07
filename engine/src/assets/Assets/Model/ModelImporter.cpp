@@ -29,6 +29,7 @@
 #include "Buffer.hpp"
 #include "Path.hpp"
 #include "VertexArray.hpp"
+#include "math/Bounds.hpp"
 
 #include "ModelParameters.hpp"
 #include "assets/AssetImporterBase.hpp"
@@ -82,6 +83,8 @@ namespace nexo::assets {
 
         auto meshNode = processNode(ctx, scene->mRootNode, scene);
         model->setData(std::make_unique<MeshNode>(meshNode));
+        model->rootBounds = meshNode.modelBounds;
+        model->rootSphere = math::sphereFromAABB(model->rootBounds);
         return model;
     }
 
@@ -89,7 +92,7 @@ namespace nexo::assets {
     {
         m_textures.reserve(scene->mNumTextures);
         // Load embedded textures
-        for (int i = 0; scene->mNumTextures; ++i) {
+        for (unsigned int i = 0; i < scene->mNumTextures; ++i) {
             aiTexture* texture = scene->mTextures[i];
             auto loadedTexture = loadEmbeddedTexture(ctx, texture);
             m_textures.try_emplace(texture->mFilename.C_Str(), loadedTexture);
@@ -328,7 +331,7 @@ namespace nexo::assets {
         } // end for (int matIdx = 0; matIdx < scene->mNumMaterials; ++matIdx)
     }
 
-    MeshNode ModelImporter::processNode(AssetImporterContext& ctx, aiNode const* node, const aiScene* scene)
+    MeshNode ModelImporter::processNode(AssetImporterContext& ctx, aiNode const* node, const aiScene* scene, const glm::mat4& parentToRoot)
     {
         auto meshNode = MeshNode{};
 
@@ -336,19 +339,34 @@ namespace nexo::assets {
 
         const glm::mat4 nodeTransform = convertAssimpMatrixToGLM(node->mTransformation);
         meshNode.transform            = nodeTransform;
+
+        const glm::mat4 nodeToRoot = parentToRoot * nodeTransform;
+
         meshNode.meshes.reserve(node->mNumMeshes);
 
         for (unsigned int i = 0; i < node->mNumMeshes; i++) {
-            aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-            meshNode.meshes.push_back(processMesh(ctx, mesh, scene));
+            aiMesh* m = scene->mMeshes[node->mMeshes[i]];
+            Mesh out  = processMesh(ctx, m, scene);
+
+            // local bounds union (meshes only)
+            meshNode.localBounds = math::aabbUnion(meshNode.localBounds, out.localBounds);
+
+            // model-space union: transform mesh local AABB by this nodeToRoot
+            const math::AABB w = math::aabbTransform(out.localBounds, nodeToRoot);
+            meshNode.modelBounds = math::aabbUnion(meshNode.modelBounds, w);
+
+            meshNode.meshes.emplace_back(std::move(out));
         }
 
         meshNode.children.reserve(node->mNumChildren);
 
         for (unsigned int i = 0; i < node->mNumChildren; i++) {
-            auto newNode = processNode(ctx, node->mChildren[i], scene);
-            meshNode.children.push_back(std::move(newNode));
+            MeshNode child = processNode(ctx, node->mChildren[i], scene, nodeToRoot);
+
+            meshNode.modelBounds = math::aabbUnion(meshNode.modelBounds, child.modelBounds);
+            meshNode.children.emplace_back(std::move(child));
         }
+        meshNode.modelSphere = math::sphereFromAABB(meshNode.modelBounds);
 
         return meshNode;
     }
@@ -396,6 +414,11 @@ namespace nexo::assets {
 
         glm::vec3 centerLocal = (minBB + maxBB) * 0.5f;
 
+        math::AABB bounds{};
+        bounds.min = minBB;
+        bounds.max = maxBB;
+        math::BSphere sphere = math::sphereFromAABB(bounds);
+
         for (unsigned int i = 0; i < mesh->mNumFaces; i++) {
             const aiFace face = mesh->mFaces[i];
             indices.insert(indices.end(), face.mIndices, face.mIndices + face.mNumIndices);
@@ -421,7 +444,7 @@ namespace nexo::assets {
         }
 
         LOG(NEXO_INFO, "Loaded mesh {}", mesh->mName.C_Str());
-        return {mesh->mName.C_Str(), vao, materialComponent, centerLocal};
+        return {mesh->mName.C_Str(), vao, materialComponent, centerLocal, bounds, sphere};
     }
 
     glm::mat4 ModelImporter::convertAssimpMatrixToGLM(const aiMatrix4x4& matrix)

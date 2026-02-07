@@ -41,7 +41,7 @@ namespace nexo::editor {
          * @brief Constructs a WindowState with a unique identifier.
          * @param id The unique identifier for the window state.
          */
-        explicit WindowState(const unsigned int id) : m_id(id)
+        WindowState(const unsigned int id) : m_id(id)
         {}
         /**
          * @brief Destructor for the WindowState class.

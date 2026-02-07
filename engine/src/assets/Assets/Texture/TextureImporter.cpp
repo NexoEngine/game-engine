@@ -23,6 +23,7 @@
 #include <stb_image.h>
 #include "assets/AssetImporterBase.hpp"
 #include "assets/Assets/Texture/Texture.hpp"
+#include "utils/ImageProcessing.hpp"
 
 namespace nexo::assets {
 
@@ -42,8 +43,11 @@ namespace nexo::assets {
         // implementation
         auto asset = std::make_unique<Texture>();
         std::shared_ptr<renderer::NxTexture2D> rendererTexture;
-        if (std::holds_alternative<ImporterFileInput>(ctx.input))
-            rendererTexture = renderer::NxTexture2D::create(std::get<ImporterFileInput>(ctx.input).filePath.string());
+        auto param = ctx.getParameters<TextureImportParameters>();
+        if (std::holds_alternative<ImporterFileInput>(ctx.input)) {
+            utils::ImageOutput image = utils::ImageProcessing::loadImageFromDisk(std::get<ImporterFileInput>(ctx.input).filePath);
+            rendererTexture = renderer::NxTexture2D::create(std::get<ImporterFileInput>(ctx.input).filePath.string(), param);
+        }
         else {
             const auto data = std::get<ImporterMemoryInput>(ctx.input).memoryData;
             rendererTexture = renderer::NxTexture2D::create(data.data(), static_cast<unsigned int>(data.size()));

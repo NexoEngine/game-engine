@@ -18,6 +18,7 @@
 #pragma once
 
 #include "RendererAPI.hpp"
+#include "DrawCommand.hpp"
 
 namespace nexo::renderer {
     /**
@@ -119,6 +120,11 @@ namespace nexo::renderer {
             _rendererApi->setClearDepth(depth);
         }
 
+        static void setLineWidth(float lineWidth)
+        {
+            _rendererApi->setLineWidth(lineWidth);
+        }
+
         /**
          * @brief Clears the screen using the current clear color.
          *
@@ -148,9 +154,9 @@ namespace nexo::renderer {
          * Usage:
          * - Use this method to draw meshes or primitives with indexed geometry.
          */
-        static void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, const size_t indexCount = 0)
+        static void drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, const size_t indexCount = 0, CommandType primitiveType = CommandType::MESH)
         {
-            _rendererApi->drawIndexed(vertexArray, indexCount);
+            _rendererApi->drawIndexed(vertexArray, indexCount, primitiveType);
         }
 
         /**

@@ -110,6 +110,9 @@ namespace nexo::renderer {
          */
         NxOpenGlTexture2D(const uint8_t *buffer, unsigned int width, unsigned int height, NxTextureFormat format);
 
+        NxOpenGlTexture2D(const std::string& path,
+                                             const assets::TextureImportParameters& ip);
+
         /**
          * @brief Creates an OpenGL 2D texture from a file in memory (raw content).
          *

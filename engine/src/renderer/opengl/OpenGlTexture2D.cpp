@@ -25,10 +25,74 @@
 
 namespace nexo::renderer {
 
+    using nexo::assets::TextureImportParameters;
+
+    static void ApplySamplerFromParams(GLuint texId,
+                                       const TextureImportParameters& ip,
+                                       GLenum dataFormat /* for completeness */)
+    {
+        glBindTexture(GL_TEXTURE_2D, texId);
+
+        // Choose min filter; keep MAG as linear for now (nice default)
+        switch (ip.minFilter) {
+            case TextureImportParameters::MinFilter::Nearest:
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+                break;
+            case TextureImportParameters::MinFilter::Bilinear:
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                break;
+            case TextureImportParameters::MinFilter::Trilinear:
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                // build mips if asked, or if filter needs them anyway
+                if (ip.generateMipmaps) glGenerateMipmap(GL_TEXTURE_2D);
+                break;
+        }
+
+        // Keep your wraps
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+    }
+
     NxOpenGlTexture2D::NxOpenGlTexture2D(const unsigned int width, const unsigned int height)
         : m_width(width), m_height(height)
     {
         createOpenGLTexture(nullptr, width, height, GL_RGBA8, GL_RGBA);
+    }
+
+    NxOpenGlTexture2D::NxOpenGlTexture2D(const std::string& path,
+                                         const TextureImportParameters& ip)
+        : m_path(path)
+    {
+        int width=0, height=0, channels=0;
+
+        stbi_set_flip_vertically_on_load(ip.flipVertically ? 1 : 0);
+        stbi_uc* data = stbi_load(path.c_str(), &width, &height, &channels, 0);
+        if (!data) THROW_EXCEPTION(NxFileNotFoundException, path);
+
+        try {
+            // Decide formats based on channels and sRGB preference
+            GLint internalFormat = 0;
+            GLenum dataFormat    = 0;
+            switch (channels) {
+                case 4: internalFormat = ip.convertToSRGB ? GL_SRGB8_ALPHA8 : GL_RGBA8; dataFormat = GL_RGBA; break;
+                case 3: internalFormat = ip.convertToSRGB ? GL_SRGB8        : GL_RGB8;  dataFormat = GL_RGB;  break;
+                case 2: internalFormat = GL_RG8;  dataFormat = GL_RG;  break; // STB gives 8-bit by default
+                case 1: internalFormat = GL_R8;   dataFormat = GL_RED; break;
+                default: THROW_EXCEPTION(NxTextureUnsupportedFormat, "OPENGL", channels, path);
+            }
+
+            createOpenGLTexture(data, (unsigned)width, (unsigned)height, internalFormat, dataFormat);
+            ApplySamplerFromParams(m_id, ip, dataFormat); // <- the only new call you really need
+        } catch (const Exception&) {
+            stbi_image_free(data);
+            throw;
+        }
+        stbi_image_free(data);
     }
 
     NxOpenGlTexture2D::NxOpenGlTexture2D(const uint8_t *buffer, const unsigned int width, const unsigned int height,

@@ -42,6 +42,7 @@
 #include "systems/RenderVideoSystem.hpp"
 #include "systems/TransformHierarchySystem.hpp"
 #include "systems/TransformMatrixSystem.hpp"
+#include "systems/AABBDebugSystem.hpp"
 
 #define NEXO_PROFILE(name) \
     nexo::Timer timer##__LINE__(name, [&](ProfileResult profileResult) { m_profileResults.push_back(profileResult); })
@@ -547,6 +548,7 @@ namespace nexo {
         std::shared_ptr<system::RenderBillboardSystem> m_renderBillboardSystem;
         std::shared_ptr<system::RenderVideoSystem> m_renderVideoSystem;
         std::shared_ptr<system::PhysicsSystem> m_physicsSystem;
+        std::shared_ptr<system::AABBDebugSystem> m_aabbdebugSystem;
 
         std::vector<ProfileResult> m_profilesResults;
     };

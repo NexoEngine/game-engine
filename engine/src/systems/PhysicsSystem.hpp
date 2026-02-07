@@ -267,7 +267,6 @@ namespace nexo::system {
         {
             return bodyLockInterface;
         }
-
        private:
         JPH::TempAllocatorImpl* tempAllocator{};
         JPH::JobSystemThreadPool* jobSystem{};

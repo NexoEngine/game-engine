@@ -15,9 +15,12 @@
 #include <filesystem>
 #include "AssetManagerWindow.hpp"
 #include "Logger.hpp"
+#include "assets/Asset.hpp"
 #include "assets/AssetCatalog.hpp"
 #include "assets/AssetImporter.hpp"
 #include "assets/AssetLocation.hpp"
+#include "assets/AssetRef.hpp"
+#include "assets/Assets/Texture/Texture.hpp"
 #include "context/ThumbnailCache.hpp"
 
 namespace nexo::editor {
@@ -115,7 +118,7 @@ namespace nexo::editor {
         m_pendingDroppedFiles.clear();
     }
 
-    void AssetManagerWindow::importDroppedFile(const std::string& filePath) const
+    void AssetManagerWindow::importDroppedFile(const std::string& filePath)
     {
         const std::filesystem::path path(filePath);
 
@@ -129,8 +132,18 @@ namespace nexo::editor {
         assets::ImporterFileInput fileInput{path};
         try {
             assets::AssetImporter importer;
-            if (const auto assetRef = importer.importAssetAuto(location, fileInput); !assetRef)
+            const auto assetRef = importer.importAssetAuto(location, fileInput);
+            if (!assetRef)
                 LOG(NEXO_ERROR, "Failed to import asset: {}", location.getPath().data());
+            m_pendingImportedAsset = assetRef;
+            m_pendingImportedAssetPath = filePath;
+            auto asset = assetRef.lock();
+            if (asset->getType() == assets::AssetType::TEXTURE) {
+                m_popupManager.openPopup("Texture Importer", ImVec2(1440, 900));
+            } else {
+                m_pendingImportedAsset = assets::GenericAssetRef::null();
+                m_pendingImportedAssetPath = "";
+            }
         } catch (const std::exception& e) {
             THROW_EXCEPTION(AssetImportException, location.getPath(), e.what());
         }

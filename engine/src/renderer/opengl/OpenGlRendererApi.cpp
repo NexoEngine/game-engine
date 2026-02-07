@@ -19,12 +19,27 @@
 #include <Exception.hpp>
 #include <RendererExceptions.hpp>
 
+#include "DrawCommand.hpp"
 #include "Logger.hpp"
 #include "OpenGlRendererAPI.hpp"
 
 #include <glad/glad.h>
 
 namespace nexo::renderer {
+
+    static GLenum nexoPrimitiveTypeToGLType(CommandType type)
+    {
+        switch (type)
+        {
+            case CommandType::MESH:
+                return GL_TRIANGLES;
+            case CommandType::LINE:
+                return GL_LINES;
+            default:
+                THROW_EXCEPTION(NxInvalidValue, "OPENGL", "Unsupported primitive type");
+        }
+        return 0;
+    }
 
     void NxOpenGlRendererApi::init()
     {
@@ -106,12 +121,19 @@ namespace nexo::renderer {
             glDepthMask(GL_FALSE);
     }
 
-    void NxOpenGlRendererApi::drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, size_t indexCount)
+    void NxOpenGlRendererApi::setLineWidth(float lineWidth)
+    {
+        if (!m_initialized) THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
+        glLineWidth(lineWidth);
+    }
+
+    void NxOpenGlRendererApi::drawIndexed(const std::shared_ptr<NxVertexArray> &vertexArray, size_t indexCount, CommandType primitiveType)
     {
         if (!m_initialized) THROW_EXCEPTION(NxGraphicsApiNotInitialized, "OPENGL");
         if (!vertexArray) THROW_EXCEPTION(NxInvalidValue, "OPENGL", "Vertex array cannot be null");
         const size_t count = indexCount ? indexCount : vertexArray->getIndexBuffer()->getCount();
-        glDrawElements(GL_TRIANGLES, static_cast<int>(count), GL_UNSIGNED_INT, nullptr);
+        const GLenum glType = nexoPrimitiveTypeToGLType(primitiveType);
+        glDrawElements(glType, static_cast<int>(count), GL_UNSIGNED_INT, nullptr);
     }
 
     void NxOpenGlRendererApi::drawUnIndexed(size_t verticesCount)

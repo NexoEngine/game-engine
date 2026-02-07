@@ -233,6 +233,7 @@ namespace nexo::renderer {
             return _elements.end();
         }
 
+
        private:
         std::vector<NxBufferElements> _elements;
         unsigned int _stride{};
