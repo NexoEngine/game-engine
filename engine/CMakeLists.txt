@@ -15,6 +15,7 @@ set(COMMON_SOURCES
         common/math/Matrix.cpp
         common/Path.cpp
         common/math/Bounds.cpp
+        common/math/Light.cpp
         engine/src/Nexo.cpp
         engine/src/EntityFactory3D.cpp
         engine/src/LightFactory.cpp
@@ -74,6 +75,7 @@ set(COMMON_SOURCES
         engine/src/systems/lights/SpotLightsSystem.cpp
         engine/src/systems/AABBDebugSystem.cpp
         engine/src/systems/TransformSystem.cpp
+        engine/src/systems/TransformMatrixSystem.cpp
         engine/src/renderPasses/ForwardPass.cpp
         engine/src/renderPasses/GridPass.cpp
         engine/src/renderPasses/MaskPass.cpp

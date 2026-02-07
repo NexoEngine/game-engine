@@ -56,8 +56,16 @@ TEST_F(PassesEnumValuesTest, OutlineIsValue3) {
     EXPECT_EQ(static_cast<PassId>(Passes::OUTLINE), 3u);
 }
 
-TEST_F(PassesEnumValuesTest, NbPassesIsValue4) {
-    EXPECT_EQ(static_cast<PassId>(Passes::NB_PASSES), 4u);
+TEST_F(PassesEnumValuesTest, ShadowIsValue4) {
+    EXPECT_EQ(static_cast<PassId>(Passes::SHADOW), 4u);
+}
+
+TEST_F(PassesEnumValuesTest, PointShadowIsValue5) {
+    EXPECT_EQ(static_cast<PassId>(Passes::POINT_SHADOW), 5u);
+}
+
+TEST_F(PassesEnumValuesTest, NbPassesIsValue6) {
+    EXPECT_EQ(static_cast<PassId>(Passes::NB_PASSES), 6u);
 }
 
 // =============================================================================
@@ -68,7 +76,7 @@ class PassesCountTest : public ::testing::Test {};
 
 TEST_F(PassesCountTest, NbPassesCountsAllPasses) {
     // NB_PASSES should equal the number of actual passes
-    EXPECT_EQ(Passes::NB_PASSES, 4u);
+    EXPECT_EQ(Passes::NB_PASSES, 6u);
 }
 
 TEST_F(PassesCountTest, NbPassesGreaterThanZero) {
@@ -93,16 +101,20 @@ TEST_F(PassesUniquenessTest, AllPassesAreDistinct) {
     values.insert(Passes::GRID);
     values.insert(Passes::MASK);
     values.insert(Passes::OUTLINE);
+    values.insert(Passes::SHADOW);
+    values.insert(Passes::POINT_SHADOW);
 
-    // All 4 passes should be distinct
-    EXPECT_EQ(values.size(), 4u);
+    // All 6 passes should be distinct
+    EXPECT_EQ(values.size(), 6u);
 }
 
 TEST_F(PassesUniquenessTest, PassesAreSequential) {
     EXPECT_EQ(Passes::GRID, Passes::FORWARD + 1);
     EXPECT_EQ(Passes::MASK, Passes::GRID + 1);
     EXPECT_EQ(Passes::OUTLINE, Passes::MASK + 1);
-    EXPECT_EQ(Passes::NB_PASSES, Passes::OUTLINE + 1);
+    EXPECT_EQ(Passes::SHADOW, Passes::OUTLINE + 1);
+    EXPECT_EQ(Passes::POINT_SHADOW, Passes::SHADOW + 1);
+    EXPECT_EQ(Passes::NB_PASSES, Passes::POINT_SHADOW + 1);
 }
 
 // =============================================================================
@@ -141,7 +153,7 @@ TEST_F(PassesIterationTest, CanIterateOverAllPasses) {
     for (PassId i = 0; i < Passes::NB_PASSES; ++i) {
         count++;
     }
-    EXPECT_EQ(count, 4);
+    EXPECT_EQ(count, 6);
 }
 
 TEST_F(PassesIterationTest, CanUseInSwitchStatement) {
@@ -151,6 +163,8 @@ TEST_F(PassesIterationTest, CanUseInSwitchStatement) {
             case Passes::GRID: return "GRID";
             case Passes::MASK: return "MASK";
             case Passes::OUTLINE: return "OUTLINE";
+            case Passes::SHADOW: return "SHADOW";
+            case Passes::POINT_SHADOW: return "POINT_SHADOW";
             case Passes::NB_PASSES: return "NB_PASSES";
             default: return "UNKNOWN";
         }
@@ -160,6 +174,8 @@ TEST_F(PassesIterationTest, CanUseInSwitchStatement) {
     EXPECT_EQ(getPassName(Passes::GRID), "GRID");
     EXPECT_EQ(getPassName(Passes::MASK), "MASK");
     EXPECT_EQ(getPassName(Passes::OUTLINE), "OUTLINE");
+    EXPECT_EQ(getPassName(Passes::SHADOW), "SHADOW");
+    EXPECT_EQ(getPassName(Passes::POINT_SHADOW), "POINT_SHADOW");
 }
 
 // =============================================================================
@@ -177,13 +193,17 @@ TEST_F(PassesComparisonTest, CanCompareOrdering) {
     EXPECT_LT(Passes::FORWARD, Passes::GRID);
     EXPECT_LT(Passes::GRID, Passes::MASK);
     EXPECT_LT(Passes::MASK, Passes::OUTLINE);
-    EXPECT_LT(Passes::OUTLINE, Passes::NB_PASSES);
+    EXPECT_LT(Passes::OUTLINE, Passes::SHADOW);
+    EXPECT_LT(Passes::SHADOW, Passes::POINT_SHADOW);
+    EXPECT_LT(Passes::POINT_SHADOW, Passes::NB_PASSES);
 }
 
 TEST_F(PassesComparisonTest, ForwardIsSmallest) {
     EXPECT_LE(Passes::FORWARD, Passes::GRID);
     EXPECT_LE(Passes::FORWARD, Passes::MASK);
     EXPECT_LE(Passes::FORWARD, Passes::OUTLINE);
+    EXPECT_LE(Passes::FORWARD, Passes::SHADOW);
+    EXPECT_LE(Passes::FORWARD, Passes::POINT_SHADOW);
 }
 
 // =============================================================================
@@ -193,12 +213,14 @@ TEST_F(PassesComparisonTest, ForwardIsSmallest) {
 class PassesUsagePatternTest : public ::testing::Test {};
 
 TEST_F(PassesUsagePatternTest, CanUseAsArrayIndex) {
-    int passData[Passes::NB_PASSES] = {10, 20, 30, 40};
+    int passData[Passes::NB_PASSES] = {10, 20, 30, 40, 50, 60};
 
     EXPECT_EQ(passData[Passes::FORWARD], 10);
     EXPECT_EQ(passData[Passes::GRID], 20);
     EXPECT_EQ(passData[Passes::MASK], 30);
     EXPECT_EQ(passData[Passes::OUTLINE], 40);
+    EXPECT_EQ(passData[Passes::SHADOW], 50);
+    EXPECT_EQ(passData[Passes::POINT_SHADOW], 60);
 }
 
 TEST_F(PassesUsagePatternTest, CanValidatePassId) {
@@ -210,21 +232,25 @@ TEST_F(PassesUsagePatternTest, CanValidatePassId) {
     EXPECT_TRUE(isValidPass(Passes::GRID));
     EXPECT_TRUE(isValidPass(Passes::MASK));
     EXPECT_TRUE(isValidPass(Passes::OUTLINE));
+    EXPECT_TRUE(isValidPass(Passes::SHADOW));
+    EXPECT_TRUE(isValidPass(Passes::POINT_SHADOW));
     EXPECT_FALSE(isValidPass(Passes::NB_PASSES));
     EXPECT_FALSE(isValidPass(100));
 }
 
 TEST_F(PassesUsagePatternTest, CanIterateAndProcess) {
     std::vector<std::string> passNames;
-    const char* names[] = {"FORWARD", "GRID", "MASK", "OUTLINE"};
+    const char* names[] = {"FORWARD", "GRID", "MASK", "OUTLINE", "SHADOW", "POINT_SHADOW"};
 
     for (PassId i = 0; i < Passes::NB_PASSES; ++i) {
         passNames.push_back(names[i]);
     }
 
-    EXPECT_EQ(passNames.size(), 4u);
+    EXPECT_EQ(passNames.size(), 6u);
     EXPECT_EQ(passNames[0], "FORWARD");
     EXPECT_EQ(passNames[3], "OUTLINE");
+    EXPECT_EQ(passNames[4], "SHADOW");
+    EXPECT_EQ(passNames[5], "POINT_SHADOW");
 }
 
 // =============================================================================
@@ -238,13 +264,17 @@ TEST_F(PassesConstexprTest, ValuesAreConstexpr) {
     constexpr PassId grid = Passes::GRID;
     constexpr PassId mask = Passes::MASK;
     constexpr PassId outline = Passes::OUTLINE;
+    constexpr PassId shadow = Passes::SHADOW;
+    constexpr PassId pointShadow = Passes::POINT_SHADOW;
     constexpr PassId nbPasses = Passes::NB_PASSES;
 
     static_assert(forward == 0);
     static_assert(grid == 1);
     static_assert(mask == 2);
     static_assert(outline == 3);
-    static_assert(nbPasses == 4);
+    static_assert(shadow == 4);
+    static_assert(pointShadow == 5);
+    static_assert(nbPasses == 6);
 
     SUCCEED();
 }

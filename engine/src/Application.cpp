@@ -18,10 +18,16 @@
 
 #include "Application.hpp"
 
+#include "components/Editor.hpp"
+#include "components/Name.hpp"
 #include "components/Parent.hpp"
+#include "components/Render.hpp"
+#include "components/Uuid.hpp"
 #include "renderer/Renderer3D.hpp"
 #include "SystemProfiler.hpp"
 #include "systems/ScriptingSystem.hpp"
+#include "systems/TransformHierarchySystem.hpp"
+#include "systems/TransformMatrixSystem.hpp"
 
 std::unique_ptr<nexo::Application> nexo::Application::_instance          = nullptr;
 std::shared_ptr<nexo::ecs::Coordinator> nexo::Application::m_coordinator = nullptr;
@@ -191,6 +197,7 @@ namespace nexo {
         m_renderVideoSystem             = m_coordinator->registerGroupSystem<system::RenderVideoSystem>();
         m_transformHierarchySystem      = m_coordinator->registerGroupSystem<system::TransformHierarchySystem>();
         m_transformMatrixSystem         = m_coordinator->registerQuerySystem<system::TransformMatrixSystem>();
+        m_transformSystem               = m_coordinator->registerGroupSystem<system::TransformSystem>();
         m_physicsSystem                 = m_coordinator->registerQuerySystem<system::PhysicsSystem>();
         m_physicsSystem->init();
 

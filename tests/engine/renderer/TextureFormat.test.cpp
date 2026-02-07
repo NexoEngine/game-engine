@@ -37,8 +37,24 @@ TEST_F(NxTextureFormatEnumTest, RGBA8ValueIs4) {
     EXPECT_EQ(static_cast<int>(NxTextureFormat::RGBA8), 4);
 }
 
-TEST_F(NxTextureFormatEnumTest, NbFormatsValueIs5) {
-    EXPECT_EQ(static_cast<int>(NxTextureFormat::_NB_FORMATS_), 5);
+TEST_F(NxTextureFormatEnumTest, RGB16FValueIs5) {
+    EXPECT_EQ(static_cast<int>(NxTextureFormat::RGB16F), 5);
+}
+
+TEST_F(NxTextureFormatEnumTest, RGBA16FValueIs6) {
+    EXPECT_EQ(static_cast<int>(NxTextureFormat::RGBA16F), 6);
+}
+
+TEST_F(NxTextureFormatEnumTest, RGB32FValueIs7) {
+    EXPECT_EQ(static_cast<int>(NxTextureFormat::RGB32F), 7);
+}
+
+TEST_F(NxTextureFormatEnumTest, RGBA32FValueIs8) {
+    EXPECT_EQ(static_cast<int>(NxTextureFormat::RGBA32F), 8);
+}
+
+TEST_F(NxTextureFormatEnumTest, NbFormatsValueIs9) {
+    EXPECT_EQ(static_cast<int>(NxTextureFormat::_NB_FORMATS_), 9);
 }
 
 TEST_F(NxTextureFormatEnumTest, AllFormatsDistinct) {
@@ -46,6 +62,10 @@ TEST_F(NxTextureFormatEnumTest, AllFormatsDistinct) {
     EXPECT_NE(NxTextureFormat::R8, NxTextureFormat::RG8);
     EXPECT_NE(NxTextureFormat::RG8, NxTextureFormat::RGB8);
     EXPECT_NE(NxTextureFormat::RGB8, NxTextureFormat::RGBA8);
+    EXPECT_NE(NxTextureFormat::RGBA8, NxTextureFormat::RGB16F);
+    EXPECT_NE(NxTextureFormat::RGB16F, NxTextureFormat::RGBA16F);
+    EXPECT_NE(NxTextureFormat::RGBA16F, NxTextureFormat::RGB32F);
+    EXPECT_NE(NxTextureFormat::RGB32F, NxTextureFormat::RGBA32F);
 }
 
 // =============================================================================

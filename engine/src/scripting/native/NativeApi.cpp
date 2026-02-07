@@ -277,8 +277,8 @@ namespace nexo::scripting {
             LOG(NEXO_ERROR, "Entity {} has no PhysicsBodyComponent", entity);
             return;
         }
-        const auto& [bodyID, type]   = coordinator.getComponent<components::PhysicsBodyComponent>(entity);
-        const JPH::BodyID joltBodyID = bodyID;
+        const auto& physicsBody      = coordinator.getComponent<components::PhysicsBodyComponent>(entity);
+        const JPH::BodyID joltBodyID = physicsBody.bodyID;
         const JPH::Vec3 joltForce(force.x, force.y, force.z);
         physicsSystem->applyForce(joltBodyID, joltForce);
     }

@@ -47,7 +47,7 @@ TEST_F(MaterialTest, DefaultIsOpaque) {
 
 TEST_F(MaterialTest, DefaultRoughness) {
     Material mat;
-    EXPECT_FLOAT_EQ(mat.roughness, 0.0f);
+    EXPECT_FLOAT_EQ(mat.roughness, 0.5f);
 }
 
 TEST_F(MaterialTest, DefaultMetallic) {
@@ -62,7 +62,7 @@ TEST_F(MaterialTest, DefaultOpacity) {
 
 TEST_F(MaterialTest, DefaultShader) {
     Material mat;
-    EXPECT_EQ(mat.shader, "Phong");
+    EXPECT_EQ(mat.shader, "PBR");
 }
 
 TEST_F(MaterialTest, DefaultTexturesAreNull) {
@@ -426,16 +426,16 @@ TEST_F(MaterialTest, ShaderNameWithSpecialCharacters) {
 
 TEST_F(MaterialTest, MultipleShaderChanges) {
     Material mat;
-    EXPECT_EQ(mat.shader, "Phong");
-
-    mat.shader = "PBR";
     EXPECT_EQ(mat.shader, "PBR");
+
+    mat.shader = "Phong";
+    EXPECT_EQ(mat.shader, "Phong");
 
     mat.shader = "Unlit";
     EXPECT_EQ(mat.shader, "Unlit");
 
-    mat.shader = "Phong";
-    EXPECT_EQ(mat.shader, "Phong");
+    mat.shader = "PBR";
+    EXPECT_EQ(mat.shader, "PBR");
 }
 
 // =============================================================================

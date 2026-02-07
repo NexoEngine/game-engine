@@ -590,7 +590,6 @@ TEST_F(RenderContextTest, CamerasPushBackSingleCamera) {
     RenderContext ctx;
     CameraContext camera;
     camera.cameraPosition = glm::vec3(1.0f, 2.0f, 3.0f);
-    camera.clearColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
 
     ctx.cameras.push_back(camera);
 

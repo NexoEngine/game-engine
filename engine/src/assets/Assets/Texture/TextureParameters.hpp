@@ -19,6 +19,7 @@
 #pragma once
 
 #include <nlohmann/json.hpp>
+#include "renderer/TextureType.hpp"
 
 namespace nexo::assets {
 

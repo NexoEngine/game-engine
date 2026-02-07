@@ -15,9 +15,9 @@ namespace nexo::renderer {
         : RenderPass(Passes::SHADOW, "Shadow pass"), m_size(size)
     {
         NxFramebufferSpecs specs;
-        specs.attachments = {
-            NxFrameBufferTextureFormats::DEPTH24STENCIL8  // depth-only
-        };
+        specs.attachments = NxFrameBufferAttachmentsSpecifications({
+            NxFrameBufferTextureSpecifications(NxFrameBufferTextureFormats::DEPTH24STENCIL8)  // depth-only
+        });
         specs.width  = size;
         specs.height = size;
 
