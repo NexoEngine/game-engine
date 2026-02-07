@@ -108,6 +108,17 @@ namespace nexo::ecs {
         virtual void insertRaw(Entity entity, const void* componentData) = 0;
 
         /**
+         * @brief Inserts a new component for the given entity using a constructor.
+         *
+         * @param entity The entity to add the component to
+         * @param constructor Pointer to the constructor function or functor
+         * @throws OutOfRange if entity ID exceeds MAX_ENTITIES
+         *
+         * @pre The entity must be a valid entity ID
+         */
+        virtual void insertRawWithConstructor(Entity entity, void (*constructor)(void* memoryDst)) = 0;
+
+        /**
          * @brief Removes the component for the given entity.
          *
          * If the entity is grouped (i.e. within the first m_groupSize entries),
@@ -260,6 +271,36 @@ namespace nexo::ecs {
                 THROW_EXCEPTION(InternalError,
                                 "Component type is not trivially copyable, raw insertion is not supported");
             }
+        }
+
+        /**
+         * @brief Inserts a new component for the given entity using a constructor.
+         *
+         * @param entity The entity to add the component to
+         * @param constructor Pointer to the constructor function or functor
+         * @throws OutOfRange if entity ID exceeds MAX_ENTITIES
+         *
+         * @pre The entity must be a valid entity ID
+         */
+        void insertRawWithConstructor(Entity entity, void (*constructor)(void* memoryDst))
+        {
+            if (entity >= MAX_ENTITIES) THROW_EXCEPTION(OutOfRange, entity);
+
+            ensureSparseCapacity(entity);
+
+            if (hasComponent(entity)) {
+                LOG(NEXO_WARN, "Entity {} already has component: {}", entity, typeid(T).name());
+                return;
+            }
+
+            const size_t newIndex = m_size;
+            m_sparse[entity]      = newIndex;
+            m_dense.push_back(entity);
+
+            // allocate new component in the array
+            m_componentArray.emplace_back();
+            constructor(&m_componentArray[newIndex]);
+            ++m_size;
         }
 
         /**
@@ -655,6 +696,17 @@ namespace nexo::ecs {
          * @pre componentData must point to valid memory of component's size
          */
         void insertRaw(Entity entity, const void* componentData) override;
+
+        /**
+         * @brief Inserts a new component for the given entity using a constructor.
+         *
+         * @param entity The entity to add the component to
+         * @param constructor Pointer to the constructor function or functor
+         * @throws OutOfRange if entity ID exceeds MAX_ENTITIES
+         *
+         * @pre The entity must be a valid entity ID
+         */
+        void insertRawWithConstructor(Entity entity, void (*constructor)(void* memoryDst)) override;
 
         /**
          * @brief Removes the component for the given entity

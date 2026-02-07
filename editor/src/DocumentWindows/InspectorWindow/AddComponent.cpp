@@ -1,4 +1,4 @@
-//// ComponentDescription.hpp /////////////////////////////////////////////////
+//// AddComponent.cpp ///////////////////////////////////////////////////////////////
 //
 // ⢀⢀⢀⣤⣤⣤⡀⢀⢀⢀⢀⢀⢀⢠⣤⡄⢀⢀⢀⢀⣠⣤⣤⣤⣤⣤⣤⣤⣤⣤⡀⢀⢀⢀⢠⣤⣄⢀⢀⢀⢀⢀⢀⢀⣤⣤⢀⢀⢀⢀⢀⢀⢀⢀⣀⣄⢀⢀⢠⣄⣀⢀⢀⢀⢀⢀⢀⢀
 // ⢀⢀⢀⣿⣿⣿⣷⡀⢀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⣿⣿⡟⡛⡛⡛⡛⡛⡛⡛⢁⢀⢀⢀⢀⢻⣿⣦⢀⢀⢀⢀⢠⣾⡿⢃⢀⢀⢀⢀⢀⣠⣾⣿⢿⡟⢀⢀⡙⢿⢿⣿⣦⡀⢀⢀⢀⢀
@@ -10,28 +10,54 @@
 // ⢀⢀⢀⣿⣿⢀⢀⢀⢀⢀⢀⢀⢀⢸⣿⡇⢀⢀⢀⢀⢀⣀⣀⣀⣀⣀⣀⣀⣀⣀⡀⢀⢀⢀⣠⣾⡿⢃⢀⢀⢀⢀⢀⢻⣿⣧⡀⢀⢀⢀⡈⢻⣿⣷⣦⣄⢀⢀⣠⣤⣶⣿⡿⢋⢀⢀⢀⢀
 // ⢀⢀⢀⢿⢿⢀⢀⢀⢀⢀⢀⢀⢀⢸⢿⢃⢀⢀⢀⢀⢻⢿⢿⢿⢿⢿⢿⢿⢿⢿⢃⢀⢀⢀⢿⡟⢁⢀⢀⢀⢀⢀⢀⢀⡙⢿⡗⢀⢀⢀⢀⢀⡈⡉⡛⡛⢀⢀⢹⡛⢋⢁⢀⢀⢀⢀⢀⢀
 //
-//  Author:      Guillaume HEIN
-//  Date:        25/06/2025
-//  Description: Header file for the field struct used in UI scripting,
-//               which represents a field in the UI with its properties
-//               this struct is passed by the C# code to the native code
+//  Author:      Marie GIACOMEL
+//  Date:        2025-10-30
+//  Description: Source file for the AddComponent functions
 //
-///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////
 
-#pragma once
+#include <ImNexo/Elements.hpp>
 
-#include <string>
-#include <vector>
+#include "InspectorWindow.hpp"
 
-#include "Field.hpp"
+namespace nexo::editor {
 
-namespace nexo::ecs {
+    void searchComponentBar()
+    {
+        // TODO: Implement search bar for components
+    }
 
-    struct ComponentDescription {
-        std::string name;                     // Name of the component
-        std::vector<Field> fields;            // List of fields in the component
-        bool internalComponent = false;       // Indicates if the component is internal
-        void (*constructor)(void* memoryDst); // Pointer to the constructor function
-    };
+    void addComponentPopup(const ecs::Entity entity)
+    {
+        const auto& coord    = nexo::Application::m_coordinator;
+        const auto signature = coord->getSignature(entity);
+        ImGui::Text("Add component to %u", entity);
+        ImGui::Separator();
+        for (const auto& [componentType, description] : coord->getComponentDescriptions()) {
+            // Skip empty components or if the entity already has it
+            if (description->name.empty() || signature.test(componentType)) continue;
+            if (ImGui::Selectable(description->name.c_str())) {
+                LOG(NEXO_INFO, "Adding component {} to entity {}", description->name, entity);
+                coord->addComponentWithDefault(entity, componentType);
+            }
+        }
+        ImGui::Separator();
+        if (ImNexo::Button("Cancel", ImNexo::ButtonTypes::CANCEL)) {
+            PopupManager::closePopup();
+        }
+        PopupManager::endPopup();
+    }
 
-} // namespace nexo::ecs
+    void InspectorWindow::showAddComponentButton(const ecs::Entity entity)
+    {
+        if (ImGui::Button("Add Component")) {
+            ImGui::Text("add component to entity %u", entity);
+            m_popupManager.openPopup("Add Component Popup");
+        }
+
+        if (m_popupManager.showPopup("Add Component Popup")) {
+            addComponentPopup(entity);
+        }
+    }
+
+} // namespace nexo::editor

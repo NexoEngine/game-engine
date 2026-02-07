@@ -137,9 +137,11 @@ namespace nexo::ecs {
          * @brief Registers a new component type within the ComponentManager.
          */
         template<typename T>
-        void registerComponent()
+        void registerComponent(const std::string& displayName = "")
         {
             m_componentManager->registerComponent<T>();
+            addComponentDescription(getComponentType<T>(),
+                                    ComponentDescription{displayName, {}, true, [](void* memoryDst) { new (memoryDst) T{}; }});
 
             m_getComponentFunctions[typeid(T)] = [this](const Entity entity) -> std::any {
                 return this->getComponent<T>(entity);
@@ -240,6 +242,12 @@ namespace nexo::ecs {
             m_systemManager->entitySignatureChanged(entity, oldSignature, signature);
         }
 
+        template<typename T>
+        void addComponent(const Entity entity) const
+        {
+            addComponent(entity, T{});
+        }
+
         /**
          * @brief Adds a component to an entity, updates its signature, and notifies systems.
          *
@@ -258,6 +266,30 @@ namespace nexo::ecs {
             const Signature oldSignature = signature;
             signature.set(componentType, true);
             m_componentManager->addComponent(entity, componentType, componentData, oldSignature, signature);
+
+            m_entityManager->setSignature(entity, signature);
+
+            m_systemManager->entitySignatureChanged(entity, oldSignature, signature);
+        }
+
+        /**
+         * @brief Adds a component to an entity using ComponentType, default-constructs it,
+         * updates its signature, and notifies systems.
+         *
+         * @param entity - The ID of the entity.
+         * @param componentType - The ID of the component type to add.
+         */
+        void addComponentWithDefault(const Entity entity, const ComponentType componentType) const
+        {
+            Signature signature          = m_entityManager->getSignature(entity);
+            const Signature oldSignature = signature;
+            signature.set(componentType, true);
+            const auto& componentDescription = m_componentDescriptions.at(componentType);
+            if (componentDescription == nullptr) {
+                THROW_EXCEPTION(ComponentNotRegistered);
+            }
+            m_componentManager->addComponentWithConstructor(entity, componentType, componentDescription->constructor, oldSignature,
+                                                            signature);
 
             m_entityManager->setSignature(entity, signature);
 
@@ -528,7 +560,7 @@ namespace nexo::ecs {
          * @brief Retrieves all registered component descriptions.
          *
          * @return const std::unordered_map<ComponentType, std::shared_ptr<ComponentDescription>>&
-         *         A const reference to the map of component types to their descriptions.
+         * A const reference to the map of component types to their descriptions.
          */
         [[nodiscard]] const std::unordered_map<ComponentType, std::shared_ptr<ComponentDescription>>&
         getComponentDescriptions() const
@@ -548,7 +580,7 @@ namespace nexo::ecs {
         {
             auto newQuerySystem = m_systemManager->registerQuerySystem<T>(std::forward<Args>(args)...);
             const std::span<const Entity> livingEntities = m_entityManager->getLivingEntities();
-            const Signature querySystemSignature   = newQuerySystem->getSignature();
+            const Signature querySystemSignature         = newQuerySystem->getSignature();
             for (Entity entity : livingEntities) {
                 const Signature entitySignature = m_entityManager->getSignature(entity);
                 if ((entitySignature & querySystemSignature) == querySystemSignature) {
