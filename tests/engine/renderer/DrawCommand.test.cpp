@@ -22,8 +22,12 @@ TEST_F(CommandTypeEnumTest, MeshValueIs0) {
     EXPECT_EQ(static_cast<int>(CommandType::MESH), 0);
 }
 
-TEST_F(CommandTypeEnumTest, FullScreenValueIs1) {
-    EXPECT_EQ(static_cast<int>(CommandType::FULL_SCREEN), 1);
+TEST_F(CommandTypeEnumTest, LineValueIs1) {
+    EXPECT_EQ(static_cast<int>(CommandType::LINE), 1);
+}
+
+TEST_F(CommandTypeEnumTest, FullScreenValueIs2) {
+    EXPECT_EQ(static_cast<int>(CommandType::FULL_SCREEN), 2);
 }
 
 TEST_F(CommandTypeEnumTest, ValuesAreDistinct) {

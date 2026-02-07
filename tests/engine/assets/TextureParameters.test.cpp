@@ -105,6 +105,7 @@ TEST_F(TextureParametersJsonTest, FromJsonRestoresValues) {
         {"convertToSRGB", false},
         {"flipVertically", false},
         {"format", 2},  // RGBA
+        {"minFilter", 1}, // Bilinear
         {"maxSize", 1024},
         {"compressionQuality", 0.75f}
     };
@@ -297,6 +298,7 @@ TEST_F(TextureParametersEdgeCasesTest, JsonWithExtraFieldsIgnored) {
         {"convertToSRGB", false},
         {"flipVertically", true},
         {"format", 1},
+        {"minFilter", 1},
         {"maxSize", 2048},
         {"compressionQuality", 0.8f},
         {"extraField", "should be ignored"},
@@ -335,6 +337,7 @@ TEST_F(TextureParametersEdgeCasesTest, JsonWithInvalidFormatValueAccepted) {
         {"convertToSRGB", true},
         {"flipVertically", true},
         {"format", 99},  // Invalid format value
+        {"minFilter", 1},
         {"maxSize", 4096},
         {"compressionQuality", 0.9f}
     };
