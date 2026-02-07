@@ -214,10 +214,20 @@ namespace nexo::renderer {
 
         if (!m_renderTarget) THROW_EXCEPTION(NxPipelineRenderTargetNotSetException);
 
+        for (const auto& [name, ssbo] : m_ssbos) {
+            ssbo->bindBase(m_bufferBindingLocations[name]);
+        }
+
+        for (const auto& [name, ubo] : m_ubos) {
+            ubo->bindBase(m_bufferBindingLocations[name]);
+        }
+
         for (PassId id : m_plan) {
             if (passes.contains(id)) passes[id]->execute(*this);
         }
+
         m_drawCommands.clear();
+        m_globalUniforms.clear();
     }
 
     void RenderPipeline::addDrawCommands(const std::vector<DrawCommand>& drawCommands)
@@ -231,7 +241,7 @@ namespace nexo::renderer {
         m_drawCommands.push_back(drawCommand);
     }
 
-    const std::vector<DrawCommand>& RenderPipeline::getDrawCommands() const
+    std::vector<DrawCommand>& RenderPipeline::getDrawCommands()
     {
         return m_drawCommands;
     }
@@ -251,5 +261,117 @@ namespace nexo::renderer {
         if (!m_renderTarget) return;
         m_renderTarget->resize(width, height);
         for (const auto& pass : passes | std::views::values) pass->resize(width, height);
+    }
+
+    void RenderPipeline::setGlobalUniforms(const std::unordered_map<std::string, UniformValue> &uniforms)
+    {
+        m_globalUniforms = uniforms;
+    }
+
+    void RenderPipeline::setGlobalUniform(const std::string &name, const UniformValue &value)
+    {
+        m_globalUniforms[name] = value;
+    }
+
+    const std::unordered_map<std::string, UniformValue> &RenderPipeline::getGlobalUniforms() const
+    {
+        return m_globalUniforms;
+    }
+
+    void RenderPipeline::clearGlobalUniforms()
+    {
+        m_globalUniforms.clear();
+    }
+
+    void RenderPipeline::addUniformBuffer(const std::string &name, unsigned int bindingLocation, const std::shared_ptr<renderer::NxShaderUniformBuffer> &buffer)
+    {
+        m_ubos[name] = buffer;
+        m_bufferBindingLocations[name] = bindingLocation;
+    }
+
+    void RenderPipeline::addStorageBuffer(const std::string &name, unsigned int bindingLocation, const std::shared_ptr<renderer::NxShaderStorageBuffer> &buffer)
+    {
+        m_ssbos[name] = buffer;
+        m_bufferBindingLocations[name] = bindingLocation;
+    }
+
+    void RenderPipeline::setUniformBufferData(const std::string &name, void *data, unsigned int size)
+    {
+        if (m_ubos.find(name) == m_ubos.end()) return;
+        m_ubos[name]->setData(data, size);
+    }
+
+    void RenderPipeline::setStorageBufferData(const std::string &name, void *data, unsigned int size)
+    {
+        if (m_ssbos.find(name) == m_ssbos.end()) return;
+        m_ssbos[name]->setData(data, size);
+    }
+
+    void RenderPipeline::appendStorageBufferData(const std::string &name, void *data, unsigned int size)
+    {
+        if (m_ssbos.find(name) == m_ssbos.end()) return;
+        m_ssbos[name]->appendData(data, size);
+    }
+
+    unsigned int RenderPipeline::getStorageBufferSize(const std::string &name)
+    {
+        if (m_ssbos.find(name) == m_ssbos.end()) return 0;
+        return m_ssbos[name]->getSize();
+    }
+
+    void RenderPipeline::setupShadowMaps()
+    {
+        for (int i = 0; i < 10; ++i) {
+            auto& sm = pointShadowMaps[i];
+            glGenTextures(1, &sm.depthCube);
+            glBindTexture(GL_TEXTURE_CUBE_MAP, sm.depthCube);
+
+            for (int face = 0; face < 6; ++face) {
+                glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + face,
+                             0,
+                             GL_DEPTH_COMPONENT24,
+                             renderer::RenderPipeline::POINT_SHADOW_SIZE,
+                             renderer::RenderPipeline::POINT_SHADOW_SIZE,
+                             0,
+                             GL_DEPTH_COMPONENT,
+                             GL_FLOAT,
+                             nullptr);
+            }
+
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+            glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+            float borderColor[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+            glTexParameterfv(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+            glGenFramebuffers(1, &sm.fbo);
+        }
+    }
+
+    GpuPointShadowMap &RenderPipeline::getShadowMap(unsigned int index)
+    {
+        return pointShadowMaps[index];
+    }
+
+    void RenderPipeline::addPointLight(const glm::vec3 &pos, float farPlane)
+    {
+        pointLights[nbPointLights++] = {pos, farPlane};
+    }
+
+    void RenderPipeline::resetPointLigths()
+    {
+        nbPointLights = 0;
+    }
+
+    unsigned int RenderPipeline::getNbPointLights() const
+    {
+        return nbPointLights;
+    }
+
+    const RenderPipeline::RendererPointLight &RenderPipeline::getPointLight(unsigned int index) const
+    {
+        return pointLights[index];
     }
 } // namespace nexo::renderer

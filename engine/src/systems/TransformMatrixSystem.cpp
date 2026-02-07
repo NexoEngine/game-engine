@@ -18,6 +18,7 @@
 
 #include "TransformMatrixSystem.hpp"
 #include "components/Transform.hpp"
+#include "SystemProfiler.hpp"
 
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
@@ -25,6 +26,7 @@
 namespace nexo::system {
     void TransformMatrixSystem::update()
     {
+        PROFILE_SYSTEM("TransformMatrixSystem", entities.size());
         const auto &renderContext = getSingleton<components::RenderContext>();
         if (renderContext.sceneRendered == -1) return;
 

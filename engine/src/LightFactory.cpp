@@ -17,6 +17,9 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "LightFactory.hpp"
+
+#include <math/Light.hpp>
+
 #include "Application.hpp"
 
 #include "components/Light.hpp"
@@ -52,7 +55,8 @@ namespace nexo {
         const ecs::Entity newPointLight = Application::m_coordinator->createEntity();
         const components::TransformComponent transformComponent{position};
         Application::m_coordinator->addComponent<components::TransformComponent>(newPointLight, transformComponent);
-        const components::PointLightComponent newPointLightComponent{color, linear, quadratic};
+        const auto maxDistance = math::computeDistanceFromAttenuation(linear, quadratic);
+        const components::PointLightComponent newPointLightComponent{color, linear, quadratic, maxDistance};
         Application::m_coordinator->addComponent<components::PointLightComponent>(newPointLight,
                                                                                   newPointLightComponent);
         const components::UuidComponent uuid;
@@ -66,7 +70,9 @@ namespace nexo {
         ecs::Entity newSpotLight = Application::m_coordinator->createEntity();
         components::TransformComponent transformComponent{position};
         Application::m_coordinator->addComponent<components::TransformComponent>(newSpotLight, transformComponent);
-        components::SpotLightComponent newSpotLightComponent{direction, color, cutOff, outerCutOff, linear, quadratic};
+        const auto maxDistance = math::computeDistanceFromAttenuation(linear, quadratic);
+        components::SpotLightComponent newSpotLightComponent{
+            direction, color, glm::cos(glm::radians(cutOff)), glm::cos(glm::radians(outerCutOff)), linear, quadratic, maxDistance};
         Application::m_coordinator->addComponent<components::SpotLightComponent>(newSpotLight, newSpotLightComponent);
         components::UuidComponent uuid;
         Application::m_coordinator->addComponent<components::UuidComponent>(newSpotLight, uuid);

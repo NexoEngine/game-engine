@@ -40,9 +40,10 @@
 #include "systems/RenderBillboardSystem.hpp"
 #include "systems/RenderCommandSystem.hpp"
 #include "systems/RenderVideoSystem.hpp"
+#include "systems/AABBDebugSystem.hpp"
+#include "systems/TransformSystem.hpp"
 #include "systems/TransformHierarchySystem.hpp"
 #include "systems/TransformMatrixSystem.hpp"
-#include "systems/AABBDebugSystem.hpp"
 
 #define NEXO_PROFILE(name) \
     nexo::Timer timer##__LINE__(name, [&](ProfileResult profileResult) { m_profileResults.push_back(profileResult); })
@@ -435,7 +436,7 @@ namespace nexo {
          * @param state New GameState to set
          * Resets video system when entering play mode
          */
-        void setGameState(GameState state)
+        void setGameState(const GameState state)
         {
             m_gameState = state;
             if (state == GameState::PLAY_MODE) {
@@ -460,6 +461,9 @@ namespace nexo {
         {
             return m_gameState == GameState::EDITOR_MODE;
         }
+
+        void markHierarchyDirty(ecs::Entity entity);
+
         static std::shared_ptr<ecs::Coordinator> m_coordinator;
 
         private:
@@ -522,6 +526,7 @@ namespace nexo {
          */
         void displayProfileResults() const;
 
+
         static std::unique_ptr<Application> _instance;
 
         scene::SceneId m_nextSceneId = 0;
@@ -539,8 +544,6 @@ namespace nexo {
 
         std::shared_ptr<system::CameraContextSystem> m_cameraContextSystem;
         std::shared_ptr<system::LightSystem> m_lightSystem;
-        std::shared_ptr<system::TransformMatrixSystem> m_transformMatrixSystem;
-        std::shared_ptr<system::TransformHierarchySystem> m_transformHierarchySystem;
         std::shared_ptr<system::PerspectiveCameraControllerSystem> m_perspectiveCameraControllerSystem;
         std::shared_ptr<system::PerspectiveCameraTargetSystem> m_perspectiveCameraTargetSystem;
         std::shared_ptr<system::ScriptingSystem> m_scriptingSystem;
@@ -549,6 +552,9 @@ namespace nexo {
         std::shared_ptr<system::RenderVideoSystem> m_renderVideoSystem;
         std::shared_ptr<system::PhysicsSystem> m_physicsSystem;
         std::shared_ptr<system::AABBDebugSystem> m_aabbdebugSystem;
+        std::shared_ptr<system::TransformSystem> m_transformSystem;
+        std::shared_ptr<system::TransformHierarchySystem> m_transformHierarchySystem;
+        std::shared_ptr<system::TransformMatrixSystem> m_transformMatrixSystem;
 
         std::vector<ProfileResult> m_profilesResults;
     };

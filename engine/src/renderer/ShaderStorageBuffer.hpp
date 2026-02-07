@@ -81,7 +81,9 @@ namespace nexo::renderer {
          * - The size must not exceed the size of the buffer allocated during creation.
          * - The data format must match what the shader expects for correct interpretation.
          */
-        virtual void setData(void *data, size_t size) = 0;
+        virtual void setData(void *data, unsigned int size) = 0;
+
+        virtual void appendData(void* data, unsigned int size) = 0;
 
         /**
          * @brief Retrieves the unique identifier of the shader storage buffer.
@@ -92,5 +94,18 @@ namespace nexo::renderer {
          * that require direct access to the underlying buffer resource.
          */
         [[nodiscard]] virtual unsigned int getId() const = 0;
+
+        /**
+         * @brief Retrieves the size of the shader storage buffer.
+         * @return The size of the buffer in bytes.
+         *
+         * This method returns the size of the shader storage buffer in bytes.
+         */
+        [[nodiscard]] unsigned int getSize() const { return m_size; };
+
+        protected:
+            unsigned int m_id = 0;
+            unsigned int m_size = 0;
+            unsigned int m_capacity = 0;
     };
 } // namespace nexo::renderer

@@ -20,6 +20,8 @@
 #include "Access.hpp"
 #include "DrawCommand.hpp"
 #include "GroupSystem.hpp"
+#include "VertexArray.hpp"
+#include "assets/Asset.hpp"
 #include "components/MaterialComponent.hpp"
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
@@ -27,6 +29,31 @@
 #include "components/Transform.hpp"
 
 namespace nexo::system {
+
+    struct RenderItem {
+        ecs::Entity entity;
+        std::shared_ptr<renderer::NxShader> shader;
+        std::shared_ptr<renderer::NxVertexArray> mesh;
+        int materialIndex;
+        uint32_t filterMask;
+        bool isTransparent;
+
+        uint32_t instanceIndex;
+
+        glm::mat4 modelMatrix;
+        unsigned int textureBatchIndex;
+    };
+
+    struct RenderBatch {
+        std::shared_ptr<renderer::NxShader> shader;
+        std::shared_ptr<renderer::NxVertexArray> mesh;
+        int materialIndex;
+        uint32_t filterMask;
+
+        uint32_t instanceOffset;
+        uint32_t instanceCount;
+        unsigned int textureBatchIndex;
+    };
 
     /**
      * @brief System responsible for rendering the scene.
@@ -60,8 +87,5 @@ namespace nexo::system {
          * If no renderable entities are found for the active scene, a warning is logged.
          */
         void update();
-
-       private:
-        static void setupLights(renderer::DrawCommand& cmd, const components::LightContext& lightContext);
     };
 } // namespace nexo::system

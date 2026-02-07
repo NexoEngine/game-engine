@@ -17,6 +17,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "TextureImporter.hpp"
+#include "TextureParameters.hpp"
 
 #include <array>
 #include <boost/uuid/random_generator.hpp>
@@ -37,10 +38,10 @@ namespace nexo::assets {
         return false;
     }
 
-    void TextureImporter::importImpl(AssetImporterContext& ctx)
-    {
-        // TODO: we need to import textures independently from graphics API back end renderer::NxTexture2D::create
-        // implementation
+    void TextureImporter::importImpl(AssetImporterContext& ctx) {
+        // Get import parameters
+        const auto params = ctx.getParameters<TextureImportParameters>();
+
         auto asset = std::make_unique<Texture>();
         std::shared_ptr<renderer::NxTexture2D> rendererTexture;
         auto param = ctx.getParameters<TextureImportParameters>();
@@ -52,28 +53,48 @@ namespace nexo::assets {
             const auto data = std::get<ImporterMemoryInput>(ctx.input).memoryData;
             rendererTexture = renderer::NxTexture2D::create(data.data(), static_cast<unsigned int>(data.size()));
         }
-        auto assetData     = std::make_unique<TextureData>();
+
+        auto assetData = std::make_unique<TextureData>();
         assetData->texture = rendererTexture;
+        assetData->textureType = params.textureType;  // Store type info
 
         asset->m_metadata.id = boost::uuids::random_generator()();
-
         asset->setData(std::move(assetData));
         ctx.setMainAsset(std::move(asset));
     }
 
-    bool TextureImporter::canReadMemory(const ImporterMemoryInput& input)
-    {
-        if (input.formatHint == "ARGB8888") { // Special case for ARGB8888 format (from assimp model textures)
+    bool TextureImporter::canReadMemory(const ImporterMemoryInput& input) {
+        // Handle special PBR texture formats
+        if (input.formatHint == "ARGB8888" ||
+            input.formatHint == "HDR" ||
+            input.formatHint == "EXR" ||
+            input.formatHint == "RGBE") {
             return true;
         }
-        const int infoResult = stbi_info_from_memory(input.memoryData.data(), static_cast<int>(input.memoryData.size()),
-                                             nullptr, nullptr, nullptr);
+
+        // Check for HDR formats
+        if (stbi_is_hdr_from_memory(input.memoryData.data(), static_cast<int>(input.memoryData.size()))) {
+            return true;
+        }
+
+        const int infoResult = stbi_info_from_memory(
+            input.memoryData.data(),
+            static_cast<int>(input.memoryData.size()),
+            nullptr, nullptr, nullptr
+        );
         return infoResult;
     }
 
-    bool TextureImporter::canReadFile(const ImporterFileInput& input)
-    {
-        const int infoResult = stbi_info(input.filePath.string().c_str(), nullptr, nullptr, nullptr);
+    bool TextureImporter::canReadFile(const ImporterFileInput& input) {
+        const std::string pathStr = input.filePath.string();
+
+        // Check for HDR formats first
+        if (stbi_is_hdr(pathStr.c_str())) {
+            return true;
+        }
+
+        // Check standard formats
+        const int infoResult = stbi_info(pathStr.c_str(), nullptr, nullptr, nullptr);
         return infoResult;
     }
 

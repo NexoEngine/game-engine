@@ -23,6 +23,7 @@ namespace nexo::event {
     {
         using enum KeyAction;
 
+
         switch (action) {
             case PRESSED:
                 os << "PRESSED";
@@ -67,6 +68,7 @@ namespace nexo::event {
     std::ostream& operator<<(std::ostream& os, const MouseButton& button)
     {
         using enum MouseButton;
+
 
         switch (button) {
             case LEFT:

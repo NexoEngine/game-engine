@@ -60,6 +60,7 @@ namespace nexo::editor {
          * Finally, it renders both the scene view and transformation gizmos within the window.
          */
         void show() override;
+        void showFullscreen(bool fullscreen);
 
         bool showToolbar      = true;
         bool isPhysicsRunning = false;
@@ -271,10 +272,10 @@ namespace nexo::editor {
         /**
          * @brief Populates the scene with default entities.
          *
-         * Creates standard light sources (ambient, directional, point, spot)
-         * and a simple ground plane in the scene.
+         *
+         * @param offset A glm::vec3 representing the positional offset to apply to all spheres.
          */
-        static void loadDefaultEntities();
+        void loadDefaultEntities(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
 
         /**
          * @brief Creates a physics-enabled entity in the scene.
@@ -459,21 +460,6 @@ namespace nexo::editor {
          * @param entities A vector of entity IDs whose transform states will be captured.
          */
         static void captureInitialTransformStates(const std::vector<int>& entities);
-
-        /**  * @brief Applies a world transformation delta to multiple entities.
-         *
-         * This function takes a source entity's old and new world transformation matrices,
-         * computes the delta transformation, and applies this delta to a list of target entities.
-         * Each target entity's TransformComponent is updated to reflect the new world position,
-         * rotation, and scale based on the computed delta.
-         *
-         * @param sourceEntity The entity whose transformation change is the basis for the delta.
-         * @param oldWorldMatrix The original world transformation matrix of the source entity.
-         * @param newWorldMatrix The new world transformation matrix of the source entity.
-         * @param targetEntities A vector of entity IDs to which the delta transformation will be applied.
-         */
-        static void applyTransformToEntities(ecs::Entity sourceEntity, const glm::mat4& oldWorldMatrix,
-                                             const glm::mat4& newWorldMatrix, const std::vector<int>& targetEntities);
 
         /**  * @brief Creates undo actions for transform changes on multiple entities.
          *
@@ -674,16 +660,6 @@ namespace nexo::editor {
          */
         void createOrFocusGameWindow();
 
-        /** @brief Spawns a scene with multiple balls for physics testing.
-         *
-         * Creates a grid of sphere entities with physics properties, arranged in
-         * a 5x5x5 formation. Each sphere is given a random color and positioned
-         * based on the provided offset.
-         *
-         * @param offset A glm::vec3 representing the positional offset to apply to all spheres.
-         */
-        void spawnBallsScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
-
         /**
          * @brief Creates a scene with multiple light sources.
          *
@@ -723,6 +699,7 @@ namespace nexo::editor {
          * @param offset Position offset to apply to all forest elements.
          */
         void forestScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
+        void spawnBallsScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
 
         enum class EditorState { GLOBAL, GIZMO, GIZMO_TRANSLATE, GIZMO_ROTATE, GIZMO_SCALE, NB_STATE };
 

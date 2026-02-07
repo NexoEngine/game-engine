@@ -19,6 +19,7 @@
 #include <array>
 #include "Shader.hpp"
 #include "UniformCache.hpp"
+#include "UniformValue.hpp"
 #include "VertexArray.hpp"
 
 namespace nexo::renderer {
@@ -70,7 +71,18 @@ namespace nexo::renderer {
         uint32_t filterMask = 0xFFFFFFFF;
         bool isOpaque       = true;
 
+        uint32_t instanceOffset = 0;      // uniform uInstanceOffset
+        uint32_t instanceCount  = 1;      // for glDraw*Instanced
+        bool     instanced      = false;
+        unsigned int textureBatchIndex = 0;
+
         float lineWidth = 1.5f;
+
+        template<typename T>
+        void setUniform(const std::string& name, T&& value) {
+            uniforms[name] = UniformValue(std::forward<T>(value));
+        }
+
 
         /**
          * @brief Executes the draw command.

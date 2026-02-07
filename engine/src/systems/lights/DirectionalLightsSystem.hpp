@@ -21,6 +21,7 @@
 #include "components/RenderContext.hpp"
 #include "components/SceneComponents.hpp"
 #include "ecs/GroupSystem.hpp"
+#include "renderPasses/GPUResources.hpp"
 
 namespace nexo::system {
 
@@ -56,6 +57,6 @@ namespace nexo::system {
          * MAX_DIRECTIONAL_LIGHTS, a TooManyDirectionalLightsException is thrown.
          * If no directional lights are found for the active scene, a warning is logged.
          */
-        void update();
+        renderer::GpuDirectionalLight update();
     };
 } // namespace nexo::system

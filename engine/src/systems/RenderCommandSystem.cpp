@@ -11,13 +11,14 @@
 // ⢀⢀⢀⢿⢿⢀⢀⢀⢀⢀⢀⢀⢀⢸⢿⢃⢀⢀⢀⢀⢻⢿⢿⢿⢿⢿⢿⢿⢿⢿⢃⢀⢀⢀⢿⡟⢁⢀⢀⢀⢀⢀⢀⢀⡙⢿⡗⢀⢀⢀⢀⢀⡈⡉⡛⡛⢀⢀⢹⡛⢋⢁⢀⢀⢀⢀⢀⢀
 //
 //  Author:      Mehdy MORVAN
-//  Date:        09/03/2025
+//  Date:        29/10/2025
 //  Description: Source file for the render system
 //
 ///////////////////////////////////////////////////////////////////////////////
 
 #include "RenderCommandSystem.hpp"
 #include "Application.hpp"
+#include "Logger.hpp"
 #include "Renderer3D.hpp"
 #include "components/Camera.hpp"
 #include "components/Editor.hpp"
@@ -30,69 +31,18 @@
 #include "core/event/Input.hpp"
 #include "math/Projection.hpp"
 #include "math/Vector.hpp"
+#include "renderPasses/GPUResources.hpp"
 #include "renderPasses/Masks.hpp"
 #include "renderer/DrawCommand.hpp"
 #include "renderer/ShaderLibrary.hpp"
+#include "SystemProfiler.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/quaternion.hpp>
+#include <algorithm>
 
 namespace nexo::system {
-
-    /**
-     * @brief Sets up the lighting uniforms in the given shader.
-     *
-     * This static helper function binds the provided shader and sets uniforms for ambient, directional,
-     * point, and spotlights based on the current lightContext data. After updating the uniforms, the shader is
-     * unbound.
-     *
-     * @param cmd
-     * @param lightContext The light context containing lighting information for the scene.
-     *
-     * @note The light context must contain valid values for:
-     *  - ambientLight
-     *  - directionalLights (and directionalLightCount)
-     *  - pointLights (and pointLightCount)
-     *  - spotLights (and spotLightCount)
-     */
-    void RenderCommandSystem::setupLights(renderer::DrawCommand &cmd, const components::LightContext &lightContext)
-    {
-        cmd.uniforms["uAmbientLight"] = lightContext.ambientLight;
-
-        cmd.uniforms["uNumPointLights"] = static_cast<int>(lightContext.pointLightCount);
-        cmd.uniforms["uNumSpotLights"]  = static_cast<int>(lightContext.spotLightCount);
-
-        const auto &directionalLight        = lightContext.dirLight;
-        cmd.uniforms["uDirLight.direction"] = directionalLight.direction;
-        cmd.uniforms["uDirLight.color"]     = glm::vec4(directionalLight.color, 1.0f);
-
-        const auto &pointLightComponentArray = coord->getComponentArray<components::PointLightComponent>();
-        const auto &transformComponentArray  = coord->getComponentArray<components::TransformComponent>();
-        for (unsigned int i = 0; i < lightContext.pointLightCount; ++i) {
-            const auto &pointLight = pointLightComponentArray->get(lightContext.pointLights[i]);
-            const auto &transform  = transformComponentArray->get(lightContext.pointLights[i]);
-            cmd.uniforms[std::format("uPointLights[{}].position", i)]  = transform.pos;
-            cmd.uniforms[std::format("uPointLights[{}].color", i)]     = glm::vec4(pointLight.color, 1.0f);
-            cmd.uniforms[std::format("uPointLights[{}].constant", i)]  = pointLight.constant;
-            cmd.uniforms[std::format("uPointLights[{}].linear", i)]    = pointLight.linear;
-            cmd.uniforms[std::format("uPointLights[{}].quadratic", i)] = pointLight.quadratic;
-        }
-
-        const auto &spotLightComponentArray = coord->getComponentArray<components::SpotLightComponent>();
-        for (unsigned int i = 0; i < lightContext.spotLightCount; ++i) {
-            const auto &spotLight = spotLightComponentArray->get(lightContext.spotLights[i]);
-            const auto &transform = transformComponentArray->get(lightContext.spotLights[i]);
-            cmd.uniforms[std::format("uSpotLights[{}].position", i)]    = transform.pos;
-            cmd.uniforms[std::format("uSpotLights[{}].color", i)]       = glm::vec4(spotLight.color, 1.0f);
-            cmd.uniforms[std::format("uSpotLights[{}].constant", i)]    = spotLight.constant;
-            cmd.uniforms[std::format("uSpotLights[{}].linear", i)]      = spotLight.linear;
-            cmd.uniforms[std::format("uSpotLights[{}].quadratic", i)]   = spotLight.quadratic;
-            cmd.uniforms[std::format("uSpotLights[{}].direction", i)]   = spotLight.direction;
-            cmd.uniforms[std::format("uSpotLights[{}].cutOff", i)]      = spotLight.cutOff;
-            cmd.uniforms[std::format("uSpotLights[{}].outerCutoff", i)] = spotLight.outerCutoff;
-        }
-    }
 
     static renderer::DrawCommand createOutlineDrawCommand(const components::CameraContext &camera)
     {
@@ -102,16 +52,16 @@ namespace nexo::system {
         cmd.filterMask |= renderer::F_OUTLINE_PASS;
         cmd.shader = renderer::ShaderLibrary::getInstance().get("Outline pulse flat");
 
-        cmd.uniforms["uViewProjection"] = camera.viewProjectionMatrix;
-        cmd.uniforms["uCamPos"]         = camera.cameraPosition;
+        cmd.setUniform("uViewProjection", camera.viewProjectionMatrix);
+        cmd.setUniform("uCamPos", camera.cameraPosition);
 
-        cmd.uniforms["uMaskTexture"]      = 0;
-        cmd.uniforms["uDepthTexture"]     = 1;
-        cmd.uniforms["uDepthMaskTexture"] = 2;
-        cmd.uniforms["uTime"]             = static_cast<float>(glfwGetTime());
-        const glm::vec2 screenSize        = {camera.renderTarget->getSize().x, camera.renderTarget->getSize().y};
-        cmd.uniforms["uScreenSize"]       = screenSize;
-        cmd.uniforms["uOutlineWidth"]     = 10.0f;
+        cmd.setUniform("uMaskTexture", 0);
+        cmd.setUniform("uDepthTexture", 1);
+        cmd.setUniform("uDepthMaskTexture", 2);
+        cmd.setUniform("uTime", static_cast<float>(glfwGetTime()));
+        const glm::vec2 screenSize = {camera.renderTargetSize.x, camera.renderTargetSize.y};
+        cmd.setUniform("uScreenSize", screenSize);
+        cmd.setUniform("uOutlineWidth", 10.0f);
         return cmd;
     }
 
@@ -124,21 +74,21 @@ namespace nexo::system {
         cmd.filterMask |= renderer::F_GRID_PASS;
         cmd.shader = renderer::ShaderLibrary::getInstance().get("Grid shader");
 
-        cmd.uniforms["uViewProjection"] = camera.viewProjectionMatrix;
-        cmd.uniforms["uCamPos"]         = camera.cameraPosition;
+        cmd.setUniform("uViewProjection", camera.viewProjectionMatrix);
+        cmd.setUniform("uCamPos", camera.cameraPosition);
 
         const components::RenderContext::GridParams &gridParams = renderContext.gridParams;
-        cmd.uniforms["uGridSize"]                               = gridParams.gridSize;
-        cmd.uniforms["uGridCellSize"]                           = gridParams.cellSize;
-        cmd.uniforms["uGridMinPixelsBetweenCells"]              = gridParams.minPixelsBetweenCells;
-        constexpr glm::vec4 gridColorThin                       = {0.5f, 0.55f, 0.7f, 0.6f};
-        constexpr glm::vec4 gridColorThick                      = {0.7f, 0.75f, 0.9f, 0.8f};
-        cmd.uniforms["uGridColorThin"]                          = gridColorThin;
-        cmd.uniforms["uGridColorThick"]                         = gridColorThick;
+        cmd.setUniform("uGridSize", gridParams.gridSize);
+        cmd.setUniform("uGridCellSize", gridParams.cellSize);
+        cmd.setUniform("uGridMinPixelsBetweenCells", gridParams.minPixelsBetweenCells);
+        constexpr glm::vec4 gridColorThin  = {0.5f, 0.55f, 0.7f, 0.6f};
+        constexpr glm::vec4 gridColorThick = {0.7f, 0.75f, 0.9f, 0.8f};
+        cmd.setUniform("uGridColorThin", gridColorThin);
+        cmd.setUniform("uGridColorThick", gridColorThick);
 
         const glm::vec2 globalMousePos   = event::getMousePosition();
         glm::vec3 mouseWorldPos          = camera.cameraPosition; // Default position (camera position)
-        const glm::vec2 renderTargetSize = camera.renderTarget->getSize();
+        const glm::vec2 renderTargetSize = camera.renderTargetSize;
 
         if (renderContext.isChildWindow) {
             // viewportBounds[0] is min (top-left), viewportBounds[1] is max (bottom-right)
@@ -183,90 +133,17 @@ namespace nexo::system {
             }
         }
 
-        cmd.uniforms["uMouseWorldPos"] = mouseWorldPos;
-        cmd.uniforms["uTime"]          = static_cast<float>(glfwGetTime());
-        return cmd;
-    }
+        cmd.setUniform("uMouseWorldPos", mouseWorldPos);
 
-    static renderer::DrawCommand createSelectedDrawCommand(const components::StaticMeshComponent &mesh,
-                                                           const std::shared_ptr<assets::Material> &materialAsset,
-                                                           const components::TransformComponent &transform)
-    {
-        renderer::DrawCommand cmd;
-        cmd.vao             = mesh.vao;
-        const bool isOpaque = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->isOpaque : true;
-        if (isOpaque)
-            cmd.shader = renderer::ShaderLibrary::getInstance().get("Flat color");
-        else {
-            cmd.shader = renderer::ShaderLibrary::getInstance().get("Albedo unshaded transparent");
-            cmd.uniforms["uMaterial.albedoColor"] =
-                materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoColor : glm::vec4(0.0f);
-            const auto albedoTextureAsset =
-                materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoTexture.lock() : nullptr;
-            const auto albedoTexture =
-                albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
-            cmd.uniforms["uMaterial.albedoTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(albedoTexture);
-        }
-        cmd.uniforms["uMatModel"] = transform.worldMatrix;
-        cmd.filterMask            = 0;
-        cmd.filterMask            = renderer::F_OUTLINE_MASK;
-        return cmd;
-    }
-
-    static renderer::DrawCommand createDrawCommand(const ecs::Entity entity,
-                                                   const std::shared_ptr<renderer::NxShader> &shader,
-                                                   const components::StaticMeshComponent &mesh,
-                                                   const std::shared_ptr<assets::Material> &materialAsset,
-                                                   const components::TransformComponent &transform)
-    {
-        renderer::DrawCommand cmd;
-        cmd.vao                   = mesh.vao;
-        cmd.shader                = shader;
-        cmd.uniforms["uMatModel"] = transform.worldMatrix;
-        cmd.uniforms["uEntityId"] = static_cast<int>(entity);
-
-        cmd.uniforms["uMaterial.albedoColor"] =
-            materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoColor : glm::vec4(0.0f);
-        const auto albedoTextureAsset =
-            materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->albedoTexture.lock() : nullptr;
-        const auto albedoTexture =
-            albedoTextureAsset && albedoTextureAsset->isLoaded() ? albedoTextureAsset->getData()->texture : nullptr;
-        cmd.uniforms["uMaterial.albedoTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(albedoTexture);
-
-        cmd.uniforms["uMaterial.specularColor"] =
-            materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->specularColor : glm::vec4(0.0f);
-        const auto specularTextureAsset =
-            materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->metallicMap.lock() : nullptr;
-        const auto specularTexture                 = specularTextureAsset && specularTextureAsset->isLoaded() ?
-                                                         specularTextureAsset->getData()->texture :
-                                                         nullptr;
-        cmd.uniforms["uMaterial.specularTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(specularTexture);
-
-        cmd.uniforms["uMaterial.emissiveColor"] =
-            materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->emissiveColor : glm::vec3(0.0f);
-        const auto emissiveTextureAsset =
-            materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->emissiveMap.lock() : nullptr;
-        const auto emissiveTexture                 = emissiveTextureAsset && emissiveTextureAsset->isLoaded() ?
-                                                         emissiveTextureAsset->getData()->texture :
-                                                         nullptr;
-        cmd.uniforms["uMaterial.emissiveTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(emissiveTexture);
-
-        cmd.uniforms["uMaterial.roughness"] =
-            materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->roughness : 1.0f;
-        const auto roughnessTextureAsset =
-            materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->roughnessMap.lock() : nullptr;
-        const auto roughnessTexture                 = roughnessTextureAsset && roughnessTextureAsset->isLoaded() ?
-                                                          roughnessTextureAsset->getData()->texture :
-                                                          nullptr;
-        cmd.uniforms["uMaterial.roughnessTexIndex"] = renderer::NxRenderer3D::get().getTextureIndex(roughnessTexture);
-
-        cmd.filterMask = 0;
-        cmd.filterMask |= renderer::F_FORWARD_PASS;
+        cmd.setUniform("uTime", static_cast<float>(glfwGetTime()));
         return cmd;
     }
 
     void RenderCommandSystem::update()
     {
+        const std::span<const ecs::Entity> entitySpan = m_group->entities();
+        PROFILE_SYSTEM("RenderCommandSystem", entitySpan.size());
+
         auto &renderContext = getSingleton<components::RenderContext>();
         if (renderContext.sceneRendered == -1) return;
 
@@ -284,38 +161,237 @@ namespace nexo::system {
         }
         Logger::resetOnce(NEXO_LOG_ONCE_KEY("Nothing to render in scene {}, skipping", sceneName));
 
-        const auto transformSpan                      = get<components::TransformComponent>();
-        const auto meshSpan                           = get<components::StaticMeshComponent>();
-        const auto materialSpan                       = get<components::MaterialComponent>();
-        const std::span<const ecs::Entity> entitySpan = m_group->entities();
+        const auto transformSpan = get<components::TransformComponent>();
+        const auto meshSpan      = get<components::StaticMeshComponent>();
+        const auto materialSpan  = get<components::MaterialComponent>();
 
-        std::vector<renderer::DrawCommand> drawCommands;
+        std::vector<RenderItem> renderItems;
+        renderItems.reserve(partition->count);
+        std::vector<renderer::GpuMaterial> gpuMaterials;
+        gpuMaterials.reserve(partition->count);
+        std::unordered_map<const void*, uint32_t> materialToIndex;
+        materialToIndex.reserve(partition->count);
+        auto &renderer3D = renderer::NxRenderer3D::get();
+
+        std::vector<unsigned int> materialTextureBatch;
+        materialTextureBatch.reserve(partition->count);
+
+        bool firstMaterial = true;
         for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
             const ecs::Entity entity = entitySpan[i];
             if (coord->entityHasComponent<components::CameraComponent>(entity) && sceneType != SceneType::EDITOR)
                 continue;
+
             const auto &transform     = transformSpan[i];
             const auto &materialAsset = materialSpan[i].material.lock();
-            std::string shaderStr = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : "";
-            const auto &mesh      = meshSpan[i];
-            auto shader           = renderer::ShaderLibrary::getInstance().get(shaderStr);
-            if (!shader) continue;
-            drawCommands.push_back(createDrawCommand(entity, shader, mesh, materialAsset, transform));
+            const auto* matKey = materialAsset.get();
+            uint32_t materialIndex;
+            auto it = materialToIndex.find(matKey);
+            if (it == materialToIndex.end()) {
+                if (!firstMaterial) {
+                    renderer3D.switchToNextTextureBatch();
+                } else {
+                    firstMaterial = false;
+                }
+                renderer::GpuMaterial gpuMat{};
 
-            if (coord->entityHasComponent<components::SelectedTag>(entity))
-                drawCommands.push_back(createSelectedDrawCommand(mesh, materialAsset, transform));
+                const auto& src = *materialAsset->getData();
+
+                gpuMat.albedoTexIndex = 0;
+                gpuMat.emissiveTexIndex = 0;
+                gpuMat.metallicTexIndex = 0;
+                gpuMat.roughnessTexIndex = 0;
+                gpuMat.aoTexIndex = 0;
+                gpuMat.normalTexIndex = 0;
+                gpuMat.opacityTexIndex = 0;
+                gpuMat.ormTexIndex = 0;
+
+                // Base color
+                gpuMat.albedoColor = src.albedoColor;
+                gpuMat.albedoTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                    src.albedoTexture.lock() && src.albedoTexture.lock()->isLoaded()
+                        ? src.albedoTexture.lock()->getData()->texture
+                        : nullptr);
+
+                // Emissive properties
+                gpuMat.emissiveColor = src.emissiveColor;
+                gpuMat.emissiveTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                    src.emissiveMap.lock() && src.emissiveMap.lock()->isLoaded()
+                        ? src.emissiveMap.lock()->getData()->texture
+                        : nullptr);
+
+                // // Surface properties
+                gpuMat.metallic = src.metallic;
+                gpuMat.roughness = src.roughness;
+                gpuMat.ao = src.ao;
+                gpuMat.normalScale = src.normalScale;
+                gpuMat.opacity = src.opacity;
+
+                // // Handle combined vs separate metallic/roughness textures
+                if (src.metallicRoughnessMap.lock() && src.metallicRoughnessMap.lock()->isLoaded()) {
+                    // Use combined ORM texture (modern glTF workflow)
+                    gpuMat.ormTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                        src.metallicRoughnessMap.lock()->getData()->texture);
+                    gpuMat.metallicTexIndex = 0;  // Not used when ORM is present
+                    gpuMat.roughnessTexIndex = 0; // Not used when ORM is present
+                } else {
+                    // Use separate textures (legacy workflow)
+                    gpuMat.metallicTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                        src.metallicMap.lock() && src.metallicMap.lock()->isLoaded()
+                            ? src.metallicMap.lock()->getData()->texture
+                            : nullptr);
+
+                    gpuMat.roughnessTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                        src.roughnessMap.lock() && src.roughnessMap.lock()->isLoaded()
+                            ? src.roughnessMap.lock()->getData()->texture
+                            : nullptr);
+
+                    gpuMat.ormTexIndex = 0; // Not used
+                }
+
+                // Additional PBR textures
+                gpuMat.aoTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                    src.aoMap.lock() && src.aoMap.lock()->isLoaded()
+                        ? src.aoMap.lock()->getData()->texture
+                        : nullptr);
+
+                gpuMat.normalTexIndex = renderer::NxRenderer3D::get().getTextureIndex(
+                    src.normalMap.lock() && src.normalMap.lock()->isLoaded()
+                        ? src.normalMap.lock()->getData()->texture
+                        : nullptr);
+
+                materialIndex = static_cast<uint32_t>(gpuMaterials.size());
+                gpuMaterials.push_back(gpuMat);
+                materialTextureBatch.push_back(renderer3D.getInternalStorage()->currentTextureBatchIndex);
+
+                materialToIndex[matKey] = materialIndex;
+            } else {
+                materialIndex = it->second;
+            }
+
+            std::string shaderStr;
+            std::shared_ptr<renderer::NxShader> shader;
+            shaderStr = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : "";
+            shader = renderer::ShaderLibrary::getInstance().get(shaderStr);
+            if (!shader) continue;
+
+            RenderItem item;
+            item.entity        = entity;
+            item.shader        = shader;
+            item.mesh          = meshSpan[i].vao;
+            item.materialIndex      = materialIndex;
+            item.filterMask    = renderer::F_FORWARD_PASS;
+            item.isTransparent = false;
+            item.modelMatrix = transform.worldMatrix;
+            item.textureBatchIndex = materialTextureBatch[materialIndex];
+            renderItems.push_back(item);
+
+            if (coord->entityHasComponent<components::SelectedTag>(entity)) {
+                RenderItem sel = item;
+                sel.filterMask = renderer::F_OUTLINE_MASK;
+                sel.entity = entity;
+                sel.mesh = meshSpan[i].vao;
+                sel.modelMatrix = transform.worldMatrix;
+                sel.textureBatchIndex = item.textureBatchIndex;
+                if (materialAsset->getData()->isOpaque) {
+                    sel.shader = renderer::ShaderLibrary::getInstance().get("Flat color");
+                } else {
+                    sel.shader = renderer::ShaderLibrary::getInstance().get("Albedo unshaded transparent");
+                }
+                sel.materialIndex = materialIndex;
+                renderItems.push_back(sel);
+            }
+        }
+
+        std::sort(renderItems.begin(), renderItems.end(),
+            [](const RenderItem& a, const RenderItem& b) {
+                if (a.filterMask     != b.filterMask)     return a.filterMask     < b.filterMask;
+                if (a.shader         != b.shader)         return a.shader         < b.shader;
+                if (a.materialIndex       != b.materialIndex)       return a.materialIndex       < b.materialIndex;
+                if (a.mesh           != b.mesh)           return a.mesh           < b.mesh;
+                return false;
+            });
+
+        std::vector<renderer::GpuInstanceData> instances;
+        instances.reserve(renderItems.size());
+        uint32_t index = 0;
+        for (auto& item : renderItems) {
+            renderer::GpuInstanceData inst{};
+            inst.model    = item.modelMatrix;
+            inst.entityId = static_cast<int>(item.entity);
+            inst.materialIndex = item.materialIndex;
+            instances.push_back(inst);
+
+            item.instanceIndex = index;
+            ++index;
+        }
+
+        std::vector<RenderBatch> batches;
+        if (!renderItems.empty()) {
+            RenderBatch current{};
+            auto& first = renderItems[0];
+
+            current.shader        = first.shader;
+            current.mesh          = first.mesh;
+            current.materialIndex      = first.materialIndex;
+            current.filterMask    = first.filterMask;
+            current.instanceOffset = first.instanceIndex;
+            current.instanceCount  = 1;
+            current.textureBatchIndex = first.textureBatchIndex;
+
+            for (size_t i = 1; i < renderItems.size(); ++i) {
+                const auto& item = renderItems[i];
+
+                bool sameBatch =
+                    item.shader     == current.shader &&
+                    item.mesh->getId()       == current.mesh->getId() &&
+                    item.materialIndex   == current.materialIndex &&
+                    item.filterMask == current.filterMask &&
+                    item.textureBatchIndex == current.textureBatchIndex;
+
+                if (sameBatch) {
+                    current.instanceCount++;
+                } else {
+                    batches.push_back(current);
+                    current.shader        = item.shader;
+                    current.mesh          = item.mesh;
+                    current.materialIndex      = item.materialIndex;
+                    current.filterMask    = item.filterMask;
+                    current.instanceOffset = item.instanceIndex;
+                    current.instanceCount  = 1;
+                    current.textureBatchIndex = item.textureBatchIndex;
+                }
+            }
+
+            batches.push_back(current);
+        }
+
+        std::vector<renderer::DrawCommand> drawCommands;
+        drawCommands.reserve(batches.size() * 2);
+        for (const auto& batch : batches) {
+            renderer::DrawCommand cmd;
+            cmd.vao        = batch.mesh;
+            cmd.shader     = batch.shader;
+            cmd.filterMask = batch.filterMask;
+            cmd.instanceOffset = batch.instanceOffset;
+            cmd.instanceCount  = batch.instanceCount;
+            cmd.instanced      = (batch.instanceCount > 1);
+            cmd.textureBatchIndex = batch.textureBatchIndex;
+
+            cmd.setUniform("uInstanceOffset", static_cast<int>(batch.instanceOffset));
+            drawCommands.push_back(cmd);
         }
 
         for (auto &camera : renderContext.cameras) {
-            for (auto &cmd : drawCommands) {
-                cmd.uniforms["uViewProjection"] = camera.viewProjectionMatrix;
-                cmd.uniforms["uCamPos"]         = camera.cameraPosition;
-                setupLights(cmd, renderContext.sceneLights);
-            }
+            camera.pipeline.setStorageBufferData(INSTANCE_BUFFER, instances.data(), sizeof(renderer::GpuInstanceData) * instances.size());
+            camera.pipeline.setStorageBufferData(MATERIAL_BUFFER, gpuMaterials.data(), sizeof(renderer::GpuMaterial) * gpuMaterials.size());
             camera.pipeline.addDrawCommands(drawCommands);
+
             if (sceneType == SceneType::EDITOR && renderContext.gridParams.enabled)
                 camera.pipeline.addDrawCommand(createGridDrawCommand(camera, renderContext));
-            if (sceneType == SceneType::EDITOR) camera.pipeline.addDrawCommand(createOutlineDrawCommand(camera));
+
+            if (sceneType == SceneType::EDITOR)
+                camera.pipeline.addDrawCommand(createOutlineDrawCommand(camera));
         }
     }
 } // namespace nexo::system

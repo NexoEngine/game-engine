@@ -18,40 +18,16 @@
 
 #include "Application.hpp"
 
-#include <core/event/SignalEvent.hpp>
-#include <glad/glad.h>
-
-#include "Renderer3D.hpp"
-#include "Timestep.hpp"
-#include "components/BillboardMesh.hpp"
-#include "components/Camera.hpp"
 #include "components/Editor.hpp"
-#include "components/Light.hpp"
-#include "components/MaterialComponent.hpp"
-#include "components/Model.hpp"
 #include "components/Name.hpp"
 #include "components/Parent.hpp"
 #include "components/Render.hpp"
-#include "components/RenderContext.hpp"
-#include "components/SceneComponents.hpp"
-#include "components/StaticMesh.hpp"
-#include "components/Transform.hpp"
 #include "components/Uuid.hpp"
-#include "components/Video.hpp"
-#include "core/event/Input.hpp"
-#include "exceptions/Exceptions.hpp"
-#include "renderer/Renderer.hpp"
-#include "renderer/RendererExceptions.hpp"
-#include "scripting/native/Scripting.hpp"
-#include "systems/AABBDebugSystem.hpp"
-#include "systems/CameraSystem.hpp"
-#include "systems/RenderBillboardSystem.hpp"
-#include "systems/RenderCommandSystem.hpp"
+#include "renderer/Renderer3D.hpp"
+#include "SystemProfiler.hpp"
 #include "systems/ScriptingSystem.hpp"
 #include "systems/TransformHierarchySystem.hpp"
 #include "systems/TransformMatrixSystem.hpp"
-#include "systems/lights/DirectionalLightsSystem.hpp"
-#include "systems/lights/PointLightsSystem.hpp"
 
 std::unique_ptr<nexo::Application> nexo::Application::_instance          = nullptr;
 std::shared_ptr<nexo::ecs::Coordinator> nexo::Application::m_coordinator = nullptr;
@@ -221,6 +197,7 @@ namespace nexo {
         m_renderVideoSystem             = m_coordinator->registerGroupSystem<system::RenderVideoSystem>();
         m_transformHierarchySystem      = m_coordinator->registerGroupSystem<system::TransformHierarchySystem>();
         m_transformMatrixSystem         = m_coordinator->registerQuerySystem<system::TransformMatrixSystem>();
+        m_transformSystem               = m_coordinator->registerGroupSystem<system::TransformSystem>();
         m_physicsSystem                 = m_coordinator->registerQuerySystem<system::PhysicsSystem>();
         m_physicsSystem->init();
 
@@ -272,36 +249,6 @@ namespace nexo {
         }
     }
 
-    void Application::init()
-    {
-        event::Input::init(m_window);
-        event::SignalHandler::getInstance()->registerEventManager(m_eventManager);
-
-        // Window and glad init
-        m_window->init();
-        registerWindowCallbacks();
-        m_window->setVsync(false);
-        m_window->setDarkMode(true);
-
-#ifdef NX_GRAPHICS_API_OPENGL
-        if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
-            THROW_EXCEPTION(renderer::NxGraphicsApiInitFailure, "Failed to initialize OpenGL context with glad");
-        }
-        LOG(NEXO_INFO, "OpenGL context initialized with glad");
-        glViewport(0, 0, static_cast<int>(m_window->getWidth()), static_cast<int>(m_window->getHeight()));
-#endif
-
-        renderer::NxRenderer::init();
-
-        m_coordinator->init();
-        registerEcsComponents();
-        renderer::NxRenderer3D::get().init();
-        registerSystems();
-        m_SceneManager.setCoordinator(m_coordinator);
-
-        LOG(NEXO_DEV, "Application initialized");
-    }
-
     void Application::beginFrame()
     {
         const auto time             = glfwGetTime();
@@ -312,6 +259,7 @@ namespace nexo {
 
     void Application::run(const SceneInfo &sceneInfo)
     {
+        PROFILE_SYSTEM("Application::run", 0);
         static bool areVideoLoaded = false;
         auto &renderContext        = m_coordinator->getSingletonComponent<components::RenderContext>();
 
@@ -328,18 +276,23 @@ namespace nexo {
                 renderContext.viewportBounds[1] = sceneInfo.viewportBounds[1];
             }
             if (m_SceneManager.getScene(sceneInfo.id).isRendered()) {
-                m_transformMatrixSystem->update();
-                m_transformHierarchySystem->update();
+                m_transformSystem->update();
                 m_cameraContextSystem->update();
-                m_lightSystem->update();
+                m_lightSystem->update(renderContext);
                 m_renderCommandSystem->update();
                 m_renderBillboardSystem->update();
+
                 //m_aabbdebugSystem->update();
                 if (!areVideoLoaded) {
                     m_renderVideoSystem->update();
                     areVideoLoaded = true;
                 }
-                for (auto &camera : renderContext.cameras) camera.pipeline.execute();
+                {
+                    PROFILE_SYSTEM("CameraPipeline", static_cast<size_t>(renderContext.cameras.size()));
+                    for (auto &camera : renderContext.cameras) {
+                        camera.pipeline.execute();
+                    }
+                }
                 // We have to unbind after the whole pipeline since multiple passes can use the same textures
                 // but we cant bind everything beforehand since a resize can be triggered and invalidate the whole state
                 renderer::NxRenderer3D::get().unbindTextures();
@@ -421,5 +374,22 @@ namespace nexo {
 
         // Clear the children list to avoid dangling references
         transform->get().children.clear();
+    }
+
+    void Application::markHierarchyDirty(ecs::Entity entity)
+    {
+        ecs::Entity currentEntity = entity;
+        ecs::Entity rootEntity = entity;
+
+        while (m_coordinator->entityHasComponent<components::ParentComponent>(currentEntity)) {
+            const auto& parentComp = m_coordinator->getComponent<components::ParentComponent>(currentEntity);
+            currentEntity = parentComp.parent;
+            rootEntity = currentEntity;
+        }
+
+        if (m_coordinator->entityHasComponent<components::RootComponent>(rootEntity)) {
+            auto& rootComp = m_coordinator->getComponent<components::RootComponent>(rootEntity);
+            rootComp.hierarchyDirty = true;
+        }
     }
 } // namespace nexo

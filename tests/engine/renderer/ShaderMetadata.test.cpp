@@ -360,79 +360,64 @@ TEST_F(RequiredAttributesTest, NotCompatibleWithFewerAttrs) {
 class UniformCacheTest : public ::testing::Test {
 protected:
     UniformCache cache;
+
+    void SetUp() override {
+        std::unordered_map<std::string, ShaderUniformInfo> uniforms = {
+            {"uTime",        {"uTime",        GL_FLOAT,      1, 0}},
+            {"uResolution",  {"uResolution",  GL_FLOAT_VEC2, 1, 1}},
+            {"uLightPos",    {"uLightPos",    GL_FLOAT_VEC3, 1, 2}},
+            {"uColor",       {"uColor",       GL_FLOAT_VEC4, 1, 3}},
+            {"uSampler",     {"uSampler",     GL_INT,        1, 4}},
+            {"uEnabled",     {"uEnabled",     GL_BOOL,       1, 5}},
+            {"uModelMatrix", {"uModelMatrix", GL_FLOAT_MAT4, 1, 6}},
+            {"uValue",       {"uValue",       GL_FLOAT,      1, 7}},
+            {"uA",           {"uA",           GL_FLOAT,      1, 8}},
+            {"uB",           {"uB",           GL_INT,        1, 9}},
+            {"uC",           {"uC",           GL_BOOL,       1, 10}},
+        };
+        cache.initialize(uniforms);
+    }
 };
 
-TEST_F(UniformCacheTest, SetAndGetFloat) {
-    cache.setFloat("uTime", 1.5f);
+TEST_F(UniformCacheTest, SetFloat) {
+    EXPECT_TRUE(cache.setFloat("uTime", 1.5f));
     EXPECT_TRUE(cache.hasValue("uTime"));
-    auto val = cache.getValue("uTime");
-    ASSERT_TRUE(val.has_value());
-    EXPECT_FLOAT_EQ(std::get<float>(*val), 1.5f);
+    EXPECT_TRUE(cache.isDirty("uTime"));
 }
 
-TEST_F(UniformCacheTest, SetAndGetFloat2) {
-    cache.setFloat2("uResolution", glm::vec2(1920.0f, 1080.0f));
-    auto val = cache.getValue("uResolution");
-    ASSERT_TRUE(val.has_value());
-    glm::vec2 v = std::get<glm::vec2>(*val);
-    EXPECT_FLOAT_EQ(v.x, 1920.0f);
-    EXPECT_FLOAT_EQ(v.y, 1080.0f);
+TEST_F(UniformCacheTest, SetFloat2) {
+    EXPECT_TRUE(cache.setFloat2("uResolution", glm::vec2(1920.0f, 1080.0f)));
+    EXPECT_TRUE(cache.hasValue("uResolution"));
 }
 
-TEST_F(UniformCacheTest, SetAndGetFloat3) {
-    cache.setFloat3("uLightPos", glm::vec3(1.0f, 2.0f, 3.0f));
-    auto val = cache.getValue("uLightPos");
-    ASSERT_TRUE(val.has_value());
-    glm::vec3 v = std::get<glm::vec3>(*val);
-    EXPECT_FLOAT_EQ(v.x, 1.0f);
-    EXPECT_FLOAT_EQ(v.y, 2.0f);
-    EXPECT_FLOAT_EQ(v.z, 3.0f);
+TEST_F(UniformCacheTest, SetFloat3) {
+    EXPECT_TRUE(cache.setFloat3("uLightPos", glm::vec3(1.0f, 2.0f, 3.0f)));
+    EXPECT_TRUE(cache.hasValue("uLightPos"));
 }
 
-TEST_F(UniformCacheTest, SetAndGetFloat4) {
-    cache.setFloat4("uColor", glm::vec4(1.0f, 0.5f, 0.25f, 1.0f));
-    auto val = cache.getValue("uColor");
-    ASSERT_TRUE(val.has_value());
-    glm::vec4 v = std::get<glm::vec4>(*val);
-    EXPECT_FLOAT_EQ(v.x, 1.0f);
-    EXPECT_FLOAT_EQ(v.y, 0.5f);
-    EXPECT_FLOAT_EQ(v.z, 0.25f);
-    EXPECT_FLOAT_EQ(v.w, 1.0f);
+TEST_F(UniformCacheTest, SetFloat4) {
+    EXPECT_TRUE(cache.setFloat4("uColor", glm::vec4(1.0f, 0.5f, 0.25f, 1.0f)));
+    EXPECT_TRUE(cache.hasValue("uColor"));
 }
 
-TEST_F(UniformCacheTest, SetAndGetInt) {
-    cache.setInt("uSampler", 5);
-    auto val = cache.getValue("uSampler");
-    ASSERT_TRUE(val.has_value());
-    EXPECT_EQ(std::get<int>(*val), 5);
+TEST_F(UniformCacheTest, SetInt) {
+    EXPECT_TRUE(cache.setInt("uSampler", 5));
+    EXPECT_TRUE(cache.hasValue("uSampler"));
 }
 
-TEST_F(UniformCacheTest, SetAndGetBool) {
-    cache.setBool("uEnabled", true);
-    auto val = cache.getValue("uEnabled");
-    ASSERT_TRUE(val.has_value());
-    EXPECT_TRUE(std::get<bool>(*val));
+TEST_F(UniformCacheTest, SetBool) {
+    EXPECT_TRUE(cache.setBool("uEnabled", true));
+    EXPECT_TRUE(cache.hasValue("uEnabled"));
 }
 
-TEST_F(UniformCacheTest, SetAndGetMatrix) {
+TEST_F(UniformCacheTest, SetMatrix) {
     glm::mat4 identity(1.0f);
-    cache.setMatrix("uModelMatrix", identity);
-    auto val = cache.getValue("uModelMatrix");
-    ASSERT_TRUE(val.has_value());
-    glm::mat4 m = std::get<glm::mat4>(*val);
-    EXPECT_FLOAT_EQ(m[0][0], 1.0f);
-    EXPECT_FLOAT_EQ(m[1][1], 1.0f);
-    EXPECT_FLOAT_EQ(m[2][2], 1.0f);
-    EXPECT_FLOAT_EQ(m[3][3], 1.0f);
+    EXPECT_TRUE(cache.setMatrix("uModelMatrix", identity));
+    EXPECT_TRUE(cache.hasValue("uModelMatrix"));
 }
 
 TEST_F(UniformCacheTest, HasValueFalseForMissing) {
     EXPECT_FALSE(cache.hasValue("uNonExistent"));
-}
-
-TEST_F(UniformCacheTest, GetValueReturnsNulloptForMissing) {
-    auto val = cache.getValue("uNonExistent");
-    EXPECT_FALSE(val.has_value());
 }
 
 TEST_F(UniformCacheTest, IsDirtyAfterSet) {

@@ -91,26 +91,10 @@ namespace nexo::renderer {
             std::unique_ptr<NxRenderer3D> renderer3D;
     };
 
-    TEST_F(Renderer3DTest, BeginEndScene)
+    TEST_F(Renderer3DTest, InitAndShutdown)
     {
-        glm::mat4 viewProjection = glm::mat4(1.0f);
-        glm::vec3 cameraPosition = {0.0f, 0.0f, 0.0f};
-
-        // Validate basic begin and end scene
-        EXPECT_NO_THROW(renderer3D->beginScene(viewProjection, cameraPosition));
-        EXPECT_NO_THROW(renderer3D->endScene());
+        // Renderer is initialized in SetUp, verify storage is available
+        EXPECT_NE(renderer3D->getInternalStorage(), nullptr);
     }
-
-	TEST_F(Renderer3DTest, BeginSceneWithoutInit)
-	{
-	    renderer3D->shutdown();
-
-	    glm::mat4 viewProjection = glm::mat4(1.0f);
-	    glm::vec3 cameraPosition = {0.0f, 0.0f, 0.0f};
-
-	    EXPECT_THROW(renderer3D->beginScene(viewProjection, cameraPosition), NxRendererNotInitialized);
-	    // Re-init for TearDown function
-	    renderer3D->init();
-	}
 
 }

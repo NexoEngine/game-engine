@@ -19,11 +19,21 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
+#include <array>
 #include "DrawCommand.hpp"
 #include "Framebuffer.hpp"
 #include "RenderPass.hpp"
+#include "ShaderStorageBuffer.hpp"
+#include "ShaderUniformBuffer.hpp"
 
 namespace nexo::renderer {
+
+    struct GpuPointShadowMap {
+        unsigned int depthCube = 0;
+        unsigned int fbo       = 0;
+        float        farPlane  = 25.0f;
+        bool         inUse     = false;
+    };
 
     class RenderPipeline {
        public:
@@ -279,7 +289,7 @@ namespace nexo::renderer {
          *
          * @return A constant reference to a vector of `DrawCommand` objects.
          */
-        [[nodiscard]] const std::vector<DrawCommand> &getDrawCommands() const;
+        [[nodiscard]] std::vector<DrawCommand> &getDrawCommands();
 
         /**
          * @brief Sets the clear color used by the camera.
@@ -314,6 +324,56 @@ namespace nexo::renderer {
          */
         void resize(unsigned int width, unsigned int height) const;
 
+        /**
+         * @brief Sets global uniforms that apply to all draw commands in this pipeline.
+         *
+         * Global uniforms are set once per pipeline execution and include things like
+         * camera matrices, lighting data, and other scene-wide parameters.
+         *
+         * @param uniforms Map of uniform names to values
+         */
+        void setGlobalUniforms(const std::unordered_map<std::string, UniformValue> &uniforms);
+
+        /**
+         * @brief Adds a single global uniform.
+         *
+         * @param name The uniform name
+         * @param value The uniform value
+         */
+        void setGlobalUniform(const std::string &name, const UniformValue &value);
+
+        /**
+         * @brief Gets the current global uniforms.
+         *
+         * @return Reference to the global uniforms map
+         */
+        [[nodiscard]] const std::unordered_map<std::string, UniformValue> &getGlobalUniforms() const;
+
+        /**
+         * @brief Clears all global uniforms.
+         */
+        void clearGlobalUniforms();
+
+        void addUniformBuffer(const std::string &name, unsigned int bindingLocation, const std::shared_ptr<renderer::NxShaderUniformBuffer> &buffer);
+
+        void addStorageBuffer(const std::string &name, unsigned int bindingLocation, const std::shared_ptr<renderer::NxShaderStorageBuffer> &buffer);
+
+        void setUniformBufferData(const std::string &name, void *data, unsigned int size);
+        void setStorageBufferData(const std::string &name, void *data, unsigned int size);
+        void appendStorageBufferData(const std::string &name, void *data, unsigned int size);
+        unsigned int getStorageBufferSize(const std::string &name);
+
+        struct RendererPointLight {
+            glm::vec3 position;
+            float farPlane;
+        };
+        void setupShadowMaps();
+        GpuPointShadowMap &getShadowMap(unsigned int index);
+        void addPointLight(const glm::vec3 &pos, float farPlane);
+        void resetPointLigths();
+        unsigned int getNbPointLights() const;
+        const RendererPointLight &getPointLight(unsigned int index) const;
+
        private:
         std::vector<DrawCommand> m_drawCommands;
         glm::vec4 m_cameraClearColor{};
@@ -322,6 +382,17 @@ namespace nexo::renderer {
 
         // Store all render passes
         std::unordered_map<PassId, std::shared_ptr<RenderPass>> passes;
+        std::unordered_map<std::string, UniformValue> m_globalUniforms;
+
+        std::unordered_map<std::string, std::shared_ptr<renderer::NxShaderUniformBuffer>> m_ubos;
+        std::unordered_map<std::string, std::shared_ptr<renderer::NxShaderStorageBuffer>> m_ssbos;
+        std::unordered_map<std::string, unsigned int> m_bufferBindingLocations;
+
+        static constexpr unsigned int POINT_SHADOW_SIZE = 1024;
+        std::array<GpuPointShadowMap, 10> pointShadowMaps;
+        std::array<RendererPointLight, 10> pointLights;
+        unsigned int nbPointLights = 0;
+
 
         // For generating unique IDs
         PassId nextPassId = 0;

@@ -15,11 +15,13 @@ set(COMMON_SOURCES
         common/math/Matrix.cpp
         common/Path.cpp
         common/math/Bounds.cpp
+        common/math/Light.cpp
         engine/src/Nexo.cpp
         engine/src/EntityFactory3D.cpp
         engine/src/LightFactory.cpp
         engine/src/CameraFactory.cpp
         engine/src/Application.cpp
+        engine/src/Init.cpp
         engine/src/renderer/Window.cpp
         engine/src/core/event/Event.cpp
         engine/src/core/event/Input.cpp
@@ -44,6 +46,8 @@ set(COMMON_SOURCES
         engine/src/renderer/UniformCache.cpp
         engine/src/renderer/DrawCommand.cpp
         engine/src/renderer/RenderPipeline.cpp
+        engine/src/renderer/UniformValue.cpp
+        engine/src/renderer/ShaderUniformBuffer.cpp
         engine/src/renderer/primitives/Cube.cpp
         engine/src/renderer/primitives/Billboard.cpp
         engine/src/renderer/primitives/Tetrahedron.cpp
@@ -69,13 +73,15 @@ set(COMMON_SOURCES
         engine/src/systems/lights/PointLightsSystem.cpp
         engine/src/systems/lights/DirectionalLightsSystem.cpp
         engine/src/systems/lights/SpotLightsSystem.cpp
-        engine/src/systems/TransformHierarchySystem.cpp
-        engine/src/systems/TransformMatrixSystem.cpp
         engine/src/systems/AABBDebugSystem.cpp
+        engine/src/systems/TransformSystem.cpp
+        engine/src/systems/TransformMatrixSystem.cpp
         engine/src/renderPasses/ForwardPass.cpp
         engine/src/renderPasses/GridPass.cpp
         engine/src/renderPasses/MaskPass.cpp
         engine/src/renderPasses/OutlinePass.cpp
+        engine/src/renderPasses/ShadowPass.cpp
+        engine/src/renderPasses/PointShadowPass.cpp
         engine/src/assets/Asset.cpp
         engine/src/assets/AssetRef.cpp
         engine/src/assets/AssetLocation.cpp
@@ -104,6 +110,7 @@ if (NEXO_GRAPHICS_API STREQUAL "OpenGL")
             engine/src/renderer/opengl/OpenGlRendererApi.cpp
             engine/src/renderer/opengl/OpenGlFramebuffer.cpp
             engine/src/renderer/opengl/OpenGlShaderReflection.cpp
+            engine/src/renderer/opengl/OpenGlShaderUniformBuffer.cpp
     )
 endif ()
 

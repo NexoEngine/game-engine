@@ -34,23 +34,33 @@ namespace nexo::renderer {
         // Bind VAO for mesh, or use full-screen quad
         if ((type == CommandType::MESH || type == CommandType::LINE) && vao && currentVAO != vao->getId()) {
             vao->bind();
-            for (const auto& vbo : vao->getVertexBuffers()) vbo->bind();
+            for (const auto& vbo : vao->getVertexBuffers()) {
+                vbo->bind();
+            }
             currentVAO = vao->getId();
         } else if (type == CommandType::FULL_SCREEN) {
             auto quad = getFullscreenQuad();
-            quad->bind();
-            currentVAO = quad->getId();
+            if (currentVAO != quad->getId()) {
+                quad->bind();
+                currentVAO = quad->getId();
+            }
         }
 
         // Set uniforms
         if (shader) {
-            for (auto const& [name, val] : uniforms) {
-                std::visit([&](auto&& v) { shader->setUniform(name, v); }, val);
+            for (const auto& [name, uniformValue] : uniforms) {
+                if (uniformValue.isValid()) {  // Only apply valid uniforms
+                    uniformValue.applyToShader(shader.get(), name);
+                }
             }
         }
 
         if (type == CommandType::MESH && vao) {
-            NxRenderCommand::drawIndexed(vao, vao->getIndexBuffer()->getCount());
+            if (instanced) {
+                NxRenderCommand::drawIndexedInstanced(vao, vao->getIndexBuffer()->getCount(), instanceCount);
+            } else {
+                NxRenderCommand::drawIndexed(vao, vao->getIndexBuffer()->getCount());
+            }
         } else if (type == CommandType::FULL_SCREEN) {
             NxRenderCommand::drawUnIndexed(6);
         } else if (type == CommandType::LINE) {

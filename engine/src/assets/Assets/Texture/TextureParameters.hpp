@@ -19,6 +19,7 @@
 #pragma once
 
 #include <nlohmann/json.hpp>
+#include "renderer/TextureType.hpp"
 
 namespace nexo::assets {
 
@@ -26,6 +27,7 @@ namespace nexo::assets {
      * @brief Import parameters for textures
      */
     struct TextureImportParameters {
+        renderer::TextureType textureType = renderer::TextureType::ALBEDO;
         bool generateMipmaps = true;
         bool convertToSRGB   = true;
         bool flipVertically  = true;

@@ -176,7 +176,9 @@ namespace ImNexo {
             ImGui::TableSetupColumn("##Y", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
             ImGui::TableSetupColumn("##Z", ImGuiTableColumnFlags_WidthStretch | ImGuiTableColumnFlags_NoHeaderLabel);
 
-            RowDragFloat3("Position", "X", "Y", "Z", &pos.x);
+            if (RowDragFloat3("Position", "X", "Y", "Z", &pos.x, -3.40282347E+38F, 3.40282347E+38F, 0.025f)) {
+                transformComponent.dirty = true;
+            }
 
             const glm::vec3 computedEuler = glm::degrees(glm::eulerAngles(quat));
 
@@ -191,8 +193,11 @@ namespace ImNexo {
                 const auto deltaQuat  = glm::quat(glm::radians(deltaEuler));
                 quat                       = glm::normalize(deltaQuat * quat);
                 lastDisplayedEuler         = glm::degrees(glm::eulerAngles(quat));
+                transformComponent.dirty = true;
             }
-            RowDragFloat3("Scale", "X", "Y", "Z", &size.x);
+            if (RowDragFloat3("Scale", "X", "Y", "Z", &size.x)) {
+                transformComponent.dirty = true;
+            }
 
             ImGui::EndTable();
         }

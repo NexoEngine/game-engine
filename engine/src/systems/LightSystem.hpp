@@ -17,6 +17,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 #pragma once
 
+#include "components/RenderContext.hpp"
 #include "lights/AmbientLightSystem.hpp"
 #include "lights/DirectionalLightsSystem.hpp"
 #include "lights/PointLightsSystem.hpp"
@@ -61,7 +62,7 @@ namespace nexo::system {
          * to ensure that the RenderContext is populated with the correct light
          * information for rendering.
          */
-        void update() const;
+        void update(components::RenderContext &renderContext) const;
 
        private:
         std::shared_ptr<AmbientLightSystem> m_ambientLightSystem          = nullptr;

@@ -22,6 +22,7 @@
 #include <string_view>
 
 #include "assets/Assets/Texture/TextureParameters.hpp"
+#include "renderer/TextureType.hpp"
 
 namespace nexo::renderer {
 
@@ -153,6 +154,11 @@ namespace nexo::renderer {
         RG8,    // 2 channels RED GREEN, 8 bits per channel
         RGB8,   // 3 channels RED GREEN BLUE, 8 bits per channel
         RGBA8,  // 4 channels RED GREEN BLUE ALPHA, 8 bits per channel
+
+        RGB16F,
+        RGBA16F,
+        RGB32F,
+        RGBA32F,
 
         _NB_FORMATS_ // Number of texture formats, used for array sizing
     };
@@ -294,6 +300,11 @@ namespace nexo::renderer {
          * ```
          */
         static std::shared_ptr<NxTexture2D> create(const std::string &path);
+
+        static std::shared_ptr<NxTexture2D> create(const std::string &path, TextureType type, bool generateMipmaps = true);
+
+        static std::shared_ptr<NxTexture2D> create(const uint8_t *buffer, unsigned int width, unsigned int height,
+                                                    NxTextureFormat format, TextureType type, bool generateMipmaps = true);
     };
 
 } // namespace nexo::renderer
