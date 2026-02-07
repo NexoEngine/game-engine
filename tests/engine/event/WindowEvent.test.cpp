@@ -21,6 +21,9 @@
 #include "core/event/WindowEvent.hpp"
 
 namespace nexo::event {
+    using enum KeyAction;
+    using enum MouseButton;
+
         TEST(WindowEventTest, EventWindowCloseInstantiation) {
         EventWindowClose closeEvent;
         SUCCEED(); // Validate no crash on instantiation
@@ -313,9 +316,9 @@ namespace nexo::event {
 
     // Additional KeyAction enum tests
     TEST(WindowEventTest, KeyActionEnumValues) {
-        EXPECT_EQ(PRESSED, 0);
-        EXPECT_EQ(RELEASED, 1);
-        EXPECT_EQ(REPEAT, 2);
+        EXPECT_EQ(static_cast<int>(PRESSED), 0);
+        EXPECT_EQ(static_cast<int>(RELEASED), 1);
+        EXPECT_EQ(static_cast<int>(REPEAT), 2);
     }
 
     TEST(WindowEventTest, EventKeyWithDifferentActions) {
@@ -331,9 +334,9 @@ namespace nexo::event {
 
     // Additional MouseButton enum tests
     TEST(WindowEventTest, MouseButtonEnumValues) {
-        EXPECT_EQ(LEFT, 0);
-        EXPECT_EQ(RIGHT, 1);
-        EXPECT_EQ(MIDDLE, 2);
+        EXPECT_EQ(static_cast<int>(LEFT), 0);
+        EXPECT_EQ(static_cast<int>(RIGHT), 1);
+        EXPECT_EQ(static_cast<int>(MIDDLE), 2);
     }
 
     TEST(WindowEventTest, EventMouseClickWithDifferentButtons) {
