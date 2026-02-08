@@ -383,15 +383,15 @@ namespace nexo::system {
         }
 
         for (auto &camera : renderContext.cameras) {
-            camera.pipeline.setStorageBufferData(INSTANCE_BUFFER, instances.data(), sizeof(renderer::GpuInstanceData) * instances.size());
-            camera.pipeline.setStorageBufferData(MATERIAL_BUFFER, gpuMaterials.data(), sizeof(renderer::GpuMaterial) * gpuMaterials.size());
-            camera.pipeline.addDrawCommands(drawCommands);
+            camera.pipeline->setStorageBufferData(INSTANCE_BUFFER, instances.data(), sizeof(renderer::GpuInstanceData) * instances.size());
+            camera.pipeline->setStorageBufferData(MATERIAL_BUFFER, gpuMaterials.data(), sizeof(renderer::GpuMaterial) * gpuMaterials.size());
+            camera.pipeline->addDrawCommands(drawCommands);
 
             if (sceneType == SceneType::EDITOR && renderContext.gridParams.enabled)
-                camera.pipeline.addDrawCommand(createGridDrawCommand(camera, renderContext));
+                camera.pipeline->addDrawCommand(createGridDrawCommand(camera, renderContext));
 
             if (sceneType == SceneType::EDITOR)
-                camera.pipeline.addDrawCommand(createOutlineDrawCommand(camera));
+                camera.pipeline->addDrawCommand(createOutlineDrawCommand(camera));
         }
     }
 } // namespace nexo::system

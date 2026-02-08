@@ -166,6 +166,8 @@ namespace nexo::editor {
          */
         void setupWindow();
 
+        void setupDemoCamera();
+
         /**
          * @brief Creates and initializes a scene with basic components.
          *
@@ -700,6 +702,8 @@ namespace nexo::editor {
          */
         void forestScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
         void spawnBallsScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
+
+        void chambouleScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
 
         enum class EditorState { GLOBAL, GIZMO, GIZMO_TRANSLATE, GIZMO_ROTATE, GIZMO_SCALE, NB_STATE };
 

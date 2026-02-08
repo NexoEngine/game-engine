@@ -399,6 +399,8 @@ glDrawBuffers(static_cast<int>(m_colorAttachments.size()), buffers.data());
         if (width > sMaxFramebufferSize || height > sMaxFramebufferSize)
             THROW_EXCEPTION(NxFramebufferResizingFailed, "OPENGL", true, width, height);
 
+        if (width == m_specs.width && height == m_specs.height) return;
+
         m_specs.width  = width;
         m_specs.height = height;
         toResize       = true;

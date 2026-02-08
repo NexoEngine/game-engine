@@ -55,7 +55,7 @@ namespace nexo {
         const ecs::Entity newPointLight = Application::m_coordinator->createEntity();
         const components::TransformComponent transformComponent{position};
         Application::m_coordinator->addComponent<components::TransformComponent>(newPointLight, transformComponent);
-        const auto maxDistance = math::computeDistanceFromAttenuation(linear, quadratic);
+        const auto maxDistance = nexo::math::computeDistanceFromAttenuation(linear, quadratic);
         const components::PointLightComponent newPointLightComponent{color, linear, quadratic, maxDistance};
         Application::m_coordinator->addComponent<components::PointLightComponent>(newPointLight,
                                                                                   newPointLightComponent);
@@ -70,7 +70,7 @@ namespace nexo {
         ecs::Entity newSpotLight = Application::m_coordinator->createEntity();
         components::TransformComponent transformComponent{position};
         Application::m_coordinator->addComponent<components::TransformComponent>(newSpotLight, transformComponent);
-        const auto maxDistance = math::computeDistanceFromAttenuation(linear, quadratic);
+        const auto maxDistance = nexo::math::computeDistanceFromAttenuation(linear, quadratic);
         components::SpotLightComponent newSpotLightComponent{
             direction, color, glm::cos(glm::radians(cutOff)), glm::cos(glm::radians(outerCutOff)), linear, quadratic, maxDistance};
         Application::m_coordinator->addComponent<components::SpotLightComponent>(newSpotLight, newSpotLightComponent);

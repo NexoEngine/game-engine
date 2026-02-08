@@ -20,17 +20,19 @@ namespace nexo::renderer {
         auto shader = ShaderLibrary::getInstance().get("Point shadow depth");
         if (!shader) return;
 
-        const auto& globalUniforms = pipeline.getGlobalUniforms();
-        auto& drawCommands         = pipeline.getDrawCommands();
+        auto& drawCommands       = pipeline.getDrawCommands();
+        const uint64_t currentGen = pipeline.getGeometryGeneration();
 
-        // You need point light world positions & farPlane somewhere;
-        // easiest is to read them from your LightBlock source (PointLightContext)
-        // but here assume gpuRes.pointLights[] is filled similarly to the UBO.
-        for (int i = 0; i < pipeline.getNbPointLights() && i < MAX_POINT_LIGHTS; ++i) {
+        for (int i = 0; i < static_cast<int>(pipeline.getNbPointLights()) && i < MAX_POINT_LIGHTS; ++i) {
             const auto& light = pipeline.getPointLight(i);
             auto& sm         = pipeline.getShadowMap(i);
 
             if (!sm.depthCube || !sm.fbo) continue;
+
+            // Skip re-rendering if light and geometry haven't changed
+            if (!sm.dirty && sm.cachedGeometryGeneration == currentGen) {
+                continue;
+            }
 
             const glm::vec3 lightPos  = light.position;
             const float     nearPlane = 0.1f;
@@ -47,7 +49,7 @@ namespace nexo::renderer {
             shadowTransforms[4] = proj * glm::lookAt(lightPos, lightPos + glm::vec3( 0,  0,  1), glm::vec3(0, -1,  0));
             shadowTransforms[5] = proj * glm::lookAt(lightPos, lightPos + glm::vec3( 0,  0, -1), glm::vec3(0, -1,  0));
 
-            glViewport(0, 0, 1024, 1024);
+            glViewport(0, 0, RenderPipeline::POINT_SHADOW_SIZE, RenderPipeline::POINT_SHADOW_SIZE);
 
             shader->bind();
             shader->setUniformFloat3("uLightPos", lightPos);
@@ -92,6 +94,10 @@ namespace nexo::renderer {
 
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             shader->unbind();
+
+            // Mark this shadow map as clean for this geometry state
+            sm.dirty = false;
+            sm.cachedGeometryGeneration = currentGen;
         }
     }
 

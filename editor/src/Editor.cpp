@@ -232,13 +232,13 @@ namespace nexo::editor {
         setupStyle();
         m_windowRegistry.setup();
 
-        if (const Application &app = Application::getInstance(); !app.initScripting()) {
-            LOG(NEXO_INFO, "Scripting engine initialized successfully");
-            // TODO: scripting is init here since it requires a scene, later scenes shouldn't be
-            // created in the editor window
-        } else {
-            LOG(NEXO_ERROR, "Error during scripting engine initialization");
-        }
+        // if (const Application &app = Application::getInstance(); !app.initScripting()) {
+        //     LOG(NEXO_INFO, "Scripting engine initialized successfully");
+        //     // TODO: scripting is init here since it requires a scene, later scenes shouldn't be
+        //     // created in the editor window
+        // } else {
+        //     LOG(NEXO_ERROR, "Error during scripting engine initialization");
+        // }
         for (const auto inspectorWindow : m_windowRegistry.getWindows<InspectorWindow>())
             inspectorWindow->registerTypeErasedProperties(); // TODO: this should be done in the InspectorWindow
                                                              // constructor, but we need the scripting to init
@@ -264,14 +264,14 @@ namespace nexo::editor {
         }
     }
 
-    void Editor::buildDockspace()
+    void Editor::buildDockspace(bool forceRebuild)
     {
         const ImGuiViewport *viewport     = ImGui::GetMainViewport();
         const ImGuiID dockspaceID         = viewport->ID;
         static bool dockingRegistryFilled = false;
 
         // If the dockspace node doesn't exist yet, create it
-        if (!ImGui::DockBuilderGetNode(dockspaceID)) {
+        if (!ImGui::DockBuilderGetNode(dockspaceID) ||forceRebuild) {
             ImGui::DockBuilderRemoveNode(dockspaceID);
             ImGui::DockSpaceOverViewport(viewport->ID);
             ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_None);
@@ -356,8 +356,13 @@ namespace nexo::editor {
             }
         }
 
-        if (ImGui::IsKeyPressed(ImGuiKey_Tab)) {
+        if (ImGui::IsKeyPressed(ImGuiKey_B)) {
             toggleGuiVisibility();
+        }
+        static bool isPlaying = false;
+        if (ImGui::IsKeyPressed(ImGuiKey_J)) {
+            Application::getInstance().setGameState(isPlaying ? nexo::GameState::EDITOR_MODE : nexo::GameState::PLAY_MODE);
+            isPlaying = !isPlaying;
         }
     }
 
@@ -563,6 +568,7 @@ namespace nexo::editor {
         if (m_guiHidden && !m_windowStates.empty()) {
             showGui();
             window->setFullscreen(false);
+            buildDockspace(true);
         } else if (!m_guiHidden && m_windowStates.empty()) {
             hideGui();
             window->setFullscreen(true);
@@ -572,6 +578,7 @@ namespace nexo::editor {
         } else {
             showGui();
             window->setFullscreen(false);
+            buildDockspace(true);
         }
     }
 
@@ -583,9 +590,9 @@ namespace nexo::editor {
 
         ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
         ImGuizmo::BeginFrame();
-        buildDockspace();
 
         if (!m_guiHidden) {
+            buildDockspace();
             drawMenuBar();
             m_windowRegistry.render();
         } else {

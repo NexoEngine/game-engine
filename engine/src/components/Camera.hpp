@@ -181,8 +181,6 @@ namespace nexo::components {
         glm::mat4 viewProjectionMatrix;                        ///< Combined view and projection matrix.
         glm::vec3 cameraPosition;                              ///< The position of the camera.
         glm::vec2 renderTargetSize;
-        //glm::vec4 clearColor;                                  ///< Clear color used for rendering.
-        //std::shared_ptr<renderer::NxFramebuffer> renderTarget; ///< The render target framebuffer.
-        renderer::RenderPipeline pipeline;
+        renderer::RenderPipeline* pipeline;                    ///< Non-owning pointer to the camera's pipeline.
     };
 } // namespace nexo::components

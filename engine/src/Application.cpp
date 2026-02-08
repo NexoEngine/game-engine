@@ -87,6 +87,7 @@ namespace nexo {
         m_coordinator->registerComponent<components::VideoComponent>("Video");
         m_coordinator->registerComponent<components::MaterialComponent>("Material");
         m_coordinator->registerComponent<components::NameComponent>();
+        m_coordinator->registerComponent<components::EditorTag>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
         m_coordinator->registerComponent<components::PhysicsBodyComponent>("Physic Body");
     }
@@ -264,7 +265,7 @@ namespace nexo {
         auto &renderContext        = m_coordinator->getSingletonComponent<components::RenderContext>();
 
         if (isInPlayMode()) {
-            m_scriptingSystem->update();
+            // m_scriptingSystem->update();
         }
 
         if (!m_isMinimized) {
@@ -290,16 +291,16 @@ namespace nexo {
                 {
                     PROFILE_SYSTEM("CameraPipeline", static_cast<size_t>(renderContext.cameras.size()));
                     for (auto &camera : renderContext.cameras) {
-                        camera.pipeline.execute();
+                        camera.pipeline->execute();
                     }
                 }
                 // We have to unbind after the whole pipeline since multiple passes can use the same textures
                 // but we cant bind everything beforehand since a resize can be triggered and invalidate the whole state
                 renderer::NxRenderer3D::get().unbindTextures();
+                m_renderVideoSystem->update();
 
                 if (isInPlayMode()) {
                     m_physicsSystem->update();
-                    m_renderVideoSystem->update();
                 }
             }
             if (m_SceneManager.getScene(sceneInfo.id).isActive()) {

@@ -90,7 +90,7 @@ namespace nexo::system  {
             for (auto &cmd : drawCommands) {
                 cmd.uniforms["uViewProjection"] = camera.viewProjectionMatrix;
             }
-            camera.pipeline.addDrawCommands(drawCommands);
+            camera.pipeline->addDrawCommands(drawCommands);
         }
     }
 }

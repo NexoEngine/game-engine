@@ -16,17 +16,18 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include <components/Name.hpp>
 #include <components/Video.hpp>
 #include <math/Light.hpp>
 #include <random>
 
 #include "CameraFactory.hpp"
+#include "DemoScenes.hpp"
 #include "EditorScene.hpp"
 #include "EntityFactory3D.hpp"
 #include "LightFactory.hpp"
 #include "Path.hpp"
 #include "RenderPass.hpp"
-#include "assets/AssetImporter.hpp"
 #include "renderPasses/GridPass.hpp"
 #include "renderPasses/MaskPass.hpp"
 #include "renderPasses/OutlinePass.hpp"
@@ -70,7 +71,7 @@ namespace nexo::editor {
                                                              static_cast<unsigned int>(m_contentSize.y));
         auto outlinePass        = std::make_shared<renderer::OutlinePass>();
         auto gridPass           = std::make_shared<renderer::GridPass>();
-        auto shadowPass         = std::make_shared<renderer::ShadowPass>(2048);
+        auto shadowPass         = std::make_shared<renderer::ShadowPass>(1024);
         auto pointShadowPass = std::make_shared<renderer::PointShadowPass>();
 
         const renderer::PassId forwardId = cameraComponent.pipeline.getFinalOutputPass();
@@ -112,11 +113,15 @@ namespace nexo::editor {
 
         m_sceneUuid = app.getSceneManager().getScene(m_sceneId).getUuid();
         if (m_defaultScene) {
-            loadDefaultEntities(); // Load default entities for testing purposes
-            physicScene(glm::vec3{-60.0f, 0.0f, 0.0f});
-            videoScene(glm::vec3{-15.0f, 0.0f, 0.0f});
-            lightsScene(glm::vec3{50.0f, 0.0f, 0.0f});
-            forestScene({100.0f, 1.0f, 0.0f});
+            // loadDefaultEntities(m_sceneId);
+            fullScene(m_sceneId);
+            dominoScene(m_sceneId, {7.5f, 4.07f, -0.5f});
+            // Qualified call to the DemoScenes free function (not the member function which creates 5 point lights)
+            ::nexo::editor::lightsScene(m_sceneId, glm::vec3{0.0f, 0.0f, 0.0f});
+            // chambouleScene(m_sceneId, glm::vec3{0.0f, 0.0f, 0.0f});
+            // physicScene(glm::vec3{-60.0f, 0.0f, 0.0f});
+            // videoScene(glm::vec3{0.0f, 0.0f, 0.0f});
+            // forestScene(glm::vec3{100.0f, 1.0f, 0.0f});
         }
     }
 
@@ -231,9 +236,14 @@ namespace nexo::editor {
         scene.addEntity(rightWall);
 
         const auto [linear, quad] = math::computeAttenuationFromDistance(70.0f);
-        const auto pointLightTop  = LightFactory::createPointLight({0.0f + offset.x, 14.0f + offset.y, 0.0f + offset.z},
+        const auto pointLightTop  = LightFactory::createPointLight({0.0f + offset.x, 14.0f + offset.y, 11.98f + offset.z},
                                                                    {1, 1, 1}, linear, quad);
         utils::addPropsTo(pointLightTop, utils::PropsType::POINT_LIGHT);
+        auto &transformCompPoint = Application::m_coordinator->getComponent<components::TransformComponent>(pointLightTop);
+        transformCompPoint.size = glm::vec3{0.01f};
+        components::NameComponent nameComp;
+        nameComp.name = "Demo_point_light";
+        app.m_coordinator->addComponent(pointLightTop, nameComp);
         scene.addEntity(pointLightTop);
 
         const auto [linear2, quad2] = math::computeAttenuationFromDistance(13.0f);
@@ -241,6 +251,8 @@ namespace nexo::editor {
                                                                  {-0.30f, -0.30f, -0.30f}, {1.0f, 0.90f, 0.46f},
                                                                  linear2, quad2, 33.50f, 43.0f);
         utils::addPropsTo(deskSpotLight, utils::PropsType::SPOT_LIGHT);
+        auto &transformCompDesk = Application::m_coordinator->getComponent<components::TransformComponent>(deskSpotLight);
+        transformCompDesk.size = glm::vec3{0.01f};
         scene.addEntity(deskSpotLight);
 
         const auto [linear3, quad3] = math::computeAttenuationFromDistance(100.0f);
@@ -248,12 +260,16 @@ namespace nexo::editor {
             LightFactory::createSpotLight({8.48f + offset.x, 7.10f + offset.y, -8.06f + offset.z}, {0.0f, 1.0f, 0.0f},
                                           {1.0f, 1.0f, 0.64f}, linear3, quad3, 55.50f, 75.5f);
         utils::addPropsTo(standSpotLightTop, utils::PropsType::SPOT_LIGHT);
+        auto &transformCompStandTop = Application::m_coordinator->getComponent<components::TransformComponent>(standSpotLightTop);
+        transformCompStandTop.size = glm::vec3{0.01f};
         scene.addEntity(standSpotLightTop);
 
         const auto standSpotLightBottom =
             LightFactory::createSpotLight({8.48f + offset.x, 6.5f + offset.y, -8.06f + offset.z}, {0.0f, -1.0f, 0.0f},
                                           {1.0f, 1.0f, 0.64f}, linear3, quad3, 16.50f, 43.5f);
         utils::addPropsTo(standSpotLightBottom, utils::PropsType::SPOT_LIGHT);
+        auto &transformCompStandBottom = Application::m_coordinator->getComponent<components::TransformComponent>(standSpotLightBottom);
+        transformCompStandBottom.size = glm::vec3{0.01f};
         scene.addEntity(standSpotLightBottom);
 
         const auto [linear4, quad4] = math::computeAttenuationFromDistance(50.0f);
@@ -271,6 +287,8 @@ namespace nexo::editor {
             const auto garlandSpotLight = LightFactory::createSpotLight(garlandPos[i], {1.0f, -0.6f, 0.0f},
                                                                         garlandColors[i], linear4, quad4, 20.0f, 30.0f);
             utils::addPropsTo(garlandSpotLight, utils::PropsType::SPOT_LIGHT);
+            auto &transformCompGarland = Application::m_coordinator->getComponent<components::TransformComponent>(garlandSpotLight);
+            transformCompGarland.size = glm::vec3{0.01f};
             scene.addEntity(garlandSpotLight);
         }
 

@@ -82,8 +82,9 @@ namespace nexo::system {
             if (shadowMapIndex >= MAX_POINT_LIGHTS) break;
         }
         for (auto &camera : renderContext.cameras) {
+            camera.pipeline->setGeometryGeneration(renderContext.geometryGeneration);
             for (unsigned int i = 0; i < out.nbPointLights; ++i) {
-                camera.pipeline.addPointLight(out.pointLights[i].position, out.pointLights[i].farPlane);
+                camera.pipeline->addPointLight(out.pointLights[i].position, out.pointLights[i].farPlane);
             }
         }
         return out;

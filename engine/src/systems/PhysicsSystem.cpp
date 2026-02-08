@@ -18,6 +18,7 @@
 
 #include "PhysicsSystem.hpp"
 #include "SystemProfiler.hpp"
+#include <algorithm>
 #include "Application.hpp"
 #include "components/PhysicsBodyComponent.hpp"
 #include "components/Transform.hpp"
@@ -69,14 +70,34 @@ namespace nexo::system {
         const double currentTime = std::chrono::duration_cast<std::chrono::duration<double>>(
             std::chrono::high_resolution_clock::now().time_since_epoch()).count();
 
-        const double delta = currentTime - m_lastPhysicsTime;
-        if (delta < fixedTimestep)
-            return;
+        if (m_lastPhysicsTime == 0.0) {
+            m_lastPhysicsTime = currentTime;
+            return; // skip first frame
+        }
 
+        double frameDelta = currentTime - m_lastPhysicsTime;
         m_lastPhysicsTime = currentTime;
 
-        constexpr int collisionSteps = 2;
-        physicsSystem->Update(fixedTimestep, collisionSteps, tempAllocator, jobSystem);
+        // Cap large pauses
+        if (frameDelta > 0.25)
+            frameDelta = 0.25;
+
+        static double accumulator = 0.0;
+        accumulator += frameDelta;
+
+        constexpr double fixedTimestep = 1.0 / 60.0; // 60 Hz
+
+        int stepCount = 0;
+        constexpr int MAX_STEPS_PER_FRAME = 4; // prevent spiral of death
+
+        while (accumulator >= fixedTimestep && stepCount < MAX_STEPS_PER_FRAME) {
+            physicsSystem->Update(fixedTimestep, 2, tempAllocator, jobSystem);
+            accumulator -= fixedTimestep;
+            ++stepCount;
+        }
+
+        if (stepCount == MAX_STEPS_PER_FRAME)
+            accumulator = 0.0; // drop excess time if simulation lagged
 
         const unsigned int numActiveDynamic = physicsSystem->GetNumActiveBodies(JPH::EBodyType::RigidBody);
         if (numActiveDynamic == 0)
@@ -127,12 +148,16 @@ namespace nexo::system {
         const JPH::ShapeSettings* shapeSettings = nullptr;
 
         switch (shapeType) {
-            case ShapeType::Box:
-                shapeSettings = new JPH::BoxShapeSettings(JPH::Vec3(
+            case ShapeType::Box: {
+                const JPH::Vec3 halfExtent(
                     transform.size.x * 0.5f,
                     transform.size.y * 0.5f,
-                    transform.size.z * 0.5f));
+                    transform.size.z * 0.5f);
+                const float minHalfExtent = std::min({halfExtent.GetX(), halfExtent.GetY(), halfExtent.GetZ()});
+                const float convexRadius = std::min(JPH::cDefaultConvexRadius, minHalfExtent);
+                shapeSettings = new JPH::BoxShapeSettings(halfExtent, convexRadius);
                 break;
+            }
 
             case ShapeType::Sphere:
                 shapeSettings = new JPH::SphereShapeSettings(transform.size.x);
@@ -182,7 +207,13 @@ namespace nexo::system {
 
         JPH::ShapeRefC shape = nullptr;
         try {
-            shape = shapeSettings->Create().Get();
+            auto result = shapeSettings->Create();
+            if (result.HasError()) {
+                LOG(NEXO_ERROR, "Shape creation failed: {}", result.GetError().c_str());
+                delete shapeSettings;
+                return {};
+            }
+            shape = result.Get();
         } catch (const std::exception& e) {
             LOG(NEXO_ERROR, "Exception during shape creation: {}", e.what());
             delete shapeSettings;
@@ -203,6 +234,8 @@ namespace nexo::system {
             shape, position, rotation, motionType,
             motionType == JPH::EMotionType::Dynamic ? Layers::MOVING : Layers::NON_MOVING
         );
+
+        bodySettings.mUserData = static_cast<JPH::uint64>(entity);
 
         bodySettings.mUserData = static_cast<JPH::uint64>(entity);
 

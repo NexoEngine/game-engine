@@ -223,11 +223,14 @@ namespace nexo::renderer {
         }
 
         for (PassId id : m_plan) {
-            if (passes.contains(id)) passes[id]->execute(*this);
+            if (passes.contains(id)) {
+                passes[id]->execute(*this);
+            }
         }
 
         m_drawCommands.clear();
         m_globalUniforms.clear();
+        resetPointLigths();
     }
 
     void RenderPipeline::addDrawCommands(const std::vector<DrawCommand>& drawCommands)
@@ -357,6 +360,12 @@ namespace nexo::renderer {
 
     void RenderPipeline::addPointLight(const glm::vec3 &pos, float farPlane)
     {
+        auto &sm = pointShadowMaps[nbPointLights];
+        if (pos != sm.cachedPosition || farPlane != sm.cachedFarPlane) {
+            sm.dirty = true;
+            sm.cachedPosition = pos;
+            sm.cachedFarPlane = farPlane;
+        }
         pointLights[nbPointLights++] = {pos, farPlane};
     }
 

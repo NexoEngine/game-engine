@@ -26,6 +26,7 @@ namespace nexo::components {
         int sceneRendered   = -1;
         SceneType sceneType = SceneType::GAME;
         bool isChildWindow  = false;   //<< Is the current scene embedded in a sub window ?
+        uint64_t geometryGeneration = 0; //<< Incremented when any transform changes (used for shadow cache invalidation)
         glm::vec2 viewportBounds[2]{}; //<< Viewport bounds in absolute coordinates (if the window viewport is embedded
                                        //in the window), this is used for mouse coordinates
         struct GridParams {

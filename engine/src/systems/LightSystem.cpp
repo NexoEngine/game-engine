@@ -43,7 +43,7 @@ namespace nexo::system {
         gpuLightBlock.numSpotLights = spotLightContext.nbSpotLights;
 
         for (auto &camera : renderContext.cameras) {
-            camera.pipeline.setUniformBufferData(LIGHT_UBO, &gpuLightBlock, sizeof(renderer::GpuLightBlock));
+            camera.pipeline->setUniformBufferData(LIGHT_UBO, &gpuLightBlock, sizeof(renderer::GpuLightBlock));
         }
     }
 } // namespace nexo::system

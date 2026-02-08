@@ -27,6 +27,10 @@ namespace nexo::renderer {
     void ShadowPass::execute(RenderPipeline &pipeline)
     {
         const auto &globalUniforms = pipeline.getGlobalUniforms();
+
+        // Skip entirely if there is no directional light
+        if (globalUniforms.find("uDirLightViewProj") == globalUniforms.end()) return;
+
         auto shader = ShaderLibrary::getInstance().get("Shadow depth");
         if (!shader || !m_shadowMap) return;
 
@@ -71,11 +75,9 @@ namespace nexo::renderer {
         m_shadowMap->unbind();
     }
 
-    void ShadowPass::resize(unsigned int width, unsigned int height)
+    void ShadowPass::resize(unsigned int, unsigned int)
     {
-        // For directional shadows we usually keep it square and independent of screen size.
-        m_size = std::max(width, height);
-        if (m_shadowMap) m_shadowMap->resize(m_size, m_size);
+        // Shadow map resolution is fixed at construction time, independent of screen size.
     }
 
 } // namespace nexo::renderer

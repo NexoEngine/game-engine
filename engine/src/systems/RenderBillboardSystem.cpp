@@ -216,12 +216,12 @@ namespace nexo::system {
 
 
             const std::size_t currentBufferSizeBytes =
-                camera.pipeline.getStorageBufferSize(INSTANCE_BUFFER);
+                camera.pipeline->getStorageBufferSize(INSTANCE_BUFFER);
             const std::uint32_t baseInstanceOffset =
                 static_cast<std::uint32_t>(currentBufferSizeBytes / sizeof(renderer::GpuInstanceData));
 
             const std::size_t currentMaterialBufferBytes =
-                camera.pipeline.getStorageBufferSize(MATERIAL_BUFFER);
+                camera.pipeline->getStorageBufferSize(MATERIAL_BUFFER);
             const std::uint32_t baseMaterialOffset =
                 static_cast<std::uint32_t>(currentMaterialBufferBytes / sizeof(renderer::GpuMaterial));;
 
@@ -300,17 +300,17 @@ namespace nexo::system {
             }
 
             if (!billboardInstances.empty()) {
-                camera.pipeline.appendStorageBufferData(
+                camera.pipeline->appendStorageBufferData(
                     INSTANCE_BUFFER,
                     billboardInstances.data(),
                     billboardInstances.size() * sizeof(renderer::GpuInstanceData));
             }
 
             if (!gpuMaterials.empty()) {
-                camera.pipeline.appendStorageBufferData(MATERIAL_BUFFER, gpuMaterials.data(), sizeof(renderer::GpuMaterial) * gpuMaterials.size());
+                camera.pipeline->appendStorageBufferData(MATERIAL_BUFFER, gpuMaterials.data(), sizeof(renderer::GpuMaterial) * gpuMaterials.size());
             }
 
-            camera.pipeline.addDrawCommands(drawCommands);
+            camera.pipeline->addDrawCommands(drawCommands);
         }
     }
 

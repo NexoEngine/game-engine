@@ -33,6 +33,12 @@ namespace nexo::renderer {
         unsigned int fbo       = 0;
         float        farPlane  = 25.0f;
         bool         inUse     = false;
+
+        // Shadow cache tracking — skip re-rendering when nothing changed
+        bool      dirty                    = true;
+        glm::vec3 cachedPosition           = glm::vec3(0.0f);
+        float     cachedFarPlane           = 0.0f;
+        uint64_t  cachedGeometryGeneration = 0;
     };
 
     class RenderPipeline {
@@ -367,12 +373,16 @@ namespace nexo::renderer {
             glm::vec3 position;
             float farPlane;
         };
+        static constexpr unsigned int POINT_SHADOW_SIZE = 512;
         void setupShadowMaps();
         GpuPointShadowMap &getShadowMap(unsigned int index);
         void addPointLight(const glm::vec3 &pos, float farPlane);
         void resetPointLigths();
         unsigned int getNbPointLights() const;
         const RendererPointLight &getPointLight(unsigned int index) const;
+
+        void setGeometryGeneration(uint64_t gen) { m_geometryGeneration = gen; }
+        [[nodiscard]] uint64_t getGeometryGeneration() const { return m_geometryGeneration; }
 
        private:
         std::vector<DrawCommand> m_drawCommands;
@@ -388,7 +398,7 @@ namespace nexo::renderer {
         std::unordered_map<std::string, std::shared_ptr<renderer::NxShaderStorageBuffer>> m_ssbos;
         std::unordered_map<std::string, unsigned int> m_bufferBindingLocations;
 
-        static constexpr unsigned int POINT_SHADOW_SIZE = 1024;
+        uint64_t m_geometryGeneration = 0;
         std::array<GpuPointShadowMap, 10> pointShadowMaps;
         std::array<RendererPointLight, 10> pointLights;
         unsigned int nbPointLights = 0;
