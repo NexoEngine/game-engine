@@ -40,7 +40,7 @@ namespace nexo::renderer {
 
     void MaskPass::execute(RenderPipeline &pipeline)
     {
-        const std::unordered_map<std::string, UniformValue> globalUniforms = pipeline.getGlobalUniforms();
+        const auto &globalUniforms = pipeline.getGlobalUniforms();
 
         m_mask->bind();
         renderer::NxRenderCommand::setClearColor({0.0f, 0.0f, 0.0f, 0.0f});

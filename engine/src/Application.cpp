@@ -87,6 +87,7 @@ namespace nexo {
         m_coordinator->registerComponent<components::VideoComponent>("Video");
         m_coordinator->registerComponent<components::MaterialComponent>("Material");
         m_coordinator->registerComponent<components::NameComponent>();
+        m_coordinator->registerComponent<components::EditorTag>();
         m_coordinator->registerSingletonComponent<components::RenderContext>();
         m_coordinator->registerComponent<components::PhysicsBodyComponent>("Physic Body");
     }
@@ -290,7 +291,7 @@ namespace nexo {
                 {
                     PROFILE_SYSTEM("CameraPipeline", static_cast<size_t>(renderContext.cameras.size()));
                     for (auto &camera : renderContext.cameras) {
-                        camera.pipeline.execute();
+                        camera.pipeline->execute();
                     }
                 }
                 // We have to unbind after the whole pipeline since multiple passes can use the same textures

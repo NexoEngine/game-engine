@@ -31,7 +31,7 @@ namespace nexo::renderer {
 
     void ForwardPass::execute(RenderPipeline &pipeline)
     {
-        const std::unordered_map<std::string, UniformValue> globalUniforms = pipeline.getGlobalUniforms();
+        const auto &globalUniforms = pipeline.getGlobalUniforms();
 
         const std::shared_ptr<renderer::NxFramebuffer> renderTarget = pipeline.getRenderTarget();
         renderTarget->bind();

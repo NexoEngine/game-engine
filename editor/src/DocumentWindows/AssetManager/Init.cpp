@@ -93,7 +93,7 @@ namespace nexo::editor {
         }
         {
             assets::AssetImporter importer;
-            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/chair/chair.gltf");
+            std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/chair/scene.gltf");
             assets::ImporterFileInput fileInput{path};
             importer.importAsset<assets::Model>(assets::AssetLocation("my_package::chair@Demo"), fileInput);
         }

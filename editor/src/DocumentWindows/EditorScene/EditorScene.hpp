@@ -65,8 +65,6 @@ namespace nexo::editor {
         bool showToolbar      = true;
         bool isPhysicsRunning = false;
 
-        bool showToolbar = false;
-
         /**
          * @brief Updates the scene by processing input events and rendering the current frame.
          *
@@ -704,8 +702,6 @@ namespace nexo::editor {
          */
         void forestScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
         void spawnBallsScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
-
-        void chambouleScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
 
         void chambouleScene(const glm::vec3& offset = {0.0f, 0.0f, 0.0f}) const;
 

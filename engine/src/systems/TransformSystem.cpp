@@ -41,11 +41,14 @@ namespace nexo::system {
         const auto& transformArray = get<components::TransformComponent>();
         auto rootSpan = get<components::RootComponent>();
 
+        bool anyDirtyTransform = false;
+
         for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
             ecs::Entity rootEntity = entitySpan[i];
             auto& rootTransform = transformArray->get(rootEntity);
             auto &rootComp = rootSpan[i];
             if (rootTransform.dirty) {
+                anyDirtyTransform = true;
                 const glm::mat4 localMatrix = calculateLocalMatrix(rootTransform);
                 rootTransform.localMatrix = localMatrix;
                 rootTransform.worldMatrix = localMatrix;
@@ -56,12 +59,18 @@ namespace nexo::system {
             if (!rootTransform.dirty && rootComp.hierarchyDirty) {
                 for (const ecs::Entity childEntity : rootTransform.children) {
                     if (lookForDirtyChildren(transformArray, childEntity, rootTransform.worldMatrix)) {
+                        anyDirtyTransform = true;
                         break;
                     }
                 }
                 rootComp.hierarchyDirty = false;
             }
             rootTransform.dirty = false;
+        }
+
+        if (anyDirtyTransform) {
+            auto &renderCtx = getSingleton<components::RenderContext>();
+            ++renderCtx.geometryGeneration;
         }
     }
 

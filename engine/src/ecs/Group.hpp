@@ -967,7 +967,6 @@ namespace nexo::ecs {
             void rebuild() override
             {
                 if (!m_isDirty) return;
-                std::cout << "Rebuilding partitions...\n";
                 auto drivingArray      = std::get<0>(m_group->m_ownedArrays);
                 const size_t groupSize = drivingArray->groupSize();
 

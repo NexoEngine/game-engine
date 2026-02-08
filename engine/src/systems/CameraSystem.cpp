@@ -65,7 +65,7 @@ namespace nexo::system {
             glm::mat4 viewMatrix = components::CameraComponent::getViewMatrix(transformComponent);
             const glm::mat4 viewProjectionMatrix = projectionMatrix * viewMatrix;
             components::CameraContext context{viewProjectionMatrix, transformComponent.pos,
-                                              cameraComponent.m_renderTarget->getSize(), cameraComponent.pipeline};
+                                              cameraComponent.m_renderTarget->getSize(), &cameraComponent.pipeline};
             renderContext.cameras.push_back(context);
             renderer::GpuPerView perView{};
             perView.uViewProjection = viewProjectionMatrix;

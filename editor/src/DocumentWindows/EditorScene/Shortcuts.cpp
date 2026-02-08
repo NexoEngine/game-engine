@@ -183,7 +183,7 @@ namespace nexo::editor {
                                           .description("Spawn balls")
                                           .key("L")
                                           .onPressed([this] {
-                                              spawnBallsScene(m_sceneId, glm::vec3{-60.0f, 0.0f, 0.0f});
+                                              spawnBallsScene(glm::vec3{-60.0f, 0.0f, 0.0f});
                                           })
                                           .build());
     }

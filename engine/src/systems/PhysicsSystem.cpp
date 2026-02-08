@@ -18,6 +18,7 @@
 
 #include "PhysicsSystem.hpp"
 #include "SystemProfiler.hpp"
+#include <algorithm>
 #include "Application.hpp"
 #include "components/PhysicsBodyComponent.hpp"
 #include "components/Transform.hpp"
@@ -147,12 +148,16 @@ namespace nexo::system {
         const JPH::ShapeSettings* shapeSettings = nullptr;
 
         switch (shapeType) {
-            case ShapeType::Box:
-                shapeSettings = new JPH::BoxShapeSettings(JPH::Vec3(
+            case ShapeType::Box: {
+                const JPH::Vec3 halfExtent(
                     transform.size.x * 0.5f,
                     transform.size.y * 0.5f,
-                    transform.size.z * 0.5f));
+                    transform.size.z * 0.5f);
+                const float minHalfExtent = std::min({halfExtent.GetX(), halfExtent.GetY(), halfExtent.GetZ()});
+                const float convexRadius = std::min(JPH::cDefaultConvexRadius, minHalfExtent);
+                shapeSettings = new JPH::BoxShapeSettings(halfExtent, convexRadius);
                 break;
+            }
 
             case ShapeType::Sphere:
                 shapeSettings = new JPH::SphereShapeSettings(transform.size.x);
@@ -202,7 +207,13 @@ namespace nexo::system {
 
         JPH::ShapeRefC shape = nullptr;
         try {
-            shape = shapeSettings->Create().Get();
+            auto result = shapeSettings->Create();
+            if (result.HasError()) {
+                LOG(NEXO_ERROR, "Shape creation failed: {}", result.GetError().c_str());
+                delete shapeSettings;
+                return {};
+            }
+            shape = result.Get();
         } catch (const std::exception& e) {
             LOG(NEXO_ERROR, "Exception during shape creation: {}", e.what());
             delete shapeSettings;

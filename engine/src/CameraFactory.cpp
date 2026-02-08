@@ -50,7 +50,7 @@ namespace nexo {
         camera.type      = components::CameraType::PERSPECTIVE;
 
         auto forwardPass               = std::make_shared<renderer::ForwardPass>();
-        auto shadowPass         = std::make_shared<renderer::ShadowPass>(2048);
+        auto shadowPass         = std::make_shared<renderer::ShadowPass>(1024);
         auto pointShadowPass = std::make_shared<renderer::PointShadowPass>();
         const renderer::PassId forwardPassId = camera.pipeline.addRenderPass(forwardPass);
         const renderer::PassId shadowId    = camera.pipeline.addRenderPass(std::move(shadowPass));

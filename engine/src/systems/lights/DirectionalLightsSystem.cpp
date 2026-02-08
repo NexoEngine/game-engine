@@ -81,8 +81,8 @@ namespace nexo::system {
 
         const auto lightVp = buildLightViewProjectionMatrix(dirLight);
         for (auto &camera : renderContext.cameras) {
-            camera.pipeline.setGlobalUniform("uDirLightViewProj", lightVp);
-            camera.pipeline.setGlobalUniform("uDirShadowTexIndex", 31);
+            camera.pipeline->setGlobalUniform("uDirLightViewProj", lightVp);
+            camera.pipeline->setGlobalUniform("uDirShadowTexIndex", 31);
         }
         return gpuDirLight;
     }

@@ -232,13 +232,13 @@ namespace nexo::editor {
         setupStyle();
         m_windowRegistry.setup();
 
-        if (const Application &app = Application::getInstance(); !app.initScripting()) {
-            LOG(NEXO_INFO, "Scripting engine initialized successfully");
-            // TODO: scripting is init here since it requires a scene, later scenes shouldn't be
-            // created in the editor window
-        } else {
-            LOG(NEXO_ERROR, "Error during scripting engine initialization");
-        }
+        // if (const Application &app = Application::getInstance(); !app.initScripting()) {
+        //     LOG(NEXO_INFO, "Scripting engine initialized successfully");
+        //     // TODO: scripting is init here since it requires a scene, later scenes shouldn't be
+        //     // created in the editor window
+        // } else {
+        //     LOG(NEXO_ERROR, "Error during scripting engine initialization");
+        // }
         for (const auto inspectorWindow : m_windowRegistry.getWindows<InspectorWindow>())
             inspectorWindow->registerTypeErasedProperties(); // TODO: this should be done in the InspectorWindow
                                                              // constructor, but we need the scripting to init

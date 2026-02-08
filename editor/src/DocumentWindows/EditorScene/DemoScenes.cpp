@@ -153,13 +153,10 @@ namespace nexo::editor {
         if (Application::m_coordinator->entityHasComponent<components::ParentComponent>(desk)) {
             desk = Application::m_coordinator->getComponent<components::ParentComponent>(desk).parent;
         }
-        auto rootCompDesk = Application::m_coordinator->getComponent<components::RootComponent>(desk);
-        auto modelDesk = rootCompDesk.modelRef.lock();
-        auto boundingBoxDesk         = modelDesk->rootBounds;
         auto transformCompDesk =
             Application::m_coordinator->getComponent<components::TransformComponent>(desk);
-        const JPH::BodyID bodyIdDesk = app.getPhysicsSystem()->createBodyFromBounds(desk, transformCompDesk, boundingBoxDesk,
-                                                                                JPH::EMotionType::Static);
+        const JPH::BodyID bodyIdDesk = app.getPhysicsSystem()->createBodyFromShape(desk, transformCompDesk,
+                                                                                system::ShapeType::Box, JPH::EMotionType::Static);
         if (bodyIdDesk.IsInvalid()) {
             THROW_EXCEPTION(InvalidBodyId, desk);
         }
@@ -168,13 +165,10 @@ namespace nexo::editor {
         if (Application::m_coordinator->entityHasComponent<components::ParentComponent>(shelf)) {
             shelf = Application::m_coordinator->getComponent<components::ParentComponent>(shelf).parent;
         }
-        auto rootCompShelf = Application::m_coordinator->getComponent<components::RootComponent>(shelf);
-        auto modelShelf = rootCompShelf.modelRef.lock();
-        auto boundingBoxShelf         = modelShelf->rootBounds;
         auto transformCompShelf =
             Application::m_coordinator->getComponent<components::TransformComponent>(shelf);
-        const JPH::BodyID bodyIdShelf = app.getPhysicsSystem()->createBodyFromBounds(shelf, transformCompShelf, boundingBoxShelf,
-                                                                                JPH::EMotionType::Static);
+        const JPH::BodyID bodyIdShelf = app.getPhysicsSystem()->createBodyFromShape(shelf, transformCompShelf,
+                                                                                system::ShapeType::Box, JPH::EMotionType::Static);
         if (bodyIdShelf.IsInvalid()) {
             THROW_EXCEPTION(InvalidBodyId, shelf);
         }
@@ -555,13 +549,10 @@ namespace nexo::editor {
                 dominoAssetRef = catalog.getAsset(dominoHModel).as<assets::Model>();
             }
             const auto domino        = EntityFactory3D::createModel(dominoAssetRef, pos, {0.01f, 0.01f, 0.01f}, rot);
-            auto rootComp = Application::m_coordinator->getComponent<components::RootComponent>(domino);
-            auto model = rootComp.modelRef.lock();
-            auto boundingBox         = model->rootBounds;
             auto transformComp =
                 Application::m_coordinator->getComponent<components::TransformComponent>(domino);
-            const JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromBounds(domino, transformComp, boundingBox,
-                                                                                    JPH::EMotionType::Dynamic);
+            const JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromShape(domino, transformComp,
+                                                                                    system::ShapeType::Box, JPH::EMotionType::Dynamic);
             if (bodyId.IsInvalid()) {
                 THROW_EXCEPTION(InvalidBodyId, domino);
             }

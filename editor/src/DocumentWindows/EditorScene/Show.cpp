@@ -122,11 +122,13 @@ namespace nexo::editor {
         if (!cameraComponent.m_renderTarget) return;
 
         // Resize handling
-        if (const glm::vec2 renderTargetSize = cameraComponent.m_renderTarget->getSize();
-            !cameraComponent.viewportLocked && (m_contentSize.x > 0 && m_contentSize.y > 0) &&
-            (m_contentSize.x != renderTargetSize.x || m_contentSize.y != renderTargetSize.y)) {
-            cameraComponent.resize(static_cast<unsigned int>(m_contentSize.x),
-                                   static_cast<unsigned int>(m_contentSize.y));
+        {
+            const auto newWidth = static_cast<unsigned int>(m_contentSize.x);
+            const auto newHeight = static_cast<unsigned int>(m_contentSize.y);
+            if (!cameraComponent.viewportLocked && newWidth > 0 && newHeight > 0 &&
+                (newWidth != cameraComponent.width || newHeight != cameraComponent.height)) {
+                cameraComponent.resize(newWidth, newHeight);
+            }
         }
 
         // Render framebuffer

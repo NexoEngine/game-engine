@@ -16,11 +16,13 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
+#include <components/Name.hpp>
 #include <components/Video.hpp>
 #include <math/Light.hpp>
 #include <random>
 
 #include "CameraFactory.hpp"
+#include "DemoScenes.hpp"
 #include "EditorScene.hpp"
 #include "EntityFactory3D.hpp"
 #include "LightFactory.hpp"
@@ -69,7 +71,7 @@ namespace nexo::editor {
                                                              static_cast<unsigned int>(m_contentSize.y));
         auto outlinePass        = std::make_shared<renderer::OutlinePass>();
         auto gridPass           = std::make_shared<renderer::GridPass>();
-        auto shadowPass         = std::make_shared<renderer::ShadowPass>(2048);
+        auto shadowPass         = std::make_shared<renderer::ShadowPass>(1024);
         auto pointShadowPass = std::make_shared<renderer::PointShadowPass>();
 
         const renderer::PassId forwardId = cameraComponent.pipeline.getFinalOutputPass();
@@ -111,11 +113,15 @@ namespace nexo::editor {
 
         m_sceneUuid = app.getSceneManager().getScene(m_sceneId).getUuid();
         if (m_defaultScene) {
-            loadDefaultEntities(); // Load default entities for testing purposes
-            physicScene(glm::vec3{-60.0f, 0.0f, 0.0f});
-            videoScene(glm::vec3{-15.0f, 0.0f, 0.0f});
-            lightsScene(glm::vec3{50.0f, 0.0f, 0.0f});
-            forestScene({100.0f, 1.0f, 0.0f});
+            // loadDefaultEntities(m_sceneId);
+            fullScene(m_sceneId);
+            dominoScene(m_sceneId, {7.5f, 4.07f, -0.5f});
+            // Qualified call to the DemoScenes free function (not the member function which creates 5 point lights)
+            ::nexo::editor::lightsScene(m_sceneId, glm::vec3{0.0f, 0.0f, 0.0f});
+            // chambouleScene(m_sceneId, glm::vec3{0.0f, 0.0f, 0.0f});
+            // physicScene(glm::vec3{-60.0f, 0.0f, 0.0f});
+            // videoScene(glm::vec3{0.0f, 0.0f, 0.0f});
+            // forestScene(glm::vec3{100.0f, 1.0f, 0.0f});
         }
     }
 

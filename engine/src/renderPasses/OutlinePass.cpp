@@ -33,7 +33,7 @@ namespace nexo::renderer {
 
     void OutlinePass::execute(RenderPipeline& pipeline)
     {
-        const std::unordered_map<std::string, UniformValue> globalUniforms = pipeline.getGlobalUniforms();
+        const auto &globalUniforms = pipeline.getGlobalUniforms();
 
         const auto renderTarget = pipeline.getRenderTarget();
         std::shared_ptr<NxFramebuffer> maskPass = nullptr;
