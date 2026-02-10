@@ -39,8 +39,6 @@ namespace nexo::ecs {
 
     void TypeErasedComponentArray::insertRaw(Entity entity, const void* componentData)
     {
-        if (entity >= MAX_ENTITIES) THROW_EXCEPTION(OutOfRange, entity);
-
         ensureSparseCapacity(entity);
 
         if (hasComponent(entity)) {
@@ -66,8 +64,6 @@ namespace nexo::ecs {
 
     void TypeErasedComponentArray::insertRawWithConstructor(Entity entity, void (*constructor)(void* memoryDst))
     {
-        if (entity >= MAX_ENTITIES) THROW_EXCEPTION(OutOfRange, entity);
-
         ensureSparseCapacity(entity);
 
         if (hasComponent(entity)) {
@@ -76,17 +72,25 @@ namespace nexo::ecs {
         }
 
         const size_t newIndex = m_size;
-        m_sparse[entity]      = newIndex;
-        m_dense.push_back(entity);
 
-        // Resize component data vector if needed
+        // Resize component data vector first, before committing bookkeeping
         const size_t requiredSize = (m_size + 1) * m_componentSize;
         if (m_componentData.size() < requiredSize) {
             m_componentData.resize(requiredSize);
         }
 
-        // Call the constructor to initialize the component in place
-        constructor(m_componentData.data());
+        // Call the constructor at the correct offset
+        try {
+            constructor(m_componentData.data() + newIndex * m_componentSize);
+        } catch (...) {
+            // Shrink buffer back on failure, bookkeeping was not yet committed
+            m_componentData.resize(m_size * m_componentSize);
+            throw;
+        }
+
+        // Commit bookkeeping only after successful construction
+        m_sparse[entity] = newIndex;
+        m_dense.push_back(entity);
         ++m_size;
     }
 
@@ -244,11 +248,14 @@ namespace nexo::ecs {
         std::byte* data1 = m_componentData.data() + index1 * m_componentSize;
         std::byte* data2 = m_componentData.data() + index2 * m_componentSize;
 
-        // Use a temporary buffer for swapping
-        std::vector<std::byte> temp(m_componentSize);
-        std::memcpy(temp.data(), data1, m_componentSize);
+        // Lazily resize the reusable swap buffer on first use
+        if (m_swapBuffer.size() < m_componentSize) {
+            m_swapBuffer.resize(m_componentSize);
+        }
+
+        std::memcpy(m_swapBuffer.data(), data1, m_componentSize);
         std::memcpy(data1, data2, m_componentSize);
-        std::memcpy(data2, temp.data(), m_componentSize);
+        std::memcpy(data2, m_swapBuffer.data(), m_componentSize);
     }
 
     void TypeErasedComponentArray::shrinkIfNeeded()

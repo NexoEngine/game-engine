@@ -109,9 +109,27 @@ namespace nexo::ecs {
      * The Coordinator class ties together the functionalities of the EntityManager,
      * ComponentManager, and SystemManager to facilitate the creation, management,
      * and interaction of entities, components, and systems within the ECS framework.
+     *
+     * ## Component Access API Tiers
+     *
+     * | Tier          | Method                              | Returns                          | On failure              |
+     * |---------------|-------------------------------------|----------------------------------|-------------------------|
+     * | Safe typed    | `getComponent<T>(entity)`           | `T&`                             | throws ComponentNotFound|
+     * | Try typed     | `tryGetComponent<T>(entity)`        | `optional<reference_wrapper<T>>` | `nullopt`               |
+     * | Raw/runtime   | `tryGetComponentById(type, entity)` | `void*`                          | `nullptr`               |
+     *
+     * Use the **safe** tier inside systems that filter on the component's signature.
+     * Use the **try** tier for optional access. Use the **raw** tier for runtime-typed
+     * access (scripting, serialization).
      */
     class Coordinator {
        public:
+        /**
+         * @brief Destructor. Resets System::coord if it points to this Coordinator,
+         *        preventing dangling pointers after destruction.
+         */
+        ~Coordinator();
+
         /**
          * @brief Initializes the Coordinator, creating instances of EntityManager,
          * ComponentManager, SystemManager, EventManager, SingletonComponentManager

@@ -36,6 +36,11 @@ namespace nexo::ecs {
             return;
         }
 
+        // Grow sparse vector lazily to accommodate the entity ID
+        if (entity >= sparse.size()) {
+            sparse.resize(entity + 1, INVALID_INDEX);
+        }
+
         sparse[entity] = dense.size();
         dense.push_back(entity);
     }
@@ -63,7 +68,7 @@ namespace nexo::ecs {
         dense[index]       = lastEntity;
         sparse[lastEntity] = index;
         dense.pop_back();
-        sparse.erase(entity);
+        sparse[entity] = INVALID_INDEX;
     }
 
     /**

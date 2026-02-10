@@ -8,6 +8,7 @@
 
 #include <gtest/gtest.h>
 #include <algorithm>
+#include <set>
 #include "ecs/Entity.hpp"
 #include "ecs/ECSExceptions.hpp"
 
@@ -390,67 +391,74 @@ TEST_F(EntityManagerEdgeCaseTest, SignatureWithSingleBit) {
 }
 
 // =============================================================================
-// EntityManager MAX_ENTITIES Limit Tests
+// EntityManager Limit Tests (using small configurable limit for fast testing)
 // =============================================================================
 
 class EntityManagerLimitTest : public ::testing::Test {
 protected:
-    EntityManager manager;
+    static constexpr Entity TEST_LIMIT = 100;
+    EntityManager manager{TEST_LIMIT};
 };
 
 TEST_F(EntityManagerLimitTest, CreateEntitiesUpToMaxLimit) {
-    // This test creates MAX_ENTITIES entities (warning: may be slow)
-    // Creating entities up to the limit should succeed
     std::vector<Entity> entities;
-    entities.reserve(MAX_ENTITIES);
+    entities.reserve(TEST_LIMIT);
 
-    for (size_t i = 0; i < MAX_ENTITIES; ++i) {
+    for (size_t i = 0; i < TEST_LIMIT; ++i) {
         EXPECT_NO_THROW({
             Entity e = manager.createEntity();
             entities.push_back(e);
         });
     }
 
-    EXPECT_EQ(manager.getLivingEntityCount(), MAX_ENTITIES);
+    EXPECT_EQ(manager.getLivingEntityCount(), TEST_LIMIT);
 }
 
 TEST_F(EntityManagerLimitTest, CreateEntityBeyondMaxThrows) {
-    // Fill up to max
-    for (size_t i = 0; i < MAX_ENTITIES; ++i) {
+    for (size_t i = 0; i < TEST_LIMIT; ++i) {
         manager.createEntity();
     }
 
-    // Trying to create one more should throw
     EXPECT_THROW(manager.createEntity(), TooManyEntities);
 }
 
 TEST_F(EntityManagerLimitTest, LivingEntityCountAccurateAtLimit) {
-    // Create entities up to the limit
-    for (size_t i = 0; i < MAX_ENTITIES; ++i) {
+    for (size_t i = 0; i < TEST_LIMIT; ++i) {
         manager.createEntity();
     }
 
-    EXPECT_EQ(manager.getLivingEntityCount(), MAX_ENTITIES);
+    EXPECT_EQ(manager.getLivingEntityCount(), TEST_LIMIT);
 
     // Destroy one and verify count
-    manager.destroyEntity(100);
-    EXPECT_EQ(manager.getLivingEntityCount(), MAX_ENTITIES - 1);
+    manager.destroyEntity(50);
+    EXPECT_EQ(manager.getLivingEntityCount(), TEST_LIMIT - 1);
 
-    // Create one more and verify we're back at max
+    // Create one more and verify we're back at limit
     manager.createEntity();
-    EXPECT_EQ(manager.getLivingEntityCount(), MAX_ENTITIES);
+    EXPECT_EQ(manager.getLivingEntityCount(), TEST_LIMIT);
 }
 
 TEST_F(EntityManagerLimitTest, MaxEntitiesMinusOneIsValid) {
-    // MAX_ENTITIES - 1 is the highest valid entity ID
-    // Fill all entities
-    for (size_t i = 0; i < MAX_ENTITIES; ++i) {
+    for (size_t i = 0; i < TEST_LIMIT; ++i) {
         manager.createEntity();
     }
 
-    // MAX_ENTITIES - 1 should be valid
-    EXPECT_NO_THROW({ [[maybe_unused]] auto sig = manager.getSignature(MAX_ENTITIES - 1); });
-    EXPECT_NO_THROW(manager.setSignature(MAX_ENTITIES - 1, Signature{}));
+    EXPECT_NO_THROW({ [[maybe_unused]] auto sig = manager.getSignature(TEST_LIMIT - 1); });
+    EXPECT_NO_THROW(manager.setSignature(TEST_LIMIT - 1, Signature{}));
+}
+
+TEST_F(EntityManagerLimitTest, DynamicAllocationNoUpfrontMemory) {
+    // With counter-based allocation, creating just a few entities
+    // should not allocate memory for the full limit
+    Entity e = manager.createEntity();
+    EXPECT_EQ(e, 0u);
+    EXPECT_EQ(manager.getLivingEntityCount(), 1u);
+}
+
+TEST_F(EntityManagerLimitTest, OutOfRangeAtLimit) {
+    EXPECT_THROW(manager.destroyEntity(TEST_LIMIT), OutOfRange);
+    EXPECT_THROW({ [[maybe_unused]] auto sig = manager.getSignature(TEST_LIMIT); }, OutOfRange);
+    EXPECT_THROW(manager.setSignature(TEST_LIMIT, Signature{}), OutOfRange);
 }
 
 // =============================================================================
@@ -859,7 +867,7 @@ TEST_F(EntityManagerValidationTest, GetSignatureForNeverCreatedEntity) {
 
 TEST_F(EntityManagerValidationTest, SetSignatureForNeverCreatedEntity) {
     // Setting signature for an entity that hasn't been created yet
-    // is allowed (signature is stored in array)
+    // is allowed (signature vector grows lazily)
     Signature sig;
     sig.set(5);
 
@@ -898,6 +906,35 @@ TEST_F(EntityManagerValidationTest, LivingEntitiesDoesNotContainDestroyed) {
     EXPECT_NE(std::find(living_vec.begin(), living_vec.end(), e1), living_vec.end());
     EXPECT_EQ(std::find(living_vec.begin(), living_vec.end(), e2), living_vec.end());
     EXPECT_NE(std::find(living_vec.begin(), living_vec.end(), e3), living_vec.end());
+}
+
+// =============================================================================
+// EntityManager Destroy Does Not Break Iteration Tests
+// =============================================================================
+
+TEST(EntityManagerDestroyIteration, DestroyDoesNotBreakIteration) {
+    EntityManager manager;
+
+    // Create 10 entities: 0..9
+    std::vector<Entity> entities;
+    for (int i = 0; i < 10; ++i) {
+        entities.push_back(manager.createEntity());
+    }
+
+    // Destroy interleaved entities: 1, 3, 5, 7
+    manager.destroyEntity(entities[1]);
+    manager.destroyEntity(entities[3]);
+    manager.destroyEntity(entities[5]);
+    manager.destroyEntity(entities[7]);
+
+    // Expected remaining: {0, 2, 4, 6, 8, 9}
+    std::set<Entity> expected = {entities[0], entities[2], entities[4], entities[6], entities[8], entities[9]};
+
+    auto living = manager.getLivingEntities();
+    std::set<Entity> actual(living.begin(), living.end());
+
+    EXPECT_EQ(actual, expected);
+    EXPECT_EQ(manager.getLivingEntityCount(), 6u);
 }
 
 }  // namespace nexo::ecs

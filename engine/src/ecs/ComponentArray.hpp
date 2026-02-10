@@ -100,9 +100,7 @@ namespace nexo::ecs {
          *
          * @param entity The entity to add the component to
          * @param componentData Pointer to the raw component data
-         * @throws OutOfRange if entity ID exceeds MAX_ENTITIES
-         *
-         * @pre The entity must be a valid entity ID
+         * @pre The entity must be a valid entity ID (validated by EntityManager)
          * @pre componentData must point to valid memory of component's size
          */
         virtual void insertRaw(Entity entity, const void* componentData) = 0;
@@ -112,9 +110,7 @@ namespace nexo::ecs {
          *
          * @param entity The entity to add the component to
          * @param constructor Pointer to the constructor function or functor
-         * @throws OutOfRange if entity ID exceeds MAX_ENTITIES
-         *
-         * @pre The entity must be a valid entity ID
+         * @pre The entity must be a valid entity ID (validated by EntityManager)
          */
         virtual void insertRawWithConstructor(Entity entity, void (*constructor)(void* memoryDst)) = 0;
 
@@ -154,8 +150,8 @@ namespace nexo::ecs {
      * @tparam T The component type stored in this array
      * @tparam capacity Initial capacity for the sparse array
      *
-     * @note This class is not thread-safe. Access should be synchronized externally when
-     *       used in multithreaded contexts.
+     * @warning Not thread-safe. The ECS assumes a single-threaded execution model.
+     *          All component array operations must be performed from the main ECS thread.
      */
     template<typename T, size_t capacity = 1024>
         requires(capacity >= 1)
@@ -211,14 +207,11 @@ namespace nexo::ecs {
          *
          * @param entity The entity to add the component to
          * @param component The component instance to add
-         * @throws OutOfRange if entity ID exceeds MAX_ENTITIES
          *
-         * @pre The entity must be a valid entity ID
+         * @pre The entity must be a valid entity ID (validated by EntityManager)
          */
         void insert(Entity entity, T component)
         {
-            if (entity >= MAX_ENTITIES) THROW_EXCEPTION(OutOfRange, entity);
-
             // Ensure m_sparse can hold this entity index.
             ensureSparseCapacity(entity);
 
@@ -240,15 +233,11 @@ namespace nexo::ecs {
          *
          * @param entity The entity to add the component to
          * @param componentData Pointer to the raw component data
-         * @throws OutOfRange if entity ID exceeds MAX_ENTITIES
-         *
-         * @pre The entity must be a valid entity ID
+         * @pre The entity must be a valid entity ID (validated by EntityManager)
          * @pre componentData must point to valid memory of component's size
          */
         void insertRaw(Entity entity, const void* componentData) override
         {
-            if (entity >= MAX_ENTITIES) THROW_EXCEPTION(OutOfRange, entity);
-
             ensureSparseCapacity(entity);
 
             if (hasComponent(entity)) {
@@ -278,14 +267,10 @@ namespace nexo::ecs {
          *
          * @param entity The entity to add the component to
          * @param constructor Pointer to the constructor function or functor
-         * @throws OutOfRange if entity ID exceeds MAX_ENTITIES
-         *
-         * @pre The entity must be a valid entity ID
+         * @pre The entity must be a valid entity ID (validated by EntityManager)
          */
         void insertRawWithConstructor(Entity entity, void (*constructor)(void* memoryDst))
         {
-            if (entity >= MAX_ENTITIES) THROW_EXCEPTION(OutOfRange, entity);
-
             ensureSparseCapacity(entity);
 
             if (hasComponent(entity)) {
@@ -294,12 +279,18 @@ namespace nexo::ecs {
             }
 
             const size_t newIndex = m_size;
-            m_sparse[entity]      = newIndex;
-            m_dense.push_back(entity);
 
-            // allocate new component in the array
+            // Allocate first, then construct, then commit bookkeeping
             m_componentArray.emplace_back();
-            constructor(&m_componentArray[newIndex]);
+            try {
+                constructor(&m_componentArray[newIndex]);
+            } catch (...) {
+                m_componentArray.pop_back();
+                throw;
+            }
+
+            m_sparse[entity] = newIndex;
+            m_dense.push_back(entity);
             ++m_size;
         }
 
@@ -668,6 +659,9 @@ namespace nexo::ecs {
      * This class allows you to create component arrays at runtime without knowing
      * the component type at compile time. You only need to specify the size of
      * each component.
+     *
+     * @warning Not thread-safe. The ECS assumes a single-threaded execution model.
+     *          All component array operations must be performed from the main ECS thread.
      */
     class alignas(64) TypeErasedComponentArray final : public IComponentArray {
        public:
@@ -690,9 +684,7 @@ namespace nexo::ecs {
          *
          * @param entity The entity to add the component to
          * @param componentData Pointer to the raw component data
-         * @throws OutOfRange if entity ID exceeds MAX_ENTITIES
-         *
-         * @pre The entity must be a valid entity ID
+         * @pre The entity must be a valid entity ID (validated by EntityManager)
          * @pre componentData must point to valid memory of component's size
          */
         void insertRaw(Entity entity, const void* componentData) override;
@@ -702,9 +694,7 @@ namespace nexo::ecs {
          *
          * @param entity The entity to add the component to
          * @param constructor Pointer to the constructor function or functor
-         * @throws OutOfRange if entity ID exceeds MAX_ENTITIES
-         *
-         * @pre The entity must be a valid entity ID
+         * @pre The entity must be a valid entity ID (validated by EntityManager)
          */
         void insertRawWithConstructor(Entity entity, void (*constructor)(void* memoryDst)) override;
 
@@ -816,6 +806,8 @@ namespace nexo::ecs {
         std::vector<size_t> m_sparse;
         // Dense storage for entity IDs
         std::vector<Entity> m_dense;
+        // Reusable buffer for swapComponents() to avoid per-call heap allocation
+        std::vector<std::byte> m_swapBuffer;
         // Size of each component in bytes
         size_t m_componentSize;
         // Initial capacity

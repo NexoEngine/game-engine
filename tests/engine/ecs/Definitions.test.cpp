@@ -69,7 +69,7 @@ TEST_F(ComponentTypeTest, ComponentTypeIsUnsigned) {
 }
 
 TEST_F(ComponentTypeTest, MaxComponentTypeValue) {
-    EXPECT_EQ(MAX_COMPONENT_TYPE, 32u);
+    EXPECT_EQ(MAX_COMPONENT_TYPE, 64u);
 }
 
 TEST_F(ComponentTypeTest, MaxComponentTypeFitsInUint8) {

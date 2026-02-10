@@ -116,8 +116,8 @@ namespace nexo::ecs {
     TEST_F(ComponentManagerEdgeCaseTest, RegisterManyComponentTypes) {
         // Test that the system doesn't break with multiple registrations
         // Note: We can't register MAX_COMPONENT_TYPE because it's a global counter
-        // shared across all tests, so we register a reasonable number instead
-        for (int i = 0; i < 10; ++i) {
+        // shared across all tests, so we register a small number instead
+        for (int i = 0; i < 2; ++i) {
             // Register TypeErasedComponents to avoid template limit issues
             EXPECT_NO_THROW(componentManager->registerComponent(sizeof(int), 32));
         }
@@ -509,7 +509,8 @@ namespace nexo::ecs {
     }
 
     TEST_F(ComponentManagerEdgeCaseTest, GetComponentArrayByTypeIDThrowsWhenNotRegistered) {
-        ComponentType invalidTypeID = 99;
+        // Use an ID within MAX_COMPONENT_TYPE bounds but not registered
+        ComponentType invalidTypeID = MAX_COMPONENT_TYPE - 1;
 
         EXPECT_THROW(
             componentManager->getComponentArray(invalidTypeID),

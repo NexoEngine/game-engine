@@ -21,6 +21,7 @@
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
+#include <vector>
 
 #include "Definitions.hpp"
 #include "ECSExceptions.hpp"
@@ -39,7 +40,7 @@ namespace nexo::ecs {
      *
      * This class provides O(1) insertion, removal, and lookup operations for entities.
      * It uses a sparse-dense pattern where entities are stored contiguously in a dense array,
-     * while maintaining a sparse lookup map to quickly find entity positions.
+     * while maintaining a sparse vector for cache-friendly index lookups.
      */
     class SparseSet {
        public:
@@ -75,7 +76,7 @@ namespace nexo::ecs {
          */
         [[nodiscard]] bool contains(const Entity entity) const
         {
-            return sparse.contains(entity);
+            return entity < sparse.size() && sparse[entity] != INVALID_INDEX;
         }
 
         /**
@@ -119,15 +120,19 @@ namespace nexo::ecs {
         }
 
        private:
+        static constexpr size_t INVALID_INDEX = SIZE_MAX;
+
         /**
          * @brief Dense array of entities in insertion order
          */
         std::vector<Entity> dense;
 
         /**
-         * @brief Sparse lookup map from entity ID to position in dense array
+         * @brief Sparse lookup vector from entity ID to position in dense array.
+         *        INVALID_INDEX indicates the entity is not in the set.
+         *        Grows lazily to accommodate the max entity ID seen.
          */
-        std::unordered_map<Entity, size_t> sparse;
+        std::vector<size_t> sparse;
     };
 
     /**
@@ -137,12 +142,18 @@ namespace nexo::ecs {
      *
      * Systems are responsible for processing entities that have a specific set of components.
      * This class provides the basic structure for a system, mainly a set of entities that the system will process.
+     *
+     * @warning This class assumes a single-threaded ECS model. The static `coord` pointer
+     *          is not thread-safe and must only be accessed from the main/ECS thread.
      */
     class System {
        public:
         virtual ~System() = default;
         /**
          * @brief Global coordinator instance shared by all systems
+         *
+         * @warning Not thread-safe. Must only be read/written from the main ECS thread.
+         *          Set during Coordinator::init() and reset during Coordinator destruction.
          */
         static std::shared_ptr<Coordinator> coord;
     };

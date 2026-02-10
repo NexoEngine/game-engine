@@ -11,6 +11,7 @@ set(SRCS
         examples/ecs/exampleBasic.cpp
         common/Exception.cpp
         engine/src/ecs/Components.cpp
+        engine/src/ecs/GroupManager.cpp
         engine/src/ecs/Entity.cpp
         engine/src/ecs/Coordinator.cpp
         engine/src/ecs/System.cpp

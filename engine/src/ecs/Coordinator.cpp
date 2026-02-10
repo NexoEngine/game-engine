@@ -22,6 +22,13 @@ std::shared_ptr<nexo::ecs::Coordinator> nexo::ecs::System::coord = nullptr;
 
 namespace nexo::ecs {
 
+    Coordinator::~Coordinator()
+    {
+        if (System::coord && System::coord.get() == this) {
+            System::coord.reset();
+        }
+    }
+
     void Coordinator::init()
     {
         m_componentManager          = std::make_shared<ComponentManager>();
@@ -29,7 +36,11 @@ namespace nexo::ecs {
         m_systemManager             = std::make_shared<SystemManager>();
         m_singletonComponentManager = std::make_shared<SingletonComponentManager>();
 
-        System::coord = std::shared_ptr<Coordinator>(this, [](const Coordinator*) {});
+        // Only set System::coord if it doesn't already point to this Coordinator
+        // (Application.cpp may have already set an owning shared_ptr before calling init())
+        if (!System::coord || System::coord.get() != this) {
+            System::coord = std::shared_ptr<Coordinator>(this, [](const Coordinator*) {});
+        }
 
         LOG(NEXO_DEV, "ecs: Coordinator initialized");
     }

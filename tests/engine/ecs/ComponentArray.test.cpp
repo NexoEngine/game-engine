@@ -118,9 +118,12 @@ TEST_F(ComponentArrayExceptionTest, RemoveThrowsForMissingComponent) {
     EXPECT_THROW(array.remove(0), ComponentNotFound);
 }
 
-TEST_F(ComponentArrayExceptionTest, InsertThrowsForOutOfRangeEntity) {
-    EXPECT_THROW(array.insert(MAX_ENTITIES, {0, 0.0f}), OutOfRange);
-    EXPECT_THROW(array.insert(MAX_ENTITIES + 1, {0, 0.0f}), OutOfRange);
+TEST_F(ComponentArrayExceptionTest, InsertLargeEntityGrowsSparse) {
+    // ComponentArray no longer validates against MAX_ENTITIES — entity ID
+    // validation is EntityManager's responsibility.
+    EXPECT_NO_THROW(array.insert(MAX_ENTITIES, {42, 3.14f}));
+    EXPECT_TRUE(array.hasComponent(MAX_ENTITIES));
+    EXPECT_EQ(array.get(MAX_ENTITIES).value, 42);
 }
 
 TEST_F(ComponentArrayExceptionTest, GetEntityAtIndexThrowsForInvalidIndex) {
@@ -611,6 +614,63 @@ TEST_F(TypeErasedComponentArrayTest, EntitiesSpan) {
 
     auto entities = array.entities();
     EXPECT_EQ(entities.size(), 3u);
+}
+
+// =============================================================================
+// Constructor Exception Safety Tests
+// =============================================================================
+
+TEST(ComponentArrayExceptionSafety, ConstructorExceptionDoesNotCorruptState) {
+    TypeErasedComponentArray array(sizeof(SimpleComponent));
+
+    // Insert a valid component first
+    SimpleComponent valid{42};
+    array.insert(0, &valid);
+    EXPECT_EQ(array.size(), 1u);
+    EXPECT_TRUE(array.hasComponent(0));
+
+    // Try inserting with a throwing constructor
+    auto throwingConstructor = [](void*) {
+        throw std::runtime_error("constructor failed");
+    };
+
+    EXPECT_THROW(array.insertRawWithConstructor(1, throwingConstructor), std::runtime_error);
+
+    // State should be unchanged after the failed insert
+    EXPECT_EQ(array.size(), 1u);
+    EXPECT_TRUE(array.hasComponent(0));
+    EXPECT_FALSE(array.hasComponent(1));
+
+    // The existing component should still be accessible and correct
+    auto* comp = static_cast<SimpleComponent*>(array.getRawComponent(0));
+    EXPECT_EQ(comp->x, 42);
+
+    // Should be able to insert a new component normally after failure
+    SimpleComponent another{99};
+    EXPECT_NO_THROW(array.insert(1, &another));
+    EXPECT_EQ(array.size(), 2u);
+    EXPECT_TRUE(array.hasComponent(1));
+}
+
+TEST(ComponentArrayExceptionSafety, TemplatedConstructorExceptionDoesNotCorruptState) {
+    ComponentArray<TestComponent> array;
+
+    // Insert a valid component
+    array.insert(0, {42, 3.14f});
+    EXPECT_EQ(array.size(), 1u);
+
+    // Try inserting with a throwing constructor
+    auto throwingConstructor = [](void*) {
+        throw std::runtime_error("constructor failed");
+    };
+
+    EXPECT_THROW(array.insertRawWithConstructor(1, throwingConstructor), std::runtime_error);
+
+    // State should be unchanged
+    EXPECT_EQ(array.size(), 1u);
+    EXPECT_TRUE(array.hasComponent(0));
+    EXPECT_FALSE(array.hasComponent(1));
+    EXPECT_EQ(array.get(0).value, 42);
 }
 
 }  // namespace nexo::ecs

@@ -18,15 +18,9 @@
 #pragma once
 
 #include <array>
-#include <bitset>
 #include <cassert>
-#include <cmath>
-#include <functional>
 #include <memory>
 #include <optional>
-#include <ranges>
-#include <set>
-#include <sstream>
 #include <typeindex>
 #include <unordered_map>
 #include <vector>
@@ -35,145 +29,15 @@
 #include "Definitions.hpp"
 #include "ECSExceptions.hpp"
 #include "Exception.hpp"
-#include "Group.hpp"
+#include "GroupManager.hpp"
 #include "Logger.hpp"
-
-namespace nexo::ecs {
-    /**
-     * @brief Helper template to tag non-owned component types
-     *
-     * This template is used for tag dispatching to distinguish between
-     * owned and non-owned components in group registration.
-     *
-     * @tparam NonOwning The non-owned component types
-     */
-    template<typename... NonOwning>
-    struct get_t {};
-
-    /**
-     * @brief Creates a type tag for specifying non-owned components
-     *
-     * This helper function is used to create a tag type that identifies
-     * which components should be accessible but not owned by a group.
-     *
-     * @tparam NonOwning The non-owned component types
-     * @return A tag object of get_t<NonOwning...>
-     */
-    template<typename... NonOwning>
-    get_t<NonOwning...> get()
-    {
-        return {};
-    }
-
-    /**
-     * @brief Type alias for a tuple of owned component arrays
-     *
-     * Used internally by the Group class to store owned components.
-     *
-     * @tparam Owned The owned component types
-     */
-    template<typename... Owned>
-    using OwnedComponents = std::tuple<std::shared_ptr<ComponentArray<Owned>>...>;
-
-    /**
-     * @brief Type alias for a tuple of non-owned component arrays
-     *
-     * Used internally by the Group class to store references to non-owned components.
-     *
-     * @tparam NonOwned The non-owned component types
-     */
-    template<typename... NonOwned>
-    using NonOwnedComponents = std::tuple<std::shared_ptr<ComponentArray<NonOwned>>...>;
-
-    /**
-     * @brief Type alias for a shared pointer to a Group
-     *
-     * Simplifies the declaration of Group instances by hiding the complex template types.
-     *
-     * @tparam OwnedGroup Tuple type for owned component arrays
-     * @tparam NonOwnedGroup Tuple type for non-owned component arrays
-     */
-    template<typename OwnedGroup, typename NonOwnedGroup>
-    using GroupAlias = std::shared_ptr<Group<OwnedGroup, NonOwnedGroup>>;
-
-    /**
-     * @brief Structure to represent a group key using numeric types
-     *
-     * Provides a more efficient way to identify groups compared to strings.
-     * Uses a combination of two separate signatures to represent owned and non-owned components.
-     */
-    struct GroupKey {
-        Signature ownedSignature;    ///< Bits set for components owned by the group
-        Signature nonOwnedSignature; ///< Bits set for components used but not owned by the group
-
-        /**
-         * @brief Equality comparison operator
-         */
-        bool operator==(const GroupKey& other) const
-        {
-            return ownedSignature == other.ownedSignature && nonOwnedSignature == other.nonOwnedSignature;
-        }
-
-        /**
-         * @brief Returns a string representation of the component types in this key
-         * Used for error messages and debugging
-         *
-         * @return String describing the components
-         */
-        [[nodiscard]] std::string toString() const
-        {
-            std::stringstream ss;
-            ss << "Owned: {";
-            bool first = true;
-
-            // Add owned component IDs
-            for (ComponentType i = 0; i < MAX_COMPONENT_TYPE; ++i) {
-                if (ownedSignature.test(i)) {
-                    if (!first) ss << ", ";
-                    ss << "Component#" << i;
-                    first = false;
-                }
-            }
-
-            ss << "}, Non-owned: {";
-            first = true;
-
-            // Add non-owned component IDs
-            for (ComponentType i = 0; i < MAX_COMPONENT_TYPE; ++i) {
-                if (nonOwnedSignature.test(i)) {
-                    if (!first) ss << ", ";
-                    ss << "Component#" << i;
-                    first = false;
-                }
-            }
-
-            ss << "}";
-            return ss.str();
-        }
-    };
-} // namespace nexo::ecs
-
-/**
- * @brief Hash function for GroupKey
- *
- * Allows GroupKey to be used as a key in unordered_map
- */
-template<>
-struct std::hash<nexo::ecs::GroupKey> {
-    size_t operator()(const nexo::ecs::GroupKey& key) const noexcept
-    {
-        const size_t h1 = std::hash<nexo::ecs::Signature>()(key.ownedSignature);
-        const size_t h2 = std::hash<nexo::ecs::Signature>()(key.nonOwnedSignature);
-        return h1 ^ (h2 << 1);
-    }
-}; // namespace std
 
 namespace nexo::ecs {
 
     /**
      * @class ComponentManager
      *
-     * @brief Central manager for all component types and their arrays
+     * @brief Central manager for all component types and their arrays.
      *
      * The ComponentManager is responsible for:
      * - Registering component types in the ECS
@@ -181,38 +45,30 @@ namespace nexo::ecs {
      * - Adding/removing components from entities
      * - Managing component group registrations
      * - Handling entity destruction with respect to components
+     *
+     * ## Component Access API Tiers
+     *
+     * Component access is provided through three consistent tiers:
+     *
+     * | Tier          | Method                          | Returns                           | On failure              |
+     * |---------------|---------------------------------|-----------------------------------|-------------------------|
+     * | Safe typed    | `getComponent<T>(entity)`       | `T&`                              | throws ComponentNotFound|
+     * | Try typed     | `tryGetComponent<T>(entity)`    | `optional<reference_wrapper<T>>`  | `nullopt`               |
+     * | Raw/runtime   | `tryGetComponent(entity, typeID)` | `void*`                         | `nullptr`               |
+     *
+     * Use the **safe** tier when you know the entity has the component (e.g. inside a system
+     * that filters on the component's signature). Use the **try** tier for optional access
+     * when the component may or may not be present. Use the **raw** tier for runtime-typed
+     * access (e.g. scripting, serialization).
      */
     class ComponentManager {
        public:
-        ComponentManager() = default;
+        ComponentManager() : m_groupManager(m_componentArrays) {}
 
-        /**
-         * @brief Copy constructor (deleted)
-         *
-         * ComponentManager is not copyable to prevent duplication of component data.
-         */
-        ComponentManager(const ComponentManager&) = delete;
-
-        /**
-         * @brief Copy assignment operator (deleted)
-         *
-         * ComponentManager is not copyable to prevent duplication of component data.
-         */
+        ComponentManager(const ComponentManager&)            = delete;
         ComponentManager& operator=(const ComponentManager&) = delete;
-
-        /**
-         * @brief Move constructor
-         *
-         * Allows transferring ownership of component arrays to a new manager.
-         */
-        ComponentManager(ComponentManager&&) noexcept = default;
-
-        /**
-         * @brief Move assignment operator
-         *
-         * Allows transferring ownership of component arrays to a new manager.
-         */
-        ComponentManager& operator=(ComponentManager&&) noexcept = default;
+        ComponentManager(ComponentManager&&)                  = delete;
+        ComponentManager& operator=(ComponentManager&&)       = delete;
 
         /**
          * @brief Registers a component type in the ECS
@@ -287,14 +143,7 @@ namespace nexo::ecs {
         void addComponent(Entity entity, T component, const Signature oldSignature, const Signature newSignature)
         {
             getComponentArray<T>()->insert(entity, std::move(component));
-
-            for (const auto& group : std::ranges::views::values(m_groupRegistry)) {
-                // Check if entity qualifies now but did not qualify before.
-                if (((oldSignature & group->allSignature()) != group->allSignature()) &&
-                    ((newSignature & group->allSignature()) == group->allSignature())) {
-                    group->addToGroup(entity);
-                }
-            }
+            m_groupManager.onComponentAdded(getComponentTypeID<T>(), oldSignature, newSignature, entity);
         }
 
         /**
@@ -317,14 +166,7 @@ namespace nexo::ecs {
                           const Signature oldSignature, const Signature newSignature)
         {
             getComponentArray(componentType)->insertRaw(entity, componentData);
-
-            for (const auto& group : std::ranges::views::values(m_groupRegistry)) {
-                // Check if entity qualifies now but did not qualify before.
-                if (((oldSignature & group->allSignature()) != group->allSignature()) &&
-                    ((newSignature & group->allSignature()) == group->allSignature())) {
-                    group->addToGroup(entity);
-                }
-            }
+            m_groupManager.onComponentAdded(componentType, oldSignature, newSignature, entity);
         }
 
         /**
@@ -347,14 +189,7 @@ namespace nexo::ecs {
                                          const Signature newSignature)
         {
             getComponentArray(componentType)->insertRawWithConstructor(entity, constructor);
-
-            for (const auto& group : std::ranges::views::values(m_groupRegistry)) {
-                // Check if entity qualifies now but did not qualify before.
-                if (((oldSignature & group->allSignature()) != group->allSignature()) &&
-                    ((newSignature & group->allSignature()) == group->allSignature())) {
-                    group->addToGroup(entity);
-                }
-            }
+            m_groupManager.onComponentAdded(componentType, oldSignature, newSignature, entity);
         }
 
         /**
@@ -373,12 +208,7 @@ namespace nexo::ecs {
         void removeComponent(const Entity entity, const ComponentType componentType, const Signature previousSignature,
                              const Signature newSignature)
         {
-            for (const auto& group : std::ranges::views::values(m_groupRegistry)) {
-                if (((previousSignature & group->allSignature()) == group->allSignature()) &&
-                    ((newSignature & group->allSignature()) != group->allSignature())) {
-                    group->removeFromGroup(entity);
-                }
-            }
+            m_groupManager.onComponentRemoved(componentType, previousSignature, newSignature, entity);
             getComponentArray(componentType)->remove(entity);
         }
 
@@ -396,13 +226,7 @@ namespace nexo::ecs {
         template<typename T>
         void removeComponent(Entity entity, const Signature previousSignature, const Signature newSignature)
         {
-            for (const auto& group : std::ranges::views::values(m_groupRegistry)) {
-                // If the entity no longer qualifies but did before, remove it.
-                if (((previousSignature & group->allSignature()) == group->allSignature()) &&
-                    ((newSignature & group->allSignature()) != group->allSignature())) {
-                    group->removeFromGroup(entity);
-                }
-            }
+            m_groupManager.onComponentRemoved(getComponentTypeID<T>(), previousSignature, newSignature, entity);
             getComponentArray<T>()->remove(entity);
         }
 
@@ -424,13 +248,7 @@ namespace nexo::ecs {
             auto componentArray = getComponentArray<T>();
             if (!componentArray->hasComponent(entity)) return false;
 
-            for (const auto& group : std::ranges::views::values(m_groupRegistry)) {
-                // If the entity no longer qualifies but did before, remove it.
-                if (((previousSignature & group->allSignature()) == group->allSignature()) &&
-                    ((newSignature & group->allSignature()) != group->allSignature())) {
-                    group->removeFromGroup(entity);
-                }
-            }
+            m_groupManager.onComponentRemoved(getComponentTypeID<T>(), previousSignature, newSignature, entity);
             componentArray->remove(entity);
             return true;
         }
@@ -489,14 +307,7 @@ namespace nexo::ecs {
         {
             const auto& componentArray = m_componentArrays[componentType];
             componentArray->duplicateComponent(sourceEntity, destEntity);
-
-            for (const auto& group : std::ranges::views::values(m_groupRegistry)) {
-                // Check if entity qualifies now but did not qualify before.
-                if (((oldSignature & group->allSignature()) != group->allSignature()) &&
-                    ((newSignature & group->allSignature()) == group->allSignature())) {
-                    group->addToGroup(destEntity);
-                }
-            }
+            m_groupManager.onComponentAdded(componentType, oldSignature, newSignature, destEntity);
         }
 
         /**
@@ -586,78 +397,31 @@ namespace nexo::ecs {
         /**
          * @brief Creates or retrieves a group for specific component combinations
          *
-         * Creates a group that provides optimized access to entities having
-         * a specific combination of components, or returns an existing one.
-         * Components specified in the template parameter pack are "owned" (internal to the group),
-         * while those in the nonOwned parameter are "non-owned" (externally referenced).
-         *
          * @tparam Owned Component types that are owned by the group
          * @param nonOwned A get_t<...> tag specifying non-owned component types
          * @return A shared pointer to the group (either existing or newly created)
-         * @throws ComponentNotRegistered if any component type is not registered
-         * @throws OverlappingGroupsException if the new group would have overlapping owned
-         *         components with an existing group
          */
         template<typename... Owned>
         auto registerGroup(const auto& nonOwned)
         {
-            const GroupKey newGroupKey = generateGroupKey<Owned...>(nonOwned);
-
-            // Check if this exact group already exists
-            auto it = m_groupRegistry.find(newGroupKey);
-            if (it != m_groupRegistry.end()) {
-                using OwnedTuple    = std::tuple<std::shared_ptr<ComponentArray<Owned>>...>;
-                using NonOwnedTuple = decltype(getNonOwnedTuple(nonOwned));
-                return std::static_pointer_cast<Group<OwnedTuple, NonOwnedTuple>>(it->second);
-            }
-
-            // Check for conflicts with existing groups
-            for (const auto& existingKey : std::ranges::views::keys(m_groupRegistry)) {
-                if (hasCommonOwnedComponents(existingKey, newGroupKey)) {
-                    for (ComponentType i = 0; i < MAX_COMPONENT_TYPE; i++) {
-                        if (existingKey.ownedSignature.test(i) && newGroupKey.ownedSignature.test(i)) {
-                            THROW_EXCEPTION(OverlappingGroupsException, existingKey.toString(), newGroupKey.toString(),
-                                            i);
-                        }
-                    }
-                }
-            }
-
-            auto group                   = createNewGroup<Owned...>(nonOwned);
-            m_groupRegistry[newGroupKey] = group;
-            return group;
+            return m_groupManager.registerGroup<Owned...>(nonOwned);
         }
 
         /**
          * @brief Retrieves an existing group for specific component combinations
          *
-         * Gets a previously registered group that matches the specified
-         * owned and non-owned component types.
-         *
          * @tparam Owned Component types that are owned by the group
          * @param nonOwned A get_t<...> tag specifying non-owned component types
          * @return A shared pointer to the existing group
-         * @throws std::runtime_error if the group doesn't exist
          */
         template<typename... Owned>
         auto getGroup(const auto& nonOwned)
         {
-            const GroupKey groupKey = generateGroupKey<Owned...>(nonOwned);
-
-            const auto it = m_groupRegistry.find(groupKey);
-            if (it == m_groupRegistry.end()) THROW_EXCEPTION(GroupNotFound, "Group not found");
-
-            using OwnedTuple    = std::tuple<std::shared_ptr<ComponentArray<Owned>>...>;
-            using NonOwnedTuple = decltype(getNonOwnedTuple(nonOwned));
-            return std::static_pointer_cast<Group<OwnedTuple, NonOwnedTuple>>(it->second);
+            return m_groupManager.getGroup<Owned...>(nonOwned);
         }
 
         /**
          * @brief Checks if two groups share any common owned components
-         *
-         * Determines if two groups have any overlap in their owned components.
-         * This is useful for determining if two groups might affect each other's sorting
-         * or partitioning when entities are updated.
          *
          * @param key1 First group key to compare
          * @param key2 Second group key to compare
@@ -665,7 +429,7 @@ namespace nexo::ecs {
          */
         [[nodiscard]] static bool hasCommonOwnedComponents(const GroupKey& key1, const GroupKey& key2)
         {
-            return (key1.ownedSignature & key2.ownedSignature).any();
+            return GroupManager::hasCommonOwnedComponents(key1, key2);
         }
 
        private:
@@ -673,103 +437,15 @@ namespace nexo::ecs {
          * @brief Array of component arrays indexed by component type ID
          *
          * Provides O(1) lookup of component arrays by their type ID.
+         * Declared before m_groupManager because GroupManager holds a reference to it.
          */
         std::array<std::shared_ptr<IComponentArray>, MAX_COMPONENT_TYPE> m_componentArrays{};
 
         /**
-         * @brief Registry of groups indexed by their component signatures
+         * @brief Manages group registration, lookup, and entity membership tracking.
          *
-         * Allows retrieval of previously created groups by their component types.
+         * Must be declared after m_componentArrays (initialization order dependency).
          */
-        std::unordered_map<GroupKey, std::shared_ptr<IGroup>> m_groupRegistry;
-
-        /**
-         * @brief Helper function to get the tuple of non-owned component arrays
-         *
-         * @param nonOwned A get_t<...> tag specifying non-owned component types
-         * @return Tuple of non-owned component arrays
-         */
-        template<typename... NonOwning>
-        auto getNonOwnedTuple(const get_t<NonOwning...>&)
-        {
-            return std::make_tuple(getComponentArray<NonOwning>()...);
-        }
-
-        /**
-         * @brief Creates a new group for the specified component types
-         *
-         * @tparam Owned Component types owned by the group
-         * @param nonOwned Tag for non-owned component types
-         * @return Shared pointer to the new group
-         */
-        template<typename... Owned>
-        auto createNewGroup(const auto& nonOwned)
-        {
-            auto nonOwnedArrays = getNonOwnedTuple(nonOwned);
-
-            auto ownedArrays    = std::make_tuple(getComponentArray<Owned>()...);
-            using OwnedTuple    = std::tuple<std::shared_ptr<ComponentArray<Owned>>...>;
-            using NonOwnedTuple = decltype(nonOwnedArrays);
-
-            // Find entities that should be in this group
-            auto driver               = std::get<0>(ownedArrays);
-            const std::size_t minSize = std::apply(
-                [](auto&&... arrays) -> std::size_t { return std::min({static_cast<std::size_t>(arrays->size())...}); },
-                ownedArrays);
-
-            for (std::size_t i = 0; i < minSize; ++i) {
-                [[maybe_unused]] Entity e = driver->getEntityAtIndex(i);
-                bool valid                = true;
-
-                // Check in owned arrays
-                std::apply([&](auto&&... arrays) { valid = (valid && ... && arrays->hasComponent(e)); }, ownedArrays);
-
-                // Check in non-owned arrays
-                std::apply([&](auto&&... arrays) { valid = (valid && ... && arrays->hasComponent(e)); },
-                           nonOwnedArrays);
-
-                if (valid) {
-                    std::apply([&](auto&&... arrays) { ((arrays->addToGroup(e)), ...); }, ownedArrays);
-                }
-            }
-
-            return std::make_shared<Group<OwnedTuple, NonOwnedTuple>>(ownedArrays, nonOwnedArrays);
-        }
-
-        /**
-         * @brief Generates a unique key for a group based on its component types
-         *
-         * Creates a GroupKey with separate signatures for owned and non-owned components.
-         *
-         * @tparam Owned Component types owned by the group
-         * @param nonOwned Tag for non-owned component types
-         * @return GroupKey uniquely identifying this group type combination
-         */
-        template<typename... Owned>
-        GroupKey generateGroupKey(const auto& nonOwned)
-        {
-            GroupKey key;
-
-            // Set bits for owned components
-            ((key.ownedSignature.set(getComponentTypeID<Owned>())), ...);
-
-            // Set bits for non-owned components
-            setNonOwnedBits(key.nonOwnedSignature, nonOwned);
-
-            return key;
-        }
-
-        /**
-         * @brief Sets bits in the non-owned signature for each non-owned component
-         *
-         * @tparam NonOwning Non-owned component types
-         * @param signature The signature to modify
-         * @param nonOwned The non-owned components tag
-         */
-        template<typename... NonOwning>
-        static void setNonOwnedBits(Signature& signature, const get_t<NonOwning...>&)
-        {
-            ((signature.set(getComponentTypeID<NonOwning>())), ...);
-        }
+        GroupManager m_groupManager;
     };
 } // namespace nexo::ecs

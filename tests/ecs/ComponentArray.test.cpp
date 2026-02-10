@@ -226,11 +226,16 @@ namespace nexo::ecs {
     // ================== ERROR HANDLING =======================
     // =========================================================
 
-    TEST_F(ComponentArrayTest, InsertThrowsOnEntityBeyondMaxEntities) {
-        const Entity invalidEntity = MAX_ENTITIES;
+    TEST_F(ComponentArrayTest, InsertBeyondMaxEntitiesGrowsSparse) {
+        // ComponentArray no longer validates against MAX_ENTITIES — entity ID
+        // validation is EntityManager's responsibility.  Inserting a large entity
+        // ID should just grow the sparse array.
+        const Entity largeEntity = MAX_ENTITIES;
         TestComponent testComp;
-        testComp.value = 1;
-        EXPECT_THROW(componentArray->insert(invalidEntity, testComp), OutOfRange);
+        testComp.value = 42;
+        EXPECT_NO_THROW(componentArray->insert(largeEntity, testComp));
+        EXPECT_TRUE(componentArray->hasComponent(largeEntity));
+        EXPECT_EQ(componentArray->get(largeEntity).value, 42);
     }
 
     TEST_F(ComponentArrayTest, RemoveThrowsOnNonExistentComponent) {

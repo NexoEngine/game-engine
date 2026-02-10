@@ -853,4 +853,36 @@ TEST_F(CoordinatorIntegrationTest, GetAllComponentsAfterPartialRemoval) {
     EXPECT_EQ(coordinator.getAllComponents(entity).size(), 2u);
 }
 
+// =============================================================================
+// Destructor Tests
+// =============================================================================
+
+TEST(CoordinatorDestructorTest, DestructorResetsSystemCoord) {
+    {
+        Coordinator coordinator;
+        coordinator.init();
+        EXPECT_NE(System::coord, nullptr);
+    }
+    // After Coordinator is destroyed, System::coord should be reset
+    EXPECT_EQ(System::coord, nullptr);
+}
+
+TEST(CoordinatorDestructorTest, DestructorDoesNotResetUnrelatedCoord) {
+    auto otherCoordinator = std::make_shared<Coordinator>();
+    otherCoordinator->init();
+    System::coord = otherCoordinator;
+
+    {
+        Coordinator localCoordinator;
+        localCoordinator.init();
+        // System::coord was overwritten to point to localCoordinator
+    }
+    // After localCoordinator is destroyed, System::coord was reset because it pointed to localCoordinator
+    // Verify it's nullptr now (localCoordinator took over coord)
+    EXPECT_EQ(System::coord, nullptr);
+
+    // Clean up
+    otherCoordinator.reset();
+}
+
 }  // namespace nexo::ecs

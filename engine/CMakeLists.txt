@@ -59,6 +59,7 @@ set(COMMON_SOURCES
         engine/src/core/scene/SceneManager.cpp
         engine/src/ecs/Entity.cpp
         engine/src/ecs/Components.cpp
+        engine/src/ecs/GroupManager.cpp
         engine/src/ecs/ComponentArray.cpp
         engine/src/ecs/Coordinator.cpp
         engine/src/ecs/System.cpp

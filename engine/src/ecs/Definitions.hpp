@@ -55,10 +55,13 @@ namespace nexo::ecs {
     /**
      * @brief Maximum number of different component types in the system
      */
-    constexpr ComponentType MAX_COMPONENT_TYPE = 32;
+    constexpr ComponentType MAX_COMPONENT_TYPE = 64;
 
     /**
      * @brief Global counter for generating unique component type IDs
+     *
+     * @warning Not thread-safe. All component type registrations must happen
+     *          on a single thread before any concurrent ECS access begins.
      */
     inline ComponentType globalComponentCounter = 0;
 
@@ -91,7 +94,6 @@ namespace nexo::ecs {
     {
         // This static variable is instantiated once per type T,
         // but it will be assigned a unique value from the shared global counter.
-        // TODO: Warning! This is not thread-safe. (and it's a crappy implementation, but it works for now)
         static const ComponentType id = generateComponentTypeID();
         return id;
     }

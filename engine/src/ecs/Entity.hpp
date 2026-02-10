@@ -19,9 +19,9 @@
 
 #pragma once
 
-#include <array>
 #include <deque>
 #include <span>
+#include <unordered_map>
 #include <vector>
 
 #include "Definitions.hpp"
@@ -41,9 +41,10 @@ namespace nexo::ecs {
         /**
          * @brief Constructor for EntityManager.
          *
-         * Initializes the pool of available entities. Each entity is represented by a unique ID.
+         * @param maxEntities Configurable soft cap on simultaneous entities (default MAX_ENTITIES).
+         *        Entity IDs are allocated lazily via a counter rather than pre-filling a pool.
          */
-        EntityManager();
+        explicit EntityManager(Entity maxEntities = MAX_ENTITIES);
 
         /**
          * @brief Creates a new entity.
@@ -95,7 +96,11 @@ namespace nexo::ecs {
        private:
         std::deque<Entity> m_availableEntities{};
         std::vector<Entity> m_livingEntities{};
+        // Maps entity ID → index in m_livingEntities for O(1) destroy
+        std::unordered_map<Entity, size_t> m_entityIndex{};
 
-        std::array<Signature, MAX_ENTITIES> m_signatures{};
+        std::vector<Signature> m_signatures{};
+        Entity m_maxEntities;
+        Entity m_nextEntityId = 0;
     };
 } // namespace nexo::ecs

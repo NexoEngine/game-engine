@@ -19,9 +19,6 @@
 #include "Entity.hpp"
 #include "ECSExceptions.hpp"
 
-#include <algorithm>
-#include <ranges>
-
 namespace nexo::ecs {
 
     /**
@@ -33,10 +30,7 @@ namespace nexo::ecs {
      * - Managing entity signatures
      * - Keeping track of living entities
      */
-    EntityManager::EntityManager()
-    {
-        for (Entity entity = 0; entity < MAX_ENTITIES; ++entity) m_availableEntities.push_back(entity);
-    }
+    EntityManager::EntityManager(const Entity maxEntities) : m_maxEntities(maxEntities) {}
 
     /**
      * @brief Creates a new entity and assigns it a unique ID.
@@ -50,10 +44,17 @@ namespace nexo::ecs {
      */
     Entity EntityManager::createEntity()
     {
-        if (m_livingEntities.size() >= MAX_ENTITIES) THROW_EXCEPTION(TooManyEntities);
+        if (m_livingEntities.size() >= m_maxEntities) THROW_EXCEPTION(TooManyEntities);
 
-        const Entity id = m_availableEntities.front();
-        m_availableEntities.pop_front();
+        Entity id;
+        if (!m_availableEntities.empty()) {
+            id = m_availableEntities.front();
+            m_availableEntities.pop_front();
+        } else {
+            id = m_nextEntityId++;
+        }
+
+        m_entityIndex[id] = m_livingEntities.size();
         m_livingEntities.push_back(id);
 
         return id;
@@ -71,15 +72,26 @@ namespace nexo::ecs {
      */
     void EntityManager::destroyEntity(const Entity entity)
     {
-        if (entity >= MAX_ENTITIES) THROW_EXCEPTION(OutOfRange, entity);
+        if (entity >= m_maxEntities) THROW_EXCEPTION(OutOfRange, entity);
 
-        const auto it = std::ranges::find(m_livingEntities, entity);
-        if (it != m_livingEntities.end())
-            m_livingEntities.erase(it);
-        else
+        const auto it = m_entityIndex.find(entity);
+        if (it == m_entityIndex.end())
             return;
-        m_signatures[entity].reset();
 
+        const size_t index     = it->second;
+        const size_t lastIndex = m_livingEntities.size() - 1;
+
+        if (index != lastIndex) {
+            // Swap with the last element
+            const Entity lastEntity    = m_livingEntities[lastIndex];
+            m_livingEntities[index]    = lastEntity;
+            m_entityIndex[lastEntity] = index;
+        }
+        m_livingEntities.pop_back();
+        m_entityIndex.erase(it);
+
+        if (entity < m_signatures.size())
+            m_signatures[entity].reset();
         m_availableEntities.push_front(entity);
     }
 
@@ -95,8 +107,10 @@ namespace nexo::ecs {
      */
     void EntityManager::setSignature(const Entity entity, const Signature signature)
     {
-        if (entity >= MAX_ENTITIES) THROW_EXCEPTION(OutOfRange, entity);
+        if (entity >= m_maxEntities) THROW_EXCEPTION(OutOfRange, entity);
 
+        if (entity >= m_signatures.size())
+            m_signatures.resize(entity + 1);
         m_signatures[entity] = signature;
     }
 
@@ -112,8 +126,10 @@ namespace nexo::ecs {
      */
     Signature EntityManager::getSignature(const Entity entity) const
     {
-        if (entity >= MAX_ENTITIES) THROW_EXCEPTION(OutOfRange, entity);
+        if (entity >= m_maxEntities) THROW_EXCEPTION(OutOfRange, entity);
 
+        if (entity >= m_signatures.size())
+            return {};
         return m_signatures[entity];
     }
 

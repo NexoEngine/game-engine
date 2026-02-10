@@ -29,6 +29,7 @@ set(COMMON_SOURCES
 # TODO: Make an ecs library
 set(ECS_SOURCES
         engine/src/ecs/Components.cpp
+        engine/src/ecs/GroupManager.cpp
         engine/src/ecs/ComponentArray.cpp
         engine/src/ecs/Coordinator.cpp
         engine/src/ecs/Entity.cpp
