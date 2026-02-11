@@ -32,10 +32,12 @@ namespace nexo::renderer {
 
     void GridPass::execute(RenderPipeline &pipeline)
     {
-        const std::shared_ptr<renderer::NxFramebuffer> renderTarget = pipeline.getRenderTarget();
+        const auto renderTarget = pipeline.getRenderTarget();
         if (!renderTarget) return;
 
         renderTarget->bind();
+
+        // Restrict drawing to only the first color attachment for the grid
         constexpr GLenum singleDrawBuffer[] = {GL_COLOR_ATTACHMENT0};
         glDrawBuffers(1, singleDrawBuffer);
 
@@ -53,8 +55,12 @@ namespace nexo::renderer {
         renderer::NxRenderCommand::setCulling(true);
         renderer::NxRenderCommand::setCulledFace(CulledFace::BACK);
 
-        constexpr GLenum allBuffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
-        glDrawBuffers(2, allBuffers);
+        // Restore all color attachment draw buffers from the render target
+        const unsigned int nbAttachments = renderTarget->getNbColorAttachments();
+        std::vector<GLenum> restoreBuffers(nbAttachments);
+        for (unsigned int i = 0; i < nbAttachments; ++i)
+            restoreBuffers[i] = GL_COLOR_ATTACHMENT0 + i;
+        glDrawBuffers(static_cast<GLsizei>(nbAttachments), restoreBuffers.data());
 
         renderTarget->unbind();
     }
