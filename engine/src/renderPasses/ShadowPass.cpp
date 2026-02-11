@@ -36,7 +36,13 @@ namespace nexo::renderer {
 
         m_shadowMap->bind();
         glViewport(0, 0, m_size, m_size);
-        NxRenderCommand::clear(); // or clear() if your FBO only has depth
+        NxRenderCommand::clear();
+
+        // Save cull face state before overriding for shadow rendering
+        GLint prevCullFaceMode;
+        glGetIntegerv(GL_CULL_FACE_MODE, &prevCullFaceMode);
+        GLboolean wasCullingEnabled = glIsEnabled(GL_CULL_FACE);
+
         glEnable(GL_CULL_FACE);
         glCullFace(GL_FRONT);
         shader->bind();
@@ -56,7 +62,10 @@ namespace nexo::renderer {
             // Bind VAO
             if (cmd.vao) cmd.vao->bind();
 
-            cmd.uniforms["uInstanceOffset"].applyToShader(shader.get(), "uInstanceOffset");
+            auto offsetIt = cmd.uniforms.find("uInstanceOffset");
+            if (offsetIt != cmd.uniforms.end()) {
+                offsetIt->second.applyToShader(shader.get(), "uInstanceOffset");
+            }
 
             // Draw instanced
             const auto indexBuffer = cmd.vao->getIndexBuffer();
@@ -69,8 +78,11 @@ namespace nexo::renderer {
         }
 
         shader->unbind();
-        glCullFace(GL_BACK);    // restore
-        glDisable(GL_CULL_FACE);
+
+        // Restore previous cull face state
+        glCullFace(prevCullFaceMode);
+        if (!wasCullingEnabled)
+            glDisable(GL_CULL_FACE);
 
         m_shadowMap->unbind();
     }
