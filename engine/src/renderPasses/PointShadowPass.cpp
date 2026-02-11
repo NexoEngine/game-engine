@@ -5,6 +5,7 @@
 #include "Passes.hpp"
 #include "Masks.hpp"
 #include "renderPasses/GPUResources.hpp"
+#include "Logger.hpp"
 
 #include <glad/glad.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -24,30 +25,33 @@ namespace nexo::renderer {
         const uint64_t currentGen = pipeline.getGeometryGeneration();
 
         for (int i = 0; i < static_cast<int>(pipeline.getNbPointLights()) && i < MAX_POINT_LIGHTS; ++i) {
-            const auto& light = pipeline.getPointLight(i);
-            auto& sm         = pipeline.getShadowMap(i);
+            auto& sm = pipeline.getShadowMap(i);
 
             if (!sm.depthCube || !sm.fbo) continue;
 
             // Skip re-rendering if light and geometry haven't changed
-            if (!sm.dirty && sm.cachedGeometryGeneration == currentGen) {
+            if (!sm.dirty && sm.cachedGeometryGeneration == currentGen)
                 continue;
-            }
 
-            const glm::vec3 lightPos  = light.position;
-            const float     nearPlane = 0.1f;
-            const float     farPlane  = light.farPlane;
+            const auto& light    = pipeline.getPointLight(i);
+            const glm::vec3 lightPos = light.position;
+            const float farPlane     = light.farPlane;
 
             sm.farPlane = farPlane;
 
-            glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, nearPlane, farPlane);
-            glm::mat4 shadowTransforms[6];
-            shadowTransforms[0] = proj * glm::lookAt(lightPos, lightPos + glm::vec3( 1,  0,  0), glm::vec3(0, -1,  0));
-            shadowTransforms[1] = proj * glm::lookAt(lightPos, lightPos + glm::vec3(-1,  0,  0), glm::vec3(0, -1,  0));
-            shadowTransforms[2] = proj * glm::lookAt(lightPos, lightPos + glm::vec3( 0,  1,  0), glm::vec3(0,  0,  1));
-            shadowTransforms[3] = proj * glm::lookAt(lightPos, lightPos + glm::vec3( 0, -1,  0), glm::vec3(0,  0, -1));
-            shadowTransforms[4] = proj * glm::lookAt(lightPos, lightPos + glm::vec3( 0,  0,  1), glm::vec3(0, -1,  0));
-            shadowTransforms[5] = proj * glm::lookAt(lightPos, lightPos + glm::vec3( 0,  0, -1), glm::vec3(0, -1,  0));
+            // Recompute shadow transforms only when light position or farPlane changed
+            if (sm.cachedFarPlane != farPlane || sm.cachedPosition != lightPos) {
+                constexpr float nearPlane = 0.1f;
+                glm::mat4 proj = glm::perspective(glm::radians(90.0f), 1.0f, nearPlane, farPlane);
+                sm.cachedShadowTransforms[0] = proj * glm::lookAt(lightPos, lightPos + glm::vec3( 1,  0,  0), glm::vec3(0, -1,  0));
+                sm.cachedShadowTransforms[1] = proj * glm::lookAt(lightPos, lightPos + glm::vec3(-1,  0,  0), glm::vec3(0, -1,  0));
+                sm.cachedShadowTransforms[2] = proj * glm::lookAt(lightPos, lightPos + glm::vec3( 0,  1,  0), glm::vec3(0,  0,  1));
+                sm.cachedShadowTransforms[3] = proj * glm::lookAt(lightPos, lightPos + glm::vec3( 0, -1,  0), glm::vec3(0,  0, -1));
+                sm.cachedShadowTransforms[4] = proj * glm::lookAt(lightPos, lightPos + glm::vec3( 0,  0,  1), glm::vec3(0, -1,  0));
+                sm.cachedShadowTransforms[5] = proj * glm::lookAt(lightPos, lightPos + glm::vec3( 0,  0, -1), glm::vec3(0, -1,  0));
+                sm.cachedFarPlane = farPlane;
+                sm.cachedPosition = lightPos;
+            }
 
             glViewport(0, 0, RenderPipeline::POINT_SHADOW_SIZE, RenderPipeline::POINT_SHADOW_SIZE);
 
@@ -66,9 +70,16 @@ namespace nexo::renderer {
                                        sm.depthCube,
                                        0);
 
+#ifndef NDEBUG
+                GLenum fbStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+                if (fbStatus != GL_FRAMEBUFFER_COMPLETE) {
+                    LOG(NEXO_WARN, "PointShadowPass: incomplete FBO for light {} face {} (status=0x{:X})", i, face, fbStatus);
+                }
+#endif
+
                 glClear(GL_DEPTH_BUFFER_BIT);
 
-                shader->setUniformMatrix("uShadowMatrix", shadowTransforms[face]);
+                shader->setUniformMatrix("uShadowMatrix", sm.cachedShadowTransforms[face]);
 
                 for (auto& cmd : drawCommands) {
                     if (!(cmd.filterMask & F_FORWARD_PASS)) continue;
@@ -76,7 +87,6 @@ namespace nexo::renderer {
 
                     cmd.vao->bind();
 
-                    // Forward the instance offset from the forward pass
                     auto it = cmd.uniforms.find("uInstanceOffset");
                     if (it != cmd.uniforms.end()) {
                         it->second.applyToShader(shader.get(), "uInstanceOffset");
@@ -95,7 +105,6 @@ namespace nexo::renderer {
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             shader->unbind();
 
-            // Mark this shadow map as clean for this geometry state
             sm.dirty = false;
             sm.cachedGeometryGeneration = currentGen;
         }
