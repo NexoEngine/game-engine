@@ -280,6 +280,8 @@ namespace nexo::system {
         MyContactListener contactListener;
 
         double m_lastPhysicsTime = 0.0;
+        double m_accumulator = 0.0;
+        bool m_diagnosticDumped = false;
 
         // Using hard value because Jolt documentation advice that the physics simulation should be able to be at 60fps
         // all the time

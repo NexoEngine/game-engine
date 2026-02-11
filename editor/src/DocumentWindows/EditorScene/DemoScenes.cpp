@@ -21,6 +21,8 @@
 #include <math/Light.hpp>
 #include <utils/EditorProps.hpp>
 
+#include <Jolt/Physics/Collision/Shape/BoxShape.h>
+
 namespace nexo::editor {
 
     void createEntityWithPhysic(const int sceneId, const glm::vec3& pos, const glm::vec3& size,
@@ -143,18 +145,48 @@ namespace nexo::editor {
     {
         auto& app           = getApp();
 
+        // Physics-only floor (no visual entity — the room model provides visuals)
+        {
+            auto* bi = app.getPhysicsSystem()->getBodyInterface();
+            JPH::BoxShapeSettings floorShape(JPH::Vec3(25.0f, 0.25f, 25.0f));
+            JPH::BodyCreationSettings floorBody(
+                floorShape.Create().Get(),
+                JPH::Vec3(0.0f + offset.x, -0.25f + offset.y, 0.0f + offset.z),
+                JPH::Quat::sIdentity(),
+                JPH::EMotionType::Static,
+                system::Layers::NON_MOVING);
+            auto* body = bi->CreateBody(floorBody);
+            bi->AddBody(body->GetID(), JPH::EActivation::DontActivate);
+        }
+
         //// Import and add to scene models
         addModelToScene(sceneId, "my_package::full_room@Demo", {0.0f + offset.x, 0.0f + offset.y, 0.0f + offset.z});
         addModelToScene(sceneId, "my_package::desk@Demo", {7.44f + offset.x, 1.93f + offset.y, 0.0f + offset.z});
         addModelToScene(sceneId, "my_package::shelf@Demo", {8.86f + offset.x, 5.60f + offset.y, 0.0f + offset.z});
 
-        //// add physics body to some models
+        //// add physics body to the desk model
+        // Note: For imported models, transform.size is a scale factor (default 1.0),
+        // NOT the actual model bounding box dimensions. We override the size in the
+        // copied transform to approximate the real physical dimensions of the desk.
         ecs::Entity desk = utils::FindEntityByName("desk");
         if (Application::m_coordinator->entityHasComponent<components::ParentComponent>(desk)) {
             desk = Application::m_coordinator->getComponent<components::ParentComponent>(desk).parent;
         }
         auto transformCompDesk =
             Application::m_coordinator->getComponent<components::TransformComponent>(desk);
+        // For imported models, transform.size is a scale factor — use the model's AABB
+        // to compute the actual world-space physics dimensions and center offset
+        {
+            auto& rootComp = Application::m_coordinator->getComponent<components::RootComponent>(desk);
+            if (auto model = rootComp.modelRef.lock(); model && !model->rootBounds.empty()) {
+                const glm::vec3 scaleFactor = transformCompDesk.size;
+                const glm::vec3 nativeDims = model->rootBounds.max - model->rootBounds.min;
+                const glm::vec3 aabbCenter = (model->rootBounds.min + model->rootBounds.max) * 0.5f;
+                transformCompDesk.size = nativeDims * scaleFactor;
+                // Offset physics center to AABB center (model origin may not be at geometric center)
+                transformCompDesk.pos += aabbCenter * scaleFactor;
+            }
+        }
         const JPH::BodyID bodyIdDesk = app.getPhysicsSystem()->createBodyFromShape(desk, transformCompDesk,
                                                                                 system::ShapeType::Box, JPH::EMotionType::Static);
         if (bodyIdDesk.IsInvalid()) {
@@ -167,6 +199,16 @@ namespace nexo::editor {
         }
         auto transformCompShelf =
             Application::m_coordinator->getComponent<components::TransformComponent>(shelf);
+        {
+            auto& rootComp = Application::m_coordinator->getComponent<components::RootComponent>(shelf);
+            if (auto model = rootComp.modelRef.lock(); model && !model->rootBounds.empty()) {
+                const glm::vec3 scaleFactor = transformCompShelf.size;
+                const glm::vec3 nativeDims = model->rootBounds.max - model->rootBounds.min;
+                const glm::vec3 aabbCenter = (model->rootBounds.min + model->rootBounds.max) * 0.5f;
+                transformCompShelf.size = nativeDims * scaleFactor;
+                transformCompShelf.pos += aabbCenter * scaleFactor;
+            }
+        }
         const JPH::BodyID bodyIdShelf = app.getPhysicsSystem()->createBodyFromShape(shelf, transformCompShelf,
                                                                                 system::ShapeType::Box, JPH::EMotionType::Static);
         if (bodyIdShelf.IsInvalid()) {
@@ -551,6 +593,18 @@ namespace nexo::editor {
             const auto domino        = EntityFactory3D::createModel(dominoAssetRef, pos, {0.01f, 0.01f, 0.01f}, rot);
             auto transformComp =
                 Application::m_coordinator->getComponent<components::TransformComponent>(domino);
+            // For model-based entities, transform.size is a scale factor (0.01), not actual
+            // dimensions. Use the model's native AABB to compute correct physics box size.
+            {
+                auto& rootComp = Application::m_coordinator->getComponent<components::RootComponent>(domino);
+                if (auto model = rootComp.modelRef.lock(); model && !model->rootBounds.empty()) {
+                    const glm::vec3 scaleFactor = transformComp.size;
+                    const glm::vec3 nativeDims = model->rootBounds.max - model->rootBounds.min;
+                    const glm::vec3 aabbCenter = (model->rootBounds.min + model->rootBounds.max) * 0.5f;
+                    transformComp.size = nativeDims * scaleFactor;
+                    transformComp.pos += aabbCenter * scaleFactor;
+                }
+            }
             const JPH::BodyID bodyId = app.getPhysicsSystem()->createBodyFromShape(domino, transformComp,
                                                                                     system::ShapeType::Box, JPH::EMotionType::Dynamic);
             if (bodyId.IsInvalid()) {

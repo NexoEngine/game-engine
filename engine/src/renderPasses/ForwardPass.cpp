@@ -61,6 +61,10 @@ namespace nexo::renderer {
             glBindTexture(GL_TEXTURE_CUBE_MAP, sm.depthCube);
         }
 
+        // Disable face culling for double-sided model support
+        // (GLTF models in this project use doubleSided: true)
+        glDisable(GL_CULL_FACE);
+
         std::vector<DrawCommand> &drawCommands = pipeline.getDrawCommands();
         int currentBatch = -1;
 
@@ -79,6 +83,7 @@ namespace nexo::renderer {
             }
         }
 
+        glEnable(GL_CULL_FACE);
         renderTarget->unbind();
     }
 } // namespace nexo::renderer

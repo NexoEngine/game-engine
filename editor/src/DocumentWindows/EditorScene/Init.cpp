@@ -118,7 +118,7 @@ namespace nexo::editor {
             dominoScene(m_sceneId, {7.5f, 4.07f, -0.5f});
             // Qualified call to the DemoScenes free function (not the member function which creates 5 point lights)
             ::nexo::editor::lightsScene(m_sceneId, glm::vec3{0.0f, 0.0f, 0.0f});
-            // chambouleScene(m_sceneId, glm::vec3{0.0f, 0.0f, 0.0f});
+            // chambouleScene(m_sceneId, glm::vec3{-20.0f, 0.0f, 0.0f});
             // physicScene(glm::vec3{-60.0f, 0.0f, 0.0f});
             // videoScene(glm::vec3{0.0f, 0.0f, 0.0f});
             // forestScene(glm::vec3{100.0f, 1.0f, 0.0f});

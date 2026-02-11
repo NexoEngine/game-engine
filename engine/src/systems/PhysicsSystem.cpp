@@ -33,6 +33,7 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/norm.hpp>
 
+#include <Jolt/Physics/Body/BodyLock.h>
 #include <Jolt/RegisterTypes.h>
 
 namespace nexo::system {
@@ -82,22 +83,50 @@ namespace nexo::system {
         if (frameDelta > 0.25)
             frameDelta = 0.25;
 
-        static double accumulator = 0.0;
-        accumulator += frameDelta;
+        m_accumulator += frameDelta;
 
         constexpr double fixedTimestep = 1.0 / 60.0; // 60 Hz
+
+        // One-time diagnostic dump + broad phase optimization on first real physics update
+        if (!m_diagnosticDumped) {
+            m_diagnosticDumped = true;
+            physicsSystem->OptimizeBroadPhase();
+            int totalBodies = static_cast<int>(physicsSystem->GetNumBodies());
+            int activeDynamic = static_cast<int>(physicsSystem->GetNumActiveBodies(JPH::EBodyType::RigidBody));
+            LOG(NEXO_WARN, "PhysicsSystem DIAG: totalBodies={} activeDynamic={}", totalBodies, activeDynamic);
+
+            JPH::BodyIDVector allBodyIds;
+            physicsSystem->GetBodies(allBodyIds);
+            for (const auto& bid : allBodyIds) {
+                JPH::BodyLockRead lock(physicsSystem->GetBodyLockInterface(), bid);
+                if (lock.Succeeded()) {
+                    const JPH::Body& body = lock.GetBody();
+                    auto pos = body.GetPosition();
+                    const char* motionStr = body.GetMotionType() == JPH::EMotionType::Static ? "Static" :
+                                            (body.GetMotionType() == JPH::EMotionType::Dynamic ? "Dynamic" : "Kinematic");
+                    int shapeType = body.GetShape() ? static_cast<int>(body.GetShape()->GetSubType()) : -1;
+                    LOG(NEXO_WARN, "  Body id={} layer={} {} pos=({},{},{}) active={} shape={}",
+                        static_cast<int>(bid.GetIndex()),
+                        static_cast<int>(body.GetObjectLayer()),
+                        motionStr,
+                        static_cast<double>(pos.GetX()), static_cast<double>(pos.GetY()), static_cast<double>(pos.GetZ()),
+                        body.IsActive() ? 1 : 0,
+                        shapeType);
+                }
+            }
+        }
 
         int stepCount = 0;
         constexpr int MAX_STEPS_PER_FRAME = 4; // prevent spiral of death
 
-        while (accumulator >= fixedTimestep && stepCount < MAX_STEPS_PER_FRAME) {
-            physicsSystem->Update(fixedTimestep, 2, tempAllocator, jobSystem);
-            accumulator -= fixedTimestep;
+        while (m_accumulator >= fixedTimestep && stepCount < MAX_STEPS_PER_FRAME) {
+            physicsSystem->Update(fixedTimestep, 1, tempAllocator, jobSystem);
+            m_accumulator -= fixedTimestep;
             ++stepCount;
         }
 
         if (stepCount == MAX_STEPS_PER_FRAME)
-            accumulator = 0.0; // drop excess time if simulation lagged
+            m_accumulator = 0.0; // drop excess time if simulation lagged
 
         const unsigned int numActiveDynamic = physicsSystem->GetNumActiveBodies(JPH::EBodyType::RigidBody);
         if (numActiveDynamic == 0)
@@ -154,7 +183,10 @@ namespace nexo::system {
                     transform.size.y * 0.5f,
                     transform.size.z * 0.5f);
                 const float minHalfExtent = std::min({halfExtent.GetX(), halfExtent.GetY(), halfExtent.GetZ()});
-                const float convexRadius = std::min(JPH::cDefaultConvexRadius, minHalfExtent);
+                if (minHalfExtent < 0.01f)
+                    LOG(NEXO_WARN, "PhysicsSystem: Very small box half-extent ({}) for entity {} — collision may be unreliable",
+                        minHalfExtent, static_cast<unsigned int>(entity));
+                const float convexRadius = std::min(JPH::cDefaultConvexRadius, minHalfExtent * 0.9f);
                 shapeSettings = new JPH::BoxShapeSettings(halfExtent, convexRadius);
                 break;
             }
@@ -237,8 +269,6 @@ namespace nexo::system {
 
         bodySettings.mUserData = static_cast<JPH::uint64>(entity);
 
-        bodySettings.mUserData = static_cast<JPH::uint64>(entity);
-
         const JPH::Body* body = bodyInterface->CreateBody(bodySettings);
         if (!body) {
             LOG(NEXO_ERROR, "Body creation failed.");
@@ -248,6 +278,13 @@ namespace nexo::system {
         bodyInterface->AddBody(body->GetID(),
             motionType == JPH::EMotionType::Dynamic ? JPH::EActivation::Activate : JPH::EActivation::DontActivate
         );
+
+        LOG(NEXO_DEV, "PhysicsSystem: Created body for entity {} | bodyID={} | shape={} | layer={} | pos=({},{},{}) | size=({},{},{})",
+            static_cast<unsigned int>(entity), body->GetID().GetIndex(),
+            static_cast<int>(shapeType),
+            motionType == JPH::EMotionType::Dynamic ? "MOVING" : "NON_MOVING",
+            transform.pos.x, transform.pos.y, transform.pos.z,
+            transform.size.x, transform.size.y, transform.size.z);
 
         const auto type = motionType == JPH::EMotionType::Dynamic
             ? components::PhysicsBodyComponent::Type::Dynamic

@@ -471,6 +471,7 @@ void main()
 
     // Calculate normal with enhanced normal mapping
     vec3 N = getNormalFromMap(material, vTexCoord, vNormal, vTangent, vBitangent);
+    if (!gl_FrontFacing) N = -N; // Flip normal for back faces (doubleSided models)
     vec3 V = normalize(uCamPos - vFragPos);
 
     // Calculate reflectance at normal incidence
