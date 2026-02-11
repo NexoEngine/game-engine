@@ -39,6 +39,7 @@ namespace nexo::renderer {
         glm::vec3 cachedPosition           = glm::vec3(0.0f);
         float     cachedFarPlane           = 0.0f;
         uint64_t  cachedGeometryGeneration = 0;
+        glm::mat4 cachedShadowTransforms[6] = {};
     };
 
     class RenderPipeline {
