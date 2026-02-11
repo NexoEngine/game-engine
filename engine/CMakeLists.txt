@@ -45,6 +45,7 @@ set(COMMON_SOURCES
         engine/src/renderer/Framebuffer.cpp
         engine/src/renderer/UniformCache.cpp
         engine/src/renderer/DrawCommand.cpp
+        engine/src/renderer/RenderPass.cpp
         engine/src/renderer/RenderPipeline.cpp
         engine/src/renderer/UniformValue.cpp
         engine/src/renderer/ShaderUniformBuffer.cpp

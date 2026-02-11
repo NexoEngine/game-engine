@@ -101,6 +101,10 @@ namespace nexo::renderer {
         }
 
        protected:
+        // Finds the output framebuffer of a prerequisite pass by its ID.
+        // Returns nullptr if the pass is not found or has no output.
+        std::shared_ptr<NxFramebuffer> getPrerequisiteOutput(RenderPipeline &pipeline, PassId targetPass) const;
+
         bool m_isFinal = false;
         PassId id;
         std::string name;
