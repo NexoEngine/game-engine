@@ -18,7 +18,6 @@
 
 #include "ForwardPass.hpp"
 #include "DrawCommand.hpp"
-#include "Framebuffer.hpp"
 #include "Passes.hpp"
 #include "RenderCommand.hpp"
 #include "renderPasses/Masks.hpp"
@@ -26,6 +25,13 @@
 #include "renderer/Renderer3D.hpp"
 
 namespace nexo::renderer {
+
+    namespace {
+        constexpr int DIR_SHADOW_TEX_UNIT      = 31;
+        constexpr int POINT_SHADOW_TEX_UNIT_BASE = 32;
+        constexpr int MAX_POINT_SHADOW_LIGHTS  = 10;
+    }
+
     ForwardPass::ForwardPass() : RenderPass(Passes::FORWARD, "Forward Pass")
     {}
 
@@ -33,36 +39,30 @@ namespace nexo::renderer {
     {
         const auto &globalUniforms = pipeline.getGlobalUniforms();
 
-        const std::shared_ptr<renderer::NxFramebuffer> renderTarget = pipeline.getRenderTarget();
+        const auto renderTarget = pipeline.getRenderTarget();
+        if (!renderTarget) return;
+
         renderTarget->bind();
         NxRenderCommand::setClearColor(pipeline.getCameraClearColor());
         NxRenderCommand::clear();
         renderTarget->clearAttachment<int>(1, -1);
         auto &renderer3D = NxRenderer3D::get();
 
-        std::shared_ptr<NxFramebuffer> shadowMapFb = nullptr;
-        for (auto prereq : prerequisites) {
-            auto p = pipeline.getRenderPass(prereq);
-            if (p && p->getId() == Passes::SHADOW) {
-                shadowMapFb = p->getOutput();
-            }
-        }
+        auto shadowMapFb = getPrerequisiteOutput(pipeline, Passes::SHADOW);
 
-        constexpr int DIR_SHADOW_TEX_UNIT = 31;
         if (shadowMapFb) {
             shadowMapFb->bindDepthAsTexture(DIR_SHADOW_TEX_UNIT);
         }
 
-        for (int i = 0; i < pipeline.getNbPointLights() && i < 10; ++i) {
+        for (int i = 0; i < static_cast<int>(pipeline.getNbPointLights()) && i < MAX_POINT_SHADOW_LIGHTS; ++i) {
             const auto& sm = pipeline.getShadowMap(i);
             if (!sm.depthCube) continue;
 
-            glActiveTexture(GL_TEXTURE0 + 32 + i);
+            glActiveTexture(GL_TEXTURE0 + POINT_SHADOW_TEX_UNIT_BASE + i);
             glBindTexture(GL_TEXTURE_CUBE_MAP, sm.depthCube);
         }
 
         // Disable face culling for double-sided model support
-        // (GLTF models in this project use doubleSided: true)
         glDisable(GL_CULL_FACE);
 
         std::vector<DrawCommand> &drawCommands = pipeline.getDrawCommands();
