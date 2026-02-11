@@ -74,12 +74,7 @@ namespace nexo::renderer {
                     renderer3D.bindTextureBatch(cmd.textureBatchIndex);
                     currentBatch = static_cast<int>(cmd.textureBatchIndex);
                 }
-                for (const auto &[name, value] : globalUniforms) {
-                    cmd.uniforms[name] = value;
-                }
-                cmd.uniforms["uDirShadowTexIndex"] = UniformValue{DIR_SHADOW_TEX_UNIT};
-
-                cmd.execute();
+                cmd.execute(&globalUniforms);
             }
         }
 

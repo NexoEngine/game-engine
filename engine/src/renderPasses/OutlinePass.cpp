@@ -50,10 +50,7 @@ namespace nexo::renderer {
         auto& drawCommands = pipeline.getDrawCommands();
         for (auto &cmd : drawCommands) {
             if (cmd.filterMask & F_OUTLINE_PASS) {
-                for (const auto &[name, value] : globalUniforms) {
-                    cmd.uniforms[name] = value;
-                }
-                cmd.execute();
+                cmd.execute(&globalUniforms);
             }
         }
 

@@ -93,7 +93,11 @@ namespace nexo::renderer {
          *
          * It optimizes state changes by tracking the currently bound shader and VAO,
          * only rebinding them if they differ from the last used ones.
+         *
+         * @param globalUniforms Optional pointer to pipeline-wide uniforms applied
+         *        directly to the shader after per-command uniforms — avoids copying
+         *        into each command's uniform map.
          */
-        void execute() const;
+        void execute(const std::unordered_map<std::string, UniformValue>* globalUniforms = nullptr) const;
     };
 } // namespace nexo::renderer

@@ -20,7 +20,7 @@
 #include "RenderCommand.hpp"
 
 namespace nexo::renderer {
-    void DrawCommand::execute() const
+    void DrawCommand::execute(const std::unordered_map<std::string, UniformValue>* globalUniforms) const
     {
         static unsigned int currentShader = 0;
         static unsigned int currentVAO    = 0;
@@ -49,8 +49,16 @@ namespace nexo::renderer {
         // Set uniforms
         if (shader) {
             for (const auto& [name, uniformValue] : uniforms) {
-                if (uniformValue.isValid()) {  // Only apply valid uniforms
+                if (uniformValue.isValid()) {
                     uniformValue.applyToShader(shader.get(), name);
+                }
+            }
+            // Apply global uniforms directly to shader — no copying into cmd.uniforms
+            if (globalUniforms) {
+                for (const auto& [name, value] : *globalUniforms) {
+                    if (value.isValid()) {
+                        value.applyToShader(shader.get(), name);
+                    }
                 }
             }
         }
