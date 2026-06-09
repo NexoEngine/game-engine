@@ -89,7 +89,7 @@ of thing a unit test never catches.
 The renderer is tested against a real OpenGL context (`tests/renderer/`). Because
 CI runners are headless, these run on top of a software GL implementation:
 `xvfb` on Linux and Mesa on Windows. Keep this in mind when adding renderer
-tests — anything that assumes a specific GPU, driver extension or exact pixel
+tests or anything that assumes a specific GPU, driver extension or exact pixel
 output will be flaky.
 
 ### Editor / manual UI tests
@@ -129,13 +129,13 @@ grouped into four GoogleTest executables, each with a matching `ctest` label:
 
 Tests are only built when `NEXO_BUILD_TESTS` is `ON` (the default for the
 `default` and `coverage` presets; off for `minimal`). When adding a new test
-file, register it in the relevant `tests/<area>/CMakeLists.txt` — `add_executable`
+file, register it in the relevant `tests/<area>/CMakeLists.txt`, `add_executable`
 does not pick files up automatically.
 
 ## Naming and file conventions
 
 - **File name:** `<Subject>.test.cpp`, where `<Subject>` matches the class or unit
-  under test — e.g. `Coordinator.test.cpp`, `Camera.test.cpp`, `Matrix.test.cpp`.
+  under test : e.g. `Coordinator.test.cpp`, `Camera.test.cpp`, `Matrix.test.cpp`.
 - **Header banner:** every test file starts with the standard NEXO banner block
   filled in with author, date and a one-line description, like every other source
   file in the repository. Copy it from an existing test.
@@ -209,7 +209,7 @@ expected to come with tests that keep coverage at or above 80%.
 
 > [!CAUTION]
 > 80% is a floor, not a goal. Coverage on its own proves only that a line ran,
-> not that its behaviour was checked — a green gate with shallow assertions is
+> not that its behaviour was checked, a green gate with shallow assertions is
 > worse than the same number with tests that actually exercise behaviour.
 
 ## Continuous integration
@@ -236,14 +236,14 @@ sonar-scanner); the other legs still build and run the tests.
 
 - Add tests for the logic you introduce or change, in the same PR.
 - Make sure the whole suite passes locally before opening the PR.
-- If you cannot reasonably test something, say so in the PR description — the
+- If you cannot reasonably test something, say so in the PR description. The
   pull request template has a dedicated section for this, including a
   "I need help with writing tests" option. Use it; that is a valid answer.
 
 **Core team / maintainers**
 
 - Keep the SonarCloud quality gate green and unblock it when it flags real gaps.
-- Review the *tests* in a PR, not only the production code — coverage of the right
+- Review the *tests* in a PR, not only the production code, coverage of the right
   behaviour is part of the review.
 - Add or extend integration coverage when landing major features, and keep the
   editor checklists in sync with UI changes.
@@ -254,7 +254,7 @@ sonar-scanner); the other legs still build and run the tests.
 The following are not expected to carry unit-test coverage and are excluded from
 coverage metrics:
 
-- The editor (`editor/`) — validated through the manual checklists in `tests/editor/`.
+- The editor (`editor/`) : validated through the manual checklists in `tests/editor/`.
 - The tests and examples themselves (`tests/`, `examples/`).
 - Generated or third-party code vendored under `vcpkg/` and `external/`.
 - Thin, logic-free glue (entry points such as `main`, trivial getters/setters).
@@ -265,7 +265,7 @@ sign-off in the PR.
 ## Writing a test: a worked example
 
 A minimal GoogleTest fixture following the conventions above. The banner header
-is abbreviated here for readability — copy the full one from an existing file.
+is abbreviated here for readability, copy the full one from an existing file.
 
 ```c++
 //// Coordinator.test.hpp //////////////////////////////////////////////////////

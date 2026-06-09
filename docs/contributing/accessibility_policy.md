@@ -7,7 +7,7 @@
 | **Audience** | All contributors (core team and external) |
 | **Last updated** | June 2026 |
 
-This documentation is intended for all contributos, to ensure quality and accessibility throughout
+This documentation is intended for all contributors, to ensure quality and accessibility throughout
 the NEXO Engine project.
 
 It is up to change, and we encourage all contributors to provide feedback and suggestions for improvement.
