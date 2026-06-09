@@ -5,7 +5,7 @@
 |---|---|
 | **Status** | Active |
 | **Audience** | All contributors (core team and external) |
-| **Last updated** | May 2026 |
+| **Last updated** | June 2026 |
 
 This document describes how we test NEXO Engine. It applies to every change that
 lands on `main`, whether it comes from a core team member or an external

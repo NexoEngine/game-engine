@@ -5,7 +5,7 @@
 |---|---|
 | **Status** | Active |
 | **Audience** | All contributors (core team and external) |
-| **Last updated** | May 2026 |
+| **Last updated** | June 2026 |
 
 This documentation is intended for all contributos, to ensure quality and accessibility throughout
 the NEXO Engine project.
