@@ -23,6 +23,7 @@ refactors safe.
 - [Testing Policy](#testing-policy)
   - [Table of Contents](#table-of-contents)
   - [Goals](#goals)
+  - [What this document does not cover](#what-this-document-does-not-cover)
   - [What we test](#what-we-test)
     - [Unit tests](#unit-tests)
     - [Integration tests](#integration-tests)
@@ -45,6 +46,10 @@ refactors safe.
 - Make refactors and engine evolution possible without silent regressions.
 - Keep the test suite fast and deterministic so that running it locally stays cheap.
 - Give reviewers something concrete to check beyond the diff itself.
+
+## What this document does not cover
+
+This document does not cover Accessibility specific QA and testing, which is covered in a separate policy (see [Accessibility Policy page](accessibility_policy.md)).
 
 ## What we test
 
