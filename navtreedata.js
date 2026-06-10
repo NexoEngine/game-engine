@@ -69,7 +69,7 @@ var NAVTREEINDEX =
 "classnexo_1_1editor_1_1_selector.html#a262b2235757487c6d5f39ef7713486ff",
 "classnexo_1_1renderer_1_1_nx_framebuffer_resizing_failed.html",
 "classnexo_1_1renderer_1_1_open_g_l_test.html",
-"namespacenexo_1_1assets.html#a60fde580868364aa1ec300406da050f9",
+"namespacenexo_1_1assets.html#a6852b592036c9b52081fe57544f6b5ce",
 "structnexo_1_1components_1_1_render_context.html",
 "structnexo_1_1editor_1_1_test_case.html"
 ];
