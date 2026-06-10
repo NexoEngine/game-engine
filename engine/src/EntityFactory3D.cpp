@@ -49,6 +49,9 @@ namespace nexo
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getCubeVAO();
+        mesh.hasBounds = true;
+        mesh.localMin = glm::vec3(-0.5f);
+        mesh.localMax = glm::vec3(0.5f);
 
         auto material = std::make_unique<components::Material>();
         material->albedoColor = color;
@@ -84,6 +87,9 @@ namespace nexo
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getCubeVAO();
+        mesh.hasBounds = true;
+        mesh.localMin = glm::vec3(-0.5f);
+        mesh.localMax = glm::vec3(0.5f);
 
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
             assets::AssetLocation("_internal::CubeMat@_internal"),
@@ -178,6 +184,9 @@ namespace nexo
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getTetrahedronVAO();
+        mesh.hasBounds = true;
+        mesh.localMin = glm::vec3(-1.0f);
+        mesh.localMax = glm::vec3(1.0f);
 
         auto material = std::make_unique<components::Material>();
         material->albedoColor = color;
@@ -209,6 +218,9 @@ namespace nexo
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getTetrahedronVAO();
+        mesh.hasBounds = true;
+        mesh.localMin = glm::vec3(-1.0f);
+        mesh.localMax = glm::vec3(1.0f);
 
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
             assets::AssetLocation("_internal::TetrahedronMat@_internal"),
@@ -236,6 +248,9 @@ namespace nexo
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getPyramidVAO();
+        mesh.hasBounds = true;
+        mesh.localMin = glm::vec3(-1.0f);
+        mesh.localMax = glm::vec3(1.0f);
 
         auto material = std::make_unique<components::Material>();
         material->albedoColor = color;
@@ -266,6 +281,9 @@ namespace nexo
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getPyramidVAO();
+        mesh.hasBounds = true;
+        mesh.localMin = glm::vec3(-1.0f);
+        mesh.localMax = glm::vec3(1.0f);
 
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
             assets::AssetLocation("_internal::PyramidMat@_internal"),
@@ -294,6 +312,9 @@ namespace nexo
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getCylinderVAO(nbSegment);
+        mesh.hasBounds = true;
+        mesh.localMin = glm::vec3(-1.0f);
+        mesh.localMax = glm::vec3(1.0f);
 
         auto material = std::make_unique<components::Material>();
         material->albedoColor = color;
@@ -324,6 +345,9 @@ namespace nexo
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getCylinderVAO(nbSegment);
+        mesh.hasBounds = true;
+        mesh.localMin = glm::vec3(-1.0f);
+        mesh.localMax = glm::vec3(1.0f);
 
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
             assets::AssetLocation("_internal::CylinderMat@_internal"),
@@ -352,6 +376,9 @@ namespace nexo
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getSphereVAO(nbSubdivision);
+        mesh.hasBounds = true;
+        mesh.localMin = glm::vec3(-1.0f);
+        mesh.localMax = glm::vec3(1.0f);
 
         auto material = std::make_unique<components::Material>();
         material->albedoColor = color;
@@ -382,6 +409,9 @@ namespace nexo
 
         components::StaticMeshComponent mesh;
         mesh.vao = renderer::NxRenderer3D::getSphereVAO(nbSubdivision);
+        mesh.hasBounds = true;
+        mesh.localMin = glm::vec3(-1.0f);
+        mesh.localMax = glm::vec3(1.0f);
 
         const auto materialRef = assets::AssetCatalog::getInstance().createAsset<assets::Material>(
             assets::AssetLocation("_internal::SphereMat@_internal"),
@@ -493,6 +523,9 @@ namespace nexo
 
             components::StaticMeshComponent staticMesh;
             staticMesh.vao = mesh.vao;
+            staticMesh.hasBounds = true;
+            staticMesh.localMin = mesh.localMin;
+            staticMesh.localMax = mesh.localMax;
 
             components::RenderComponent renderComponent;
             renderComponent.isRendered = true;

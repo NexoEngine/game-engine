@@ -28,6 +28,7 @@
 #include "components/StaticMesh.hpp"
 #include "components/Transform.hpp"
 #include "core/event/Input.hpp"
+#include "math/Frustum.hpp"
 #include "math/Projection.hpp"
 #include "math/Vector.hpp"
 #include "renderPasses/Masks.hpp"
@@ -290,36 +291,42 @@ namespace nexo::system {
 		const auto materialSpan = get<components::MaterialComponent>();
 		const std::span<const ecs::Entity> entitySpan = m_group->entities();
 
-        std::vector<renderer::DrawCommand> drawCommands;
-		for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
-		    const ecs::Entity entity = entitySpan[i];
-            if (coord->entityHasComponent<components::CameraComponent>(entity) && sceneType != SceneType::EDITOR)
-                continue;
-            const auto &transform = transformSpan[i];
-            const auto &materialAsset = materialSpan[i].material.lock();
-            std::string shaderStr = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : "";
-            const auto &mesh = meshSpan[i];
-            auto shader = renderer::ShaderLibrary::getInstance().get(shaderStr);
-            if (!shader)
-                continue;
-            drawCommands.push_back(createDrawCommand(
-                entity,
-                shader,
-                mesh,
-                materialAsset,
-                transform)
-            );
-
-            if (coord->entityHasComponent<components::SelectedTag>(entity))
-                drawCommands.push_back(createSelectedDrawCommand(mesh, materialAsset, transform));
-		}
-
 		for (auto &camera : renderContext.cameras) {
-            for (auto &cmd : drawCommands) {
+            const math::Frustum frustum(camera.viewProjectionMatrix);
+            std::vector<renderer::DrawCommand> drawCommands;
+
+            for (size_t i = partition->startIndex; i < partition->startIndex + partition->count; ++i) {
+                const ecs::Entity entity = entitySpan[i];
+                if (coord->entityHasComponent<components::CameraComponent>(entity) && sceneType != SceneType::EDITOR)
+                    continue;
+                const auto &transform = transformSpan[i];
+                const auto &mesh = meshSpan[i];
+
+                // Frustum culling: skip entities whose AABB is entirely outside the camera frustum
+                if (mesh.hasBounds)
+                {
+                    glm::vec3 worldMin, worldMax;
+                    math::transformAABB(mesh.localMin, mesh.localMax, transform.worldMatrix, worldMin, worldMax);
+                    if (!frustum.intersectsAABB(worldMin, worldMax))
+                        continue;
+                }
+
+                const auto &materialAsset = materialSpan[i].material.lock();
+                std::string shaderStr = materialAsset && materialAsset->isLoaded() ? materialAsset->getData()->shader : "";
+                auto shader = renderer::ShaderLibrary::getInstance().get(shaderStr);
+                if (!shader)
+                    continue;
+
+                auto cmd = createDrawCommand(entity, shader, mesh, materialAsset, transform);
                 cmd.uniforms["uViewProjection"] = camera.viewProjectionMatrix;
                 cmd.uniforms["uCamPos"] = camera.cameraPosition;
                 setupLights(cmd, renderContext.sceneLights);
+                drawCommands.push_back(std::move(cmd));
+
+                if (coord->entityHasComponent<components::SelectedTag>(entity))
+                    drawCommands.push_back(createSelectedDrawCommand(mesh, materialAsset, transform));
             }
+
             camera.pipeline.addDrawCommands(drawCommands);
             if (sceneType == SceneType::EDITOR && renderContext.gridParams.enabled)
                 camera.pipeline.addDrawCommand(createGridDrawCommand(camera, renderContext));

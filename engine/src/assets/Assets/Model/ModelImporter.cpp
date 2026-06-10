@@ -431,7 +431,7 @@ namespace nexo::assets {
         }
 
         LOG(NEXO_INFO, "Loaded mesh {}", mesh->mName.C_Str());
-        return {mesh->mName.C_Str(), vao, materialComponent, centerLocal};
+        return {mesh->mName.C_Str(), vao, materialComponent, centerLocal, minBB, maxBB};
     }
 
     glm::mat4 ModelImporter::convertAssimpMatrixToGLM(const aiMatrix4x4& matrix)

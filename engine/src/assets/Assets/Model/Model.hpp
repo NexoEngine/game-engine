@@ -30,6 +30,8 @@ namespace nexo::assets {
         AssetRef<Material> material;
 
         glm::vec3 localCenter = {0.0f, 0.0f, 0.0f};
+        glm::vec3 localMin = {0.0f, 0.0f, 0.0f};
+        glm::vec3 localMax = {0.0f, 0.0f, 0.0f};
     };
 
     struct MeshNode {
