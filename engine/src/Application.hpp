@@ -463,6 +463,13 @@ namespace nexo {
 
         bool save(const std::filesystem::path &path);
 
+        bool load(const std::filesystem::path &path);
+
+        // Save/load system helpers
+        bool loadBinary(const std::filesystem::path &path);
+
+        bool loadJson(const std::filesystem::path &path);
+
         static std::shared_ptr<ecs::Coordinator> m_coordinator;
 
        protected:
@@ -470,6 +477,10 @@ namespace nexo {
         std::shared_ptr<event::EventManager> m_eventManager;
 
        private:
+
+
+
+
         /**
          * @brief Registers all debug listeners for the application.
          *

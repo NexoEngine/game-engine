@@ -175,6 +175,15 @@ namespace nexo::ecs {
         return {m_dense.data(), m_size};
     }
 
+    void TypeErasedComponentArray::reset()
+    {
+        m_componentData.clear();
+        m_sparse.clear();
+        m_dense.clear();
+        m_size = 0;
+        m_groupSize = 0;
+    }
+
     Entity TypeErasedComponentArray::getEntityAtIndex(const size_t index) const
     {
         if (index >= m_size) THROW_EXCEPTION(OutOfRange, index);

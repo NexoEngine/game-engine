@@ -212,25 +212,27 @@ namespace nexo {
             root["component_arrays"] = nexo::json::array();
 
             const auto &typeMap = m_coordinator->getTypeIdToTypeIndex();
-            const auto &descs = m_coordinator->getComponentDescriptions();
+            const auto &descs   = m_coordinator->getComponentDescriptions();
 
             for (const auto &p : typeMap) {
                 const ecs::ComponentType typeId = p.first;
-                const std::type_index &ti = p.second;
+                const std::type_index &ti       = p.second;
 
                 nexo::json arrJson;
                 const auto descIt = descs.find(typeId);
-                std::string name = (descIt != descs.end() && descIt->second) ? descIt->second->name : ti.name();
+                std::string name  = (descIt != descs.end() && descIt->second) ? descIt->second->name : ti.name();
 
                 bool ok = m_coordinator->serializeComponentArray(ti, arrJson, nexo::save::SerializationContext::editor());
                 if (!ok) continue; // skip types without serializer
 
                 nexo::json entry;
                 entry["typeId"] = typeId;
-                entry["name"] = name;
-                entry["data"] = arrJson;
+                entry["name"]   = name;
+                entry["data"]   = arrJson;
                 root["component_arrays"].push_back(entry);
             }
+
+            root["entities"] = m_coordinator->getAllEntitiesWith<>()
 
             // Write file
             std::ofstream ofs(path.string(), std::ios::out | std::ios::trunc);
@@ -262,4 +264,65 @@ namespace nexo {
             return false;
         }
     }
+
+    bool Application::loadBinary(const std::filesystem::path &path)
+    {
+        return false;
+    }
+
+    bool Application::loadJson(const std::filesystem::path &path)
+    {
+        try {
+            std::ifstream jsonFile(path);
+
+            if (!jsonFile || !jsonFile.is_open()) {
+                throw std::runtime_error("Couldn't open file with ifstream");
+            }
+
+            json root = json::parse(jsonFile);
+
+
+            json& componentsArray = root.at("component_arrays");
+            // if (!componentsArray.is_array() || componentsArray.empty()) {
+            //     throw std::runtime_error("Missing field 'component_arrays'");
+            // }
+
+            const auto &typeMap = m_coordinator->getTypeIdToTypeIndex();
+            const auto &descs   = m_coordinator->getComponentDescriptions();
+
+            for (const json& componentArray : componentsArray) {
+                const json& typeId = componentArray.at("typeId");
+                const json& name = componentArray.at("name");
+                const json& arrJson = componentArray.at("data");
+
+                const ecs::ComponentType componentType = typeId.get<ecs::ComponentType>();
+                const std::type_index ti = typeMap.at(componentType);
+
+                bool ok = m_coordinator->deserializeComponentArray(ti, arrJson, nexo::save::SerializationContext::editor());
+                if (!ok) {
+                    LOG(NEXO_WARN, "Couldn't find deserializer for component array of type {}", name);
+                    continue;
+                }
+
+
+            }
+            return true;
+        } catch (std::exception& e) {
+            LOG(NEXO_ERROR, "Cannot load json save from {}: {}", path.string(), e.what());
+        }
+        return false;
+    }
+
+    bool Application::load(const std::filesystem::path &path)
+    {
+        if (path.extension() == ".nexob") {
+            return loadBinary(path);
+        } else if (path.extension() == ".json") {
+            return loadJson(path);
+        } else {
+            LOG(NEXO_ERROR, "Unsupported file extension: {}", path.extension().string());
+            return false;
+        }
+    }
+
 } // namespace nexo

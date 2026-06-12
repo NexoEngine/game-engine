@@ -36,17 +36,17 @@ namespace nexo::save {
 
     class SerializationException : public SaveException {
     public:
-        explicit SerializationException(const std::string &filePath,
+        explicit SerializationException(const std::string &message,
                                         const std::source_location &loc = std::source_location::current())
-            : SaveException("Serialization exception: ", loc)
+            : SaveException("Serialization exception: " + message, loc)
         {}
     };
 
     class DeserializationException : public SaveException {
     public:
-        explicit DeserializationException(const std::string &filePath,
+        explicit DeserializationException(const std::string &message,
                                           const std::source_location &loc = std::source_location::current())
-            : SaveException("Deserialization exception: ", loc)
+            : SaveException("Deserialization exception: " + message, loc)
         {}
     };
 

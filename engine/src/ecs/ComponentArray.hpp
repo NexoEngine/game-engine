@@ -23,6 +23,8 @@
 #include <span>
 #include <vector>
 
+#include "save/Serializer.hpp"
+
 namespace nexo::ecs {
     /**
      * @class IComponentArray
@@ -132,6 +134,15 @@ namespace nexo::ecs {
          * @return Span of entity IDs
          */
         [[nodiscard]] virtual std::span<const Entity> entities() const = 0;
+
+        /**
+         * @brief Resets the ComponentArray, effectively removing all components and entities registered.
+         */
+        virtual void reset() = 0;
+
+
+        // virtual std::any getMemento(Entity entity) const = 0;
+
     };
 
 #if defined(_MSC_VER)
@@ -156,6 +167,7 @@ namespace nexo::ecs {
     template<typename T, size_t capacity = 1024>
         requires(capacity >= 1)
     class alignas(64) ComponentArray final : public IComponentArray {
+
        public:
         /**
          * @brief Type alias for the component type
@@ -600,6 +612,15 @@ namespace nexo::ecs {
                    sizeof(Entity) * m_dense.capacity();
         }
 
+        void reset() override
+        {
+            m_componentArray.clear();
+            m_sparse.clear();
+            m_dense.clear();
+            m_size = 0;
+            m_groupSize = 0;
+        }
+
        private:
         // Dense storage for components.
         std::vector<T> m_componentArray;
@@ -773,6 +794,8 @@ namespace nexo::ecs {
          * @return Const span of entity IDs
          */
         [[nodiscard]] std::span<const Entity> entities() const override;
+
+        void reset() override;
 
         /**
          * @brief Gets the entity at the given index in the dense array

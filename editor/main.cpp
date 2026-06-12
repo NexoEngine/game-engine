@@ -66,18 +66,23 @@ try {
 
     nexo::Application &app = nexo::Application::getInstance();
 
-    app.save("test_save.json");
+    using clock = std::chrono::steady_clock;
+    constexpr auto targetFrameTime = std::chrono::milliseconds(16);
+
+    auto nextFrameTime = clock::now();
+
+    app.load("test_save.json");
 
     while (editor.isOpen()) {
-        auto start = std::chrono::high_resolution_clock::now();
+        nextFrameTime += targetFrameTime;
+
         editor.render();
         editor.update();
 
-        auto end                                          = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double, std::milli> elapsed = end - start;
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(16) - elapsed);
+        std::this_thread::sleep_until(nextFrameTime);
     }
+
+    app.save("test_save_new.json");
 
     editor.shutdown();
     return 0;

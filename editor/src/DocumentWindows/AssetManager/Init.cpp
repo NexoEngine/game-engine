@@ -81,7 +81,7 @@ namespace nexo::editor {
         //     assets::ImporterFileInput fileInput{path};
         //     importer.importAsset<assets::Model>(assets::AssetLocation("my_package::Sword@Models"), fileInput);
         // }
-        // Demo Models
+        // // Demo Models
         // {
         //     assets::AssetImporter importer;
         //     std::filesystem::path path = Path::resolvePathRelativeToExe("../resources/models/Demo/bretzel/bretzel.gltf");

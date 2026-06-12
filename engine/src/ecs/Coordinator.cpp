@@ -152,4 +152,13 @@ namespace nexo::ecs {
         return true;
     }
 
+    bool Coordinator::deserializeComponentArray(const std::type_index& typeIndex, const nexo::json& in,
+                                              const nexo::save::SerializationContext& ctx) const
+    {
+        const auto it = m_deserializeComponentArrayFunctions.find(typeIndex);
+        if (it == m_deserializeComponentArrayFunctions.end()) return false;
+        it->second(in, ctx);
+        return true;
+    }
+
 } // namespace nexo::ecs

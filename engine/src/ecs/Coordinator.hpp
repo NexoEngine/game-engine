@@ -186,6 +186,14 @@ namespace nexo::ecs {
 
                         save::serialize(j, *componentArray, ctx);
                 };
+
+                m_deserializeComponentArrayFunctions[typeid(T)] =
+                    [this](const json& j, const save::SerializationContext& ctx = save::SerializationContext{}) {
+                        auto componentArray = this->getComponentArray<T>();
+                        if (componentArray == nullptr) return;
+
+                        save::deserialize(j, *componentArray, ctx);
+                };
             }
         }
 
@@ -834,6 +842,9 @@ namespace nexo::ecs {
         [[nodiscard]] bool serializeComponentArray(const std::type_index& typeIndex, nexo::json& out,
                                                    const nexo::save::SerializationContext& ctx = {}) const;
 
+        [[nodiscard]] bool deserializeComponentArray(const std::type_index& typeIndex, const json& in,
+                                       const save::SerializationContext& ctx) const;
+
        private:
         /**
          * @brief Processes a component type to update required and excluded signatures.
@@ -873,6 +884,7 @@ namespace nexo::ecs {
         std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentFunctions;
         std::unordered_map<std::type_index, std::function<std::any(Entity)>> m_getComponentPointers;
         std::unordered_map<std::type_index, std::function<void(json&, const save::SerializationContext&)>> m_serializeComponentArrayFunctions;
+        std::unordered_map<std::type_index, std::function<void(const json& j, const save::SerializationContext&)>> m_deserializeComponentArrayFunctions;
 
         std::unordered_map<ComponentType, std::shared_ptr<ComponentDescription>> m_componentDescriptions;
     };
